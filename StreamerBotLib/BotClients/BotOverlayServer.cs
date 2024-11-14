@@ -90,6 +90,13 @@ namespace StreamerBotLib.BotClients
             SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
         }
 
+        public void SetOverlayWindowGUI(MediaOverlayPage window)
+        {
+            OverlayPage = window;
+            SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
+            SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
+        }
+
         public void ManageStreamOnlineOfflineStatus(bool Start)
         {
             if (OptionFlags.MediaOverlayStartWithStream)

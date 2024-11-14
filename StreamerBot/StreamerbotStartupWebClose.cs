@@ -179,6 +179,8 @@ namespace StreamerBot
             CheckBox_TabifySettings_Clicked(this, new());
             CheckDebug(this, new());
             SetVisibility(this, new());
+            CheckFocus();
+
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "End Window Loaded events.");
         }
 
@@ -189,20 +191,35 @@ namespace StreamerBot
         private void StartAutoBots()
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Attempting to start bots.");
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
+
+            if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate
+                && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
+            ||
+                (OptionFlags.TwitchTokenUseAuth // when using the Twitch auth token method
+                                                // check the bot/streamer tokens are available assigned
+                && (!OptionFlags.TwitchStreamerUseToken && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
+                 || (OptionFlags.TwitchStreamerUseToken
+                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken))
+                   )
+                )
+            )
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
 
             foreach (Tuple<bool, Platform, RadioButton> tuple in from Tuple<bool, Platform, RadioButton> tuple in BotOps
                                                                  where tuple.Item1 && tuple.Item3.IsEnabled
-                                                                 select tuple)
-            {
+                                                           select tuple)
+                {
                 DispatchStartBot(tuple.Item3.DataContext as IOModule);
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
+                }
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
+
+                BeginUpdateCategory();
             }
-
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
-
-            BeginUpdateCategory();
         }
 
         /// <summary>

@@ -14,6 +14,9 @@ namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
+        private MediaOverlayPage MediaOverlayPage = null;
+        private MediaOverlay MediaOverlay = null;
+
         private void MediaOverlayServer_SetOverlayWindow(object sender, SetOverlayWindowEventArgs e)
         {
             ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
@@ -48,7 +51,8 @@ namespace StreamerBot
                         Bots.TwitchBotSendChatClient => throw new NotImplementedException(),
                         Bots.TwitchTokenBot => throw new NotImplementedException(),
                         Bots.Default => throw new NotImplementedException(),
-                       _ => throw new NotImplementedException()
+                        Bots.TwitchUserBot => throw new NotImplementedException(),
+                        _ => throw new NotImplementedException()
                     };
 
                     HelperStartBot(radio);
@@ -68,6 +72,7 @@ namespace StreamerBot
                 ToggleInputEnabled(true);
                 RadioButton radio = e.BotName switch
                 {
+                    Bots.TwitchChatBot => Radio_Twitch_StopBot,
                     Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
                     Bots.TwitchMultiBot => Radio_Twitch_LiveBotStop,
                     Bots.TwitchBotEventSub => Radio_Twitch_BotEventSubStop,
@@ -78,6 +83,7 @@ namespace StreamerBot
                     Bots.TwitchBotSendChatClient => throw new NotImplementedException(),
                     Bots.TwitchTokenBot => throw new NotImplementedException(),
                     Bots.Default => throw new NotImplementedException(),
+                    Bots.TwitchUserBot => throw new NotImplementedException(),
                     _ => throw new NotImplementedException()
                 };
                 HelperStopBot(radio);
@@ -91,6 +97,7 @@ namespace StreamerBot
                 ToggleInputEnabled(true);
                 RadioButton radio = e.BotName switch
                 {
+                    Bots.TwitchChatBot => Radio_Twitch_StopBot,
                     Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
                     Bots.TwitchMultiBot => Radio_Twitch_LiveBotStop,
                     Bots.TwitchBotEventSub => Radio_Twitch_BotEventSubStop,
@@ -101,6 +108,7 @@ namespace StreamerBot
                     Bots.DiscordWebhooks => throw new NotImplementedException(),
                     Bots.TwitchTokenBot => throw new NotImplementedException(),
                     Bots.Default => throw new NotImplementedException(),
+                    Bots.TwitchUserBot => throw new NotImplementedException(),
                     _ => throw new NotImplementedException()
                 };
                 HelperStopBot(radio);
