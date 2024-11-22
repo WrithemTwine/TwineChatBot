@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Static;
 

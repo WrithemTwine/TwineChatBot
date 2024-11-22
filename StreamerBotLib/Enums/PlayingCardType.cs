@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Enums
 {
-    internal enum PlayingCardType
+    public enum PlayingCardType
     {
         French
     }

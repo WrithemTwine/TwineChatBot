@@ -6,7 +6,7 @@ namespace StreamerBotLib.Events
     /// Event response when the Twitch Authentication Code expired or is unavailable 
     /// and the user needs to authenticate the application.
     /// </summary>
-    internal class TwitchAuthCodeExpiredEventArgs : EventArgs
+    public class TwitchAuthCodeExpiredEventArgs : EventArgs
     {
         /// <summary>
         /// Empty constructor.

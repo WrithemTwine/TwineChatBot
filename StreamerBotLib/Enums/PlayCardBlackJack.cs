@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Enums
 {
-    internal enum PlayCardBlackJack
+    public enum PlayCardBlackJack
     {
         BlackJackHit,
         BlackJack21Win,

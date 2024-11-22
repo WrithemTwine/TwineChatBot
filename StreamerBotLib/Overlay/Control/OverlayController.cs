@@ -23,6 +23,8 @@ namespace StreamerBotLib.Overlay.Control
         internal TwineBotWebServer _httpServer;
         internal TickerFormatter tickerFormatter;
 
+        private bool IsServerStarted;
+
 #if UtilizePipeIPC
         internal OverlaySvcClientPipe _clientPipe;
 
@@ -46,6 +48,7 @@ namespace StreamerBotLib.Overlay.Control
         {
             _httpServer = new();
             tickerFormatter = new();
+            IsServerStarted = false;
         }
 
         /// <summary>
@@ -66,10 +69,14 @@ namespace StreamerBotLib.Overlay.Control
         /// </summary>
         public void StartServer()
         {
-            TwineBotWebServer.StartServer();
+            if (!IsServerStarted)
+            {
+                TwineBotWebServer.StartServer();
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server started.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server started.");
 
+                IsServerStarted = true;
+            }
         }
 
         /// <summary>
@@ -77,9 +84,13 @@ namespace StreamerBotLib.Overlay.Control
         /// </summary>
         public void StopServer()
         {
-            TwineBotWebServer.StopServer();
+            if (IsServerStarted)
+            {
+                TwineBotWebServer.StopServer();
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server stopped.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server stopped.");
+                IsServerStarted = false;
+            }
         }
 
         /// <summary>

@@ -31,11 +31,11 @@ namespace StreamerBotLib.DataSQL.Models
                            Platform platform = Platform.Default)
 #endif
     {
-        public OldFollowUsers(Followers followers, DateTime statusChangeDate) : this()
+        public OldFollowUsers(Followers followers, string userName, DateTime statusChangeDate) : this()
         {
             Platform = followers.Platform;
             UserId = followers.UserId;
-            UserName = followers.User.UserName;
+            UserName = userName;
             IsFollower = followers.IsFollower;
             FollowedDate = followers.FollowedDate;
             StatusChangeDate = statusChangeDate;

@@ -161,7 +161,7 @@ namespace StreamerBotLib.Systems
             AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, e.LastFollowerUserName);
         }
 
-        private void DataManage_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
+        public static void StopBulkFollowers()
         {
             DataManage.NotifyStopBulkFollowers();
         }
@@ -590,7 +590,7 @@ namespace StreamerBotLib.Systems
 
         }
 
-        public void UserCheered(LiveUser User, int Bits )
+        public void UserCheered(LiveUser User, int Bits)
         {
             // handle bit cheers
             if (Bits > 0)

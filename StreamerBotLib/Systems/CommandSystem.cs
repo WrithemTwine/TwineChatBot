@@ -49,7 +49,7 @@ namespace StreamerBotLib.Systems
         public void StartElapsedTimerThread()
         {
             // don't start another thread if the current is still active
-            if (ElapsedThread == null)
+            if (ElapsedThread == null && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
             {
                 ChatBotStarted = true;
                 ElapsedThread = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ElapsedCommandTimers);
@@ -887,7 +887,7 @@ namespace StreamerBotLib.Systems
 
         private static void LookupQuery(CommandData CommData, string paramvalue, ref Dictionary<string, string> datavalues)
         {
-            //TODO: the commands with data lookup needs a lot of work!
+            //TODO: the query commands with data lookup needs a lot of work!
 
             switch (CommData.Top)
             {
@@ -916,7 +916,7 @@ namespace StreamerBotLib.Systems
 
                 default:
                     {
-                        object querydata = DataManage.PerformQuery(CommandsBase.GetCommands(CommData), paramvalue);
+                        object querydata = DataManage.PerformQuery(CommandsBase.GetCommands(CommData), paramvalue) ?? "";
 
                         string output = "";
                         if (querydata.GetType() == typeof(string))

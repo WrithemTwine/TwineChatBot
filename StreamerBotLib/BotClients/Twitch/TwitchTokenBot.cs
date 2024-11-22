@@ -33,6 +33,9 @@ namespace StreamerBotLib.BotClients.Twitch
         internal ApiSettings StreamerApiSettings { get; private set; }
         internal TwitchAPI StreamerHelixApi { get; private set; }
 
+        internal ApiSettings StreamerNoScopesApiSettings { get; private set; }
+        internal TwitchAPI StreamerNoScopesHelixApi { get; private set; }
+
         private readonly IDataManagerReadOnly DataManager = SystemsController.DataManage;
 
         private bool TokenRenewalStarted; // flag to use a single thread for checking AuthCode access tokens
@@ -46,10 +49,13 @@ namespace StreamerBotLib.BotClients.Twitch
         internal event EventHandler BotAccessTokenUnChanged;
         internal event EventHandler StreamerAccessTokenChanged;
         internal event EventHandler StreamerAccessTokenUnChanged;
+        internal event EventHandler StreamerNoScopesAccessTokenChanged;
+        internal event EventHandler StreamerNoScopesAccessTokenUnChanged;
 
         public event EventHandler AccessTokensInitialized;
         internal event EventHandler<TwitchAuthCodeExpiredEventArgs> BotAcctAuthCodeExpired;
         internal event EventHandler<TwitchAuthCodeExpiredEventArgs> StreamerAcctAuthCodeExpired;
+        internal event EventHandler<TwitchAuthCodeExpiredEventArgs> StreamerNoScopesAuthCodeExpired;
 
         /// <summary>
         /// The upcoming expiration date of the token. This token is for accessing Twitch through the bot account.
@@ -67,6 +73,16 @@ namespace StreamerBotLib.BotClients.Twitch
         /// The date & time the token bot checked the streamer account access token for validity.
         /// </summary>
         private DateTime StreamerAccessTokenLastCheckedDate;
+
+        /// <summary>
+        /// The Upcoming expiration date of the token. When the user uses the bot account for chatting, but needs streamer token access to access streamer level information.
+        /// </summary>
+        private DateTime StreamerNoScopesAccessTokenExpireDate;
+
+        /// <summary>
+        /// The date & time the token bot checked the streamer account access token for validity.
+        /// </summary>
+        private DateTime StreamerNoScopesAccessTokenLastCheckedDate;
 
         public TwitchTokenBot()
         {
@@ -116,6 +132,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 // at this point, clear the helix api data and 'start bot' will reset it, even if token mode changed
                 StreamerHelixApi = null;
                 BotHelixApi = null;
+                StreamerNoScopesHelixApi = null;
             }
         }
 
@@ -125,6 +142,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 BotHelixApi = new(settings: BotApiSettings);
                 StreamerHelixApi = new(settings: StreamerApiSettings);
+                StreamerNoScopesHelixApi = new(settings: StreamerNoScopesApiSettings);
 
                 if (!InitializeTokens)
                 {
@@ -143,8 +161,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (string.IsNullOrEmpty(OptionFlags.TwitchStreamerUserId))
             {
-                OptionFlags.TwitchStreamerUserId = 
-                    OptionFlags.TwitchChannelName == OptionFlags.TwitchBotUserName ? 
+                OptionFlags.TwitchStreamerUserId =
+                    OptionFlags.TwitchChannelName == OptionFlags.TwitchBotUserName ?
                         OptionFlags.TwitchBotUserId
                         : DataManager.GetUserId(new(OptionFlags.TwitchChannelName, Platform.Twitch)) ?? StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchChannelName]).Result.Users[0].Id;
             }
@@ -169,12 +187,19 @@ namespace StreamerBotLib.BotClients.Twitch
                     AccessToken = OptionFlags.TwitchStreamerAccessToken
                 } : BotApiSettings;
 
+            StreamerNoScopesApiSettings = new()
+            {
+                ClientId = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchStreamerClientId : OptionFlags.TwitchBotClientId,
+                AccessToken = OptionFlags.TwitchStreamerNoScopesAccessToken
+            };
+
             SetTwitchApis();
 
             SetIds();
 
             BotAccessTokenChanged?.Invoke(this, new());
             StreamerAccessTokenChanged?.Invoke(this, new());
+            StreamerNoScopesAccessTokenChanged?.Invoke(this, new());
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Finished building UserProvided-Token mode api settings.");
         }
@@ -270,6 +295,38 @@ namespace StreamerBotLib.BotClients.Twitch
                             }
                         }
 
+                        if ((DateTime.Now - StreamerNoScopesAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
+                        { // only check if we haven't checked in the last 1 second - avoid lots of checks in a single second
+                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Now checking Bot token.");
+                            // try to refresh Bot token
+                            Tuple<string, string, int> StreamerNoScopesresponse = ProcessToken(
+                                OptionFlags.TwitchAuthStreamerNoScopesAuthCode,
+                                OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId,
+                                OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientSecret : OptionFlags.TwitchAuthBotClientSecret,
+                                OptionFlags.TwitchAuthStreamerNoScopesRefreshToken,
+                                OptionFlags.TwitchAuthStreamerNoScopesAccessToken);
+
+                            StreamerNoScopesAccessTokenLastCheckedDate = DateTime.Now;
+
+                            // with a good response, set the token data
+                            if (StreamerNoScopesresponse.Item1 != "" && StreamerNoScopesresponse.Item2 != "")
+                            {
+                                OptionFlags.TwitchAuthBotAccessToken = StreamerNoScopesresponse.Item1;
+                                OptionFlags.TwitchAuthBotRefreshToken = StreamerNoScopesresponse.Item2;
+                                StreamerNoScopesAccessTokenExpireDate = DateTime.Now.AddSeconds(StreamerNoScopesresponse.Item3);
+
+                                if (StreamerNoScopesApiSettings != null)
+                                {
+                                    StreamerNoScopesApiSettings.AccessToken = OptionFlags.TwitchAuthStreamerNoScopesAccessToken;
+                                    StreamerNoScopesAccessTokenChanged?.Invoke(this, EventArgs.Empty);
+                                }
+                            }
+                            else
+                            {
+                                StreamerNoScopesAccessTokenUnChanged?.Invoke(this, EventArgs.Empty);
+                            }
+                        }
+
                         if (OptionFlags.TwitchStreamerUseToken)
                         {
                             if ((DateTime.Now - StreamerAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
@@ -318,6 +375,13 @@ namespace StreamerBotLib.BotClients.Twitch
                                     AccessToken = OptionFlags.TwitchAuthStreamerAccessToken
                                 }
                                 : BotApiSettings;
+
+                        StreamerNoScopesApiSettings ??= 
+                             new ApiSettings()
+                            {
+                                ClientId =OptionFlags.TwitchStreamerUseToken? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId,
+                                AccessToken = OptionFlags.TwitchAuthStreamerNoScopesAccessToken
+                            };
 
                         SetTwitchApis();
                         SetIds();
@@ -462,7 +526,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="clientId">The client Id registered to the account used in the app (could be bot account or streamer account).</param>
         /// <param name="OpenBrowser">An action code bit to open the browser at the end of this code flow.</param>
         /// <param name="AuthenticationFinished">An action to perform once the authentication is finished-specifically a GUI action.</param>
-        internal void GenerateAuthCodeURL(string clientId, Action<string> OpenBrowser = null, Action AuthenticationFinished = null)
+        internal void GenerateAuthCodeURL(string clientId, bool NoScopes = false, Action<string> OpenBrowser = null, Action AuthenticationFinished = null)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Request to generate an auth code URL.");
 
@@ -479,36 +543,54 @@ namespace StreamerBotLib.BotClients.Twitch
 
             string State = buildstring[..Math.Min(buildstring.Length, 30)];
 
-            // invoke event to get the user involved with authorizing the application
-            if (clientId == OptionFlags.TwitchAuthBotClientId) // determine if the client Id is the bot client
+            if (NoScopes)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating bot account authorization URL.");
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating no scopes authorization URL.");
 
                 string buildURL = AuthBot.GetAuthorizationCodeUrl(
                     OptionFlags.TwitchAuthRedirectURL,
-                    OptionFlags.TwitchStreamerUseToken ? // check if the bot account is the streamer account, determines scopes to request
-                    Resources.CredentialsTwitchScopesDiffOauthBot.Split(' ') :
-                    Resources.CredentialsTwitchScopesOauthSame.Split(' '),
+                    [""],
                     state: State,
-                    clientId: clientId);
+                    clientId: OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId);
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "URL generated.");
 
-                BotAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
+                StreamerNoScopesAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
+
             }
             else
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating streamer account authorization URL.");
+                // invoke event to get the user involved with authorizing the application
+                if (clientId == OptionFlags.TwitchAuthBotClientId) // determine if the client Id is the bot client
+                {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating bot account authorization URL.");
 
-                string buildURL = AuthBot.GetAuthorizationCodeUrl(
-                    OptionFlags.TwitchAuthRedirectURL,
-                    Resources.CredentialsTwitchScopesDiffOauthChannel.Split(' '),
-                    state: State,
-                    clientId: clientId
-                    );
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "URL generated.");
+                    string buildURL = AuthBot.GetAuthorizationCodeUrl(
+                        OptionFlags.TwitchAuthRedirectURL,
+                        OptionFlags.TwitchStreamerUseToken ? // check if the bot account is the streamer account, determines scopes to request
+                        Resources.CredentialsTwitchScopesDiffOauthBot.Split(' ') :
+                        Resources.CredentialsTwitchScopesOauthSame.Split(' '),
+                        state: State,
+                        clientId: clientId);
 
-                StreamerAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "URL generated.");
+
+                    BotAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
+                }
+                else
+                {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating streamer account authorization URL.");
+
+                    string buildURL = AuthBot.GetAuthorizationCodeUrl(
+                        OptionFlags.TwitchAuthRedirectURL,
+                        Resources.CredentialsTwitchScopesDiffOauthChannel.Split(' '),
+                        state: State,
+                        clientId: clientId
+                        );
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "URL generated.");
+
+                    StreamerAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
+                }
             }
         }
 
@@ -527,6 +609,10 @@ namespace StreamerBotLib.BotClients.Twitch
             OptionFlags.TwitchAuthStreamerAuthCode = "";
             OptionFlags.TwitchAuthStreamerAccessToken = "";
             OptionFlags.TwitchAuthStreamerRefreshToken = "";
+
+            OptionFlags.TwitchAuthStreamerNoScopesAuthCode = "";
+            OptionFlags.TwitchAuthStreamerNoScopesAccessToken = "";
+            OptionFlags.TwitchAuthStreamerNoScopesRefreshToken = "";
         }
     }
 }

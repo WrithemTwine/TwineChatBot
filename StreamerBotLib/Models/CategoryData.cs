@@ -12,7 +12,7 @@
 
         public int HashCode()
         {
-            return (CategoryId+CategoryName).GetHashCode();
+            return (CategoryId + CategoryName).GetHashCode();
         }
     };
 }

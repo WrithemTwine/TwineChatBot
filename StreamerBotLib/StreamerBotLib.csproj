@@ -19,40 +19,48 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
+	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
+	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
 		<Optimize>True</Optimize>
+		<DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
 		<Optimize>True</Optimize>
+		<DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
 		<Optimize>True</Optimize>
+		<DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
 	  <Optimize>True</Optimize>
+	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
 	  <Optimize>True</Optimize>
+	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'">
 		<NoWarn>1701;1702;SYSLIB0051</NoWarn>
 		<Optimize>True</Optimize>
+		<DefineConstants>$(DefineConstants);EFC8</DefineConstants>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -64,16 +72,27 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.4.1" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="8.0.10" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.4.2" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' &#xD;&#xA;						  Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' &#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'" />
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'" />
+		
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' &#xD;&#xA;						  Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' &#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+		
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.11" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />

@@ -14,14 +14,14 @@
         /// <returns><code>true</code> - if added to List, <code>false</code> - if List contained item and not added.</returns>
         public static bool UniqueAdd<T>(this List<T> List, T Item)
         {
-            bool found = false;
+            bool added = false;
             if (!List.Contains(Item))
             {
                 List.Add(Item);
-                found = true;
+                added = true;
             }
 
-            return found;
+            return added;
         }
 
         /// <summary>
@@ -32,17 +32,17 @@
         /// <param name="Item">The item to check if List contains and then add this item.</param>
         /// <param name="comparer">An item comparer to use to determine if two list objects are equal.</param>
         /// <returns><code>true</code> - if added to List, <code>false</code> - if List contained item and not added.</returns>
-        public static bool UniqueAdd<T>(this List<T> List, T Item, IEqualityComparer<T> comparer)
+        public static bool UniqueAdd<T>(this List<T> List, T Item, Predicate<T> predicate)
         {
-            bool found = false;
+            bool added = false;
 
-            if (!List.Where(Listitem => comparer.Equals(Item, Listitem)).Select(Listitem => new { }).Any())
+            if (!List.Where((Listitem) => { return predicate.Invoke(Listitem); }).Select(Listitem => new { }).Any())
             {
                 List.Add(Item);
-                found = true;
+                added = true;
             }
 
-            return found;
+            return added;
         }
 
         /// <summary>
@@ -68,14 +68,14 @@
         /// <returns><code>true</code> - if added to ICollection, <code>false</code> - if ICollection contained item and not added.</returns>
         public static bool UniqueAdd<T>(this ICollection<T> ICollection, T Item)
         {
-            bool found = false;
+            bool added = false;
             if (!ICollection.Contains(Item))
             {
                 ICollection.Add(Item);
-                found = true;
+                added = true;
             }
 
-            return found;
+            return added;
         }
 
         /// <summary>
@@ -86,17 +86,17 @@
         /// <param name="Item">The item to check if ICollection contains and then add this item.</param>
         /// <param name="comparer">An item comparer to use to determine if two ICollection objects are equal.</param>
         /// <returns><code>true</code> - if added to ICollection, <code>false</code> - if ICollection contained item and not added.</returns>
-        public static bool UniqueAdd<T>(this ICollection<T> ICollection, T Item, IEqualityComparer<T> comparer)
+        public static bool UniqueAdd<T>(this ICollection<T> ICollection, T Item, Predicate<T> predicate)
         {
-            bool found = false;
+            bool added = false;
 
-            if (!ICollection.Where(ICollectionitem => comparer.Equals(Item, ICollectionitem)).Select(ICollectionitem => new { }).Any())
+            if (!ICollection.Where((CollectionItem) => { return predicate.Invoke(CollectionItem); }).Select(ICollectionitem => new { }).Any())
             {
                 ICollection.Add(Item);
-                found = true;
+                added = true;
             }
 
-            return found;
+            return added;
         }
 
         /// <summary>

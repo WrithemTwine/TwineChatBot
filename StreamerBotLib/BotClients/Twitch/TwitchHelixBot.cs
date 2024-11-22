@@ -24,7 +24,7 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchHelixBot : TwitchBotsBase
     {
-       
+
         /// <summary>
         /// Reports Game Category Name from querying a channel
         /// </summary>
@@ -193,7 +193,7 @@ namespace StreamerBotLib.BotClients.Twitch
             return null;
         }
 
-        private async Task<GetChannelFollowersResponse> GetFollowers(string broadcasterId, string UserId = null, int first=20, string after=null)
+        private async Task<GetChannelFollowersResponse> GetFollowers(string broadcasterId, string UserId = null, int first = 20, string after = null)
         {
             return await tokenBot.StreamerHelixApi.Helix.Channels.GetChannelFollowersAsync(broadcasterId: broadcasterId, userId: UserId, first: first, after: after);
         }
@@ -326,7 +326,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
-                return GetStreams(UserName: UserName).Result;
+                return GetStreams(UserId: UserId, UserName: UserName).Result;
             });
         }
 

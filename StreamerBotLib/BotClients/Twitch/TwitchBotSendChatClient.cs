@@ -39,7 +39,7 @@ namespace StreamerBotLib.BotClients.Twitch
             while (tempSend.Length > SingleChatLength)
             {
                 string temp = tempSend[..SingleChatLength];
-                string AddSend = temp[..(temp.LastIndexOf(' ') - 1)];
+                string AddSend = temp[..(temp.LastIndexOf(' '))];
                 newSendMsg.Add(AddSend);
                 tempSend = prefix + tempSend.Replace(AddSend, "").Trim();
             }
@@ -54,12 +54,12 @@ namespace StreamerBotLib.BotClients.Twitch
                 int x = 0; // loop x times and stop, to prevent infinite loop
                 const int MaxTime = 5; // try this many times and stop the loop
 
-                while (newSendMsg.Count > 0 || x < MaxTime)
+                while (newSendMsg.Count > 0 && x < MaxTime)
                 {
                     try
                     {
-                        string firstmsg = newSendMsg[0];
-                        if (tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg).Result.Data[0].IsSent)
+                        string firstmsg = newSendMsg.FirstOrDefault();
+                        if (firstmsg != default && tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg).Result.Data[0].IsSent)
                         {
                             newSendMsg.Remove(firstmsg);
                             x = 0;
@@ -69,7 +69,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                         tokenBot.CheckToken();
-                        Thread.Sleep(500);
+                        Thread.Sleep(500 * (x + 1));
                         x++;
                     }
                     catch (Exception ex)
@@ -77,7 +77,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotSendChat, "Found exception.");
 
                         LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                        Thread.Sleep(500);
+                        Thread.Sleep(500 * (x + 1));
                         x++;
                     }
                 }

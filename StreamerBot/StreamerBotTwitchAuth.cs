@@ -77,6 +77,18 @@ namespace StreamerBot
             });
         }
 
+        private void Button_TwitchAuthCode_NoScopes_ApproveURL(object sender, RoutedEventArgs e)
+        {
+            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = false;
+
+            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthBotClientId, TwitchAuth_PopupURLAuth, 
+                AuthenticatedAttemptToStartBots);
+            Dispatcher.BeginInvoke(() =>
+            {
+                StatusBar_TwitchAuth_NoScopesAuthCodeInvalid.Visibility = Visibility.Collapsed;
+            });
+        }
+
         private void Button_TwitchAuthCode_ApproveStreamerURL(object sender, RoutedEventArgs e)
         {
             Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = false;
@@ -190,11 +202,13 @@ namespace StreamerBot
                                                   ]
                                      select !string.IsNullOrEmpty(BUT)).All((bt) => bt == true);
 
-            bool UserStreamerTokenData = (!OptionFlags.TwitchStreamerUseToken && UserBotTokenData) ||
+            bool UserStreamerTokenData = (!OptionFlags.TwitchStreamerUseToken && UserBotTokenData
+                                         && !string.IsNullOrEmpty(OptionFlags.TwitchStreamerNoScopesAccessToken)) ||
                                          (from SUT in (ICollection<string>)[
                                              OptionFlags.TwitchChannelName,
                                              OptionFlags.TwitchStreamerClientId,
-                                             OptionFlags.TwitchStreamerAccessToken
+                                             OptionFlags.TwitchStreamerAccessToken,
+                                             OptionFlags.TwitchStreamerNoScopesAccessToken
                                              ]
                                           select !string.IsNullOrEmpty(SUT)).All((st) => st == true);
             // Auth token data
@@ -223,7 +237,7 @@ namespace StreamerBot
 
             // Twitch
 
-            if (OptionFlags.TwitchChannelName != OptionFlags.TwitchBotUserName)
+            if (OptionFlags.TwitchStreamerUseToken)
             {
                 GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
                 TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
@@ -233,6 +247,12 @@ namespace StreamerBot
                 Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
 
                 Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Visible;
+
+                Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer.Visibility = Visibility.Visible;
+                Twitch_AuthCode_NoScopes_Button_AuthorizeBot.Visibility = Visibility.Collapsed;
+
+                SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Collapsed;
+                SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Visible;
             }
             else
             {
@@ -244,6 +264,12 @@ namespace StreamerBot
                 Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Visible;
 
                 Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Collapsed;
+
+                Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer.Visibility = Visibility.Collapsed;
+                Twitch_AuthCode_NoScopes_Button_AuthorizeBot.Visibility = Visibility.Visible;
+
+                SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Visible;
+                SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Collapsed;
             }
 
             // set earliest token expiration date

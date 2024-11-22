@@ -37,10 +37,10 @@ namespace StreamerBotLib.Overlay
             // to match the alert, so the bot crashed.
             // UpdateLinks loads the styles in case alerts are waiting to be processed
 
-            if (OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayAutoServerStart)
+            if (OptionFlags.MediaOverlayAutoStart && OptionFlags.MediaOverlayAutoServerStart && OptionFlags.MediaOverlayMediaActionPort != 0)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
-            }            
+            }
             TickerSelections(this, new());
             UpdateLinks();
         }

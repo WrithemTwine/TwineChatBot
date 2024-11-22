@@ -19,7 +19,6 @@ namespace StreamerBotLib.BotClients
      *
      */
 
-
     public class BotOverlayServer : IOModule, IBotTypes
     {
         /// <summary>
@@ -90,13 +89,6 @@ namespace StreamerBotLib.BotClients
             SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
         }
 
-        public void SetOverlayWindowGUI(MediaOverlayPage window)
-        {
-            OverlayPage = window;
-            SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
-            SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
-        }
-
         public void ManageStreamOnlineOfflineStatus(bool Start)
         {
             if (OptionFlags.MediaOverlayStartWithStream)
@@ -118,19 +110,22 @@ namespace StreamerBotLib.BotClients
         /// <returns>True, the bot has started.</returns>
         public override void StartBot()
         {
-            IsActive = true;
-
-            if (OverlayPage == null)
+            if (IsActive == null || IsActive == false)
             {
-                SetOverlayWindow?.Invoke(this, new SetOverlayWindowEventArgs() { SetOverlay = SetOverlayWindowGUI });
-            }
+                IsActive = true;
 
-            if (!AlertsThreadStarted)
-            {
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
-            }
+                if (OverlayPage == null)
+                {
+                    SetOverlayWindow?.Invoke(this, new SetOverlayWindowEventArgs() { SetOverlay = SetOverlayWindowGUI });
+                }
 
-            InvokeBotStarted();
+                if (!AlertsThreadStarted)
+                {
+                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
+                }
+
+                InvokeBotStarted();
+            }
         }
 
         /// <summary>
@@ -151,15 +146,18 @@ namespace StreamerBotLib.BotClients
         /// <returns>True for bot stopped.</returns>
         public override void StopBot()
         {
-            IsActive = false;
+            if (IsActive == true)
+            {
+                IsActive = false;
 
-            SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
-            SendTickerToServer -= OverlayPage?.GetupdatedTickerReceivedHandler();
+                SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
+                SendTickerToServer -= OverlayPage?.GetupdatedTickerReceivedHandler();
 
-            OverlayPage?.StopController();
-            OverlayPage = null;
+                OverlayPage?.StopController();
+                OverlayPage = null;
 
-            InvokeBotStopped();
+                InvokeBotStopped();
+            }
         }
 
         #region Sending Msg mechansim

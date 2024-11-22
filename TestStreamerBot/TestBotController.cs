@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.BotClients.Twitch;
-using StreamerBotLib.BotIOController;
+﻿using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
@@ -140,7 +139,7 @@ namespace TestStreamerBot
                 string Category = random.GameName;
 
                 // go online
-                botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, new(Id, Category));
+                botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
 
                 // wait a bit
                 Thread.Sleep(20000);
@@ -238,7 +237,9 @@ namespace TestStreamerBot
                 List<Follow> regularfollower = [GenerateFollower("Reg")];
 
                 BotController.HandleBotEventStartBulkFollowers();
-                botController.HandleBotEventNewFollowers(regularfollower);
+
+                botController.HandleBotEventNewFollowers(regularfollower[0]);
+
                 Assert.True(dataManager.PostFollower(
                     new(regularfollower[0].FollowedAt,
                     regularfollower[0].FromUserId,
@@ -276,16 +277,15 @@ namespace TestStreamerBot
 
                 for (int x = 0; x < Random.Next(1, 20); x++)
                 {
-                    follows.Add(new(
-                        followedAt: DateTime.Now,
-                        fromUserId: "00112233",
-                        fromUserName: $"IFollow{datestring}{x}",
-                        platform: Platform.Default,
-                        GetRandomGameIdName().GameName)
-                        );
+                    botController.HandleBotEventNewFollowers(new(
+                            followedAt: DateTime.Now,
+                            fromUserId: "00112233",
+                            fromUserName: $"IFollow{datestring}{x}",
+                            platform: Platform.Default,
+                            GetRandomGameIdName().GameName)
+                            );
                 }
 
-                botController.HandleBotEventNewFollowers(follows);
             }
         }
 
@@ -327,7 +327,7 @@ namespace TestStreamerBot
                 string Id = "7193";
                 string Category = "Microsoft Flight Simulator";
 
-                botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, new(Id, Category));
+                botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
 
                 Thread.Sleep(1000);
                 Assert.False(dataManager.PostStream(onlineTime, Category));
@@ -413,9 +413,9 @@ namespace TestStreamerBot
                 string Id = "7193";
                 string Category = "Microsoft Flight Simulator";
 
-                botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, new(Id, Category));
+                botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
 
-                botController.HandleIncomingRaidData(new("Pitcy", Platform.Twitch), DateTime.Now.ToLocalTime(), "13", new("284757","Fortnite"));
+                botController.HandleIncomingRaidData(new("Pitcy", Platform.Twitch), DateTime.Now.ToLocalTime(), 13, new("284757", "Fortnite"));
                 botController.HandleUserJoined([new("Pitcy", Platform.Twitch), new("DarkStreamPhantom", Platform.Twitch), new("OutlawTorn14", Platform.Twitch), new("MrTopiczz", Platform.Twitch), new("pitcyissmelly", Platform.Twitch)]);
                 botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName = "Pitcy", IsModerator = true, Message = "!followage" }, Platform.Twitch);
             }
@@ -478,7 +478,7 @@ namespace TestStreamerBot
                 string Id = "7193";
                 string Category = "Microsoft Flight Simulator";
 
-                botController.HandleOnStreamOnline(TwitchBotsBase.TwitchChannelName, Title, onlineTime, new(Id, Category));
+                botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
 
                 Thread.Sleep(1000);
                 Assert.False(dataManager.PostStream(onlineTime, Category));
@@ -486,7 +486,7 @@ namespace TestStreamerBot
 
                 OnGetChannelGameNameEventArgs randomGame = GetRandomGameIdName();
 
-                botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch, userId), DateTime.Now, Random.Next(5, Viewers).ToString(), new(randomGame.GameId, randomGame.GameName));
+                botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch, userId), DateTime.Now, Random.Next(5, Viewers), new(randomGame.GameId, randomGame.GameName));
                 Thread.Sleep(5000); // wait for category
 
                 // Assert.True(ActionSystem.UserChat(new(RaidUserName, Platform.Twitch)));

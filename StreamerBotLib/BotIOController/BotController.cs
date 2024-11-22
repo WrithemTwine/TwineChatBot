@@ -1,5 +1,4 @@
 ﻿using StreamerBotLib.BotClients;
-using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
 using StreamerBotLib.Enums;
@@ -772,9 +771,9 @@ namespace StreamerBotLib.BotIOController
             var CurrStream = TwitchBots.GetStreamDetail(UserId: e.StreamOnline.BroadcasterUserId);
 
             HandleOnStreamOnline(
-                e.StreamOnline.BroadcasterUserName, 
-                CurrStream.Streams[0].Title, 
-                CurrStream.Streams[0].StartedAt.ToLocalTime(), 
+                e.StreamOnline.BroadcasterUserName,
+                CurrStream.Streams[0].Title,
+                CurrStream.Streams[0].StartedAt.ToLocalTime(),
                 new(CurrStream.Streams[0].GameId, CurrStream.Streams[0].GameName)
                 );
         }
@@ -803,7 +802,7 @@ namespace StreamerBotLib.BotIOController
         {
             //if (!OptionFlags.TwitchOutRaidStarted)
             //{
-                HandleOnStreamOffline();
+            HandleOnStreamOffline();
             //}
         }
 
@@ -890,7 +889,7 @@ namespace StreamerBotLib.BotIOController
                     IsTurbo = false,
                     IsVip = e.ChannelChatMessage.IsVip,
                     Message = e.ChannelChatMessage.Message.Text,
-                    Bits = e.ChannelChatMessage.Cheer.Bits
+                    Bits = e.ChannelChatMessage.Cheer?.Bits ?? 0
                 }
                 , Platform.Twitch);
         }
@@ -919,7 +918,8 @@ namespace StreamerBotLib.BotIOController
                 {
                     foundcommand = true;
                     commandtext = f.Text[1..].ToLower();
-                } else if(foundcommand)
+                }
+                else if (foundcommand)
                 {
                     cmdarglist.Add(f.Text);
                 }

@@ -49,7 +49,7 @@ namespace StreamerBotLib.GUI
         private void Service_Started(object sender, EventArgs e)
         {
             IOModule currbot = sender as IOModule;
-            BotStarted(new() { BotName = currbot.BotClientName, Started = currbot.IsActive==true, Stopped = currbot.IsActive == false });
+            BotStarted(new() { BotName = currbot.BotClientName, Started = currbot.IsActive == true, Stopped = currbot.IsActive == false });
         }
 
         private void Service_Stopped(object sender, EventArgs e)

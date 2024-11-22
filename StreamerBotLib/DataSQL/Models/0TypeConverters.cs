@@ -104,12 +104,12 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (List<string>)value ?? [];
+            return string.Join(", ", ((List<string>)value));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return string.Join(", ", ((List<string>)value));
+            return new List<string>(((string)value).Split(", "));
         }
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)

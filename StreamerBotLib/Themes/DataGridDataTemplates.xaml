@@ -1,8 +1,9 @@
-﻿<ResourceDictionary 
+﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:SqlModels="clr-namespace:StreamerBotLib.DataSQL.Models"
     xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase">
 
     <Style TargetType="{x:Type DataGrid}">
         <Setter Property="AlternationCount" Value="1" />
@@ -33,6 +34,8 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <SqlModels:CategoryConverter x:Name="CategoryConverter" x:Key="CategoryConverter" />
 
     <!--#region DataGrid DateTime templates -->
     <DataTemplate x:Key="DateFirstSeenTemplate">
@@ -191,6 +194,7 @@
             <!--<DatePicker SelectedDate="{Binding ThroughDate}" />-->
         </StackPanel>
     </DataTemplate>
+    
     <!--#endregion-->
 
     <!--#region DataGrid RowDetail DataTemplates -->
@@ -480,5 +484,17 @@
     <CollectionViewSource x:Key="DG_Webhooks_CVS" Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
 
     <!--#endregion-->
-    
+
+
+    <DataTemplate x:Key="CategoryDataTemplate">
+        <StackPanel>
+            <TextBlock Text="{Binding Category}" />
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditCategoryDataTemplate">
+        <StackPanel>
+        </StackPanel>
+    </DataTemplate>
+
 </ResourceDictionary>

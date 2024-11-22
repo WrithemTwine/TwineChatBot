@@ -24,10 +24,8 @@ namespace StreamerBotLib.GUI
         public static TwitchBotLiveMonitorSvc TwitchBotLiveMonitorSvc { get; private set; } = BotsTwitch.TwitchBotLiveMonitorSvc;
         public static TwitchBotClipSvc TwitchClip { get; private set; } = BotsTwitch.TwitchBotClipSvc;
         public static TwitchHelixBot TwitchHelixBot { get; private set; } = BotsTwitch.TwitchHelixBot;
-        public static TwitchStreamerEventSubBot TwitchStreamerEventSubBot { get; private set; } = BotsTwitch.TwitchStreamerEventSubBot;
-
-
-
+        public static TwitchStreamerEventSubBotScopes TwitchStreamerEventSubBot { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotScopes;
+        public static TwitchStreamerEventSubBotNoScopes TwitchStreamerEventSubBotNoScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotNoScopes;
         public GUITwitchBots()
         {
             TwitchBotEventSubChatClient.OnBotStarted += TwitchBot_OnBotStarted;
@@ -47,7 +45,19 @@ namespace StreamerBotLib.GUI
             TwitchStreamerEventSubBot.OnBotStopped += TwitchBot_OnBotStopped;
             TwitchStreamerEventSubBot.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
+            TwitchStreamerEventSubBotNoScopes.OnNewLiveStreamStarted += TwitchStreamerEventSubBot_OnNewLiveStreamStarted;
+            TwitchStreamerEventSubBotNoScopes.NewStreamOnline += TwitchStreamerEventSubBot_NewStreamOnline; ;
+            TwitchStreamerEventSubBotNoScopes.NewChannelUpdate += TwitchStreamerEventSubBot_NewChannelUpdate; ;
+            TwitchStreamerEventSubBotNoScopes.NewStreamOffline += TwitchStreamerEventSubBot_NewStreamOffline; ;
+
             BotsTwitch.RaidCompleted += Twitch_RaidCompleted;
+        }
+
+        private void TwitchStreamerEventSubBot_OnNewLiveStreamStarted(object sender, EventArgs e)
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now online.");
+
+            OnLiveStreamStarted?.Invoke(this, new());
         }
 
         public static void Send(string msg)
@@ -57,9 +67,6 @@ namespace StreamerBotLib.GUI
 
         private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
         {
-            TwitchStreamerEventSubBot.NewStreamOnline += TwitchStreamerEventSubBot_NewStreamOnline; ;
-            TwitchStreamerEventSubBot.NewChannelUpdate += TwitchStreamerEventSubBot_NewChannelUpdate; ;
-            TwitchStreamerEventSubBot.NewStreamOffline += TwitchStreamerEventSubBot_NewStreamOffline; ;
         }
 
         private void TwitchStreamerEventSubBot_NewStreamOnline(object sender, BotClients.Twitch.TwitchLib.Events.EventSub.NewStreamOnlineEventArgs e)
@@ -93,7 +100,7 @@ namespace StreamerBotLib.GUI
         private void TwitchBot_OnBotStopped(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsActive ==true });
+            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsActive == true });
         }
 
         private void TwitchBot_OnBotStarted(object sender, EventArgs e)

@@ -2,8 +2,6 @@
 
 //#define XAML_AddEdit
 
-// TODO: fix Overlay rows, when "overlay type !is 'channel points', the OverlayAction combo is empty
-
 using Microsoft.Win32;
 
 using StreamerBotLib.DataSQL.Models;
@@ -34,7 +32,6 @@ namespace StreamerBotLib.GUI.Windows
         private bool IsClosing;
         private bool AddedStringEvent;
         private IDataManagerReadOnly DataManage { get; set; }
-        private bool IsNewRow { get; set; }
         private const int ValueWidth = 325;
         private const int LabelWidth = 150;
         private List<EditPopupTime> DateList { get; set; } = [];
@@ -53,7 +50,10 @@ namespace StreamerBotLib.GUI.Windows
 
         private ComboBox OverlayTypeElement;
         private ComboBox OverlayActionTypeElement;
+
         private const string OverlayTypeName = "ComboBox_OverlayType";
+
+        private const string FilePathInfo = "Paste full path to file, double-click to browse to file.";
 
         private IDatabaseTableMeta CurrData;
 
@@ -91,7 +91,6 @@ namespace StreamerBotLib.GUI.Windows
         public EditData(IDataManagerReadOnly dataManageReadOnly)
         {
             InitializeComponent();
-            IsNewRow = false;
             DataManage = dataManageReadOnly;
         }
 
@@ -151,7 +150,8 @@ namespace StreamerBotLib.GUI.Windows
                     {
                         valueElement = new TextBox()
                         {
-                            ToolTip = "Paste full path to file, double-click to browse to file.",
+                            ToolTip = FilePathInfo,
+                            Text = FilePathInfo,
                             MinWidth = 200
                         };
 
@@ -364,19 +364,15 @@ namespace StreamerBotLib.GUI.Windows
                     {
                         try
                         {
-                            CurrData.Values["MediaFile"] = FileCopy((string)CurrData.Values["MediaFile"], (string)CurrData.Values["OverlayType"]) ?? (string)CurrData.Values["MediaFile"];
-                            CurrData.Values["ImageFile"] = FileCopy((string)CurrData.Values["ImageFile"], (string)CurrData.Values["OverlayType"]) ?? (string)CurrData.Values["ImageFile"];
+                            CurrData.Values["MediaFile"] = ProcessFile("MediaFile");
+                            CurrData.Values["ImageFile"] = ProcessFile("ImageFile");
                         }
                         catch (Exception ex)
                         {
                             LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                         }
                     }
-
-                    //if (IsNewRow) // if this row is new, we have to add it to the DataTable, and not just modify it.
-                    //{
                     AddNewRow?.Invoke(this, new(CurrData));
-                    // }
                 }
             }
             catch (Exception ex)
@@ -384,6 +380,18 @@ namespace StreamerBotLib.GUI.Windows
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
             }
             Close();
+
+            object ProcessFile(string Key)
+            {
+                if (((string)CurrData.Values[Key]) == FilePathInfo)
+                {
+                    return CurrData.Values[Key];
+                }
+                else
+                {
+                    return FileCopy((string)CurrData.Values[Key], CurrData.Values["OverlayType"].ToString());
+                }
+            }
         }
 
         /// <summary>
@@ -454,8 +462,8 @@ namespace StreamerBotLib.GUI.Windows
             else
             {
                 resultfile = CopyFile;
-            }
-            return resultfile;
+            } 
+            return Path.GetRelativePath( Directory.GetCurrentDirectory(), resultfile);
         }
 
         private void EditData_Loaded_TextBoxLen(object sender, RoutedEventArgs e)

@@ -237,9 +237,9 @@ namespace StreamerBotLib.Systems
                 if (U != null)
                 {
                     OnProcessCommand(U.ResultMessage);
-                    DataManage.PostCurrencyUpdate(U.Player, U.Payout, GameBlackJackCurrency);
                 }
             }
+            DataManage.PostCurrencyUpdate(GameCurrBlackJack.PayoutPlayers(), GameBlackJackCurrency);
 
             GameCurrBlackJack = null;
             BlackJackPlay = false;

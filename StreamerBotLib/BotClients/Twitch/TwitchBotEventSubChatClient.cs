@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 using StreamerBotLib.Events;
 using StreamerBotLib.Static;
@@ -20,14 +19,13 @@ namespace StreamerBotLib.BotClients.Twitch
     {
         public event EventHandler<ChannelChatMessageEventArgs> OnChannelChatMessageReceived;
 
-        private readonly ILogger<TwitchBotEventSubChatClient> _logger;
         private readonly EventSubWebsocketClient _eventSubWebsocketClient;
 
-        public TwitchBotEventSubChatClient()
+        public TwitchBotEventSubChatClient(ILoggerFactory loggerFactory)
         {
             BotClientName = Enums.Bots.TwitchBotEventSub;
 
-            _eventSubWebsocketClient = new(); // add logger factory
+            _eventSubWebsocketClient = new(loggerFactory); // add logger factory
 
             _eventSubWebsocketClient.WebsocketConnected += OnWebsocketConnected;
             _eventSubWebsocketClient.WebsocketDisconnected += OnWebsocketDisconnected;
@@ -48,6 +46,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => { StartAsync(new()); });
                         IsActive = true;
                         InvokeBotStarted();
+                        MsgLogCleanup();
                     }
                 }
                 catch (TokenExpiredException ex)
@@ -95,43 +94,56 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task OnChannelChatMessage(object sender, ChannelChatMessageArgs args)
         {
-            return new Task(() =>
+            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            {
+                return
+                m.MessageId == args.Notification.Metadata.MessageId &&
+                m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+            }))
             {
                 ChannelChatMessage msg = args.Notification.Payload.Event;
                 OnChannelChatMessageReceived?.Invoke(this, new(msg));
-            });
+            }
+            return new Task(() => { });
         }
 
         private Task OnErrorOccurred(object sender, ErrorOccuredArgs args)
         {
-            return new Task(() =>
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} encountered an error:\r\n" +
-                $"Exception: {args.Exception}\r\n" +
-                $"Message: {args.Message}");
-            });
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} encountered an error:\r\n" +
+            $"Exception: {args.Exception}\r\n" +
+            $"Message: {args.Message}");
+            return new Task(() => { });
         }
 
         private Task OnWebsocketReconnected(object sender, EventArgs args)
         {
-            return new Task(() =>
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} reconnected!");
-            });
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} reconnected!");
+            return new Task(() => { });
         }
 
         private Task OnWebsocketDisconnected(object sender, EventArgs args)
         {
-            return new Task(() =>
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} disconnected.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} disconnected.");
 
-            });
+            if (IsActive == true)
+            {
+                Thread.Sleep(1000);
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                {
+                    StartAsync(new());
+                });
+            }
+            else
+            {
+                StopBot();
+            }
+
+            return new Task(() => { });
         }
 
         private Task OnWebsocketConnected(object sender, WebsocketConnectedArgs args)
         {
-            if(!args.IsRequestedReconnect)
+            if (!args.IsRequestedReconnect)
             {
                 var conditions = new Dictionary<string, string>
                 {
@@ -139,9 +151,9 @@ namespace StreamerBotLib.BotClients.Twitch
                     {"user_id", OptionFlags.TwitchBotUserId }
                 };
 
-                return tokenBot.BotHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync( 
-                    new ChatMessageHandler().SubscriptionType, 
-                    "1", conditions, 
+                return tokenBot.BotHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
+                    new ChatMessageHandler().SubscriptionType,
+                    "1", conditions,
                     EventSubTransportMethod.Websocket,
                     _eventSubWebsocketClient.SessionId);
             }
@@ -155,7 +167,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public void StopAsync(CancellationToken cancellationToken)
         {
-           _eventSubWebsocketClient.DisconnectAsync();
+            _eventSubWebsocketClient.DisconnectAsync();
         }
     }
 }

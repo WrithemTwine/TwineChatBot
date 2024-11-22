@@ -1,16 +1,13 @@
 ﻿using Microsoft.Web.WebView2.Wpf;
 
 using StreamerBotLib.BotClients;
-using StreamerBotLib.BotIOController;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Overlay;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System.ComponentModel;
-using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -28,13 +25,13 @@ namespace StreamerBot
                 Settings.Default.UpgradeRequired = false;
                 Version thisversion = this.GetType().Assembly.GetName().Version;
 
-                if (thisversion.Major == 1 && thisversion.MajorRevision == 3 && thisversion.Minor == 1 && thisversion.MinorRevision == 3 )
+                if (thisversion.Major == 1 && thisversion.MajorRevision == 3 && thisversion.Minor == 1 && thisversion.MinorRevision == 3)
                 { // reset the credentials, new access scopes for each token
                     Settings.Default.TwitchAuthBotClientId = (string)Settings.Default.GetPreviousVersion("TwitchAuthClientId"); ;
 
                     Settings.Default.TwitchAuthBotAccessToken = null;
                     Settings.Default.TwitchAuthBotAuthCode = null;
-                    Settings.Default.TwitchAuthBotRefreshToken= null;
+                    Settings.Default.TwitchAuthBotRefreshToken = null;
                     Settings.Default.TwitchAuthStreamerAccessToken = null;
                     Settings.Default.TwitchAuthStreamerAuthCode = null;
                     Settings.Default.TwitchAuthStreamerRefreshToken = null;
@@ -179,7 +176,6 @@ namespace StreamerBot
             CheckBox_TabifySettings_Clicked(this, new());
             CheckDebug(this, new());
             SetVisibility(this, new());
-            CheckFocus();
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "End Window Loaded events.");
         }
@@ -192,7 +188,7 @@ namespace StreamerBot
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Attempting to start bots.");
 
-            if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) >= CheckRefreshDate
+            if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) >= CheckRefreshDate
                 && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
             ||
                 (OptionFlags.TwitchTokenUseAuth // when using the Twitch auth token method
@@ -208,12 +204,12 @@ namespace StreamerBot
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
 
-            foreach (Tuple<bool, Platform, RadioButton> tuple in from Tuple<bool, Platform, RadioButton> tuple in BotOps
-                                                                 where tuple.Item1 && tuple.Item3.IsEnabled
-                                                           select tuple)
+                foreach (Tuple<bool, Platform, RadioButton> tuple in from Tuple<bool, Platform, RadioButton> tuple in BotOps
+                                                                     where tuple.Item1 && tuple.Item3.IsEnabled
+                                                                     select tuple)
                 {
-                DispatchStartBot(tuple.Item3.DataContext as IOModule);
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
+                    DispatchStartBot(tuple.Item3.DataContext as IOModule);
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
                 }
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");

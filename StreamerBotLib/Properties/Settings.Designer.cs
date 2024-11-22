@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.11.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.12.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -2413,6 +2413,89 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["TwitchAddFollowersStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerNoScopesAccessToken {
+            get {
+                return ((string)(this["TwitchAuthStreamerNoScopesAccessToken"]));
+            }
+            set {
+                this["TwitchAuthStreamerNoScopesAccessToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerNoScopesRefreshToken {
+            get {
+                return ((string)(this["TwitchAuthStreamerNoScopesRefreshToken"]));
+            }
+            set {
+                this["TwitchAuthStreamerNoScopesRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerNoScopesAuthCode {
+            get {
+                return ((string)(this["TwitchAuthStreamerNoScopesAuthCode"]));
+            }
+            set {
+                this["TwitchAuthStreamerNoScopesAuthCode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerNoScopesAccessToken {
+            get {
+                return ((string)(this["TwitchStreamerNoScopesAccessToken"]));
+            }
+            set {
+                this["TwitchStreamerNoScopesAccessToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerNoScopesRefreshToken {
+            get {
+                return ((string)(this["TwitchStreamerNoScopesRefreshToken"]));
+            }
+            set {
+                this["TwitchStreamerNoScopesRefreshToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime TwitchStreamerNoScopesTokenDate {
+            get {
+                return ((global::System.DateTime)(this["TwitchStreamerNoScopesTokenDate"]));
+            }
+            set {
+                this["TwitchStreamerNoScopesTokenDate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchStreamEventSubNoScopesAutoStart {
+            get {
+                return ((bool)(this["TwitchStreamEventSubNoScopesAutoStart"]));
+            }
+            set {
+                this["TwitchStreamEventSubNoScopesAutoStart"] = value;
             }
         }
     }

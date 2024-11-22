@@ -2,13 +2,13 @@
 
 namespace StreamerBotLib.Models
 {
-    internal class PlayingCard<T, S>
+    public class PlayingCard<T, S>
         where T : Enum
         where S : Enum
     {
-        internal T PlayingCardValue { get; set; }
-        internal S Suit { get; set; }
-        internal bool Used { get; set; }
+        public T PlayingCardValue { get; set; }
+        public S Suit { get; set; }
+        public bool Used { get; set; }
 
         public override string ToString()
         {

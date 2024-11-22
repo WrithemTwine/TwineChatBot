@@ -754,7 +754,7 @@ namespace StreamerBotLib.DataSQL.Import
                     }
                     else if (!(from I in context.InRaidData where I.UserId == uId && I.RaidDate == A.DateTime select I).Any())
                     {
-                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category) );
+                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category));
                     }
                 }
             }

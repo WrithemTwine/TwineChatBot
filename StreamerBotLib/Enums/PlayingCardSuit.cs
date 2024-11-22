@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Enums
 {
-    internal enum PlayingCardSuit
+    public enum PlayingCardSuit
     {
         Spade,
         Club,

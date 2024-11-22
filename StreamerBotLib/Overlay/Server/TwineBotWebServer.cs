@@ -13,6 +13,8 @@ namespace StreamerBotLib.Overlay.Server
 {
     public class TwineBotWebServer
     {
+        private static bool ServerStarted;
+
         /// <summary>
         /// Server maintained in this class.
         /// </summary>
@@ -32,6 +34,11 @@ namespace StreamerBotLib.Overlay.Server
         private static List<IOverlayPageReadOnly> TickerPages { get; set; } = [];
 
         /// <summary>
+        /// Flag to track whether the alert server listening thread started, prevent multiple threads
+        /// </summary>
+        private static bool ServerAlertThreadStarted;
+
+        /// <summary>
         /// Instantiate and initialize a new object.
         /// </summary>
         public TwineBotWebServer()
@@ -49,6 +56,7 @@ namespace StreamerBotLib.Overlay.Server
                 }
             }
 
+            ServerStarted = false;
             OptionFlags.MediaOverlayMediaActionPort = Assign(OptionFlags.MediaOverlayMediaActionPort);
             OptionFlags.MediaOverlayMediaTickerPort = Assign(OptionFlags.MediaOverlayMediaTickerPort);
         }
@@ -94,12 +102,17 @@ namespace StreamerBotLib.Overlay.Server
                 HTTPListenServer.Prefixes.Add(P);
             }
 
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            if (!ServerAlertThreadStarted)
             {
-                HTTPListenServer.Start();
-                ProcessPages = new(() => ServerSendAlerts());
-                ProcessPages.Start();
-            });
+                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                {
+                    HTTPListenServer.Start();
+                    ProcessPages = new(() => ServerSendAlerts());
+                    ProcessPages.Start();
+                    ServerStarted = true;
+                });
+                ServerAlertThreadStarted = true;
+            }
         }
 
         /// <summary>
@@ -285,12 +298,14 @@ namespace StreamerBotLib.Overlay.Server
         /// </summary>
         public static void StopServer()
         {
-            if (HTTPListenServer.IsListening)
+            if (ServerStarted)
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Overlay http server stopping.");
 
                 HTTPListenServer.Stop();
                 ProcessPages.Wait();
+                ServerAlertThreadStarted = false;
+                ServerStarted = false;
             }
         }
 

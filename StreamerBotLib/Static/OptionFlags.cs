@@ -433,7 +433,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchChannelName
         {
-            get => Settings.Default.TwitchChannelName; 
+            get => Settings.Default.TwitchChannelName;
             set => Settings.Default.TwitchChannelName = value;
         }
         /// <summary>
@@ -523,6 +523,10 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static DateTime TwitchStreamerTokenDate => Settings.Default.TwitchStreamerTokenDate;
 
+        public static string TwitchStreamerNoScopesAccessToken => Settings.Default.TwitchStreamerNoScopesAccessToken;
+        public static string TwitchStreamerNoScopesRefreshToken => Settings.Default.TwitchStreamerNoScopesRefreshToken;
+        public static DateTime TwitchStreamerNoScopesTokenDate => Settings.Default.TwitchStreamerNoScopesTokenDate;
+
         #region Twitch Authorization code flow
 
         /// <summary>
@@ -603,6 +607,25 @@ namespace StreamerBotLib.Static
         /// Flag on whether to use the internal web browser for the authentication code process
         /// </summary>
         public static bool TwitchAuthUseInternalBrowser => Settings.Default.TwitchAuthUseInternalBrowser;
+
+        public static string TwitchAuthStreamerNoScopesAccessToken
+        {
+            get => Settings.Default.TwitchAuthStreamerNoScopesAccessToken;
+            set => Settings.Default.TwitchAuthStreamerNoScopesAccessToken = value;
+        }
+
+        public static string TwitchAuthStreamerNoScopesRefreshToken
+        {
+            get => Settings.Default.TwitchAuthStreamerNoScopesRefreshToken;
+            set => Settings.Default.TwitchAuthStreamerNoScopesRefreshToken = value;
+        }
+
+        public static string TwitchAuthStreamerNoScopesAuthCode
+        {
+            get => Settings.Default.TwitchAuthStreamerNoScopesAuthCode;
+            set => Settings.Default.TwitchAuthStreamerNoScopesAuthCode = value;
+        }
+
         #endregion
 
         /// <summary>

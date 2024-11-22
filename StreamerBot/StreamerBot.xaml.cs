@@ -10,7 +10,6 @@ using StreamerBotLib.Systems;
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Windows;
@@ -75,6 +74,7 @@ namespace StreamerBot
             [
                 new(Settings.Default.TwitchBotEventSubAutoStart, Platform.Twitch, Radio_Twitch_BotEventSubStart),
                 new(Settings.Default.TwitchStreamEventSubAutoStart, Platform.Twitch, Radio_Twitch_StreamerEventSubStart),
+                new(Settings.Default.TwitchStreamEventSubNoScopesAutoStart, Platform.Twitch, Radio_Twitch_StreamerEventSubNoScopesStart),
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Platform.Twitch, Radio_Twitch_LiveBotStart),
                 new(Settings.Default.TwitchClipAutoStart, Platform.Twitch, Radio_Twitch_ClipBotStart),
                 new(Settings.Default.MediaOverlayAutoStart, Platform.Service, Radio_Services_OverlayBotStart)
@@ -331,10 +331,13 @@ namespace StreamerBot
             else
             {
                 CheckBox_ManageUsers.IsEnabled = true;
-                Dispatcher.BeginInvoke(new BotOperation(() =>
+                if (Radio_Twitch_StreamerEventSubStart.IsChecked == true)
                 {
-                    (Radio_Twitch_StreamerEventSubStart.DataContext as IOModule).StopBot();
-                }), null);
+                    Dispatcher.BeginInvoke(new BotOperation(() =>
+                    {
+                        (Radio_Twitch_StreamerEventSubStart.DataContext as IOModule).StopBot();
+                    }), null);
+                }
             }
 
             BotController.ManageDatabase();
@@ -498,6 +501,7 @@ namespace StreamerBot
         {
             if ((sender as RadioButton).IsEnabled)
             {
+                (sender as RadioButton).IsEnabled = false;
                 DispatchStartBot((sender as RadioButton).DataContext as IOModule);
             }
         }
@@ -546,6 +550,13 @@ namespace StreamerBot
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
+            TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+            TwitchCheckFocus();
+        }
+
+        private void RefreshButtonNoScopes_Click(object sender, RoutedEventArgs e)
+        {
+            Label_Twitch_RefreshDate_NoScopes.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
             TwitchCheckFocus();
         }

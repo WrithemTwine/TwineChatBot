@@ -1,5 +1,5 @@
 ﻿using StreamerBotLib.BotClients;
-using StreamerBotLib.BotClients.Twitch;
+using StreamerBotLib.Static;
 
 namespace TestStreamerBot
 {
@@ -14,10 +14,10 @@ namespace TestStreamerBot
 
         private void Initialize()
         {
-            TwitchBotsBase.TwitchChannelName = ChannelName;
-            TwitchBotsBase.TwitchClientID = ClientId;
-            TwitchBotsBase.TwitchAccessToken = AccessToken;
-            TwitchBotsBase.TwitchBotUserName = BotUserName;
+            OptionFlags.TwitchChannelName = ChannelName;
+            OptionFlags.TwitchBotClientId = ClientId;
+            OptionFlags.TwitchBotAccessToken = AccessToken;
+            OptionFlags.TwitchBotUserName = BotUserName;
         }
 
         [Fact]

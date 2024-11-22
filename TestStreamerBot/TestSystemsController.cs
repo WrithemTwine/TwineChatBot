@@ -74,11 +74,11 @@ namespace TestStreamerBot
             OptionFlags.ManageOutRaidData = true;
 
             string RaidName = "CuteChibiChu";
-            string viewers = "5000";
+            int viewers = 5000;
             string Category = "New World";
             DateTime RaidTime = DateTime.Now;
 
-            systemsController.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, new("3813210654" , Category));
+            systemsController.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, new("3813210654", Category));
             SystemsController.PostOutgoingRaid(RaidName, RaidTime);
 
             Assert.True(((DataManagerSQL)SystemsController.DataManage).TestInRaidData(RaidName, RaidTime, viewers, Category));
