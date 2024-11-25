@@ -340,7 +340,7 @@ namespace TestStreamerBot
 
                 Assert.True(dataManager.PostCategory(new(newId, newCategory)));
 
-                BotController.HandleOnStreamOffline();
+                botController.HandleOnStreamOffline(Platform.Twitch);
             }
         }
 

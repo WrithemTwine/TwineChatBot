@@ -152,6 +152,7 @@ namespace StreamerBotLib.DataSQL
                     {
                         context.SaveChanges(true);
                         RefreshFollowersObservableCollection();
+                        RefreshUsersObservableCollection();
                         NotifyDataCollectionUpdated("CurrFollowers");
                     }
                     if (Refcontext == null) { ClearDataContext(context); }
@@ -267,10 +268,10 @@ namespace StreamerBotLib.DataSQL
                     //}
 
                     foreach (Followers OldFollowlist in
-                        
+
                                         from NonFollows in (from F in context.Followers
-                                                        where !F.IsFollower
-                                                        select F)
+                                                            where !F.IsFollower
+                                                            select F)
                                         join OF in context.OldFollowUsers
                                         on NonFollows.UserId equals OF.UserId
                                         where NonFollows.User.UserName != OF.UserName && NonFollows.Platform == OF.Platform
@@ -281,11 +282,11 @@ namespace StreamerBotLib.DataSQL
                     context.Followers.RemoveRange(from F in context.Followers where !F.IsFollower select F);
                     context.SaveChanges(true);
 
-                    foreach(Followers UpdatedFollower in (from F in context.Followers
-                                                          join Match in context.OldFollowUsers
-                                                          on F.UserId equals Match.UserId
-                                                          where F.Platform == Match.Platform && F.FollowedDate == F.StatusChangeDate
-                                                          select F)
+                    foreach (Followers UpdatedFollower in (from F in context.Followers
+                                                           join Match in context.OldFollowUsers
+                                                           on F.UserId equals Match.UserId
+                                                           where F.Platform == Match.Platform && F.FollowedDate == F.StatusChangeDate
+                                                           select F)
                         )
                     {
                         UpdatedFollower.StatusChangeDate = currtime;
@@ -293,6 +294,7 @@ namespace StreamerBotLib.DataSQL
                     context.SaveChanges(true);
                 }
                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower()));
+                RefreshUsersObservableCollection();
                 RefreshFollowersObservableCollection();
                 RefreshOldFollowUsersObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }

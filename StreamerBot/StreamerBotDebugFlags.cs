@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -38,7 +37,7 @@ namespace StreamerBot
 
                 ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
-                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), Debug: true);
+                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), platform: StreamerBotLib.Enums.Platform.Default, Debug: true);
 
                     List<CategoryData> output = SystemsController.DataManage.GetGameCategories();
                     Random random = new();
@@ -54,7 +53,7 @@ namespace StreamerBot
         {
             if (DebugStreamStarted != DateTime.MinValue)
             {
-                BotController.HandleOnStreamOffline();
+                Controller.HandleOnStreamOffline(StreamerBotLib.Enums.Platform.Default);
 
                 DebugStreamStarted = DateTime.MinValue;
 

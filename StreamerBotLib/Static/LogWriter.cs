@@ -40,6 +40,11 @@ namespace StreamerBotLib.Static
         {
             lock (StatusLog)
             {
+                if (OptionFlags.LogBotStatus)
+                {
+                    StatusLogWriter.WriteLine($"Ending bot session at {DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}");
+                    StatusLogWriter.WriteLine();
+                }
                 StatusLogWriter.Close();
             }
             lock (ExceptionLog)
@@ -49,6 +54,32 @@ namespace StreamerBotLib.Static
             lock (DebugLogFile)
             {
                 DebugLogFileWriter.Close();
+            }
+        }
+
+        /// <summary>
+        /// Reverses the format of the WriteLog intended for a log started message to change the shape in the output file for easier identification.
+        /// </summary>
+        /// <param name="startDate">The date provided as when the bot session started.</param>
+        /// <param name="line">A specific message tied to starting the bot session.</param>
+        public static void WriteLog(DateTime startDate, string line)
+        {
+            lock (StatusLog)
+            {
+                if (OptionFlags.LogBotStatus)
+                {
+                    try
+                    {
+                        StatusLogWriter.WriteLine($"{line}====={startDate.ToLocalTime().ToString(CultureInfo.CurrentCulture)}");
+                    }
+                    catch (ObjectDisposedException ex)
+                    {
+                        LogException(ex, "WriteLog");
+                        StatusLogWriter = new(StatusLog, true) { AutoFlush = true };
+                        StatusLogWriter.WriteLine($"{line}====={startDate.ToLocalTime().ToString(CultureInfo.CurrentCulture)}");
+                        StatusLogWriter.Close();
+                    }
+                }
             }
         }
 

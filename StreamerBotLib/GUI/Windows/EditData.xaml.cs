@@ -462,8 +462,8 @@ namespace StreamerBotLib.GUI.Windows
             else
             {
                 resultfile = CopyFile;
-            } 
-            return Path.GetRelativePath( Directory.GetCurrentDirectory(), resultfile);
+            }
+            return Path.GetRelativePath(Directory.GetCurrentDirectory(), resultfile);
         }
 
         private void EditData_Loaded_TextBoxLen(object sender, RoutedEventArgs e)

@@ -24,7 +24,8 @@ using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.EventSub.Core.Models.Chat;
 
 namespace StreamerBotLib.BotClients
-{
+{ // TODO: redo 'stream online' & category name process-including GUI statusbar GUI category name;
+  // TODO: update EventSub Raid for outgoing out of broadcaster channel
     public class BotsTwitch : BotsBase
     {
         #region Properties-Events
@@ -54,6 +55,10 @@ namespace StreamerBotLib.BotClients
         private Thread BulkLoadClips;
 
         public static event EventHandler<EventArgs> RaidCompleted;
+        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOnline;
+        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamUpdated;
+        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOffline;
+
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidTwitchAccess;
 
         public static event EventHandler<TwitchAuthCodeExpiredEventArgs> BotAuthCodeExpired;
@@ -64,6 +69,17 @@ namespace StreamerBotLib.BotClients
         /// are constructed with existing tokens-or authcode access tokens are refreshed upon startup.
         /// </summary>
         public event EventHandler OnTwitchTokensInitialized;
+
+        public Stream CurrStream
+        {
+            get
+            {
+                _CurrStream ??= GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId).Streams[0];
+                return _CurrStream;
+            }
+        }
+
+        private Stream _CurrStream;
 
         private ConcurrentQueue<string> StatusMessages;
         private bool LoggingStarted;
@@ -175,7 +191,12 @@ namespace StreamerBotLib.BotClients
             TwitchStreamerEventSubBotScopes.NewChannelSubscribe += TwitchStreamerEventSubBot_NewChannelSubscribe;
             TwitchStreamerEventSubBotScopes.NewChannelSubscriptionGift += TwitchStreamerEventSubBot_NewChannelSubscriptionGift;
             TwitchStreamerEventSubBotScopes.NewChannelSubscriptionMessage += TwitchStreamerEventSubBot_NewChannelSubscriptionMessage;
+            TwitchStreamerEventSubBotScopes.OnChannelChatMessageReceived += TwitchBotEventSubChatClient_OnChannelChatMessageReceived;
+            TwitchStreamerEventSubBotScopes.OnChannelChatMessageStarted += TwitchStreamerEventSubBotScopes_OnChannelChatMessageStarted;
+            TwitchStreamerEventSubBotScopes.OnChannelChatMessageStopping += TwitchStreamerEventSubBotScopes_OnChannelChatMessageStopping;
+            TwitchStreamerEventSubBotScopes.OnChannelChatMessageStopped += TwitchStreamerEventSubBotScopes_OnChannelChatMessageStopped;
 
+            TwitchStreamerEventSubBotNoScopes.OnBotStarted += TwitchStreamerEventSubBotNoScopes_OnBotStarted;
             TwitchStreamerEventSubBotNoScopes.NewStreamOffline += TwitchStreamerEventSubBot_NewStreamOffline;
             TwitchStreamerEventSubBotNoScopes.NewChannelUpdate += TwitchStreamerEventSubBot_NewChannelUpdate;
             TwitchStreamerEventSubBotNoScopes.NewChannelRaid += TwitchStreamerEventSubBot_NewChannelRaid;
@@ -221,14 +242,12 @@ namespace StreamerBotLib.BotClients
         private void TwitchBotEventSubChatClient_OnBotStarted(object sender, EventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Bot EventSub bot started to read channel chat messages.");
-            TwitchBotsBase.MsgLogging = TwitchBotEventSubChatClient.IsActive == true || TwitchStreamerEventSubBotScopes.IsActive == true;
 
             InvokeBotEvent(this, BotEvents.TwitchBotEventSubStarted, null);
         }
         private void TwitchBotEventSubChatClient_OnBotStopped(object sender, EventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Bot EventSub bot stopped and won't read channel chat messages.");
-            TwitchBotsBase.MsgLogging = TwitchBotEventSubChatClient.IsActive == true || TwitchStreamerEventSubBotScopes.IsActive == true;
 
             InvokeBotEvent(this, BotEvents.TwitchBotEventSubStopped, null);
         }
@@ -261,23 +280,13 @@ namespace StreamerBotLib.BotClients
 
         #endregion
 
-        #region Streamer EventSub Bot
-
-        private void TwitchStreamerEventSubBot_OnBotStarted(object sender, EventArgs e)
+        #region Streamer No Scopes EventSub Bot
+        private void TwitchStreamerEventSubBotNoScopes_OnBotStarted(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "EventSub bot started.");
-            TwitchBotsBase.MsgLogging = TwitchBotEventSubChatClient.IsActive == true || TwitchStreamerEventSubBotScopes.IsActive == true;
+            _CurrStream = null;
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                if (OptionFlags.TwitchAddFollowersStart)
-                {
-                    ThreadManager.CreateThreadStart($"{MethodBase.GetCurrentMethod().Name}-GetFollowers", () =>
-                    {
-                        GetAllFollowers();
-                    });
-                }
-
                 // the bot might start when stream is already started-not registered online, check for online and start additional subscriptions
                 if (!OptionFlags.IsStreamOnline)
                 {
@@ -290,20 +299,24 @@ namespace StreamerBotLib.BotClients
                             LogWriter.DebugLog($"{MethodBase.GetCurrentMethod().Name}-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
 
                             InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
+                            ActiveUsers();
                         }
+
+                        ManageStreamOnlineOfflineStatus(true);
+
+                        StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+
                     });
                 }
             }));
-        }
-        private void TwitchStreamerEventSubBot_OnBotStopped(object sender, EventArgs e)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Chat bot is now stopped.");
-            TwitchBotsBase.MsgLogging = TwitchBotEventSubChatClient.IsActive == true || TwitchStreamerEventSubBotScopes.IsActive == true;
         }
         private void TwitchStreamerEventSubBot_NewStreamOnline(object sender, NewStreamOnlineEventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notifying streamer channel is now online.");
             ManageStreamOnlineOfflineStatus(true);
+
+            StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+
             InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
@@ -317,6 +330,8 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Registered a stream update, {e.ChannelUpdate.BroadcasterUserName}.");
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Received, {e.ChannelUpdate.BroadcasterUserName} has a stream update notification.");
 
+            StreamUpdated?.Invoke(this, new(categoryName: e.ChannelUpdate.CategoryName));
+
             InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
         }
         private void TwitchStreamerEventSubBot_NewStreamOffline(object sender, NewStreamOfflineEventArgs e)
@@ -326,6 +341,46 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Now posting to data system the stream is offline.");
             ManageStreamOnlineOfflineStatus(false);
             InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
+
+            StreamOffline?.Invoke(this, new());
+        }
+        private void TwitchStreamerEventSubBot_NewChannelRaid(object sender, NewChannelRaidEventArgs e)
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "EventSub bot received a raid notification.");
+
+            var Category = GetUserCategory(UserId: e.ChannelRaid.FromBroadcasterUserId);
+
+            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid,
+                new OnIncomingRaidArgs()
+                {
+                    Category = Category,
+                    RaidTime = DateTime.Now.ToLocalTime(),
+                    ViewerCount = e.ChannelRaid.Viewers,
+                    LiveUser = new(e.ChannelRaid.FromBroadcasterUserName, Platform.Twitch, e.ChannelRaid.FromBroadcasterUserId)
+                });
+        }
+
+        #endregion
+
+        #region Streamer EventSub Bot
+        private void TwitchStreamerEventSubBot_OnBotStarted(object sender, EventArgs e)
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "EventSub bot started.");
+
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            {
+                if (OptionFlags.TwitchAddFollowersStart)
+                {
+                    ThreadManager.CreateThreadStart($"{MethodBase.GetCurrentMethod().Name}-GetFollowers", () =>
+                    {
+                        GetAllFollowers();
+                    });
+                }
+            }));
+        }
+        private void TwitchStreamerEventSubBot_OnBotStopped(object sender, EventArgs e)
+        {
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Chat bot is now stopped.");
         }
         private void TwitchStreamerEventSubBot_NewChannelSubscriptionGift(object sender, NewChannelSubscriptionGiftEventArgs e)
         {
@@ -347,21 +402,6 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "EventSub bot received a channel point-reward redemption, posting into system.");
 
             InvokeBotEvent(this, BotEvents.TwitchChannelPointsRewardRedeemed, e);
-        }
-        private void TwitchStreamerEventSubBot_NewChannelRaid(object sender, NewChannelRaidEventArgs e)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "EventSub bot received a raid notification.");
-
-            var Category = GetUserCategory(UserId: e.ChannelRaid.FromBroadcasterUserId);
-
-            InvokeBotEvent(this, BotEvents.TwitchIncomingRaid,
-                new OnIncomingRaidArgs()
-                {
-                    Category = Category,
-                    RaidTime = DateTime.Now.ToLocalTime(),
-                    ViewerCount = e.ChannelRaid.Viewers,
-                    LiveUser = new(e.ChannelRaid.FromBroadcasterUserName, Platform.Twitch, e.ChannelRaid.FromBroadcasterUserId)
-                });
         }
         private void TwitchStreamerEventSubBot_NewChannelFollow(object sender, NewChannelFollowEventArgs e)
         {
@@ -404,6 +444,19 @@ namespace StreamerBotLib.BotClients
 
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Finished managing the bots based " +
                 "on current livestream status (online or offline).");
+        }
+
+        private void TwitchStreamerEventSubBotScopes_OnChannelChatMessageStarted(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void TwitchStreamerEventSubBotScopes_OnChannelChatMessageStopping(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        private void TwitchStreamerEventSubBotScopes_OnChannelChatMessageStopped(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -615,76 +668,6 @@ namespace StreamerBotLib.BotClients
         private string AuthCodeStreamerNoScopeState = "";
         private Action<string> AuthCodeStreamerNoScopeAction;
 
-        private void TwitchTokenBot_StreamerNoScopesAuthCodeExpired(object sender, TwitchAuthCodeExpiredEventArgs e)
-        {
-            if (e?.OpenBrowser != null)
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Starting Twitch auth code approval for the no scopes streamer " +
-                    "credential.");
-
-                lock (AuthCodeStreamerState)
-                {
-                    AuthCodeStreamerNoScopeState = e.State;
-                }
-                AuthCodeStreamerNoScopeAction = e.OpenBrowser;
-                FinishedAuthenticationAction = e.AuthenticationFinished;
-
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Start the http listener " +
-                   $"on {OptionFlags.TwitchAuthRedirectURL} to get ready for when the user authorizes application access to their account.");
-
-                AuthCodeListener();
-
-                // call the provided method to give user the web based app authorization URL
-                e.OpenBrowser(e.AuthURL);
-            }
-            else
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Determined the auth code expired and user isn't " +
-                    "ready to authorize the application. Need to stop all of the bots, since the access tokens are no longer valid; auth code is now invalid.");
-
-                foreach (IIOModule bot in BotsList)
-                {
-                    bot.StopBot();
-                }
-                InvalidTwitchAccess?.Invoke(this, new(Platform.Twitch, e.BotType));
-            }
-        }
-
-        private void TwitchTokenBot_StreamerAcctAuthCodeExpired(object sender, TwitchAuthCodeExpiredEventArgs e)
-        {
-            if (e?.OpenBrowser != null)
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Starting Twitch auth code approval for the streamer " +
-                    "credential.");
-
-                lock (AuthCodeStreamerState)
-                {
-                    AuthCodeStreamerState = e.State;
-                }
-                AuthCodeStreamerAction = e.OpenBrowser;
-                FinishedAuthenticationAction = e.AuthenticationFinished;
-
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Start the http listener " +
-                    $"on {OptionFlags.TwitchAuthRedirectURL} to get ready for when the user authorizes application access to their account.");
-
-                AuthCodeListener();
-
-                // call the provided method to give user the web based app authorization URL
-                e.OpenBrowser(e.AuthURL);
-            }
-            else
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Determined the auth code expired and user isn't " +
-                    "ready to authorize the application. Need to stop all of the bots, since the access tokens are no longer valid; auth code is now invalid.");
-
-                foreach (IIOModule bot in BotsList)
-                {
-                    bot.StopBot();
-                }
-                InvalidTwitchAccess?.Invoke(this, new(Platform.Twitch, e.BotType));
-            }
-        }
-
         private bool HttpStarted = false;
 
         /// <summary>
@@ -744,14 +727,14 @@ namespace StreamerBotLib.BotClients
                         {
                             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Determined user approved the application access.");
 
-                            OptionFlags.TwitchAuthStreamerAuthCode = QueryValues["code"];
+                            OptionFlags.TwitchAuthStreamerNoScopesAuthCode = QueryValues["code"];
                         }
                         else
                         {
                             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Determined user didn't approve the application access.");
 
                             AuthCodeStreamerNoScopeAction(Msgs.MsgTwitchAuthFailedAuthentication);
-                            OptionFlags.TwitchAuthStreamerAuthCode = null;
+                            OptionFlags.TwitchAuthStreamerNoScopesAuthCode = null;
                         }
                         lock (AuthCodeStreamerNoScopeState)
                         {
@@ -842,6 +825,76 @@ namespace StreamerBotLib.BotClients
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Determined the auth code expired and user isn't " +
     "ready to authorize the application. Need to stop all of the bots, since the access tokens are no longer valid; auth code is now invalid.");
+
+                foreach (IIOModule bot in BotsList)
+                {
+                    bot.StopBot();
+                }
+                InvalidTwitchAccess?.Invoke(this, new(Platform.Twitch, e.BotType));
+            }
+        }
+
+        private void TwitchTokenBot_StreamerNoScopesAuthCodeExpired(object sender, TwitchAuthCodeExpiredEventArgs e)
+        {
+            if (e?.OpenBrowser != null)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Starting Twitch auth code approval for the no scopes streamer " +
+                    "credential.");
+
+                lock (AuthCodeStreamerState)
+                {
+                    AuthCodeStreamerNoScopeState = e.State;
+                }
+                AuthCodeStreamerNoScopeAction = e.OpenBrowser;
+                FinishedAuthenticationAction = e.AuthenticationFinished;
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Start the http listener " +
+                   $"on {OptionFlags.TwitchAuthRedirectURL} to get ready for when the user authorizes application access to their account.");
+
+                AuthCodeListener();
+
+                // call the provided method to give user the web based app authorization URL
+                e.OpenBrowser(e.AuthURL);
+            }
+            else
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Determined the auth code expired and user isn't " +
+                    "ready to authorize the application. Need to stop all of the bots, since the access tokens are no longer valid; auth code is now invalid.");
+
+                foreach (IIOModule bot in BotsList)
+                {
+                    bot.StopBot();
+                }
+                InvalidTwitchAccess?.Invoke(this, new(Platform.Twitch, e.BotType));
+            }
+        }
+
+        private void TwitchTokenBot_StreamerAcctAuthCodeExpired(object sender, TwitchAuthCodeExpiredEventArgs e)
+        {
+            if (e?.OpenBrowser != null)
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Starting Twitch auth code approval for the streamer " +
+                    "credential.");
+
+                lock (AuthCodeStreamerState)
+                {
+                    AuthCodeStreamerState = e.State;
+                }
+                AuthCodeStreamerAction = e.OpenBrowser;
+                FinishedAuthenticationAction = e.AuthenticationFinished;
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Start the http listener " +
+                    $"on {OptionFlags.TwitchAuthRedirectURL} to get ready for when the user authorizes application access to their account.");
+
+                AuthCodeListener();
+
+                // call the provided method to give user the web based app authorization URL
+                e.OpenBrowser(e.AuthURL);
+            }
+            else
+            {
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Determined the auth code expired and user isn't " +
+                    "ready to authorize the application. Need to stop all of the bots, since the access tokens are no longer valid; auth code is now invalid.");
 
                 foreach (IIOModule bot in BotsList)
                 {

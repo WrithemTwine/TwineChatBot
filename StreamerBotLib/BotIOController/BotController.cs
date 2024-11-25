@@ -14,15 +14,14 @@ using System.Reflection;
 using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.Client.Events;
 using TwitchLib.EventSub.Core.Models.Chat;
 using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
 
-
 // TODO: add/verify "DataManage.UpdateStats" updates; including commands, chats, clips, channel redeems
-
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
 
 namespace StreamerBotLib.BotIOController
@@ -30,9 +29,15 @@ namespace StreamerBotLib.BotIOController
     public class BotController
     {
         public event EventHandler<PostChannelMessageEventArgs> OutputSentToBots;
-        public event EventHandler<OnGetChannelGameNameEventArgs> OnStreamCategoryChanged;
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidAuthorizationToken;
         public event EventHandler TokensInitialized;
+
+        public event EventHandler OnStreamOnline;
+        public event EventHandler<OnGetChannelGameNameEventArgs> OnStreamCategoryChanged;
+        public event EventHandler OnStreamOffline;
+
+        private Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
+                                                                      select new KeyValuePair<Platform, bool>(P, false));
 
         private static Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
@@ -77,6 +82,7 @@ namespace StreamerBotLib.BotIOController
         private void TwitchBots_OnTwitchTokensInitialized(object sender, EventArgs e)
         {
             TokensInitialized?.Invoke(this, new());
+            GetUserCategory();
         }
 
         /// <summary>
@@ -152,7 +158,7 @@ namespace StreamerBotLib.BotIOController
                             TwitchBulkPostFollowers((OnNewFollowersDetectedArgs)e.e);
                             break;
                         case BotEvents.TwitchStartBulkFollowers:
-                            TwitchStartBulkFollowers(e.e);
+                            TwitchStartBulkFollowers();
                             break;
                         case BotEvents.TwitchStopBulkFollowers:
                             TwitchStopBulkFollowers();
@@ -484,6 +490,11 @@ namespace StreamerBotLib.BotIOController
             };
         }
 
+        public void GetUserCategory()
+        {
+            GetUserCategory(OptionFlags.TwitchChannelName, OptionFlags.TwitchStreamerUserId, Platform.Twitch);
+        }
+
         /// <summary>
         /// A request to query the bot specified in <paramref name="bots"/> platform to find the current stream category for the provided channel.
         /// </summary>
@@ -504,17 +515,6 @@ namespace StreamerBotLib.BotIOController
             {
                 return "";
             }
-            //return bots switch
-            //{
-            //    Bots.TwitchUserBot or Bots.TwitchChatBot => c,
-            //    Bots.Default => throw new NotImplementedException(),
-            //    Bots.TwitchLiveBot => throw new NotImplementedException(),
-            //    Bots.TwitchFollowBot => throw new NotImplementedException(),
-            //    Bots.TwitchClipBot => throw new NotImplementedException(),
-            //    Bots.TwitchMultiBot => throw new NotImplementedException(),
-            //    Bots.TwitchPubSub => throw new NotImplementedException(),
-            //    _ => ""
-            //};
         }
 
         public static DateTime GetUserAccountAge(string UserName, Platform bots)
@@ -620,14 +620,15 @@ namespace StreamerBotLib.BotIOController
         /// Interface method to request Twitch to provide an access/refresh token with the newly obtained authentication code.
         /// </summary>
         /// <param name="clientId">The client Id for the authentication code we need to activate.</param>
+        /// <param name="NoScopes">True specifies the current authorization is for the no-scopes access token credential.</param>
         /// <param name="OpenBrowser"></param>
         /// <param name="AuthenticationFinished">A callback method once the bot concludes using the auth code to get an access/refresh token.</param>
-        public static void TwitchTokenAuthCodeAuthorize(string clientId, Action<string> OpenBrowser, Action AuthenticationFinished)
+        public static void TwitchTokenAuthCodeAuthorize(string clientId, bool NoScopes, Action<string> OpenBrowser, Action AuthenticationFinished)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received request to activate " +
                 "a Twitch authorization code for a specific client Id, which returns an initial access token and a refresh token to begin accessing Twitch.");
 
-            BotsTwitch.TwitchActivateAuthCode(clientId, OpenBrowser, AuthenticationFinished);
+            BotsTwitch.TwitchActivateAuthCode(clientId, NoScopes, OpenBrowser, AuthenticationFinished);
         }
 
         /// <summary>
@@ -716,8 +717,7 @@ namespace StreamerBotLib.BotIOController
             HandleChatBotStopped(Bots.TwitchBotEventSub, args);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
-        public static void TwitchStartBulkFollowers(EventArgs args = null)
+        public static void TwitchStartBulkFollowers()
         {
             HandleBotEventStartBulkFollowers();
         }
@@ -768,13 +768,13 @@ namespace StreamerBotLib.BotIOController
 
         internal void TwitchStreamOnline(NewStreamOnlineEventArgs e)
         {
-            var CurrStream = TwitchBots.GetStreamDetail(UserId: e.StreamOnline.BroadcasterUserId);
+            Stream CurrStream = TwitchBots.CurrStream;
 
             HandleOnStreamOnline(
                 e.StreamOnline.BroadcasterUserName,
-                CurrStream.Streams[0].Title,
-                CurrStream.Streams[0].StartedAt.ToLocalTime(),
-                new(CurrStream.Streams[0].GameId, CurrStream.Streams[0].GameName)
+                CurrStream.Title,
+                CurrStream.StartedAt.ToLocalTime(),
+                new(CurrStream.GameId, CurrStream.GameName)
                 );
         }
 
@@ -798,12 +798,9 @@ namespace StreamerBotLib.BotIOController
             HandleOnStreamUpdate(new(e.GameId, e.GameName));
         }
 
-        internal static void TwitchStreamOffline(NewStreamOfflineEventArgs e)
+        internal void TwitchStreamOffline(NewStreamOfflineEventArgs e)
         {
-            //if (!OptionFlags.TwitchOutRaidStarted)
-            //{
-            HandleOnStreamOffline();
-            //}
+            HandleOnStreamOffline(Platform.Twitch);
         }
 
         internal void TwitchNewSubscriber(NewChannelSubscribeEventArgs e)
@@ -899,11 +896,11 @@ namespace StreamerBotLib.BotIOController
             HandleIncomingRaidData(e.LiveUser, e.RaidTime, e.ViewerCount, e.Category);
         }
 
-        public static void TwitchOutgoingRaid(OnStreamRaidResponseEventArgs e)
+        public void TwitchOutgoingRaid(OnStreamRaidResponseEventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "");
 
-            HandleOutgoingRaidData(e.ToChannel, e.CreatedAt);
+            HandleOutgoingRaidData(e.ToChannel, e.CreatedAt, Platform.Twitch);
         }
 
         public void TwitchChatCommandReceived(ChannelChatMessageEventArgs e)
@@ -973,14 +970,6 @@ namespace StreamerBotLib.BotIOController
         #endregion
 
         #region Handle Bot Events
-
-        /// <summary>
-        /// Empty non-event just to satisfy the "BotEvent" handler through the bot interface - some bots don't call this event handler.
-        /// </summary>
-        public static void HandleBotEventEmpty()
-        {
-            // I do nothing else.
-        }
 
         #region Followers
 
@@ -1063,10 +1052,29 @@ namespace StreamerBotLib.BotIOController
 
         }
 
+        private void ManageOnlineStream(Platform platform)
+        {
+            PlatformOnlineStatus[platform] = true;
+
+            OnStreamOnline?.Invoke(this, new());
+        }
+
+        private void ManageOfflineStream(Platform platform)
+        {
+            PlatformOnlineStatus[platform] = false;
+
+            if (!PlatformOnlineStatus.ContainsValue(true))
+            {
+                OnStreamOffline?.Invoke(this, new());
+            }
+        }
+
         public void HandleOnStreamOnline(string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
         {
             try
             {
+                ManageOnlineStream(platform);
+
                 ManageBotsStreamStatusChanged(true);
 
                 bool Started = Systems.StreamOnline(StartedAt);
@@ -1123,9 +1131,11 @@ namespace StreamerBotLib.BotIOController
             PostGameCategoryEvent(categoryData);
         }
 
-        public static void HandleOnStreamOffline(string HostedChannel = null, DateTime? RaidTime = null)
+        public void HandleOnStreamOffline(Platform platform, string HostedChannel = null, DateTime? RaidTime = null)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received a livestream offline status update.");
+
+            ManageOfflineStream(platform);
 
             if (OptionFlags.IsStreamOnline)
             {
@@ -1372,9 +1382,9 @@ namespace StreamerBotLib.BotIOController
             Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
         }
 
-        public static void HandleOutgoingRaidData(string ToChannelName, DateTime RaidTime)
+        public void HandleOutgoingRaidData(string ToChannelName, DateTime RaidTime, Platform platform)
         {
-            HandleOnStreamOffline(ToChannelName, RaidTime);
+            HandleOnStreamOffline(platform, ToChannelName, RaidTime);
         }
 
         public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Platform Source)

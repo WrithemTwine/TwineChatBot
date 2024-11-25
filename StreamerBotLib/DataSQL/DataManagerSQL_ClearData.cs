@@ -134,7 +134,7 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                foreach(OverlayTicker O in context.OverlayTicker)
+                foreach (OverlayTicker O in context.OverlayTicker)
                 {
                     O.UserName = "";
                 }

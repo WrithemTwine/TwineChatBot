@@ -439,6 +439,8 @@ namespace StreamerBotLib.DataSQL
                 PostCategory(gamename, context);
                 context.InRaidData.Add(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
                 context.SaveChanges(true);
+                RefreshUsersObservableCollection();
+                RefreshCategoryListObservableCollection();
                 RefreshInRaidDataObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
             }

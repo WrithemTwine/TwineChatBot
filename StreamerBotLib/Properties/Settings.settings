@@ -615,7 +615,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="TwitchStreamerNoScopesTokenDate" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">1900-01-01</Value>
     </Setting>
     <Setting Name="TwitchStreamEventSubNoScopesAutoStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

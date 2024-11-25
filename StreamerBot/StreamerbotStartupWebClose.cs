@@ -101,20 +101,20 @@ namespace StreamerBot
             GUITwitchBots.OnBotStarted += GuiTwitchBot_GiveawayEvents;
             GUITwitchBots.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
             GUITwitchBots.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
-            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamStarted;
-            GUITwitchBots.OnLiveStreamStarted += GuiTwitchBot_OnLiveStreamEvent;
-            GUITwitchBots.OnLiveStreamUpdated += GuiTwitchBot_OnLiveStreamEvent;
-            GUITwitchBots.OnLiveStreamStopped += GuiTwitchBot_OnLiveStreamStopped;
+
+            Controller.OnStreamOnline += GuiTwitchBot_OnLiveStreamStarted;
+            Controller.OnStreamOffline += GuiTwitchBot_OnLiveStreamStopped;
+            Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
+            Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
+            Controller.TokensInitialized += Controller_TokensInitialized;
+
+
             GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
             guiAppServices.AppDataDirectory = GetAppDataCWD();
             GUIAppServices.OnBotStarted += GUI_OnBotStarted;
             GUIAppServices.OnBotStopped += GUI_OnBotStopped;
             guiAppServices.MediaOverlayServer.SetOverlayWindow += MediaOverlayServer_SetOverlayWindow;
-
-            Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
-            Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
-            Controller.TokensInitialized += Controller_TokensInitialized;
 
             ThreadManager.OnThreadCountUpdate += ThreadManager_OnThreadCountUpdate;
 
@@ -213,8 +213,6 @@ namespace StreamerBot
                 }
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
-
-                BeginUpdateCategory();
             }
         }
 

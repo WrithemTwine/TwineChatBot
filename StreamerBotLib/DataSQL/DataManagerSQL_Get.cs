@@ -73,9 +73,9 @@ namespace StreamerBotLib.DataSQL
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = new List<string>(from Com in (context.CommandsBase)
-                              where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
-                              orderby Com.CmdName
-                              select $"{(prefix ? "!" : "")}{Com.CmdName}");
+                                              where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
+                                              orderby Com.CmdName
+                                              select $"{(prefix ? "!" : "")}{Com.CmdName}");
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
             }

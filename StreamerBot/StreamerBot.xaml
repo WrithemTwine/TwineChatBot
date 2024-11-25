@@ -219,7 +219,7 @@
                             </StackPanel>
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <WrapPanel HorizontalAlignment="Center">
-                                    <GroupBox Header="Bot-EventSub Read Msgs">
+                                    <GroupBox Header="Bot-EventSub Read Msgs" x:Name="GroupBox_Twitch_StartBots_BotEventSub">
                                         <WrapPanel>
                                             <TextBlock>
                                                 This bot reads chat messages from the monitor channel.
@@ -309,13 +309,13 @@
                                                 <TextBlock>Add all followers when starting bot</TextBlock>
                                             </CheckBox>
                                             <RadioButton 
-                                                DataContext="{Binding TwitchStreamerEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                                DataContext="{Binding TwitchStreamerEventSubBotScopes, Mode=OneWay, Source={StaticResource TwitchBot}}" 
                                                 x:Name="Radio_Twitch_StreamerEventSubStart" 
                                                 IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Start EventSub Bot</TextBlock>
                                             </RadioButton>
                                             <RadioButton 
-                                                DataContext="{Binding TwitchStreamerEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}"
+                                                DataContext="{Binding TwitchStreamerEventSubBotScopes, Mode=OneWay, Source={StaticResource TwitchBot}}"
                                                 x:Name="Radio_Twitch_StreamerEventSubStop" 
                                                 IsEnabled="False" IsChecked="True" 
                                                 PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
@@ -389,7 +389,7 @@
                                             </GroupBox>
                                         </WrapPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Local-Media Overlay Service">
+                                    <GroupBox Header="Service-Media Overlay">
                                         <WrapPanel>
                                             <Label x:Name="Label_OverlayService_Start" Visibility="Collapsed">
                                                 <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
@@ -453,7 +453,7 @@
 
                             <ScrollViewer x:Name="ScrollViewer_TwitchTokenForm" DockPanel.Dock="Left" 
                                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                                <WrapPanel Orientation="Vertical">
+                                <WrapPanel>
 
                                     <StackPanel x:Name="StackPanel_TwitchTokenFlow" Visibility="Collapsed">
                                         <DockPanel LastChildFill="False">
@@ -602,7 +602,8 @@
 
                                             </Expander>
 
-                                            <GroupBox x:Name="GroupBox_Twitch_BotCredentials" Header="Bot Account" Width="410">
+                                            <GroupBox x:Name="GroupBox_Twitch_BotCredentials" 
+                                                      Header="Bot Account" Width="410">
                                                 <StackPanel>
                                                     <TextBlock x:Uid="ExpiredToken" 
                                                                x:Name="TextBlock_ExpiredCredentialsMsg" 
@@ -621,9 +622,10 @@
                                                         <TextBox x:Name="TextBox_TwitchScopesOauthSame" BorderBrush="Blue" BorderThickness="1" IsReadOnly="True" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" Visibility="Collapsed" SourceUpdated="TextBox_SourceUpdated" DataContext="" Text="{Binding Mode=OneWay, Source={x:Static  StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}" />
 
                                                     </StackPanel>
-                                                    <TextBlock Width="300" Text="* This Chat Bot only supports communicating
-                                                               to one channel through the Channel Name." 
-                                                               TextWrapping="Wrap" FontSize="8" FontStretch="SemiCondensed" />
+                                                    <TextBlock Width="300" Text="* This Chat Bot only supports 
+                                                               communicating to one channel through the Channel Name." 
+                                                               TextWrapping="Wrap" FontSize="8" 
+                                                               FontStretch="SemiCondensed" />
                                                     <StackPanel Orientation="Horizontal" Margin="10">
                                                         <Label Content="Bot User Name" />
                                                         <TextBox x:Name="TB_Twitch_BotUser" Text="{Binding TwitchBotUserName, Mode=TwoWay}"  SourceUpdated="TextBox_SourceUpdated" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated" TextChanged="TextBox_TextChanged" TextInput="TextBox_TextChanged" LostFocus="TextBox_TextChanged" />

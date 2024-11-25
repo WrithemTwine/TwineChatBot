@@ -40,7 +40,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public TwitchStreamerEventSubBotNoScopes(ILoggerFactory loggerFactory)
         {
-            BotClientName = Enums.Bots.TwitchStreamerEventSubScopes;
+            BotClientName = Enums.Bots.TwitchStreamerEventSubNoScopes;
 
             _eventSubWebsocketClient = new(loggerFactory);
 
@@ -51,7 +51,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             _eventSubWebsocketClient.StreamOnline += StreamOnline;
             _eventSubWebsocketClient.StreamOffline += StreamOffline;
-            _eventSubWebsocketClient.ChannelRaid += ChannelRaid; 
+            _eventSubWebsocketClient.ChannelRaid += ChannelRaid;
             _eventSubWebsocketClient.ChannelUpdate += ChannelUpdate;
 
         }
@@ -130,7 +130,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
-                CreateEventSubSubscription(new ChannelUpdateHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+                CreateEventSubSubscription(new ChannelUpdateHandler().SubscriptionType, "2", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "to_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new StreamOfflineHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
             });
@@ -153,6 +153,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         InvokeBotStarted();
                     });
                     IsActive = true;
+                    MsgLogging |= IsActive == true;
                     MsgLogCleanup();
                 }
             }

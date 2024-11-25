@@ -37,38 +37,43 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public override void StartBot()
         {
-            try
+            if (OptionFlags.TwitchStreamerUseToken)
             {
                 try
                 {
-                    if (IsActive == null || IsActive == false)
+                    try
                     {
-                        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => { StartAsync(new()); });
+                        if (IsActive == null || IsActive == false)
+                        {
+                            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => { StartAsync(new()); });
+                            IsActive = true;
+                            InvokeBotStarted();
+                            MsgLogging |= IsActive == true;
+                            MsgLogCleanup();
+                        }
+                    }
+                    catch (TokenExpiredException ex)
+                    {
+                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        tokenBot.CheckToken();
+
+                        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                        {
+                            StartAsync(new());
+                        });
+
                         IsActive = true;
+                        MsgLogging |= IsActive == true;
                         InvokeBotStarted();
-                        MsgLogCleanup();
                     }
                 }
-                catch (TokenExpiredException ex)
+                catch (Exception ex)
                 {
                     LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                    tokenBot.CheckToken();
-
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
-                    {
-                        StartAsync(new());
-                    });
-
-                    IsActive = true;
-                    InvokeBotStarted();
+                    IsActive = false;
+                    InvokeBotFailedStart();
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket failed to start.");
                 }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                IsActive = false;
-                InvokeBotFailedStart();
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchBotEventSubBot, $"Websocket failed to start.");
             }
         }
 

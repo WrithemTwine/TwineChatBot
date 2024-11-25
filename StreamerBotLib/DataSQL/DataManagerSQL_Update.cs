@@ -168,10 +168,12 @@ namespace StreamerBotLib.DataSQL
                     }
 
                 }
-                if (Refcontext == null) {
+                if (Refcontext == null)
+                {
                     context.SaveChanges(true);
                     RefreshUserStatsObservableCollection();
-                    ClearDataContext(context); }
+                    ClearDataContext(context);
+                }
             }
         }
 

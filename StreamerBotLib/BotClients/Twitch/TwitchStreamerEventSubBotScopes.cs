@@ -1,12 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
+using StreamerBotLib.Events;
 using StreamerBotLib.Static;
 
 using System.Reflection;
 
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
+using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
 using TwitchLib.EventSub.Websockets;
 using TwitchLib.EventSub.Websockets.Core.EventArgs;
 using TwitchLib.EventSub.Websockets.Core.EventArgs.Channel;
@@ -14,9 +16,7 @@ using TwitchLib.EventSub.Websockets.Handler.Channel;
 using TwitchLib.EventSub.Websockets.Handler.Channel.ChannelPoints.Redemptions;
 using TwitchLib.EventSub.Websockets.Handler.Channel.Cheers;
 using TwitchLib.EventSub.Websockets.Handler.Channel.Follows;
-using TwitchLib.EventSub.Websockets.Handler.Channel.Raids;
 using TwitchLib.EventSub.Websockets.Handler.Channel.Subscription;
-using TwitchLib.EventSub.Websockets.Handler.Stream;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -38,7 +38,15 @@ namespace StreamerBotLib.BotClients.Twitch
         public event EventHandler<NewChannelCheerEventArgs> NewChannelCheer;
         public event EventHandler<NewChannelFollowEventArgs> NewChannelFollow;
 
+        public event EventHandler<ChannelChatMessageEventArgs> OnChannelChatMessageReceived;
+
         public event EventHandler OnNewLiveStreamStarted;
+
+        // handles the case when the bot account and streamer account are the same and this bot 
+        // sets up the channelchatmessage subscription
+        public event EventHandler OnChannelChatMessageStarted;
+        public event EventHandler OnChannelChatMessageStopping;
+        public event EventHandler OnChannelChatMessageStopped;
 
         public TwitchStreamerEventSubBotScopes(ILoggerFactory loggerFactory)
         {
@@ -57,6 +65,8 @@ namespace StreamerBotLib.BotClients.Twitch
             _eventSubWebsocketClient.ChannelSubscribe += ChannelSubscribe;
             _eventSubWebsocketClient.ChannelSubscriptionMessage += ChannelSubscriptionMessage;
             _eventSubWebsocketClient.ChannelPointsCustomRewardRedemptionAdd += ChannelPointsCustomRewardRedemptionAdd;
+
+            _eventSubWebsocketClient.ChannelChatMessage += OnChannelChatMessage;
         }
 
         #region Subscription Events
@@ -144,11 +154,44 @@ namespace StreamerBotLib.BotClients.Twitch
             return new Task(() => { });
         }
 
+        private Task OnChannelChatMessage(object sender, ChannelChatMessageArgs args)
+        {
+            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            {
+                return
+                m.MessageId == args.Notification.Metadata.MessageId &&
+                m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+            }))
+            {
+                ChannelChatMessage msg = args.Notification.Payload.Event;
+                OnChannelChatMessageReceived?.Invoke(this, new(msg));
+            }
+            return new Task(() => { });
+        }
+
         #region Edit Subscriptions
         private void CreateEventSubSubscription(string SubscriptionType, string Version, Dictionary<string, string> conditions)
         {
-            Action CreateSubAction = () =>
+            /*
+            //void CreateSubAction()
+            //{
+            //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
+            //    if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
+            //    {
+            //        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+            //        var SubResponse = tokenBot.StreamerHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
+            //        SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
+            //        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
+
+            //        SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
+            //    }
+            //}
+            */
+
+            try
             {
+                //CreateSubAction();
+
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
                 if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
@@ -159,17 +202,23 @@ namespace StreamerBotLib.BotClients.Twitch
 
                     SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
                 }
-            };
-
-            try
-            {
-                CreateSubAction.Invoke();
             }
             catch (BadTokenException ex)
             {
                 LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
                 tokenBot.CheckToken();
-                CreateSubAction.Invoke();
+                //CreateSubAction();
+
+                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
+                if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
+                {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+                    var SubResponse = tokenBot.StreamerHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
+                    SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
+
+                    SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
+                }
             }
         }
 
@@ -209,6 +258,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         InvokeBotStarted();
                     });
                     IsActive = true;
+                    MsgLogging |= IsActive == true;
                     MsgLogCleanup();
                 }
             }
@@ -235,7 +285,13 @@ namespace StreamerBotLib.BotClients.Twitch
                 CreateEventSubSubscription(new ChannelSubscribeHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new ChannelSubscriptionGiftHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new ChannelCheerHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-                CreateEventSubSubscription(new ChannelFollowHandler().SubscriptionType, "1", new Dictionary<string, string>{{"broadcaster_user_id", OptionFlags.TwitchStreamerUserId },{"moderator_id", OptionFlags.TwitchBotUserId }});
+                CreateEventSubSubscription(new ChannelFollowHandler().SubscriptionType, "2", new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "moderator_user_id", OptionFlags.TwitchStreamerUserId } });
+
+                if (!OptionFlags.TwitchStreamerUseToken)
+                {
+                    CreateEventSubSubscription(new ChatMessageHandler().SubscriptionType, "1", new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchStreamerUserId } });
+                    OnChannelChatMessageStarted?.Invoke(this, new());
+                }
             });
         }
 
@@ -248,13 +304,23 @@ namespace StreamerBotLib.BotClients.Twitch
                     ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                     {
                         StopAsync(new());
+                        if (!OptionFlags.TwitchStreamerUseToken)
+                        {
+                            OnChannelChatMessageStopping?.Invoke(this, new());
+                        }
+
                         DeleteEventSubSubscription(new ChannelPointsCustomRewardRedemptionAddHandler().SubscriptionType);
                         DeleteEventSubSubscription(new ChannelSubscriptionMessageHandler().SubscriptionType);
                         DeleteEventSubSubscription(new ChannelSubscribeHandler().SubscriptionType);
                         DeleteEventSubSubscription(new ChannelSubscriptionGiftHandler().SubscriptionType);
-                        DeleteEventSubSubscription(new ChannelRaidHandler().SubscriptionType);
                         DeleteEventSubSubscription(new ChannelCheerHandler().SubscriptionType);
-                        DeleteEventSubSubscription(new StreamOfflineHandler().SubscriptionType);
+                        DeleteEventSubSubscription(new ChannelFollowHandler().SubscriptionType);
+
+                        if (!OptionFlags.TwitchStreamerUseToken)
+                        {
+                            OnChannelChatMessageStopped?.Invoke(this, new());
+                        }
+
                     });
                     IsActive = false;
                     InvokeBotStopped();

@@ -70,7 +70,7 @@ namespace StreamerBot
         {
             Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = false;
 
-            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthBotClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
+            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthBotClientId, false, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_BotAuthCodeInvalid.Visibility = Visibility.Collapsed;
@@ -79,9 +79,9 @@ namespace StreamerBot
 
         private void Button_TwitchAuthCode_NoScopes_ApproveURL(object sender, RoutedEventArgs e)
         {
-            Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = false;
+            Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer.IsEnabled = false;
 
-            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthBotClientId, TwitchAuth_PopupURLAuth, 
+            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthBotClientId, true, TwitchAuth_PopupURLAuth,
                 AuthenticatedAttemptToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
@@ -93,7 +93,7 @@ namespace StreamerBot
         {
             Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = false;
 
-            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
+            BotController.TwitchTokenAuthCodeAuthorize(OptionFlags.TwitchAuthStreamerClientId, false, TwitchAuth_PopupURLAuth, AuthenticatedAttemptToStartBots);
             Dispatcher.BeginInvoke(() =>
             {
                 StatusBar_TwitchAuth_StreamerAuthCodeInvalid.Visibility = Visibility.Collapsed;
@@ -234,6 +234,7 @@ namespace StreamerBot
             // both the user adds client Id & secret are available and auth code is not available (not authenticated)
             Twitch_AuthCode_Button_AuthorizeBot.IsEnabled = AuthBotTokenData && OptionFlags.TwitchAuthBotAuthCode == "";
             Twitch_AuthCode_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchStreamerUseToken && AuthStreamerTokenData && OptionFlags.TwitchAuthStreamerAuthCode == "";
+            Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchAuthStreamerNoScopesAuthCode == "";
 
             // Twitch
 
@@ -253,6 +254,8 @@ namespace StreamerBot
 
                 SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Collapsed;
                 SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Visible;
+
+                GroupBox_Twitch_StartBots_BotEventSub.Visibility = Visibility.Visible;
             }
             else
             {
@@ -270,6 +273,8 @@ namespace StreamerBot
 
                 SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Visible;
                 SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Collapsed;
+
+                GroupBox_Twitch_StartBots_BotEventSub.Visibility = Visibility.Collapsed;
             }
 
             // set earliest token expiration date

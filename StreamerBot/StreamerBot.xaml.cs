@@ -56,6 +56,7 @@ namespace StreamerBot
         public StreamerBotWindow()
         {
             StartBotDate = DateTime.Now;
+            LogWriter.WriteLog(StartBotDate, "Now starting active bot session status log");
 
             CheckSettings();
             SetDatabaseChoice();
@@ -163,12 +164,6 @@ namespace StreamerBot
                 });
             }
         }
-        private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "User pushed the category button.");
-
-            BeginUpdateCategory();
-        }
         private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received an livestream started event.");
@@ -181,9 +176,9 @@ namespace StreamerBot
 
             SetLiveStreamActive(false);
         }
-        private void GuiTwitchBot_OnLiveStreamEvent(object sender, EventArgs e)
+        private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received a livestream event.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "User pushed the category button.");
 
             BeginUpdateCategory();
         }
@@ -191,7 +186,7 @@ namespace StreamerBot
         {
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
 
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => GUITwitchBots.GetUserGameCategory(UserName: s)));
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => Controller.GetUserCategory()));
         }
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
@@ -527,7 +522,6 @@ namespace StreamerBot
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             TwitchCheckFocus();
-            BotController.TwitchInitializeHelix();
         }
 
         private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)

@@ -3,6 +3,7 @@
     public enum BotType
     {
         BotAccount,
-        StreamerAccount
+        StreamerAccount,
+        StreamerNoScopes
     }
 }
