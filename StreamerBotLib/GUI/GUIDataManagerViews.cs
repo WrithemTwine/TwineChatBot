@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.DataSQL;
-using StreamerBotLib.DataSQL.Models;
+﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
@@ -188,12 +187,12 @@ namespace StreamerBotLib.GUI
             {
                 CommandCollection.Clear();
 
-                using var context = new SQLDBContext();
-                foreach (var command in context.Commands)
+                foreach (var command in DataManager.GetCommandList())
                 {
-                    CommandCollection.Add(command.CmdName);
+                    CommandCollection.Add(command);
                 }
             }
         }
+
     }
 }

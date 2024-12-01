@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -45,6 +46,28 @@ namespace StreamerBotLib.DataSQL
                               where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
                               select O).Any();
                 if (Refcontext == null) { ClearDataContext(context); }
+                return result;
+            }
+        }
+
+        public IEnumerable<LiveUser> TestGetRandomUsers(int count, SQLDBContext Refcontext = null)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                SQLDBContext context = Refcontext ?? BuildDataContext();
+                var Users = (from U in context.Users select U).ToList();
+
+                Random random = new();
+                List<LiveUser> result = [];
+
+                for (int x = 0; x < count; x++)
+                {
+                    Models.Users row = Users[random.Next(Users.Count)];
+                    result.Add(new(row.UserName, row.Platform, row.UserId));
+                }
+
+                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             }
         }

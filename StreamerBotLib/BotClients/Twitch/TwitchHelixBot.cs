@@ -215,18 +215,21 @@ namespace StreamerBotLib.BotClients.Twitch
 
             try
             {
-                return func.Invoke();
-            }
-            catch (TokenExpiredException ex)
-            {
-                LogWriter.LogException(ex, MethodName);
-                LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchHelixBot, "Exception found. Attempting to update token.");
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-                tokenBot.CheckToken();
+                try
+                {
+                    return func.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, MethodName);
+                    LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchHelixBot, "Exception found. Attempting to update token.");
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+                    tokenBot.CheckToken();
 
-                LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchHelixBot, "Attempting to again perform user-service action.");
+                    LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchHelixBot, "Attempting to again perform user-service action.");
 
-                return func.Invoke();
+                    return func.Invoke();
+                }
             }
             catch (Exception ex)
             {
@@ -342,22 +345,23 @@ namespace StreamerBotLib.BotClients.Twitch
 
             return PerformAction(MethodBase.GetCurrentMethod().Name, () =>
             {
-                string channelId = OptionFlags.TwitchStreamerUserId, botId = OptionFlags.TwitchBotUserId;
+                string channelId = OptionFlags.TwitchStreamerUserId, botId = OptionFlags.TwitchStreamerUserId;
 
                 List<Chatter> currChat = [];
-                string cursor = null;
+                GetChattersResponse curr = GetChatters(channelId, botId).Result;
+                string cursor = curr.Pagination?.Cursor;
+                currChat.AddRange(curr.Data);
 
-                do
+                while (!string.IsNullOrEmpty(cursor))
                 {
-                    GetChattersResponse curr = GetChatters(channelId, botId, after: cursor).Result;
+                    curr = GetChatters(channelId, botId, after: cursor).Result;
                     cursor = curr.Pagination?.Cursor;
                     currChat.AddRange(curr.Data);
                 }
-                while (!string.IsNullOrEmpty(cursor));
 
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchHelixBot, $"Finished getting a list of {currChat.Count} current chatters.");
 
-                return currChat;
+                return currChat ?? [];
             });
         }
 

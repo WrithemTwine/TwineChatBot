@@ -358,7 +358,9 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
@@ -371,18 +373,21 @@
 
                 <TextBlock Grid.Row="0" Grid.Column="0">First Date seen:</TextBlock>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FirstDateSeen, StringFormat={}{0:g}}" />
+     
+                <TextBlock Grid.Row="1" Grid.Column="0">Followed Date:</TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Follower.FollowedDate, FallbackValue=\&quot;Not a Follower\&quot;, StringFormat=\{0:g\}}" />
 
-                <TextBlock Grid.Row="1" Grid.Column="0">Current Login:</TextBlock>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
-                <TextBlock Grid.Row="2" VerticalAlignment="Bottom" >Activity Stats:</TextBlock>
-                <TextBlock Grid.Row="3" Grid.Column="0">Commands called:</TextBlock>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="4" Grid.Column="0">Chats:</TextBlock>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="5" Grid.Column="0">Clips created:</TextBlock>
-                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="6" Grid.Column="0">Channel Point Rewards:</TextBlock>
-                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="3" Grid.Column="0">Current Login:</TextBlock>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+                <TextBlock Grid.Row="4" VerticalAlignment="Bottom" >Activity Stats:</TextBlock>
+                <TextBlock Grid.Row="5" Grid.Column="0">Commands called:</TextBlock>
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="6" Grid.Column="0">Chats:</TextBlock>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="7" Grid.Column="0">Clips created:</TextBlock>
+                <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="8" Grid.Column="0">Channel Point Rewards:</TextBlock>
+                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
 
             </Grid>
         </Border>

@@ -207,9 +207,7 @@ namespace StreamerBotLib.DataSQL
                 }
 
                 context.SaveChanges(true);
-
                 if (Refcontext == null) { ClearDataContext(context); }
-
                 return newuser;
             }
         }
@@ -320,7 +318,7 @@ namespace StreamerBotLib.DataSQL
                 {
                     context.SaveChanges(true);
                     RefreshUsersObservableCollection();
-
+                    RefreshUserStatsObservableCollection();
                     ClearDataContext(context);
                 }
             }
@@ -342,6 +340,7 @@ namespace StreamerBotLib.DataSQL
                 }
                 context.SaveChanges(true);
                 RefreshUsersObservableCollection();
+                RefreshUserStatsObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
             }
         }

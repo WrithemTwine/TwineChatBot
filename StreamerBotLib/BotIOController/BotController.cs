@@ -11,7 +11,6 @@ using StreamerBotLib.Systems;
 
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
@@ -39,7 +38,6 @@ namespace StreamerBotLib.BotIOController
         private Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
                                                                       select new KeyValuePair<Platform, bool>(P, false));
 
-        private static Dispatcher AppDispatcher { get; set; }
         public SystemsController Systems { get; private set; }
         internal static Collection<IBotTypes> BotsList { get; private set; } = [];
         public List<Bots> StartedChatBots { get; private set; } = [];
@@ -111,23 +109,14 @@ namespace StreamerBotLib.BotIOController
         }
 
         /// <summary>
-        /// Associate the dispatcher from the GUI thread, necessary to run code based on the GUI thread objects.
-        /// </summary>
-        /// <param name="dispatcher">The GUI thread Application.Dispatcher</param>
-        public void SetDispatcher(Dispatcher dispatcher)
-        {
-            AppDispatcher = dispatcher;
-            Systems.SetDispatcher(dispatcher);
-        }
-
-        /// <summary>
         /// Receives a bundled event from the bots, which is unpackaged and now runs on the GUI thread dispatcher.
         /// </summary>
         /// <param name="sender">Unused.</param>
         /// <param name="e">The parameters to include the method name to invoke, and the event arguments for the invoked method.</param>
         private void HandleBotEvent(object sender, BotEventArgs e)
         {
-            AppDispatcher.BeginInvoke(() =>
+            //AppDispatcher.BeginInvoke(() =>
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
                 LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Event, {e.MethodName}, received from bots to post into system.");
 
@@ -234,6 +223,9 @@ namespace StreamerBotLib.BotIOController
                             break;
                         case BotEvents.TwitchBotCommandCall:
                             TwitchBotCommandCall((SendBotCommandEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchCurrentUsers:
+                            TwitchCurrentUsers((StreamerOnExistingUserDetectedArgs)e.e);
                             break;
                         case BotEvents.HandleBotEventEmpty:
                             break;

@@ -10,11 +10,6 @@ namespace StreamerBotLib.Systems
     {
         private bool UpdateDeathCounter;
 
-        /// <summary>
-        /// Currency system instantiates through Statistic System, it's active when the stream is active - the StreamOnline and StreamOffline activity starts the Currency clock < - currency is (should be) earned when online.
-        /// </summary>
-        // private Thread StreamUpdateThread;
-
         public void ManageUsers()
         {
             ManageUsers(DateTime.Now.ToLocalTime());
@@ -23,11 +18,11 @@ namespace StreamerBotLib.Systems
 
         public static void ManageUsers(DateTime SpecifyTime)
         {
-            lock (CurrUsers)
+            lock (StreamViewers)
             {
                 if (OptionFlags.ManageUsers)
                 {
-                    DataManage.UserJoined(CurrUsers, SpecifyTime.ToLocalTime());
+                    DataManage.UserJoined(StreamViewers.GetCurrentActiveUsers(), SpecifyTime.ToLocalTime());
                 }
             }
         }
@@ -47,13 +42,20 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void CurrUserUpdate(IEnumerable<LiveUser> liveUsers, Platform platform, DateTime CurrTime)
+        /// <summary>
+        /// Adds user to the database by name, or updates existing user, and the time they joined the channel
+        /// </summary>
+        /// <param name="User">User's DisplayName</param>
+        /// <param name="CurrTime">The current time the user joined</param>
+        /// <returns></returns>
+        public static void UserJoined(LiveUser User, DateTime CurrTime)
         {
-            lock (CurrUsers)
+            if (OptionFlags.IsStreamOnline)
             {
-                foreach (LiveUser L in CurrUsers.Except(liveUsers))
+                CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, StreamViewers.Count);
+                if (OptionFlags.ManageUsers)
                 {
-                    UserLeft(L, CurrTime);
+                    DataManage.UserJoined(User, CurrTime);
                 }
             }
         }
@@ -64,35 +66,16 @@ namespace StreamerBotLib.Systems
         /// <param name="User">User's DisplayName</param>
         /// <param name="CurrTime">The current time the user joined</param>
         /// <returns></returns>
-        public static bool UserJoined(LiveUser User, DateTime CurrTime)
+        public static void UserJoined(IEnumerable<LiveUser> User, DateTime CurrTime)
         {
-            bool result = false;
-            lock (CurrUsers)
-            {
-                result = CurrUsers.UniqueAdd(User);
-            }
-
             if (OptionFlags.IsStreamOnline)
             {
-                CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
+                CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, StreamViewers.Count);
                 if (OptionFlags.ManageUsers)
                 {
                     DataManage.UserJoined(User, CurrTime);
                 }
             }
-
-            return result;
-        }
-
-        public static bool UserChat(LiveUser User)
-        {
-            bool result = false;
-            if (OptionFlags.IsStreamOnline)
-            {
-                CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, CurrUsers.Count);
-                result = UniqueUserChat.UniqueAdd(User.UserName);
-            }
-            return result;
         }
 
         public static void ModJoined(string User)
@@ -121,22 +104,20 @@ namespace StreamerBotLib.Systems
 
         public static void UserLeft(LiveUser User, DateTime CurrTime)
         {
-            lock (CurrUsers)
+            lock (StreamViewers)
             {
                 PostDataUserLeft(User, CurrTime);
-                CurrUsers.Remove(User);
             }
         }
 
         public static void ClearUserList(DateTime Stopped)
         {
-            lock (CurrUsers)
+            lock (StreamViewers)
             {
-                foreach (LiveUser U in CurrUsers)
+                foreach (LiveUser U in StreamViewers.GetCurrentActiveUsers())
                 {
                     PostDataUserLeft(U, Stopped);
                 }
-                CurrUsers.Clear();
             }
         }
 
@@ -261,8 +242,7 @@ namespace StreamerBotLib.Systems
             ModUsers.Clear();
             SubUsers.Clear();
             VIPUsers.Clear();
-            UniqueUserJoined.Clear();
-            UniqueUserChat.Clear();
+            StreamViewers.EndStreamResetList();
         }
 
         #region Stream Stat Methods

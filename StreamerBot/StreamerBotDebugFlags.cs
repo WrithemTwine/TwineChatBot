@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -13,6 +14,9 @@ namespace StreamerBot
     public partial class StreamerBotWindow
     {
         #region Debug Empty Stream
+#if DEBUG
+        private DebugStreamUsers TestingWindow;
+#endif
 
         private void CheckDebug(object sender, RoutedEventArgs e)
         {
@@ -45,9 +49,22 @@ namespace StreamerBot
                     Controller.HandleOnStreamUpdate(itemfound);
                 });
 
+#if DEBUG
+                TestingWindow = new();
+                TestingWindow.AddDebugUsers += TestingWindow_AddDebugUsers;
+                TestingWindow.Show();
+#endif
+
                 SetLiveStreamActive(true);
             }
         }
+
+#if DEBUG
+        private void TestingWindow_AddDebugUsers(object sender, EventArgs e)
+        {
+            Controller.Systems.TestAddUsers();
+        }
+#endif
 
         private void EndDebugStream_Click(object sender, RoutedEventArgs e)
         {
@@ -58,8 +75,12 @@ namespace StreamerBot
                 DebugStreamStarted = DateTime.MinValue;
 
                 SetLiveStreamActive(false);
-            }
 
+#if DEBUG
+                TestingWindow.AddDebugUsers -= TestingWindow_AddDebugUsers;
+#endif
+
+            }
         }
 
         #endregion
@@ -81,6 +102,8 @@ namespace StreamerBot
             }
             NotifyPropertyChanged("DebugFlagsList");
         }
+
+
 
     }
 
@@ -113,4 +136,5 @@ namespace StreamerBot
         }
 
     }
+
 }

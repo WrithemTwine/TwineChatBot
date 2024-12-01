@@ -420,7 +420,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 ((Webhooks)Update).CopyUpdates((Models.Webhooks)DataEntity);
                 return DataEntity;
             }
-            else return null;
+            else
+            {
+                return null;
+            }
         }
     }
 }

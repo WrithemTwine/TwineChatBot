@@ -244,7 +244,7 @@
                                                          PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Stop EventSub Bot</TextBlock>
                                             </RadioButton>
-                                            <GroupBox Header="Activate per Online Status" Width="Auto">
+                                            <GroupBox Header="Activate per Online Status" Width="Auto" Visibility="Collapsed">
                                                 <WrapPanel>
                                                     <CheckBox DataContext="{Binding TwitchBotEventSubConnectOnline, 
                                                         Mode=OneWay, Source={x:Static s:Settings.Default}}">

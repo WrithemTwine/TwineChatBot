@@ -8,7 +8,6 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.ComponentModel.DataAnnotations;
-using System.Windows.Threading;
 
 namespace TestStreamerBot
 {
@@ -67,7 +66,6 @@ namespace TestStreamerBot
 
                     botController.OutputSentToBots += BotController_OutputSentToBots;
 
-                    botController.SetDispatcher(Dispatcher.CurrentDispatcher);
                     dataManager = (IDataManagerTestMethods)SystemsController.DataManage;
                 }
             }

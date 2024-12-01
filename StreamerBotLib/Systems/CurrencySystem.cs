@@ -33,9 +33,9 @@ namespace StreamerBotLib.Systems
                     {
                         while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
                         {
-                            lock (CurrUsers)
+                            lock (StreamViewers)
                             {
-                                DataManage.UpdateCurrency(new(from LiveUser U in CurrUsers
+                                DataManage.UpdateCurrency(new(from LiveUser U in StreamViewers.GetCurrentActiveUsers()
                                                               select U.UserName), DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
@@ -63,9 +63,9 @@ namespace StreamerBotLib.Systems
                         // watch time accruing only works when stream is online <- i.e. watched!
                         while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
                         {
-                            lock (CurrUsers)
+                            lock (StreamViewers)
                             {
-                                DataManage.UpdateWatchTime(CurrUsers, DateTime.Now.ToLocalTime());
+                                DataManage.UpdateWatchTime(StreamViewers.GetCurrentActiveUsers(), DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
                             Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));

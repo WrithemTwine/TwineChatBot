@@ -8,9 +8,7 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 
 using System.Data;
-using System.Globalization;
 using System.Reflection;
-using System.Windows.Threading;
 
 namespace StreamerBotLib.Systems
 {
@@ -27,7 +25,6 @@ namespace StreamerBotLib.Systems
         private static CategoryData CurrCategory { get; set; } = new("", "");
 
         private ActionSystem SystemActions { get; set; }
-        internal static Dispatcher AppDispatcher { get; set; }
 
         private Queue<Task> ProcMsgQueue { get; set; } = new();
         private Thread ProcessMsgs;
@@ -39,6 +36,8 @@ namespace StreamerBotLib.Systems
 
         private bool GiveawayStarted = false;
         private readonly List<LiveUser> GiveawayCollectionList = [];
+
+        private static ManageStreamViewers StreamViewers => ActionSystem.StreamViewers;
 
         /// <summary>
         /// Builds and initalizes the controller, instantiates all of the systems
@@ -56,6 +55,18 @@ namespace StreamerBotLib.Systems
 
             DataManage.OnBulkFollowersAddFinished += DataManage_OnBulkFollowersAddFinished;
         }
+
+#if DEBUG
+        public void TestAddUsers()
+        {
+            int getUsers = 20;
+            Random random = new Random();
+
+            UserJoined(((IDataManagerTestMethods)DataManage).TestGetRandomUsers(random.Next(getUsers)).ToList());
+
+        }
+
+#endif
 
         private void ActionProcessCmds()
         {
@@ -92,11 +103,6 @@ namespace StreamerBotLib.Systems
         private void Command_ProcessedCommand(object sender, PostChannelMessageEventArgs e)
         {
             SendMessage(e.Msg, e.RepeatMsg);
-        }
-
-        public void SetDispatcher(Dispatcher dispatcher)
-        {
-            AppDispatcher = dispatcher;
         }
 
         private void SendMessage(string message, int Repeat = 0)
@@ -332,11 +338,6 @@ namespace StreamerBotLib.Systems
         {
             bool streamstart = SystemActions.StreamOnline(CurrTime);
 
-            //if (OptionFlags.ManageStreamStats)
-            //{
-            //    BeginPostingStreamUpdates();
-            //}
-
             SystemActions.StartElapsedTimerThread();
 
             SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Live.ToString(), null);
@@ -401,16 +402,19 @@ namespace StreamerBotLib.Systems
         {
             DateTime Curr = DateTime.Now.ToLocalTime();
 
-            ActionSystem.CurrUserUpdate(UserNames, UserNames[0].Platform, DateTime.Now);
+            var FirstUsers = StreamViewers.AddUsersFirstJoinedChannel(UserNames);
 
-            foreach (LiveUser user in UserNames)
+            ActionSystem.UserJoined(UserNames, Curr);
+            foreach (LiveUser user in FirstUsers)
             {
-                if (RegisterJoinedUser(user, Curr, JoinedUserMsg: true))
-                {
-                    UserWelcomeMessage(user);
-                }
+                UserWelcomeMessage(user);
             }
             UpdateUserJoinedList();
+
+            foreach (LiveUser L in StreamViewers.GetUsersLeft(UserNames))
+            {
+                ActionSystem.UserLeft(L, Curr);
+            }
         }
 
         private void UpdateUserJoinedList()
@@ -419,10 +423,14 @@ namespace StreamerBotLib.Systems
             {
                 ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
-                    AppDispatcher.BeginInvoke(new BotOperation(() =>
+                    ThreadManager.AddTaskToGUIDispatcher(new Task(() =>
                     {
-                        ActionSystem.UpdateGUICurrUsers();
-                    }));
+                        _ = new BotOperation(() =>
+                        {
+                            ActionSystem.UpdateGUICurrUsers();
+                        });
+                    }
+                    ));
                 });
             }
             catch (Exception ex)
@@ -440,30 +448,11 @@ namespace StreamerBotLib.Systems
         #endregion
 
         #region User Related
-        private static bool RegisterJoinedUser(LiveUser User, DateTime UserTime, bool JoinedUserMsg = false, bool ChatUserMessage = false)
-        {
-            bool FoundUserJoined = false;
-            bool FoundUserChat = false;
-
-            if (JoinedUserMsg) // use a straight flag for user to join the channel
-            {
-                FoundUserJoined = ActionSystem.UserJoined(User, UserTime);
-            }
-
-            if (ChatUserMessage)
-            {
-                // have to separate, else the user registered before actually registered
-
-                FoundUserChat = ActionSystem.UserChat(User);
-            }
-            // use the OptionFlags.FirstUserJoinedMsg flag to determine the welcome message is through user joined
-            return (OptionFlags.FirstUserJoinedMsg && FoundUserJoined) || (ChatUserMessage && FoundUserChat);
-        }
 
         private void UserWelcomeMessage(LiveUser User)
         {
             if ((!User.UserName.Equals(ActionSystem.ChannelName, StringComparison.CurrentCultureIgnoreCase)
-               && (!User.UserName.Equals(ActionSystem.BotUserName?.ToLower(CultureInfo.CurrentCulture), StringComparison.CurrentCultureIgnoreCase)))
+               && (!User.UserName.Equals(ActionSystem.BotUserName, StringComparison.CurrentCultureIgnoreCase)))
                || OptionFlags.MsgWelcomeStreamer)
             {
                 string msg = ActionSystem.CheckWelcomeUser(User.UserId);
@@ -555,7 +544,6 @@ namespace StreamerBotLib.Systems
 
             ActionSystem.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
 
-            // TODO: review for detecting whether the bot sent message, and not including those chats in total chats (in terms of repeat timer chat thresholds)
             if (User.UserName != OptionFlags.TwitchBotUserName)
             {
                 UpdatedStat(StreamStatType.TotalChats);
@@ -574,9 +562,9 @@ namespace StreamerBotLib.Systems
                 ActionSystem.ModJoined(MsgReceived.DisplayName);
             }
 
-            if (RegisterJoinedUser(User, DateTime.Now.ToLocalTime(), ChatUserMessage: OptionFlags.FirstUserChatMsg))
+            foreach (LiveUser user in StreamViewers.AddUsersFirstChatMessage([User]))
             {
-                UserWelcomeMessage(User);
+                UserWelcomeMessage(user);
             }
 
             #region Currency Games
@@ -587,7 +575,6 @@ namespace StreamerBotLib.Systems
             }
 
             #endregion
-
         }
 
         public void UserCheered(LiveUser User, int Bits)

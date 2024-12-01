@@ -341,28 +341,15 @@ namespace StreamerBotLib.Systems
         /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
         private void AutoShoutUsers()
         {
-            List<LiveUser> CurrActiveUsers;
-            lock (CurrUsers)
-            {
-                CurrActiveUsers = [];
-                CurrActiveUsers.UniqueAddRange(CurrUsers);
-            }
-
-
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Received AutoShoutUsers command. Current active users.");
-
-            foreach (LiveUser u in CurrActiveUsers)
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Contains {u.UserName}, {u.UserId}, {u.Platform}");
-            }
-
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Now checking if the user is on the shout list.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Received AutoShoutUsers command.");
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Now checking if each active user is on the shout list.");
 
             ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
             {
-                foreach (LiveUser U in CurrActiveUsers)
+                foreach (LiveUser u in StreamViewers.GetCurrentActiveUsers())
                 {
-                    CheckShout(U, out _);
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Checking for auto-shout: {u.UserName}, {u.UserId}, {u.Platform}");
+                    CheckShout(u, out _);
                 }
             });
         }
@@ -377,7 +364,7 @@ namespace StreamerBotLib.Systems
         public void CheckShout(LiveUser User, out string response, bool AutoShout = true)
         {
             response = "";
-            if (DataManage.CheckShoutName(User.UserName) || !AutoShout)
+            if (DataManage.CheckShoutName(User.UserId) || !AutoShout)
             {
                 if (OptionFlags.MsgSendSOToChat)
                 {
@@ -389,8 +376,6 @@ namespace StreamerBotLib.Systems
                 if (response != "" && response != "/me ")
                 {
                     OnProcessCommand(response, multi);
-
-
                     LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
                 }
             }

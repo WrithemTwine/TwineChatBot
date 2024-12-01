@@ -100,16 +100,24 @@ namespace StreamerBot
         #region GUIAppStats
         private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
         {
-            AppDispatcher.BeginInvoke(new BotOperation(() =>
+            ThreadManager.AddTaskToGUIDispatcher(new Task(() =>
             {
-                guiAppStats.Threads.UpdateValue(e.AllThreadCount);
-                guiAppStats.ClosedThreads.UpdateValue(e.ClosedThreadCount);
-            }));
+                _ = new BotOperation(() =>
+                {
+                    guiAppStats.Threads.UpdateValue(e.AllThreadCount);
+                    guiAppStats.ClosedThreads.UpdateValue(e.ClosedThreadCount);
+                });
+            }
+            ));
         }
 
         private void UpdateAppTime()
         {
-            AppDispatcher.BeginInvoke(new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); }));
+            ThreadManager.AddTaskToGUIDispatcher(new Task(() =>
+            {
+                _ = new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); });
+            }
+            ));
         }
 
         #endregion

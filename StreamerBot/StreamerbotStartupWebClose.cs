@@ -229,6 +229,13 @@ namespace StreamerBot
             OptionFlags.IsStreamOnline = false;
             OptionFlags.ActiveToken = false;
 
+#if DEBUG
+            if (TestingWindow != null && TestingWindow.IsActive)
+            {
+                TestingWindow?.Close();
+            }
+#endif
+
             LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Sending an exit to the bot controller.");
             Controller.ExitBots();
 

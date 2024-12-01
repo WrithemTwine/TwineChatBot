@@ -26,6 +26,10 @@ namespace StreamerBot
     // TODO: look at using "localhost" for the clip's referback URL to grab a clip to send to overlay-reconnect into Overlay
 
     // TODO: consider a flag in datamanager to more reliably commit when viewers enter and exit channel-to decrease lag when users join and leave & displayed in the GUI 
+    // TODO: verify "get chatters" - currently not capturing current active users- consider shortening time to capture user changes
+    // TODO: raid-out currently didn't note for a raid-but, other bot may have interfered with performing the call and capturing the raid call
+    // TODO: review expired token handling for null calls
+
 
     /// <summary>
     /// Interaction logic for OverlayWindow.xaml
@@ -46,8 +50,6 @@ namespace StreamerBot
         private short TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
-        internal Dispatcher AppDispatcher { get; private set; } = Dispatcher.CurrentDispatcher;
-
         /// <summary>
         /// A collection of options and RadioButton pairs for each bot, to start and stop.
         /// </summary>
@@ -56,6 +58,7 @@ namespace StreamerBot
         public StreamerBotWindow()
         {
             StartBotDate = DateTime.Now;
+            ThreadManager.SetGUIDispatcher(Dispatcher.CurrentDispatcher);
             LogWriter.WriteLog(StartBotDate, "Now starting active bot session status log");
 
             CheckSettings();
@@ -65,7 +68,6 @@ namespace StreamerBot
 
             // TODO: determine database connection strings, start if available, defer until setup parameter(s) are added
             Controller = new();
-            Controller.SetDispatcher(AppDispatcher);
 
             //GUIDataManagerViews.DataViewsLoaded += StreamerBotWindow_DataViewsLoaded;
 

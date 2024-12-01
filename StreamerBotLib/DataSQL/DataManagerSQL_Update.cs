@@ -105,10 +105,11 @@ namespace StreamerBotLib.DataSQL
                                       where (S.UserId == L.UserId && S.Platform == L.Platform)
                                       select S).FirstOrDefault();
 
-                    //if (curruser == default)
-                    //{
-                    //    curruser = context.UserStats.Add(new(userId: L.UserId, platform: L.Platform)).Entity;
-                    //}
+                    if (curruser.UserStats == default
+                        && (from US in context.UserStats where US.UserId == L.UserId select US).FirstOrDefault() == default)
+                    {
+                        context.UserStats.Add(new(userId: L.UserId, platform: L.Platform));
+                    }
 
                     if (curruser.LastDateSeen < CurrStreamStart)
                     {
@@ -123,6 +124,7 @@ namespace StreamerBotLib.DataSQL
                 if (Refcontext == null)
                 {
                     context.SaveChanges(true);
+                    RefreshUsersObservableCollection();
                     RefreshUserStatsObservableCollection();
                     ClearDataContext(context);
                 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿#define USEQUEUELOGGER_NO // setup directive for "USEQUEUELOGGER": use logging, "USEQUEUELOGGER_NO": don't use logging
+
+using Microsoft.Extensions.Logging;
 
 using StreamerBotLib.BotClients.Twitch;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
@@ -12,7 +14,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System.Collections.Concurrent;
 using System.Net;
 using System.Reflection;
 using System.Web;
@@ -24,8 +25,8 @@ using TwitchLib.Api.Services.Events.LiveStreamMonitor;
 using TwitchLib.EventSub.Core.Models.Chat;
 
 namespace StreamerBotLib.BotClients
-{ // TODO: redo 'stream online' & category name process-including GUI statusbar GUI category name;
-  // TODO: update EventSub Raid for outgoing out of broadcaster channel
+{
+    // TODO: update EventSub Raid for outgoing out of broadcaster channel
     public class BotsTwitch : BotsBase
     {
         #region Properties-Events
@@ -81,8 +82,10 @@ namespace StreamerBotLib.BotClients
 
         private Stream _CurrStream;
 
+#if USEQUEUELOGGER
         private ConcurrentQueue<string> StatusMessages;
         private bool LoggingStarted;
+#endif
 
         /// <summary>
         /// When the user sets up the GUI to use either User tokens or AuthCode auto tokens,
@@ -115,7 +118,9 @@ namespace StreamerBotLib.BotClients
                     .AddStreamLogger();
             });
             StreamLoggerProvider.OnWriteLine += StreamLoggerProvider_OnWriteLine;
+#if USEQUEUELOGGER
             StatusMessages = new();
+#endif
 
             DataManager = SystemsController.DataManage;
             TwitchTokenBot = TwitchBotsBase.tokenBot;
@@ -140,14 +145,24 @@ namespace StreamerBotLib.BotClients
 
             AddHandlers();
 
+#if USEQUEUELOGGER
             StartLogging();
+#endif
         }
 
         private void StreamLoggerProvider_OnWriteLine(object sender, OnWriteLineEventArgs e)
         {
+#if USEQUEUELOGGER
             StatusMessages.Enqueue(e.Message);
+#else
+            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            {
+                LogWriter.WriteLog(e.Message);
+            });
+#endif
         }
 
+#if USEQUEUELOGGER
         private void StartLogging()
         {
             if (!LoggingStarted)
@@ -166,6 +181,7 @@ namespace StreamerBotLib.BotClients
                 });
             }
         }
+#endif
 
         private void AddHandlers()
         {
@@ -285,7 +301,7 @@ namespace StreamerBotLib.BotClients
         {
             _CurrStream = null;
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
             {
                 // the bot might start when stream is already started-not registered online, check for online and start additional subscriptions
                 if (!OptionFlags.IsStreamOnline)
@@ -297,15 +313,14 @@ namespace StreamerBotLib.BotClients
                         if (response != null && response.Streams.Length > 0)
                         {
                             LogWriter.DebugLog($"{MethodBase.GetCurrentMethod().Name}-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
+                            OptionFlags.IsStreamOnline = true;
 
                             InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
                             ActiveUsers();
+                            TwitchStreamerEventSubBotNoScopes.StreamAlreadyOnlineStartServices();
+                            ManageStreamOnlineOfflineStatus(true);
+                            StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
                         }
-
-                        ManageStreamOnlineOfflineStatus(true);
-
-                        StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
-
                     });
                 }
             }));
@@ -448,15 +463,21 @@ namespace StreamerBotLib.BotClients
 
         private void TwitchStreamerEventSubBotScopes_OnChannelChatMessageStarted(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Bot EventSub bot started to read channel chat messages.");
+
+            InvokeBotEvent(this, BotEvents.TwitchBotEventSubStarted, null);
         }
         private void TwitchStreamerEventSubBotScopes_OnChannelChatMessageStopping(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Bot EventSub bot stopped and won't read channel chat messages.");
+
+            InvokeBotEvent(this, BotEvents.TwitchBotEventSubStopping, null);
         }
         private void TwitchStreamerEventSubBotScopes_OnChannelChatMessageStopped(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Bot EventSub bot stopped and won't read channel chat messages.");
+
+            InvokeBotEvent(this, BotEvents.TwitchBotEventSubStopped, null);
         }
 
         #endregion
@@ -481,23 +502,23 @@ namespace StreamerBotLib.BotClients
         #endregion
 
         #region Twitch Helix Calls
-        private static Models.LiveUser AddUserId(string s)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Adding user Id to the existing user name.");
+        //private static Models.LiveUser AddUserId(string s)
+        //{
+        //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Adding user Id to the existing user name.");
 
-            Models.LiveUser user = new(s, Platform.Twitch);
+        //    Models.LiveUser user = new(s, Platform.Twitch);
 
-            string userId = DataManager.GetUserId(user);
-            if (string.IsNullOrEmpty(userId))
-            {
-                user.UserId = TwitchHelixBot.GetUserId(user.UserName);
-            }
-            else
-            {
-                user.UserId = userId;
-            }
-            return user;
-        }
+        //    string userId = DataManager.GetUserId(user);
+        //    if (string.IsNullOrEmpty(userId))
+        //    {
+        //        user.UserId = TwitchHelixBot.GetUserId(user.UserName);
+        //    }
+        //    else
+        //    {
+        //        user.UserId = userId;
+        //    }
+        //    return user;
+        //}
 
         public static CategoryData GetUserCategory(string UserId = null, string UserName = null)
         {
@@ -1010,6 +1031,7 @@ namespace StreamerBotLib.BotClients
                 ActiveUserThread = true;
                 ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
                 {
+                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Starting to monitor active users in the stream.");
                     const int SecondsBetweenUserCheck = 90;
 
                     DateTime LastChecked = DateTime.Now;
@@ -1018,15 +1040,16 @@ namespace StreamerBotLib.BotClients
                     {
                         if (DateTime.Now >= LastChecked)
                         {
-                            LastChecked.AddSeconds(SecondsBetweenUserCheck);
+                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Time to check active users in the current stream.");
+                            LastChecked = LastChecked.AddSeconds(SecondsBetweenUserCheck);
                             InvokeBotEvent(this, BotEvents.TwitchCurrentUsers, new StreamerOnExistingUserDetectedArgs()
                             {
                                 Users = (from C in TwitchHelixBot.GetChatters()
                                          let LU = new LiveUser(C.UserName, Platform.Twitch, C.UserId)
-                                         select LU).ToList()
+                                         select LU).ToList() ?? []
                             });
                         }
-                        Thread.Sleep(1000); // wait and check; query for new chatters every {SecondsBetweenUserCheck} timeframe
+                        Thread.Sleep(1000); // wait and check; query for new chatters every {SecondsBetweenUserCheck} timeframe -short wait to permit thread to shut down if bot closes
                     }
                     ActiveUserThread = false;
                 });

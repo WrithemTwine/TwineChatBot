@@ -40,11 +40,11 @@ namespace StreamerBotLib.Systems
         /// <summary>
         /// Time delays to use in threads
         /// </summary>
-        protected const int SecondsDelay = 2000;
+        protected const int SecondsDelay = 4000;
 
-        protected static List<LiveUser> CurrUsers { get; private set; } = [];
-        protected static List<string> UniqueUserJoined { get; private set; } = [];
-        protected static List<string> UniqueUserChat { get; private set; } = [];
+
+        internal static ManageStreamViewers StreamViewers { get; } = new();
+
         protected static List<string> ModUsers { get; private set; } = [];
         protected static List<string> SubUsers { get; private set; } = [];
         protected static List<string> VIPUsers { get; private set; } = [];
@@ -110,14 +110,6 @@ namespace StreamerBotLib.Systems
                 DataManage.RemoveAllOverlayTickerData();
             }
         }
-
-        ///// <summary>
-        ///// Add currency accrual rows for every user when a new currency type is added to the database
-        ///// </summary>
-        //public static void UpdateCurrencyTable()
-        //{
-        //    DataManage.PostCurrencyRows();
-        //}
 
         public static void ClearWatchTime()
         {
@@ -195,9 +187,9 @@ namespace StreamerBotLib.Systems
         {
             get
             {
-                lock (CurrUsers)
+                lock (StreamViewers)
                 {
-                    return CurrUsers.Count;
+                    return StreamViewers.GetCurrentActiveUsers().Count;
                 }
             }
         }
@@ -220,8 +212,10 @@ namespace StreamerBotLib.Systems
         public static void UpdateGUICurrUsers()
         {
             CurrUserJoin.Clear();
-            CurrUsers.Sort();
-            foreach (LiveUser liveUser in CurrUsers)
+            var curr = StreamViewers.GetCurrentActiveUsers();
+            curr.Sort();
+
+            foreach (LiveUser liveUser in curr)
             {
                 CurrUserJoin.Add(liveUser.UserName);
             }

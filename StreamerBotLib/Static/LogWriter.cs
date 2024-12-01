@@ -53,6 +53,9 @@ namespace StreamerBotLib.Static
             }
             lock (DebugLogFile)
             {
+                DebugLogFileWriter.WriteLine($"Ending bot session at {DateTime.Now.ToLocalTime().ToString(CultureInfo.CurrentCulture)}");
+                DebugLogFileWriter.WriteLine();
+
                 DebugLogFileWriter.Close();
             }
         }
@@ -79,6 +82,19 @@ namespace StreamerBotLib.Static
                         StatusLogWriter.WriteLine($"{line}====={startDate.ToLocalTime().ToString(CultureInfo.CurrentCulture)}");
                         StatusLogWriter.Close();
                     }
+                }
+
+                try
+                {
+                    DebugLogFileWriter.WriteLine($"{line}====={startDate.ToLocalTime().ToString(CultureInfo.CurrentCulture)}");
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    LogException(ex, "WriteLog");
+
+                    DebugLogFileWriter = new(DebugLogFile, true) { AutoFlush = true };
+                    DebugLogFileWriter.WriteLine($"{line}====={startDate.ToLocalTime().ToString(CultureInfo.CurrentCulture)}");
+                    DebugLogFileWriter.Close();
                 }
             }
         }
