@@ -9,7 +9,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
     public static partial class Sort
     {
 #if DEBUG
-        public static int INTROSORT_THRESHOLD = 32;
+        private static readonly int INTROSORT_THRESHOLD = 32;
 #else
         const int INTROSORT_THRESHOLD = 32;
 #endif
@@ -91,7 +91,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 return first;
             }
 
-            int pivotIndex = pivot(keys, first, last - 1, asc);
+            int pivotIndex = Pivot(keys, first, last - 1, asc);
             var pivotValue = keys[pivotIndex];
 
             // Move pivot to end
@@ -148,7 +148,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 return first;
             }
 
-            int pivotIndex = pivot(keys, items, first, last - 1, asc);
+            int pivotIndex = Pivot(keys, items, first, last - 1, asc);
             var pivotValue = keys[pivotIndex];
 
             // Move pivot to end
@@ -190,7 +190,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private static int pivot<T>(T[] keys, int first, int last, bool asc)
+        private static int Pivot<T>(T[] keys, int first, int last, bool asc)
             where T : IComparable<T>
         {
             int dir = asc ? 1 : -1;
@@ -219,7 +219,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private static int pivot<T, U>(T[] keys, U[] items, int first, int last, bool asc)
+        private static int Pivot<T, U>(T[] keys, U[] items, int first, int last, bool asc)
             where T : IComparable<T>
         {
             int dir = asc ? 1 : -1;

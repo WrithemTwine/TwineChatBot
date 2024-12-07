@@ -2,7 +2,6 @@
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 
-using System.Reflection;
 using System.Windows.Threading;
 
 namespace StreamerBotLib.Static
@@ -57,9 +56,21 @@ namespace StreamerBotLib.Static
         /// and to specify priority for the thread stoping order.
         /// </summary>
         /// <param name="task">The task to add to the GUI dispatcher.</param>
+        public static void AddTaskToGUIDispatcher(Action task)
+        {
+            GUIDispatcher.InvokeAsync(async () => await Task.Run(() => task));
+        }
+
+        /// <summary>
+        /// Add a task on the GUI dispatcher and use "BeginInvoke". Does not maintain ongoing threads
+        /// outside of the task.
+        /// Use <see cref="CreateThread"/> or <see cref="CreateThreadStart"/> for ongoing threads
+        /// and to specify priority for the thread stoping order.
+        /// </summary>
+        /// <param name="task">The task to add to the GUI dispatcher.</param>
         public static void AddTaskToGUIDispatcher(Task task)
         {
-            GUIDispatcher.BeginInvoke(() => task);
+            GUIDispatcher.InvokeAsync(() => task.RunSynchronously());
         }
 
         /// <summary>
@@ -81,7 +92,7 @@ namespace StreamerBotLib.Static
             {
                 lock (CurrThreads)
                 {
-                    List<ThreadData> ToRemove = new();
+                    List<ThreadData> ToRemove = [];
 
                     foreach (ThreadData t in CurrThreads.Where(t => t.ThreadItem.ThreadState == ThreadState.Stopped))
                     {
@@ -151,10 +162,10 @@ namespace StreamerBotLib.Static
             threadData.ThreadItem.Start();
         }
 
-        private static ThreadData CreateThreadData(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
-        {
-            return CreateThreadData(MethodBase.GetCurrentMethod().Name, () => task.Start(), waitState, Priority);
-        }
+        //private static ThreadData CreateThreadData(Task task, ThreadWaitStates waitState = ThreadWaitStates.Close, ThreadExitPriority Priority = ThreadExitPriority.Normal)
+        //{
+        //    return CreateThreadData("CreateThreadData", () => task.Start(), waitState, Priority);
+        //}
 
         /// <summary>
         /// Creates a Thread with the provided task, and maintained parameters to

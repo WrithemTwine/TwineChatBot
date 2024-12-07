@@ -29,12 +29,19 @@ namespace StreamerBotLib.MLearning.Accord.KNN
     /// 
     /// <typeparam name="TNode">The class type for the nodes of the tree.</typeparam>
     /// 
+    /// <remarks>
+    ///   Creates a new <see cref="NodeDistance&lt;T&gt;"/>.
+    /// </remarks>
+    /// 
+    /// <param name="node">The node value.</param>
+    /// <param name="distance">The distance value.</param>
+    /// 
     [Serializable]
-    public struct NodeDistance<TNode> : IComparable<NodeDistance<TNode>>, IEquatable<NodeDistance<TNode>>
+    public readonly struct NodeDistance<TNode>(TNode node, double distance) : IComparable<NodeDistance<TNode>>, IEquatable<NodeDistance<TNode>>
         where TNode : IEquatable<TNode>
     {
-        private TNode node;
-        private double distance;
+        private readonly TNode node = node;
+        private readonly double distance = distance;
 
         /// <summary>
         ///   Gets the node in this pair.
@@ -55,19 +62,6 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         }
 
         /// <summary>
-        ///   Creates a new <see cref="NodeDistance&lt;T&gt;"/>.
-        /// </summary>
-        /// 
-        /// <param name="node">The node value.</param>
-        /// <param name="distance">The distance value.</param>
-        /// 
-        public NodeDistance(TNode node, double distance)
-        {
-            this.node = node;
-            this.distance = distance;
-        }
-
-        /// <summary>
         ///   Determines whether the specified <see cref="object"/>
         ///   is equal to this instance.
         /// </summary>
@@ -82,9 +76,8 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public override bool Equals(object obj)
         {
-            if (obj is NodeDistance<TNode>)
+            if (obj is NodeDistance<TNode> b)
             {
-                var b = (NodeDistance<TNode>)obj;
                 return node.Equals(b.node) && distance == b.distance;
             }
 
@@ -102,10 +95,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public override int GetHashCode()
         {
-            int hash = 17;
-            hash = hash * 23 + node.GetHashCode();
-            hash = hash * 23 + distance.GetHashCode();
-            return hash;
+            return HashCode.Combine(node, distance);
         }
 
         /// <summary>

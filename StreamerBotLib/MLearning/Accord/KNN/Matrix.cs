@@ -161,12 +161,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public static T[] GetColumn<T>(this T[][] m, int index, T[] result = null)
         {
-            if (result == null)
-            {
-                result = new T[m.Length];
-            }
+            result ??= new T[m.Length];
 
-            index = Matrix.index(index, m.Columns());
+            index = Matrix.Index(index, m.Columns());
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = m[i][index];
@@ -181,7 +178,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public static T[] GetRow<T>(this T[][] m, int index, T[] result = null)
         {
-            index = Matrix.index(index, m.Rows());
+            index = Matrix.Index(index, m.Rows());
 
             if (result == null)
             {
@@ -287,12 +284,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         ///
         public static T[] GetRow<T>(this T[,] m, int index, T[] result = null)
         {
-            if (result == null)
-            {
-                result = new T[m.GetLength(1)];
-            }
+            result ??= new T[m.GetLength(1)];
 
-            index = Matrix.index(index, m.Rows());
+            index = Matrix.Index(index, m.Rows());
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = m[index, i];
@@ -322,12 +316,9 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public static T[] GetColumn<T>(this T[,] m, int index, T[] result = null)
         {
-            if (result == null)
-            {
-                result = new T[m.Rows()];
-            }
+            result ??= new T[m.Rows()];
 
-            index = Matrix.index(index, m.Columns());
+            index = Matrix.Index(index, m.Columns());
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = m[i, index];
@@ -350,7 +341,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             return matrix.GetLength(1);
         }
 
-        private static int index(int end, int length)
+        private static int Index(int end, int length)
         {
             if (end < 0)
             {
@@ -382,7 +373,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             var set = new HashSet<T>(values);
 
-            return set.ToArray();
+            return [.. set];
         }
 
         /// <summary>
@@ -394,13 +385,13 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException("count",
+                throw new ArgumentOutOfRangeException(nameof(count),
                 "The number of elements to be selected must be positive.");
             }
 
             if (count == 0)
             {
-                return new int[0];
+                return [];
             }
 
             if (count > values.Length)
@@ -487,7 +478,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             if (a == b)
             {
-                return new int[] { };
+                return [];
             }
 
             int[] r;
@@ -523,19 +514,16 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public static T[] Get<T>(this T[] source, int[] indexes, bool inPlace = false)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
+            ArgumentNullException.ThrowIfNull(source);
 
-            if (indexes == null)
-            {
-                throw new ArgumentNullException("indexes");
-            }
+            ArgumentNullException.ThrowIfNull(indexes);
 
             if (inPlace && source.Length != indexes.Length)
             {
+#pragma warning disable CA2208
+                // API uses complex parameter name as the type of the argument causing the exception - either 'source' or 'indexes' are incorrect arguments
                 throw new DimensionMismatchException(paramName: "Source and indexes arrays must have the same dimension for in-place operations.");
+#pragma warning restore CA2008
             }
 
             var destination = new T[indexes.Length];
@@ -576,9 +564,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #endif
         public static void Swap<T>(this T[] array, int a, int b)
         {
-            T aux = array[a];
-            array[a] = array[b];
-            array[b] = aux;
+            (array[b], array[a]) = (array[a], array[b]);
         }
 
         /// <summary>

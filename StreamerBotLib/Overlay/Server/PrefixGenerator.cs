@@ -13,8 +13,8 @@ namespace StreamerBotLib.Overlay.Server
             return $"http://localhost:{Port}/";
         }
 
-        private static List<string> Prefixes { get; set; } = new();
-        private static List<OverlayPage> Links { get; set; } = new();
+        private static List<string> Prefixes { get; set; } = [];
+        private static List<OverlayPage> Links { get; set; } = [];
 
         public static int LinkCount { get { return Links.Count; } }
 

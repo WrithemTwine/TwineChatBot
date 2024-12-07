@@ -106,7 +106,7 @@ namespace StreamerBot
             Controller.OnStreamOffline += GuiTwitchBot_OnLiveStreamStopped;
             Controller.OnStreamCategoryChanged += BotEvents_GetChannelGameName;
             Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
-            Controller.TokensInitialized += Controller_TokensInitialized;
+            Controller.TokensInitialized += Controller_TokensInitializedAsync;
 
 
             GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
@@ -166,54 +166,63 @@ namespace StreamerBot
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Begin Window Loaded events.");
+            LogWriter.DebugLog("Window_Loaded", DebugLogTypes.GUIEvents, "Begin Window Loaded events.");
 
-            ToggleButton_ChooseTwitchAuth_Click(this, null);
 
-            TwitchCheckFocus();
-            CheckMessageBoxes();
-            CheckBox_ManageData_Click(sender, new());
-            CheckBox_TabifySettings_Clicked(this, new());
-            CheckDebug(this, new());
-            SetVisibility(this, new());
+            ThreadManager.CreateThreadStart("Window_Loaded", () =>
+            {
+                _ = Dispatcher.BeginInvoke(() =>
+                {
+                    ToggleButton_ChooseTwitchAuth_Click(this, null);
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "End Window Loaded events.");
+                    CheckMessageBoxes();
+                    CheckBox_ManageData_Click(sender, new());
+                    CheckBox_TabifySettings_Clicked(this, new());
+                    CheckDebug(this, new());
+                    SetVisibility(this, new());
+                });
+            });
+
+            LogWriter.DebugLog("Window_Loaded", DebugLogTypes.GUIEvents, "End Window Loaded events.");
         }
 
         /// <summary>
         /// Check each bot if it's enabled-the credentials are proper- and start any bot the user selected to start when the app is loaded.
         /// Also, when the Twitch authentication token method changes, need to restart any bots if the tokens are available.
         /// </summary>
-        private void StartAutoBots()
+        private Task StartAutoBots()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Attempting to start bots.");
-
-            if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) >= CheckRefreshDate
-                && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
-            ||
-                (OptionFlags.TwitchTokenUseAuth // when using the Twitch auth token method
-                                                // check the bot/streamer tokens are available assigned
-                && (!OptionFlags.TwitchStreamerUseToken && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
-                 || (OptionFlags.TwitchStreamerUseToken
-                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
-                     && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken))
-                   )
-                )
-            )
+            return Task.Run(() =>
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
+                LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Attempting to start bots.");
 
-                foreach (Tuple<bool, Platform, RadioButton> tuple in from Tuple<bool, Platform, RadioButton> tuple in BotOps
-                                                                     where tuple.Item1 && tuple.Item3.IsEnabled
-                                                                     select tuple)
+                if ((OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) >= CheckRefreshDate
+                    && !OptionFlags.TwitchTokenUseAuth) // when not using the Twitch auth token method
+                ||
+                    (OptionFlags.TwitchTokenUseAuth // when using the Twitch auth token method
+                                                    // check the bot/streamer tokens are available assigned
+                    && (!OptionFlags.TwitchStreamerUseToken && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken)
+                     || (OptionFlags.TwitchStreamerUseToken
+                         && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAccessToken)
+                         && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAccessToken))
+                       )
+                    )
+                )
                 {
-                    DispatchStartBot(tuple.Item3.DataContext as IOModule);
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
-                }
+                    LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
+                    LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
-            }
+                    foreach (Tuple<bool, Platform, RadioButton> tuple in from Tuple<bool, Platform, RadioButton> tuple in BotOps
+                                                                         where tuple.Item1 && tuple.Item3.IsEnabled
+                                                                         select tuple)
+                    {
+                        DispatchStartBotAsync(tuple.Item3.DataContext as IOModule);
+                        LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
+                    }
+
+                    LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
+                }
+            });
         }
 
         /// <summary>
@@ -223,7 +232,7 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void OnWindowClosing(object sender, CancelEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Closing the application. Setting flags to end threaded procedures.");
+            LogWriter.DebugLog("OnWindowClosing", DebugLogTypes.GUIEvents, "Closing the application. Setting flags to end threaded procedures.");
 
             WatchProcessOps = false;
             OptionFlags.IsStreamOnline = false;
@@ -236,11 +245,11 @@ namespace StreamerBot
             }
 #endif
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Sending an exit to the bot controller.");
+            LogWriter.DebugLog("OnWindowClosing", DebugLogTypes.GUIEvents, "Sending an exit to the bot controller.");
             Controller.ExitBots();
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Closing/Exiting all of the output logs, including me!");
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Exiting the log writers. No more logging available.");
+            LogWriter.DebugLog("OnWindowClosing", DebugLogTypes.BotController, "Closing/Exiting all of the output logs, including me!");
+            LogWriter.DebugLog("OnWindowClosing", DebugLogTypes.GUIEvents, "Exiting the log writers. No more logging available.");
             LogWriter.ExitCloseLogs();
         }
 

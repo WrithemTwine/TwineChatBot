@@ -73,12 +73,12 @@
         /// 
         public TNode[] Children
         {
-            get { return new[] { Left, Right }; }
+            get { return [Left, Right]; }
             set
             {
                 if (value.Length != 2)
                 {
-                    throw new ArgumentException("The array must have length 2.", "value");
+                    throw new ArgumentException("The array must have length 2.", nameof(value));
                 }
 
                 Left = value[0];

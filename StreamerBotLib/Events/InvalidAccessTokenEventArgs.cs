@@ -2,15 +2,9 @@
 
 namespace StreamerBotLib.Events
 {
-    public class InvalidAccessTokenEventArgs : EventArgs
+    public class InvalidAccessTokenEventArgs(Platform platform, BotType botType) : EventArgs
     {
-        public Platform Platform { get; set; }
-        public BotType BotType { get; set; }
-
-        public InvalidAccessTokenEventArgs(Platform platform, BotType botType)
-        {
-            Platform = platform;
-            BotType = botType;
-        }
+        public Platform Platform { get; set; } = platform;
+        public BotType BotType { get; set; } = botType;
     }
 }

@@ -2,6 +2,8 @@
 
 using StreamerBotLib.Enums;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
@@ -15,6 +17,7 @@ namespace StreamerBotLib.DataSQL.Models
 #endif
  : UserBase(userId, platform)
     {
+        [AllowNull]
         public Users? User { get; set; }
     }
 }

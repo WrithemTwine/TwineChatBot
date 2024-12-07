@@ -3,19 +3,24 @@
     /// <summary>
     /// Holds the data for each player in the game.
     /// </summary>
-    public class PlayGameUserWager<T, S>
+    /// <remarks>
+    /// Assign the data.
+    /// </remarks>
+    /// <param name="player">The current player.</param>
+    /// <param name="wager">The player's wager.</param>
+    public class PlayGameUserWager<T, S>(LiveUser player, int wager)
         where T : Enum
         where S : Enum
     {
         /// <summary>
         /// The current player detail.
         /// </summary>
-        public LiveUser Player { get; set; }
+        public LiveUser Player { get; set; } = player;
 
         /// <summary>
         /// The player's wager.
         /// </summary>
-        public int Wager { get; set; }
+        public int Wager { get; set; } = wager;
 
         /// <summary>
         /// Indicates whether this player won their hand.
@@ -35,7 +40,7 @@
         /// <summary>
         /// The cards in the player's hand.
         /// </summary>
-        public List<PlayingCard<T, S>> Cards { get; set; } = new();
+        public List<PlayingCard<T, S>> Cards { get; set; } = [];
 
         /// <summary>
         /// The numerical amount of the player's hand.
@@ -46,16 +51,5 @@
         /// The visual representation of the player's cards in their hand.
         /// </summary>
         public string CardItems { get; set; } = "";
-
-        /// <summary>
-        /// Assign the data.
-        /// </summary>
-        /// <param name="player">The current player.</param>
-        /// <param name="wager">The player's wager.</param>
-        public PlayGameUserWager(LiveUser player, int wager)
-        {
-            Player = player;
-            Wager = wager;
-        }
     }
 }

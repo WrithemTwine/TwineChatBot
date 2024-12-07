@@ -11,7 +11,6 @@ using StreamerBotLib.Systems;
 using System.Collections.Concurrent;
 using System.Data;
 using System.Globalization;
-using System.Reflection;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -329,14 +328,14 @@ switches:
 
         private void LearnMsgs_LearnMsgsRowDeleted(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether learned message rows are deleted.");
+            LogWriter.DebugLog("LearnMsgs_LearnMsgsRowDeleted", DebugLogTypes.DataManager, $"Machine learning, whether learned message rows are deleted.");
 
             LearnMsgChanged = true;
         }
 
         private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, whether adding a new learned message.");
+            LogWriter.DebugLog("LearnMsgs_TableNewRow", DebugLogTypes.DataManager, $"Machine learning, whether adding a new learned message.");
 
             LearnMsgChanged = true;
         }

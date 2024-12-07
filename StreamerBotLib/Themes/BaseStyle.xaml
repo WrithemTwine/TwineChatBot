@@ -362,6 +362,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="Background" Value="{DynamicResource FullBackground}" />
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="false">
                 <Setter Property="Foreground" Value="{DynamicResource ScrollBarForeground}"/>

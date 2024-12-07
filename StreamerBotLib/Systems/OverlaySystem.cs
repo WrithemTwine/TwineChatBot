@@ -5,8 +5,6 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
-using System.Reflection;
-
 /*
  * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 
  * https://dev.twitch.tv/docs/embed
@@ -32,14 +30,6 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public static event EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerItems;
 
-        /// <summary>
-        /// List of Table/Column pairs for building the overlay action selections
-        /// </summary>
-        private readonly Dictionary<string, string> OverlayActionColumnPairs = new()
-        {
-            {"Commands", "CmdName"},
-            {"ChannelEvents", "Name" }
-        };
         private readonly List<string> ChannelPointRewards = [];
 
         /// <summary>
@@ -79,14 +69,14 @@ namespace StreamerBotLib.Systems
                 data.MediaFile = ProvidedURL;
                 data.Duration = Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"The provided URL {ProvidedURL} and Duration {data.Duration} check out, and are added to data.");
+                LogWriter.DebugLog("CheckURL", DebugLogTypes.OverlayBot, $"The provided URL {ProvidedURL} and Duration {data.Duration} check out, and are added to data.");
 
             }
         }
 
         private void OnNewOverlayEvent(NewOverlayEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Building Overlay Event with action data, {e.OverlayAction.OverlayType} and {e.OverlayAction.ActionValue}.");
+            LogWriter.DebugLog("OnNewOverlayEvent", DebugLogTypes.OverlayBot, $"Building Overlay Event with action data, {e.OverlayAction.OverlayType} and {e.OverlayAction.ActionValue}.");
 
             NewOverlayEvent?.Invoke(this, e);
         }
@@ -105,7 +95,7 @@ namespace StreamerBotLib.Systems
             {
                 FoundAction = overlayActionTypes.Find(x => x.UserName == User.UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Determined {FoundAction?.OverlayType} {FoundAction?.ActionValue} as the matching Overlay action.");
+                LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"Determined {FoundAction?.OverlayType} {FoundAction?.ActionValue} as the matching Overlay action.");
             }
 
             void CheckDiffMsg(ref OverlayActionType data)
@@ -118,16 +108,16 @@ namespace StreamerBotLib.Systems
 
             if (FoundAction != null)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"OverlaySystem - found an action, {FoundAction.ActionValue} {FoundAction.OverlayType}, building a response alert.");
+                LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"OverlaySystem - found an action, {FoundAction.ActionValue} {FoundAction.OverlayType}, building a response alert.");
 
                 CheckDiffMsg(ref FoundAction);
                 if (overlayType == OverlayTypes.Commands && Action == DefaultCommand.so.ToString())
                 {
                     if (OptionFlags.MediaOverlayShoutoutClips)
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"OverlaySystem - action, {FoundAction.ActionValue} {FoundAction.OverlayType}, is a shoutout.");
+                        LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"OverlaySystem - action, {FoundAction.ActionValue} {FoundAction.OverlayType}, is a shoutout.");
 
-                        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                        ThreadManager.CreateThreadStart("CheckForOverlayEvent", () =>
                         {
                             ShoutOutOverlayAction UserShout = new(FoundAction, OnNewOverlayEvent);
                             OnGetChannelClipsEvent(new() { ChannelName = User.UserName, CallBackResult = UserShout.FoundChannelClips });

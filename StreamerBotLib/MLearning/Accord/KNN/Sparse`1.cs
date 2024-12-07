@@ -414,11 +414,11 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             for (int i = 0; i < Indices.Length; i++)
             {
                 sb.Append(Indices[i] + 1); // Note: LibSVM array format is one-based
-                sb.Append(":");
+                sb.Append(':');
                 sb.AppendFormat(formatProvider, "{0:" + format + "}", Values[i]);
                 if (i < Indices.Length - 1)
                 {
-                    sb.Append(" ");
+                    sb.Append(' ');
                 }
             }
             return sb.ToString();

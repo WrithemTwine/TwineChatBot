@@ -58,7 +58,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(double x, double y)
+        public readonly double Distance(double x, double y)
         {
             return Math.Abs(x - y);
         }
@@ -84,7 +84,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(double[] x, double[] y)
+        public readonly double Distance(double[] x, double[] y)
         {
             double sum = 0.0;
             for (int i = 0; i < x.Length; i++)
@@ -116,7 +116,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(double vector1x, double vector1y, double vector2x, double vector2y)
+        public static double Distance(double vector1x, double vector1y, double vector2x, double vector2y)
         {
             double dx = vector1x - vector2x;
             double dy = vector1y - vector2y;
@@ -135,7 +135,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(Tuple<double, double> x, Tuple<double, double> y)
+        public readonly double Distance(Tuple<double, double> x, Tuple<double, double> y)
         {
             double dx = x.Item1 - y.Item1;
             double dy = y.Item1 - y.Item2;
@@ -159,7 +159,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(Sparse<double> x, Sparse<double> y)
+        public readonly double Distance(Sparse<double> x, Sparse<double> y)
         {
             return Math.Sqrt(SquareEuclidean.Sparse(x, y));
         }
@@ -173,7 +173,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         /// <returns>A similarity measure between x and y.</returns>
         /// 
-        public double Similarity(double x, double y)
+        public readonly double Similarity(double x, double y)
         {
             return 1.0 / (1.0 + Math.Abs(x - y));
         }
@@ -187,7 +187,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         /// <returns>A similarity measure between x and y.</returns>
         /// 
-        public double Similarity(double[] x, double[] y)
+        public readonly double Similarity(double[] x, double[] y)
         {
             double sum = 0.0;
 
@@ -209,7 +209,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         /// <returns>A similarity measure between x and y.</returns>
         /// 
-        public double Similarity(Tuple<double, double> x, Tuple<double, double> y)
+        public readonly double Similarity(Tuple<double, double> x, Tuple<double, double> y)
         {
             double dx = x.Item1 - y.Item1;
             double dy = y.Item1 - y.Item2;
@@ -229,9 +229,6 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Similarity(Sparse<double> x, Sparse<double> y)
-        {
-            return 1.0 / (1.0 + Distance(x, y));
-        }
+        public readonly double Similarity(Sparse<double> x, Sparse<double> y) => 1.0 / (1.0 + Distance(x, y));
     }
 }

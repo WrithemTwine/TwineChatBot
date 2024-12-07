@@ -77,10 +77,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         IParallel
     {
         [NonSerialized]
-        private ThreadLocal<double[]> distances = new ThreadLocal<double[]>();
+        private readonly ThreadLocal<double[]> distances = new();
 
         [NonSerialized]
-        private ParallelOptions parallelOptions = new ParallelOptions();
+        private ParallelOptions parallelOptions = new();
 
         /// <summary>
         ///   Gets or sets the parallelization options for this algorithm.
@@ -122,8 +122,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// <returns>System.Double[].</returns>
         public override double[] Scores(TInput input, double[] result)
         {
-            double[] distances;
-            int[] idx = GetNearestIndices(input, out distances);
+            int[] idx = GetNearestIndices(input, out double[] distances);
 
             // Compute the scores for these points
             for (int i = 0; i < idx.Length; i++)
@@ -152,8 +151,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             for (int k = 0; k < input.Length; k++)
             {
-                double[] distances;
-                int[] idx = GetNearestIndices(input[k], out distances);
+                int[] idx = GetNearestIndices(input[k], out double[] distances);
 
                 // Compute the scores for these points
                 for (int i = 0; i < idx.Length; i++)
@@ -216,8 +214,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public override TInput[] GetNearestNeighbors(TInput input, out int[] labels)
         {
-            double[] distances;
-            int[] idx = GetNearestIndices(input, out distances);
+            int[] idx = GetNearestIndices(input, out _);
 
             labels = Outputs.Get(idx);
             return Inputs.Get(idx);
@@ -237,7 +234,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public override KNearestNeighbors<TInput> Learn(TInput[] x, int[] y, double[] weights = null)
         {
-            CheckArgs(K, x, y, Distance, weights);
+            CheckArgs(K, x, y, Distance);
 
             Inputs = x;
             Outputs = y;

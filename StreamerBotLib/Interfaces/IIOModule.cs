@@ -13,10 +13,10 @@ namespace StreamerBotLib.Interfaces
         public static bool ShowConnectionMsg { get; set; }
 
         // Connect to the data provider, must have Stream Key and Token set to connect
-        bool Connect();
+        Task<bool> Connect();
 
         // Send data to the provider
-        void Send(string s);
+        Task Send(string s);
 
         // Send whisper to the provider
         bool SendWhisper(string user, string s);
@@ -25,12 +25,12 @@ namespace StreamerBotLib.Interfaces
         bool ReceiveWhisper(Action<string> ReceiveWhisperCallback);
 
         // Start send receive operations
-        void StartBot();
+        Task StartBot();
 
         // Stop operations
-        void StopBot();
+        Task StopBot();
 
         // Procedures for full app exit
-        bool ExitBot();
+        Task<bool> ExitBot();
     }
 }

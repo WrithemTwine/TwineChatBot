@@ -68,19 +68,19 @@
 
         bool[][] IClassifier<TInput, bool[]>.Decide(TInput[] input)
         {
-            return ToMultilabel().Decide(input, create<bool>(input));
+            return ToMultilabel().Decide(input, Create<bool>(input));
         }
 
 
         double[][] IClassifier<TInput, double[]>.Decide(TInput[] input)
         {
-            return ToMultilabel().Decide(input, create<double>(input));
+            return ToMultilabel().Decide(input, Create<double>(input));
         }
 
 
         int[][] IClassifier<TInput, int[]>.Decide(TInput[] input)
         {
-            return ToMultilabel().Decide(input, create<int>(input));
+            return ToMultilabel().Decide(input, Create<int>(input));
         }
 
 
@@ -189,32 +189,32 @@
 
         double[] ICovariantTransform<TInput, double[]>.Transform(TInput input)
         {
-            return Transform(input, create<double>(input));
+            return Transform(input, Create<double>(input));
         }
 
         double[][] ICovariantTransform<TInput, double[]>.Transform(TInput[] input)
         {
-            return Transform(input, create<double>(input));
+            return Transform(input, Create<double>(input));
         }
 
         bool[] ICovariantTransform<TInput, bool[]>.Transform(TInput input)
         {
-            return Transform(input, create<bool>(input));
+            return Transform(input, Create<bool>(input));
         }
 
         bool[][] ICovariantTransform<TInput, bool[]>.Transform(TInput[] input)
         {
-            return Transform(input, create<bool>(input));
+            return Transform(input, Create<bool>(input));
         }
 
         int[] ICovariantTransform<TInput, int[]>.Transform(TInput input)
         {
-            return Transform(input, create<int>(input));
+            return Transform(input, Create<int>(input));
         }
 
         int[][] ICovariantTransform<TInput, int[]>.Transform(TInput[] input)
         {
-            return Transform(input, create<int>(input));
+            return Transform(input, Create<int>(input));
         }
 
         /// <summary>

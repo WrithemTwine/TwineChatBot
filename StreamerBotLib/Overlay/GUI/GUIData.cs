@@ -21,13 +21,13 @@ namespace StreamerBotLib.Overlay.GUI
         /// <summary>
         /// Collection of the links implemented in the http server
         /// </summary>
-        public ObservableCollection<OverlayPage> OverlayLinks { get; private set; } = new();
+        public ObservableCollection<OverlayPage> OverlayLinks { get; private set; } = [];
 
         /// <summary>
         /// The collection of styles presented to the user in the GUI, saved to specific files, and 
         /// used to serve the Content pages with these styles.
         /// </summary>
-        public List<OverlayStyle> OverlayEditStyles { get; private set; } = new();
+        public List<OverlayStyle> OverlayEditStyles { get; private set; } = [];
 
         /// <summary>
         /// Initialize, and add debug data to the stats for testing.
@@ -87,7 +87,7 @@ namespace StreamerBotLib.Overlay.GUI
         {
             foreach (OverlayStat overlayStat in OverlayStats)
             {
-                OnPropertyChanged(nameof(overlayStat));
+                OnPropertyChanged(overlayStat.OverlayType);
             }
         }
 

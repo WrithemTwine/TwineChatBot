@@ -3,7 +3,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace StreamerBotLib.BotClients
@@ -12,7 +11,7 @@ namespace StreamerBotLib.BotClients
     {
         private static readonly HttpClient client = new();
 
-        private static readonly Queue<Tuple<Uri, JsonContent>> DataJobs = new();
+        private static readonly Queue<Tuple<Uri, JsonContent>> DataJobs = [];
         private static bool JobThread;
 
         /// <summary>
@@ -34,7 +33,7 @@ namespace StreamerBotLib.BotClients
 
             if (!JobThread) // check if job thread is running
             {
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, SendDataAsync);
+                ThreadManager.CreateThreadStart("SendMessage", SendDataAsync);
 
                 lock (DataJobs)
                 {
@@ -185,7 +184,7 @@ namespace StreamerBotLib.BotClients
         //private const int max_embeds = 10;
 
         [AllowNull, JsonPropertyName("content")]
-        public string Content { get; private set; } = content != null ? content[..Math.Min(2000, content.Length)] : null;
+        public string Content { get; private set; } = content?[..Math.Min(2000, content.Length)];
         [AllowNull, JsonPropertyName("username")]
         public string Username { get; private set; } = username;
         [AllowNull, JsonPropertyName("avatarurl")]

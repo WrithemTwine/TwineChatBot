@@ -2,8 +2,6 @@
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System.Reflection;
-
 namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem
@@ -155,7 +153,7 @@ namespace StreamerBotLib.Systems
 
         public bool StreamOnline(DateTime Started)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Detected a new livestream and starting up activites.");
+            LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Detected a new livestream and starting up activites.");
 
             CurrStream.Clear();
 
@@ -192,7 +190,7 @@ namespace StreamerBotLib.Systems
 
         internal static void StreamDataUpdate()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Updating the current stream data to the database.");
+            LogWriter.DebugLog("StreamDataUpdate", DebugLogTypes.StatSystem, "Updating the current stream data to the database.");
 
             if (OptionFlags.ManageStreamStats)
             {
@@ -205,8 +203,8 @@ namespace StreamerBotLib.Systems
 
         public static void StreamOffline(DateTime Stopped)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Received notice event the channel livestream is offline.");
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Clearing user list with stream end time, to end watchtime & currency accrual.");
+            LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Received notice event the channel livestream is offline.");
+            LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Clearing user list with stream end time, to end watchtime & currency accrual.");
 
             ClearUserList(Stopped);
 
@@ -216,17 +214,17 @@ namespace StreamerBotLib.Systems
             CurrStream.VIPsPresent = VIPUsers.Count;
             CurrStream.SubsPresent = SubUsers.Count;
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Gathering user stats from the recent livestream.");
+            LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Gathering user stats from the recent livestream.");
 
             // setting if user wants to save Stream Stat data
             if (OptionFlags.ManageStreamStats)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Posting the final livestream stats.");
+                LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Posting the final livestream stats.");
 
                 DataManage.PostStreamStat(CurrStream);
             }
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Wrap up clearing the stream stats.");
+            LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Wrap up clearing the stream stats.");
 
             ClearStreamStatState();
         }
@@ -236,7 +234,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         private static void ClearStreamStatState()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Clear all of the stream data lists.");
+            LogWriter.DebugLog("ClearStreamStatState", DebugLogTypes.StatSystem, "Clear all of the stream data lists.");
 
             CurrStream.Clear();
             ModUsers.Clear();
@@ -395,24 +393,24 @@ namespace StreamerBotLib.Systems
         /// <returns><code>-1</code>: if no update, <code>int value</code>: if counter updated</returns>
         internal int AddDeathCounter()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Received request to update death counter.");
+            LogWriter.DebugLog("AddDeathCounter", DebugLogTypes.StatSystem, "Received request to update death counter.");
 
             int result = -1;
             if (!UpdateDeathCounter)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Starting a check to prevent multiple death counter updates.");
+                LogWriter.DebugLog("AddDeathCounter", DebugLogTypes.StatSystem, "Starting a check to prevent multiple death counter updates.");
 
                 UpdateDeathCounter = true;
                 result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category));
 
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("AddDeathCounter", () =>
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Waiting for 30 seconds to prevent another death counter update.");
+                    LogWriter.DebugLog("AddDeathCounter", DebugLogTypes.StatSystem, "Waiting for 30 seconds to prevent another death counter update.");
 
                     Thread.Sleep(30 * 1000); // wait 30 seconds
                     UpdateDeathCounter = false; // reset flag for next update
 
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, "Finished the 30 seconds. Ready to accept another death counter update.");
+                    LogWriter.DebugLog("AddDeathCounter", DebugLogTypes.StatSystem, "Finished the 30 seconds. Ready to accept another death counter update.");
                 });
             }
 
@@ -427,7 +425,7 @@ namespace StreamerBotLib.Systems
         /// <returns>Current value of the counter after reset.</returns>
         internal static int ResetDeathCounter(int Counter)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.StatSystem, $"Request to update the current {Category} death counter to {Counter}.");
+            LogWriter.DebugLog("ResetDeathCounter", DebugLogTypes.StatSystem, $"Request to update the current {Category} death counter to {Counter}.");
 
             return DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category), true, Counter);
         }

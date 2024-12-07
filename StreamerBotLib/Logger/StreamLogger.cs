@@ -6,11 +6,11 @@ namespace StreamerBotLib.Logger
 {
     internal class StreamLogger(string name, Func<StreamLoggerConfiguration> getCurrentConfig) : ILogger
     {
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => default!;
+        public IDisposable BeginScope<TState>(TState state) where TState : notnull => default!;
 
         public event EventHandler<OnWriteLineEventArgs> OnWriteLine;
 
-        public bool IsEnabled(LogLevel logLevel) => true; // getCurrentConfig().LogLevelEnabled.ContainsKey(logLevel);
+        public bool IsEnabled(LogLevel logLevel) => getCurrentConfig().LogLevelEnabled.ContainsKey(logLevel);
 
         public void Log<TState>(LogLevel logLevel,
                                 EventId eventId,

@@ -3,36 +3,28 @@ using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System.Reflection;
-
 namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem
     {
-        private List<Tuple<string, Task, DateTime>> RequestApprovalList = new();
+        private readonly List<Tuple<string, Task, DateTime>> RequestApprovalList = [];
 
-        private List<string> describe = new();
+        private readonly List<string> describe = [];
 
         #region Auto-Mod Messages
-        public void ManageLearnedMsgList()
+        public static void ManageLearnedMsgList()
         {
             lock (GUI.GUIDataManagerLock.Lock)
             {
                 List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
                 if (learnMsgsRows != null)
                 {
-                    List<BotModAction> botModActions = new();
-
-                    foreach (LearnMsgRecord M in learnMsgsRows)
-                    {
-                        botModActions.Add(new()
-                        {
-                            LearnMsg = M.TeachingMsg,
-                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
-                        });
-                    }
-
-                    MessageAnalysis.UpdateLearningList(botModActions);
+                    MessageAnalysis.UpdateLearningList((from LearnMsgRecord M in learnMsgsRows
+                                                        select new BotModAction()
+                                                        {
+                                                            LearnMsg = M.TeachingMsg,
+                                                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
+                                                        }).ToList());
                 }
             }
         }
@@ -75,7 +67,7 @@ namespace StreamerBotLib.Systems
 
             if (ItemCount)
             {
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => { MonitorApprovals(); });
+                ThreadManager.CreateThreadStart("AddApprovalRequest", () => { MonitorApprovals(); });
             }
         }
 
@@ -144,7 +136,7 @@ namespace StreamerBotLib.Systems
             while (RequestApprovalList.Count > 0)
             {
                 DateTime Expiry = DateTime.Now;
-                List<Tuple<string, Task, DateTime>> toRemove = new();
+                List<Tuple<string, Task, DateTime>> toRemove = [];
 
                 lock (RequestApprovalList)
                 {

@@ -7,7 +7,6 @@ using StreamerBotLib.Static;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
-using System.Reflection;
 
 namespace StreamerBotLib.Overlay.Server
 {
@@ -104,7 +103,7 @@ namespace StreamerBotLib.Overlay.Server
 
             if (!ServerAlertThreadStarted)
             {
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("StartServer", () =>
                 {
                     HTTPListenServer.Start();
                     ProcessPages = new(() => ServerSendAlerts());
@@ -126,7 +125,7 @@ namespace StreamerBotLib.Overlay.Server
                 lock (OverlayPages)
                 {
                     OverlayPages.Add(overlayPage);
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Overlay alert, {overlayPage.OverlayType}, added and awaiting to be served.");
+                    LogWriter.DebugLog("SendAlert", DebugLogTypes.OverlayBot, $"http server - Overlay alert, {overlayPage.OverlayType}, added and awaiting to be served.");
                 }
             }
         }
@@ -184,7 +183,7 @@ namespace StreamerBotLib.Overlay.Server
                         HttpListenerResponse response = context.Response;
                         // Construct a response.
 
-                        //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - received request, {request.RawUrl}");
+                        //LogWriter.DebugLog("ResponseListen", DebugLogTypes.OverlayBot, $"http server - received request, {request.RawUrl}");
 
                         byte[] buffer;
 
@@ -262,7 +261,7 @@ namespace StreamerBotLib.Overlay.Server
                         Stream output = response.OutputStream;
                         output.Write(buffer, 0, buffer.Length);
 
-                        //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - finished sending request.");
+                        //LogWriter.DebugLog("ResponseListen", DebugLogTypes.OverlayBot, $"http server - finished sending request.");
 
                         // must close the output stream.
                         output.Close();
@@ -286,8 +285,8 @@ namespace StreamerBotLib.Overlay.Server
                     {
                         ResponseCount++; // increase count for active listeners
                     }
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ResponseListen.Invoke());
-                    //LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Adding more http server listening threads, now {ResponseCount}.");
+                    ThreadManager.CreateThreadStart("ResponseListen", () => ResponseListen.Invoke());
+                    //LogWriter.DebugLog("ServerSendAlerts", DebugLogTypes.OverlayBot, $"http server - Adding more http server listening threads, now {ResponseCount}.");
                 }
                 Thread.Sleep(200);
             }
@@ -300,7 +299,7 @@ namespace StreamerBotLib.Overlay.Server
         {
             if (ServerStarted)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"http server - Overlay http server stopping.");
+                LogWriter.DebugLog("StopServer", DebugLogTypes.OverlayBot, $"http server - Overlay http server stopping.");
 
                 HTTPListenServer.Stop();
                 ProcessPages.Wait();

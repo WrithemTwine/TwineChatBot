@@ -6,7 +6,7 @@ namespace StreamerBotLib.DataSQL
     {
         public SQLDBContext CreateDbContext()
         {
-            SQLDBContext dbContext = new SQLDBContext();
+            SQLDBContext dbContext = new();
             dbContext.Database.EnsureCreated();
             return dbContext;
         }

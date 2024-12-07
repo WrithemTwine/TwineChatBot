@@ -5,18 +5,16 @@ using StreamerBotLib.MLearning.Accord.KNN;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System.Reflection;
-
 namespace StreamerBotLib.MLearning
 {
     public static class MessageAnalysis
     {
-        private static List<BotModAction> ModActions { get; set; } = new();
-        private static List<string> StopWords { get; set; } = new();
-        private static List<string> Punctuation { get; } = new() { "!", "­¡", "?", "¿", "(", ")", "[", "]", "{", "}", "+", "-", "*", "/", "\"", "<", ">", "'", ":", ";", "&", "|", "@", "#", "$", "%", "^", "~", "`", "_", "\\" };
+        private static List<BotModAction> ModActions { get; set; } = [];
+        private static List<string> StopWords { get; set; } = [];
+        private static List<string> Punctuation { get; } = ["!", "­¡", "?", "¿", "(", ")", "[", "]", "{", "}", "+", "-", "*", "/", "\"", "<", ">", "'", ":", ";", "&", "|", "@", "#", "$", "%", "^", "~", "`", "_", "\\"];
 
-        private static List<string> PreppedInputs { get; set; } = new();
-        private static List<int> PreppedOutputs { get; set; } = new();
+        private static List<string> PreppedInputs { get; set; } = [];
+        private static List<int> PreppedOutputs { get; set; } = [];
 
         static MessageAnalysis()
         {
@@ -943,7 +941,7 @@ zero
 #if UPDATELEARN
             KNearest = new(k: 3, distance: new Levenshtein());
 
-            KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
+            KNearest.Learn([.. PreppedInputs], PreppedOutputs.ToArray());
 #endif
         }
 
@@ -964,7 +962,7 @@ zero
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "Predict");
 
                 return MsgTypes.LearnMore;
             }

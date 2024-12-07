@@ -2,9 +2,8 @@
 
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
 using StreamerBotLib.Events;
+using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
-
-using System.Reflection;
 
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
@@ -22,6 +21,9 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchStreamerEventSubBotScopes : TwitchBotsBase
     {
+        private IEventSubMessageIdsLogger eventSubMessageIdsLogger;
+        private TwitchTokenBot tokenBot;
+
         private readonly EventSubWebsocketClient _eventSubWebsocketClient;
 
         /// <summary>
@@ -48,9 +50,12 @@ namespace StreamerBotLib.BotClients.Twitch
         public event EventHandler OnChannelChatMessageStopping;
         public event EventHandler OnChannelChatMessageStopped;
 
-        public TwitchStreamerEventSubBotScopes(ILoggerFactory loggerFactory)
+        internal TwitchStreamerEventSubBotScopes(ILoggerFactory loggerFactory,
+            IEventSubMessageIdsLogger messageIdsLogger, TwitchTokenBot TokenBot)
         {
             BotClientName = Enums.Bots.TwitchStreamerEventSubScopes;
+            tokenBot = TokenBot;
+            eventSubMessageIdsLogger = messageIdsLogger;
 
             _eventSubWebsocketClient = new(loggerFactory);
 
@@ -72,101 +77,115 @@ namespace StreamerBotLib.BotClients.Twitch
         #region Subscription Events
         private Task ChannelPointsCustomRewardRedemptionAdd(object sender, ChannelPointsCustomRewardRedemptionArgs args)
         {
-            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            return Task.Run(() =>
             {
-                return
-                m.MessageId == args.Notification.Metadata.MessageId &&
-                m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
-            }))
-            {
-                NewChannelCustomRewardRedemption?.Invoke(this, new(args.Notification.Payload.Event));
-            }
-            return new Task(() => { });
+                if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                {
+                    return
+                    m.MessageId == args.Notification.Metadata.MessageId &&
+                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                }))
+                {
+                    NewChannelCustomRewardRedemption?.Invoke(this, new(args.Notification.Payload.Event));
+                }
+            });
         }
 
         private Task ChannelSubscriptionMessage(object sender, ChannelSubscriptionMessageArgs args)
         {
-            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            return Task.Run(() =>
             {
-                return
-                m.MessageId == args.Notification.Metadata.MessageId &&
-                m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
-            }))
-            {
-                NewChannelSubscriptionMessage?.Invoke(this, new(args.Notification.Payload.Event));
-            }
-            return new Task(() => { });
+                if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                {
+                    return
+                    m.MessageId == args.Notification.Metadata.MessageId &&
+                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                }))
+                {
+                    NewChannelSubscriptionMessage?.Invoke(this, new(args.Notification.Payload.Event));
+                }
+            });
         }
 
         private Task ChannelSubscribe(object sender, ChannelSubscribeArgs args)
         {
-            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            return Task.Run(() =>
+            {
+                if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
             {
                 return
                 m.MessageId == args.Notification.Metadata.MessageId &&
                 m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
             }))
-            {
-                NewChannelSubscribe?.Invoke(this, new(args.Notification.Payload.Event));
-            }
-            return new Task(() => { });
+                {
+                    NewChannelSubscribe?.Invoke(this, new(args.Notification.Payload.Event));
+                }
+            });
         }
 
         private Task ChannelSubscriptionGift(object sender, ChannelSubscriptionGiftArgs args)
         {
-            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            return Task.Run(() =>
             {
-                return
-                m.MessageId == args.Notification.Metadata.MessageId &&
-                m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
-            }))
-            {
-                NewChannelSubscriptionGift?.Invoke(this, new(args.Notification.Payload.Event));
-            }
-            return new Task(() => { });
+                if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+             {
+                 return
+                 m.MessageId == args.Notification.Metadata.MessageId &&
+                 m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+             }))
+                {
+                    NewChannelSubscriptionGift?.Invoke(this, new(args.Notification.Payload.Event));
+                }
+            });
         }
 
         private Task ChannelCheer(object sender, ChannelCheerArgs args)
         {
-            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            return Task.Run(() =>
+            {
+                if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
             {
                 return
                 m.MessageId == args.Notification.Metadata.MessageId &&
                 m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
             }))
-            {
-                NewChannelCheer?.Invoke(this, new(args.Notification.Payload.Event));
-            }
-            return new Task(() => { });
+                {
+                    NewChannelCheer?.Invoke(this, new(args.Notification.Payload.Event));
+                }
+            });
         }
 
         private Task ChannelFollow(object sender, ChannelFollowArgs args)
         {
-            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            return Task.Run(() =>
             {
-                return
-                m.MessageId == args.Notification.Metadata.MessageId &&
-                m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
-            }))
-            {
-                NewChannelFollow?.Invoke(this, new(args.Notification.Payload.Event));
-            }
-            return new Task(() => { });
+                if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+             {
+                 return
+                 m.MessageId == args.Notification.Metadata.MessageId &&
+                 m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+             }))
+                {
+                    NewChannelFollow?.Invoke(this, new(args.Notification.Payload.Event));
+                }
+            });
         }
 
         private Task OnChannelChatMessage(object sender, ChannelChatMessageArgs args)
         {
-            if (MessageIdLog.UniqueAdd(args.Notification.Metadata, (m) =>
+            return Task.Run(() =>
             {
-                return
-                m.MessageId == args.Notification.Metadata.MessageId &&
-                m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
-            }))
-            {
-                ChannelChatMessage msg = args.Notification.Payload.Event;
-                OnChannelChatMessageReceived?.Invoke(this, new(msg));
-            }
-            return new Task(() => { });
+                if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+             {
+                 return
+                 m.MessageId == args.Notification.Metadata.MessageId &&
+                 m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+             }))
+                {
+                    ChannelChatMessage msg = args.Notification.Payload.Event;
+                    OnChannelChatMessageReceived?.Invoke(this, new(msg));
+                }
+            });
         }
 
         #region Edit Subscriptions
@@ -175,13 +194,13 @@ namespace StreamerBotLib.BotClients.Twitch
             /*
             //void CreateSubAction()
             //{
-            //    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
+            //    LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
             //    if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
             //    {
-            //        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+            //        LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
             //        var SubResponse = tokenBot.StreamerHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
             //        SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
-            //        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
+            //        LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
 
             //        SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
             //    }
@@ -192,30 +211,30 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 //CreateSubAction();
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
+                LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
                 if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
                     var SubResponse = tokenBot.StreamerHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
                     SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
 
                     SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
                 }
             }
             catch (BadTokenException ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "CreateEventSubSubscription");
                 tokenBot.CheckToken();
                 //CreateSubAction();
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
+                LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
                 if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
                     var SubResponse = tokenBot.StreamerHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
                     SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
 
                     SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
                 }
@@ -232,53 +251,49 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         SubscriptionIdKeys.Remove(key);
                     }
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name,
+                    LogWriter.DebugLog("DeleteEventSubSubscription",
                        Enums.DebugLogTypes.TwitchStreamerEventSubBot,
                        $"Deleted the {key} subscription.");
                 }
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "DeleteEventSubSubscription");
             }
         }
 
         #endregion
         #endregion
 
-        public override void StartBot()
+        public override Task StartBot()
         {
-            try
+            return Task.Run(async () =>
             {
-                if (IsActive == null || IsActive == false)
+                try
                 {
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                    if (IsActive == null || IsActive == false)
                     {
-                        StartAsync(new());
-                        InvokeBotStarted();
-                    });
-                    IsActive = true;
-                    MsgLogging |= IsActive == true;
-                    MsgLogCleanup();
+                        await StartAsync(new());
+                    }
                 }
-            }
-            catch (BadScopeException ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                tokenBot.CheckToken();
-                InvokeBotFailedStart();
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket failed to start.");
-            }
+                catch (BadScopeException ex)
+                {
+                    LogWriter.LogException(ex, "StartBot");
+                    tokenBot.CheckToken();
+                    InvokeBotFailedStart();
+                    LogWriter.DebugLog("StartBot", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket failed to start.");
+                }
+            });
         }
 
-        public void StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _eventSubWebsocketClient.ConnectAsync();
+            await _eventSubWebsocketClient.ConnectAsync();
         }
 
         private void StartServices()
         {
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            ThreadManager.CreateThreadStart("StartServices", () =>
             {
                 CreateEventSubSubscription(new ChannelPointsCustomRewardRedemptionAddHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new ChannelSubscriptionMessageHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
@@ -295,15 +310,15 @@ namespace StreamerBotLib.BotClients.Twitch
             });
         }
 
-        public override void StopBot()
+        public override Task StopBot()
         {
-            try
+            return Task.Run(async () =>
             {
-                if (IsActive == true)
+                try
                 {
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                    if (IsActive == true)
                     {
-                        StopAsync(new());
+                        await StopAsync(new());
                         if (!OptionFlags.TwitchStreamerUseToken)
                         {
                             OnChannelChatMessageStopping?.Invoke(this, new());
@@ -321,65 +336,78 @@ namespace StreamerBotLib.BotClients.Twitch
                             OnChannelChatMessageStopped?.Invoke(this, new());
                         }
 
-                    });
-                    IsActive = false;
-                    InvokeBotStopped();
+                        IsActive = false;
+                        InvokeBotStopped();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket failed to stop.");
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, "StopBot");
+                    LogWriter.DebugLog("StopBot", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket failed to stop.");
 
-            }
+                }
+            });
         }
 
-        public void StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _eventSubWebsocketClient.DisconnectAsync();
+            await _eventSubWebsocketClient.DisconnectAsync();
         }
 
         private Task OnErrorOccurred(object sender, ErrorOccuredArgs args)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} encountered an error:\r\n" +
-            $"Exception: {args.Exception}\r\n" +
-            $"Message: {args.Message}");
-            return new Task(() => { });
+            return Task.Run(() =>
+            {
+                LogWriter.DebugLog("OnErrorOccurred", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} encountered an error:\r\n" +
+             $"Exception: {args.Exception}\r\n" +
+             $"Message: {args.Message}");
+            });
         }
 
         private Task OnWebsocketReconnected(object sender, EventArgs args)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} reconnected!");
-            return new Task(() => { });
+            return Task.Run(() =>
+            {
+                LogWriter.DebugLog("OnWebsocketReconnected", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} reconnected!");
+            });
         }
 
         private Task OnWebsocketDisconnected(object sender, EventArgs args)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} disconnected.");
-
-            if (IsActive == true)
+            return Task.Run(async () =>
             {
-                Thread.Sleep(1000);
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                LogWriter.DebugLog("OnWebsocketDisconnected", Enums.DebugLogTypes.TwitchStreamerEventSubBot, $"Websocket session {_eventSubWebsocketClient.SessionId} disconnected.");
+
+                if (IsActive == true)
                 {
-                    StartAsync(new());
-                });
-            }
-            else
-            {
-                StopBot();
-            }
+                    Thread.Sleep(1000);
+                    await StartAsync(new());
+                }
+                else
+                {
+                    await StopBot();
+                }
 
-            return new Task(() => { });
+            });
         }
 
         private Task OnWebsocketConnected(object sender, WebsocketConnectedArgs args)
         {
-            if (!args.IsRequestedReconnect)
+            return Task.Run(() =>
             {
-                StartServices();
-            }
-            return new Task(() => { });
+                if (!args.IsRequestedReconnect)
+                {
+                    StartServices();
+                }
+
+                if (IsActive != true)
+                {
+                    IsActive = true;
+                    InvokeBotStarted();
+                    eventSubMessageIdsLogger.MsgLogging |= IsActive == true;
+                    eventSubMessageIdsLogger.MsgLogCleanup();
+                }
+            });
         }
 
     }

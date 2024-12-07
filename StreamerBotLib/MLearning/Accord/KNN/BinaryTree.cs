@@ -77,7 +77,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 yield break;
             }
 
-            var stack = new Stack<TNode>(new[] { Root });
+            var stack = new Stack<TNode>([Root]);
 
             while (stack.Count != 0)
             {
@@ -102,7 +102,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         ///   method</see>. Can be iterated with a foreach loop.
         /// </summary>
         /// 
-        /// <param name="method">The tree traversal method. Common methods are
+        /// <param name="Traverse">The tree traversal method. Common methods are
         /// available in the <see cref="TreeTraversal"/>static class.</param>
         /// 
         /// <returns>An <see cref="IEnumerable{T}"/> object which can be used to
@@ -129,16 +129,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
 
 
-        private class BinaryTreeTraversal : IEnumerable<TNode>
+        private class BinaryTreeTraversal(BinaryTree<TNode> tree, BinaryTraversalMethod<TNode> method) : IEnumerable<TNode>
         {
-            private BinaryTree<TNode> tree;
-            private BinaryTraversalMethod<TNode> method;
-
-            public BinaryTreeTraversal(BinaryTree<TNode> tree, BinaryTraversalMethod<TNode> method)
-            {
-                this.tree = tree;
-                this.method = method;
-            }
+            private readonly BinaryTree<TNode> tree = tree;
+            private readonly BinaryTraversalMethod<TNode> method = method;
 
             public IEnumerator<TNode> GetEnumerator()
             {

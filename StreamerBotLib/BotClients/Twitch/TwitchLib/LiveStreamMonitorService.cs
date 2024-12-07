@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Static;
 
-using System.Reflection;
-
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Interfaces;
@@ -82,7 +80,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "OnServiceTimerTick");
             }
         }
 
@@ -112,7 +110,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         private void HandleLiveStreamUpdate(string channel, Stream liveStream, bool callEvents)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchMultiLiveBot, $"Performing stream update.");
+            LogWriter.DebugLog("HandleLiveStreamUpdate", Enums.DebugLogTypes.TwitchMultiLiveBot, $"Performing stream update.");
 
             var wasAlreadyLive = LiveStreams.ContainsKey(channel);
 

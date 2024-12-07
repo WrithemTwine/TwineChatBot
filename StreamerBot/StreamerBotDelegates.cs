@@ -11,21 +11,16 @@ namespace StreamerBot
         internal delegate void BotOperation();
         #endregion
 
-        internal void DispatchStartBot(IIOModule sender)
+        internal async void DispatchStartBotAsync(IIOModule sender)
         {
-            Dispatcher.BeginInvoke(new BotOperation(() =>
-            {
-                sender?.StartBot();
-            }));
+            await sender?.StartBot();
         }
 
-        internal void DispatchStopBot(IIOModule sender)
+        internal async void DispatchStopBot(IIOModule sender)
         {
-            Dispatcher.BeginInvoke(new BotOperation(() =>
-            {
-                sender?.StopBot();
-            }));
+            await sender?.StopBot();
         }
+
 
     }
 }

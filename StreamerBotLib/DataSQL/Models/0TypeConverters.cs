@@ -49,6 +49,7 @@ namespace StreamerBotLib.DataSQL.Models
                      "Int64" => (long)value,
                      "long" => ((long)value),
                      "Int128" => (Int128)value,
+                     _ => throw new NotImplementedException(),
                  }).ToString("#,0", culture);
         }
 

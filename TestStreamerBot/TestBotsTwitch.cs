@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.BotClients;
-using StreamerBotLib.Static;
+﻿using StreamerBotLib.Static;
 
 namespace TestStreamerBot
 {
@@ -9,8 +8,6 @@ namespace TestStreamerBot
         private const string BotUserName = "";
         private const string ClientId = "";
         private const string AccessToken = "";
-
-        private BotsTwitch TwitchBot { get; set; } = new();
 
         private void Initialize()
         {

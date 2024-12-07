@@ -65,7 +65,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 yield break;
             }
 
-            var queue = new Queue<TNode>(new[] { tree.Root });
+            var queue = new Queue<TNode>([tree.Root]);
 
             while (queue.Count != 0)
             {
@@ -164,7 +164,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 yield break;
             }
 
-            var stack = new Stack<TNode>(new[] { tree.Root });
+            var stack = new Stack<TNode>([tree.Root]);
 
             TNode previous = tree.Root;
 

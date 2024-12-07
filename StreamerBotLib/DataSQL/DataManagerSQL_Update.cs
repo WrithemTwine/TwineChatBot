@@ -19,7 +19,8 @@ namespace StreamerBotLib.DataSQL
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 foreach (string U in Users)
                 {
-                    UpdateCurrency((from user in context.Users where user.UserName == U select user).FirstOrDefault(), dateTime, context);
+                    var CurrUser = (from user in context.Users where user.UserName == U select user).FirstOrDefault();
+                    UpdateCurrency(ref CurrUser, dateTime);
                 }
 
                 if (Refcontext == null)
@@ -31,7 +32,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        private void UpdateCurrency(Users User, DateTime CurrTime, SQLDBContext Refcontext = null)
+        private void UpdateCurrency(ref Users User, DateTime CurrTime)
         {
             lock (GUIDataManagerLock.Lock)
             {

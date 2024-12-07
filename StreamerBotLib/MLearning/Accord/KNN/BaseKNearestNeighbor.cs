@@ -50,7 +50,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         private TDistance distance;
 
         [NonSerialized]
-        private CancellationToken token = new CancellationToken();
+        private CancellationToken token = new();
 
 
 
@@ -88,7 +88,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentOutOfRangeException("value",
+                    throw new ArgumentOutOfRangeException(nameof(value),
                         "The value for k should be greater than zero and less than total number of input points.");
                 }
 
@@ -217,39 +217,29 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
 
 
-        internal static void CheckArgs(int k, TInput[] inputs, int[] outputs, IDistance<TInput> distance, double[] weights)
+        internal static void CheckArgs(int k, TInput[] inputs, int[] outputs, IDistance<TInput> distance)
         {
-            if (inputs == null)
-            {
-                throw new ArgumentNullException("inputs");
-            }
+            ArgumentNullException.ThrowIfNull(inputs);
 
-            if (outputs == null)
-            {
-                throw new ArgumentNullException("inputs");
-            }
+            ArgumentNullException.ThrowIfNull(outputs);
 
             if (inputs.Length != outputs.Length)
             {
-                throw new DimensionMismatchException("outputs",
+                throw new DimensionMismatchException(nameof(outputs),
                     "The number of input vectors should match the number of corresponding output labels");
             }
 
             if (k <= 0 || k > inputs.Length)
             {
-                throw new ArgumentOutOfRangeException("k", "The value for k should be greater than zero and less than total number of input points.");
+                throw new ArgumentOutOfRangeException(nameof(k), "The value for k should be greater than zero and less than total number of input points.");
             }
 
-            if (distance == null)
-            {
-                throw new ArgumentNullException("distance");
-            }
+            ArgumentNullException.ThrowIfNull(distance);
         }
 
-        internal int GetNumberOfInputs(TInput[] x)
+        internal static int GetNumberOfInputs(TInput[] x)
         {
-            var first = x[0] as IList;
-            if (first == null)
+            if (x[0] is not IList first)
             {
                 return 0;
             }
@@ -258,8 +248,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
             for (int i = 0; i < x.Length; i++)
             {
-                IList l = x[i] as IList;
-                if (l == null || l.Count != length)
+                if (x[i] is not IList l || l.Count != length)
                 {
                     return 0;
                 }

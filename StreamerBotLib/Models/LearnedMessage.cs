@@ -9,13 +9,8 @@ namespace StreamerBotLib.Models
 
         public static List<LearnedMessage> BuildList(string[] Msgs, MsgTypes msgType)
         {
-            List<LearnedMessage> output = new();
-            foreach (string M in Msgs)
-            {
-                output.Add(new(M, msgType));
-            }
-
-            return output;
+            return (from string M in Msgs
+                    select new LearnedMessage(M, msgType)).ToList();
         }
     }
 }

@@ -41,5 +41,15 @@
         {
             return LiveUser.Equals(other.LiveUser);
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ManageStreamViewer);
+        }
+
+        public override int GetHashCode()
+        {
+            return LiveUser.GetHashCode();
+        }
     }
 }

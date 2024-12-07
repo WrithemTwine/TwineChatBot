@@ -2,7 +2,6 @@
 using StreamerBotLib.Events;
 using StreamerBotLib.Static;
 
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -59,7 +58,7 @@ namespace StreamerBot
             }
             catch (ThreadInterruptedException ex) // will always throw exception when exiting during a Sleep
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "ProcessWatcher");
             }
         }
 
@@ -100,7 +99,7 @@ namespace StreamerBot
         #region GUIAppStats
         private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
         {
-            ThreadManager.AddTaskToGUIDispatcher(new Task(() =>
+            ThreadManager.AddTaskToGUIDispatcher(() =>
             {
                 _ = new BotOperation(() =>
                 {
@@ -108,16 +107,16 @@ namespace StreamerBot
                     guiAppStats.ClosedThreads.UpdateValue(e.ClosedThreadCount);
                 });
             }
-            ));
+            );
         }
 
         private void UpdateAppTime()
         {
-            ThreadManager.AddTaskToGUIDispatcher(new Task(() =>
+            ThreadManager.AddTaskToGUIDispatcher(() =>
             {
                 _ = new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); });
             }
-            ));
+            );
         }
 
         #endregion
@@ -149,7 +148,7 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Notification the bot tokens are now expired.");
+            LogWriter.DebugLog("BotWindow_NotifyExpiredCredentials", DebugLogTypes.GUIEvents, "Notification the bot tokens are now expired.");
 
             List<RadioButton> BotOps =
             [
@@ -166,7 +165,7 @@ namespace StreamerBot
                     HelperStopBot(button);
                 }
 
-                TwitchCheckFocus();
+                TwitchCheckFocusAsync();
             });
         }
 

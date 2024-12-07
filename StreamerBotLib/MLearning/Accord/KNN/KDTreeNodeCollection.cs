@@ -70,8 +70,8 @@ namespace StreamerBotLib.MLearning.Accord.KNN
     public class KDTreeNodeCollection<TNode> : ICollection<NodeDistance<TNode>>
         where TNode : KDTreeNodeBase<TNode>, IComparable<TNode>, IEquatable<TNode>
     {
-        double[] distances;
-        TNode[] positions;
+        readonly double[] distances;
+        readonly TNode[] positions;
 
         int count;
 
@@ -173,10 +173,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// 
         public KDTreeNodeCollection(int size)
         {
-            if (size <= 0)
-            {
-                throw new ArgumentOutOfRangeException("size");
-            }
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
 
             Capacity = size;
             distances = new double[size];
@@ -205,7 +202,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 // The list still has room for new elements. 
                 // Just add the value at the right position.
 
-                add(distance, value);
+                Add(distance, value);
 
                 return true; // a value has been added
             }
@@ -221,7 +218,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 RemoveFarthest();
 
-                add(distance, value);
+                Add(distance, value);
 
                 return true; // a value has been added
             }
@@ -252,7 +249,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 // The list still has room for new elements. 
                 // Just add the value at the right position.
 
-                add(distance, value);
+                Add(distance, value);
 
                 return true; // a value has been added
             }
@@ -268,7 +265,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 RemoveNearest();
 
-                add(distance, value);
+                Add(distance, value);
 
                 return true; // a value has been added
             }
@@ -284,14 +281,14 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         /// <param name="distance">The distance from the node to the query point.</param>
         /// <param name="item">The item to be added.</param>
         /// 
-        private void add(double distance, TNode item)
+        private void Add(double distance, TNode item)
         {
             positions[count] = item;
             distances[count] = distance;
             count++;
 
             // Ensure it is in the right place.
-            siftUpLast();
+            SiftUpLast();
         }
 
 
@@ -466,7 +463,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             positions[1] = positions[count];
             distances[1] = distances[count];
             positions[count] = null;
-            siftDownMax(1);
+            SiftDownMax(1);
         }
 
         /// <summary>
@@ -486,11 +483,11 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             positions[0] = positions[count];
             distances[0] = distances[count];
             positions[count] = null;
-            siftDownMin(0);
+            SiftDownMin(0);
         }
 
 
-        private void siftUpLast()
+        private void SiftUpLast()
         {
             // Work out where the element was inserted.
             int u = count - 1;
@@ -507,7 +504,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 // Swap if less than paired item.
                 if (distances[u] < distances[u - 1])
                 {
-                    swap(u, u - 1);
+                    Swap(u, u - 1);
                 }
             }
 
@@ -521,14 +518,14 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 if (distances[u] < distances[u - 1])
                 {
                     // Swap with it's pair
-                    u = swap(u, u - 1);
+                    u = Swap(u, u - 1);
 
                     // If smaller than smaller parent pair
                     if (distances[u] < distances[p - 1])
                     {
                         // Swap into min-heap side
-                        u = swap(u, p - 1);
-                        siftUpMin(u);
+                        u = Swap(u, p - 1);
+                        SiftUpMin(u);
                     }
                 }
                 else
@@ -537,8 +534,8 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                     if (distances[u] > distances[p])
                     {
                         // Swap into max-heap side
-                        u = swap(u, p);
-                        siftUpMax(u);
+                        u = Swap(u, p);
+                        SiftUpMax(u);
                     }
                 }
             }
@@ -551,39 +548,39 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 if (distances[u] > distances[p])
                 {
                     // Swap into max-heap side
-                    u = swap(u, p);
-                    siftUpMax(u);
+                    u = Swap(u, p);
+                    SiftUpMax(u);
                 }
 
                 // else if smaller than smaller parent pair
                 else if (distances[u] < distances[p - 1])
                 {
                     // Swap into min-heap side
-                    u = swap(u, p - 1);
-                    siftUpMin(u);
+                    u = Swap(u, p - 1);
+                    SiftUpMin(u);
                 }
             }
         }
 
-        private void siftUpMin(int c)
+        private void SiftUpMin(int c)
         {
             // Min-side parent: (x/2-1)&~1
             for (int p = c / 2 - 1 & ~1; p >= 0 && distances[c] < distances[p]; c = p, p = c / 2 - 1 & ~1)
             {
-                swap(c, p);
+                Swap(c, p);
             }
         }
 
-        private void siftUpMax(int c)
+        private void SiftUpMax(int c)
         {
             // Max-side parent: (x/2-1)|1
             for (int p = c / 2 - 1 | 1; p >= 0 && distances[c] > distances[p]; c = p, p = c / 2 - 1 | 1)
             {
-                swap(c, p);
+                Swap(c, p);
             }
         }
 
-        private void siftDownMin(int p)
+        private void SiftDownMin(int p)
         {
             // For each child of the parent.
             for (int c = p * 2 + 2; c < count; p = c, c = p * 2 + 2)
@@ -597,12 +594,12 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 // If it is less than our parent swap.
                 if (distances[c] < distances[p])
                 {
-                    swap(p, c);
+                    Swap(p, c);
 
                     // Swap the pair if necessary.
                     if (c + 1 < count && distances[c + 1] < distances[c])
                     {
-                        swap(c, c + 1);
+                        Swap(c, c + 1);
                     }
                 }
                 else
@@ -612,7 +609,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             }
         }
 
-        private void siftDownMax(int p)
+        private void SiftDownMax(int p)
         {
             // For each child on the max side of the tree.
             for (int c = p * 2 + 1; c <= count; p = c, c = p * 2 + 1)
@@ -623,7 +620,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                     // Check if we need to swap with th parent.
                     if (distances[c - 1] > distances[p])
                     {
-                        swap(p, c - 1);
+                        Swap(p, c - 1);
                     }
 
                     break;
@@ -638,7 +635,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                         // Swap with the parent.
                         if (distances[c + 1] > distances[p])
                         {
-                            swap(p, c + 1);
+                            Swap(p, c + 1);
                         }
 
                         break;
@@ -656,11 +653,11 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 if (distances[c] > distances[p])
                 {
-                    swap(p, c);
+                    Swap(p, c);
                     // Swap with pair if necessary
                     if (distances[c - 1] > distances[c])
                     {
-                        swap(c, c - 1);
+                        Swap(c, c - 1);
                     }
                 }
                 else
@@ -670,7 +667,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             }
         }
 
-        private int swap(int x, int y)
+        private int Swap(int x, int y)
         {
             // Store temp.
             var node = positions[y];

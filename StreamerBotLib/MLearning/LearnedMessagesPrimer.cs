@@ -6,7 +6,7 @@ namespace StreamerBotLib.MLearning
 {
     public class LearnedMessagesPrimer
     {
-        private static string[] SpamBotMsgs =
+        private static readonly string[] SpamBotMsgs =
         [
             "Best followers, primes and viewers on mountviewers.com(remove the space)",
             "Wanna become famous? Buy followers, primes and views on bigfollows .com",

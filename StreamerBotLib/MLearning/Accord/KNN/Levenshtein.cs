@@ -71,7 +71,7 @@
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(string x, string y)
+        public readonly double Distance(string x, string y)
         {
             if (x == null || x.Length == 0)
             {
@@ -123,7 +123,7 @@
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
-        public object Clone()
+        public readonly object Clone()
         {
             return new Levenshtein();
         }

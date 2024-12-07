@@ -2,8 +2,7 @@
 
 namespace SimpleTestFeature.Exceptions
 {
-    internal class UnauthorizedException : Exception
+    internal class UnauthorizedException(string message) : Exception(message)
     {
-        public UnauthorizedException(string message) : base(message) { }
     }
 }

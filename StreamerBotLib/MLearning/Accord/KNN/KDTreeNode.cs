@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace StreamerBotLib.MLearning.Accord.KNN
+﻿namespace StreamerBotLib.MLearning.Accord.KNN
 {
     // Accord Machine Learning Library
     // The Accord.NET Framework
@@ -98,19 +96,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 return "(null)";
             }
 
-            StringBuilder sb = new StringBuilder();
-            sb.Append("(");
-            for (int i = 0; i < Position.Length; i++)
-            {
-                sb.Append(Position[i]);
-                if (i < Position.Length - 1)
-                {
-                    sb.Append(",");
-                }
-            }
-            sb.Append(")");
-
-            return sb.ToString();
+            return $"({string.Join(',', Position)})";
         }
 
         /// <summary>

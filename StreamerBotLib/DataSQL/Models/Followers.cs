@@ -3,6 +3,7 @@
 using StreamerBotLib.Enums;
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
@@ -37,7 +38,9 @@ namespace StreamerBotLib.DataSQL.Models
         public string Category { get; set; } = category;
         public DateTime AddDate { get; set; } = addDate;
 
+        [AllowNull]
         public Users? User { get; set; }
+        [AllowNull]
         public CategoryList? CategoryList { get; set; }
 
         //public ICollection<OldFollowUsers> OldFollowUsers { get; } = [];

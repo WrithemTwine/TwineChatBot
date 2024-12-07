@@ -3,8 +3,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.CurrencyGames;
 
-using System.Reflection;
-
 namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem
@@ -17,9 +15,8 @@ namespace StreamerBotLib.Systems
         private List<LiveUser> GameBlackJackPlayers { get; set; } = [];
         private LiveUser GameCurrBlackJackPlayer = null;
         private BlackJack GameCurrBlackJack;
-        private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = new();
+        private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = [];
         private string GameBlackJackCurrency;
-
 
         public void StartCurrencyClock()
         {
@@ -29,7 +26,7 @@ namespace StreamerBotLib.Systems
 
                 try
                 {
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                    ThreadManager.CreateThreadStart("StartCurrencyClock", () =>
                     {
                         while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
                         {
@@ -46,7 +43,7 @@ namespace StreamerBotLib.Systems
                 }
                 catch (ThreadInterruptedException ex)
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "StartCurrencyClock");
                 }
             }
         }
@@ -58,7 +55,7 @@ namespace StreamerBotLib.Systems
                 WatchStarted = true;
                 try
                 {
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                    ThreadManager.CreateThreadStart("MonitorWatchTime", () =>
                     {
                         // watch time accruing only works when stream is online <- i.e. watched!
                         while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
@@ -75,7 +72,7 @@ namespace StreamerBotLib.Systems
                 }
                 catch (ThreadInterruptedException ex)
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "MonitorWatchTime");
                 }
             }
         }
@@ -101,7 +98,7 @@ namespace StreamerBotLib.Systems
                         )), cmdrow.SendMsgCount, cmdrow);
 
                     GameCurrBlackJack = new();
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => GameBlackJackStart());
+                    ThreadManager.CreateThreadStart("GamePlayBlackJack", () => GameBlackJackStart());
 
                     GameBlackJackCurrency = cmdrow.Currency_field;
                     lock (GameCurrBlackJackAnswer)

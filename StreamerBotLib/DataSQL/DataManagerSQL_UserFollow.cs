@@ -4,8 +4,6 @@ using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System.Reflection;
-
 namespace StreamerBotLib.DataSQL
 {
     public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
@@ -112,7 +110,7 @@ namespace StreamerBotLib.DataSQL
             {
                 ProcessFollowQueuestarted = true;
 
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("PostFollowsQueue", () =>
                 {
                     SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -356,7 +354,7 @@ namespace StreamerBotLib.DataSQL
                     UpdateWatchTime(User, LastSeen, context);
                     if (OptionFlags.CurrencyStart && (OptionFlags.CurrencyOnline && OptionFlags.IsStreamOnline))
                     {
-                        UpdateCurrency(user, LastSeen, context);
+                        UpdateCurrency(ref user, LastSeen);
                     }
                 }
                 if (Refcontext == null)

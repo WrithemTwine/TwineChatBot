@@ -61,7 +61,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         ///   method</see>. Can be iterated with a foreach loop.
         /// </summary>
         /// 
-        /// <param name="method">The tree traversal method. Common methods are
+        /// <param name="Traverse">The tree traversal method. Common methods are
         /// available in the <see cref="TreeTraversal"/>static class.</param>
         /// 
         /// <returns>An <see cref="IEnumerable{T}"/> object which can be used to
@@ -87,16 +87,10 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         }
 
 
-        private class InnerTreeTraversal : IEnumerable<TNode>
+        private class InnerTreeTraversal(Tree<TNode> tree, TraversalMethod<TNode> method) : IEnumerable<TNode>
         {
-            private Tree<TNode> tree;
-            private TraversalMethod<TNode> method;
-
-            public InnerTreeTraversal(Tree<TNode> tree, TraversalMethod<TNode> method)
-            {
-                this.tree = tree;
-                this.method = method;
-            }
+            private readonly Tree<TNode> tree = tree;
+            private readonly TraversalMethod<TNode> method = method;
 
             public IEnumerator<TNode> GetEnumerator()
             {

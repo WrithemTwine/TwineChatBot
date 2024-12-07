@@ -1008,16 +1008,12 @@ namespace StreamerBotLib.Static
         /// <returns>DefaultValue(SettingName).Value == CheckSettingValue; true if value is default</returns>
         public static bool CheckSettingIsDefault(string SettingName, string CheckSettingValue)
         {
-            DefaultSettingValueAttribute defaultSetting = null;
-
-            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
-                                     where m.Name == SettingName
-                                     select m)
-            {
-                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
-            }
-
-            return defaultSetting.Value == CheckSettingValue;
+            return ((DefaultSettingValueAttribute)(from MemberInfo m in typeof(Settings).GetProperties()
+                                                   where m.Name == SettingName
+                                                   select m)
+                                                   .FirstOrDefault()?
+                                                   .GetCustomAttribute(typeof(DefaultSettingValueAttribute)))
+                                                   ?.Value == CheckSettingValue;
         }
     }
 }

@@ -43,5 +43,14 @@ namespace StreamerBotLib.Overlay.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as OverlayStat);
+        }
+
+        public override int GetHashCode()
+        {
+            return _OverlayType.GetHashCode();
+        }
     }
 }

@@ -5,7 +5,6 @@ using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -34,7 +33,7 @@ namespace StreamerBotLib.MultiLive
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Right-click menu is clicked.");
+            LogWriter.DebugLog("MenuItem_Click", DebugLogTypes.GUIMultiLive, "Right-click menu is clicked.");
 
             int start = TB_LiveMsg.SelectionStart;
 
@@ -49,14 +48,14 @@ namespace StreamerBotLib.MultiLive
 
         public void SetIsEnabled(bool IsEnabled)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, $"Setting visual area IsEnabled={IsEnabled}.");
+            LogWriter.DebugLog("SetIsEnabled", DebugLogTypes.GUIMultiLive, $"Setting visual area IsEnabled={IsEnabled}.");
 
             Grid_MultiUserLiveMonitor.IsEnabled = IsEnabled;
         }
 
         public void SetHandlers(EventHandler<RoutedEventArgs> SettingsLostFocus, EventHandler<TextChangedEventArgs> TextChanged)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting handlers for textbox and lost focus.");
+            LogWriter.DebugLog("SetHandlers", DebugLogTypes.GUIMultiLive, "Setting handlers for textbox and lost focus.");
 
             m_Routed = SettingsLostFocus;
             m_TextChanged = TextChanged;
@@ -148,7 +147,7 @@ namespace StreamerBotLib.MultiLive
 
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to enabled.");
+            LogWriter.DebugLog("DataGridContextMenu_EnableItems_Click", DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to enabled.");
 
             IEnumerable<MultiWebhooks> item = (IEnumerable<MultiWebhooks>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
             SetMultiChannelIsEnabled(item, true);
@@ -164,7 +163,7 @@ namespace StreamerBotLib.MultiLive
 
         private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to disabled.");
+            LogWriter.DebugLog("DataGridContextMenu_DisableItems_Click", DebugLogTypes.GUIMultiLive, "Setting selected webhook items 'IsEnabled' to disabled.");
 
             IEnumerable<MultiWebhooks> item = (IEnumerable<MultiWebhooks>)((((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid).SelectedItems;
             SetMultiChannelIsEnabled(item, false);
@@ -195,7 +194,7 @@ namespace StreamerBotLib.MultiLive
 
         private void ComboBox_DropDownOpened(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Computing the date with stream count data for the combo box.");
+            LogWriter.DebugLog("ComboBox_DropDownOpened", DebugLogTypes.GUIMultiLive, "Computing the date with stream count data for the combo box.");
 
             SummarizeChannels?.Invoke(this, new()
             {
@@ -211,7 +210,7 @@ namespace StreamerBotLib.MultiLive
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Enable the button to permit actually summarizing the stream data.");
+            LogWriter.DebugLog("ComboBox_SelectionChanged", DebugLogTypes.GUIMultiLive, "Enable the button to permit actually summarizing the stream data.");
 
             if (((ComboBox)sender).SelectedItem != null)
             {
@@ -221,7 +220,7 @@ namespace StreamerBotLib.MultiLive
 
         private void Button_StartSummarizingLiveData_Click(object sender, RoutedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIMultiLive, "Disabling buttons and sending a summarizing message to the data manager.");
+            LogWriter.DebugLog("Button_StartSummarizingLiveData_Click", DebugLogTypes.GUIMultiLive, "Disabling buttons and sending a summarizing message to the data manager.");
 
             TabItem_DailyData.IsEnabled = false;
             TabItem_SummaryDailyData.IsEnabled = false;

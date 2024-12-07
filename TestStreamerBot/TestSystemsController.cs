@@ -11,7 +11,7 @@ namespace TestStreamerBot
 
         private string result = string.Empty;
 
-        private SystemsController systemsController;
+        private readonly SystemsController systemsController;
 
         public TestSystemsController()
         {
@@ -45,7 +45,7 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { new("DarkStreamPhantom", Platform.Twitch) });
+            systemsController.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
             Assert.Empty(result);
         }
 
@@ -57,11 +57,11 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined(new() { new("DarkStreamPhantom", Platform.Twitch) });
+            systemsController.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
 
             result = string.Empty;
 
-            systemsController.UserJoined(new() { new("DarkStreamPhantom", Platform.Twitch) });
+            systemsController.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
             Assert.Empty(result);
         }
 
@@ -95,7 +95,7 @@ namespace TestStreamerBot
             OptionFlags.ManageUsers = true;
             OptionFlags.IsStreamOnline = true;
 
-            systemsController.UserJoined(new() { new(UserName, Platform.Twitch) });
+            systemsController.UserJoined([new(UserName, Platform.Twitch)]);
             Assert.True(SystemsController.DataManage.CheckUser(new(UserName, Platform.Twitch)));
             systemsController.UserLeft(new(UserName, Platform.Twitch));
         }

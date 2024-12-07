@@ -5,9 +5,9 @@
     /// </summary>
     public enum ViewerTypes { Broadcaster, Mod, VIP, Follower, Sub, Viewer }
 
-    public class ViewerTypesString
+    public static class ViewerTypesString
     {
-        public string ViewerTypesValues
+        public static string ViewerTypesValues
         {
             get
             {

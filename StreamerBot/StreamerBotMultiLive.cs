@@ -23,7 +23,7 @@ namespace StreamerBot
 
         private const string MultiLiveName = "MultiUserLiveBot";
 
-        private void SetMultiLiveActive(bool ProcessFound = false)
+        private void SetMultiLiveActive()
         {
             // allow edits while bot is active
             (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);

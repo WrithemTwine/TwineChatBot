@@ -2,8 +2,7 @@
 
 namespace SimpleTestFeature.Exceptions
 {
-    internal class BadParameterException : Exception
+    internal class BadParameterException(string message) : Exception(message)
     {
-        public BadParameterException(string message) : base(message) { }
     }
 }

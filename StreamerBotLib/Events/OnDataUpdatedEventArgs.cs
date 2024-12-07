@@ -2,6 +2,6 @@
 {
     public class OnDataUpdatedEventArgs : EventArgs
     {
-        public List<string> UpdatedTables = new();
+        public List<string> UpdatedTables = [];
     }
 }

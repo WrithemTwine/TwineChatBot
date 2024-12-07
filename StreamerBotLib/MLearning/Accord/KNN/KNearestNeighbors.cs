@@ -250,7 +250,7 @@
         /// 
         public override KNearestNeighbors Learn(double[][] x, int[] y, double[] weights = null)
         {
-            CheckArgs(K, x, y, Distance, weights);
+            CheckArgs(K, x, y, Distance);
 
             NumberOfInputs = GetNumberOfInputs(x);
             Inputs = x;

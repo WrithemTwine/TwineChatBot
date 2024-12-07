@@ -8,7 +8,6 @@ using StreamerBotLib.Static;
 
 using System.Data;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 
 using static StreamerBotLib.DataSQL.Import.DataSource;
@@ -21,7 +20,7 @@ namespace StreamerBotLib.DataSQL.Import
     internal class ImportDataSources : BaseDataManager
     {
         private static readonly string DataFileXML = "ChatDataStore.xml";
-        private DataSource _DataSource;
+        private readonly DataSource _DataSource;
 
         private static readonly string MultiDataFileXML = "MultiChatbotData.xml";
         private readonly MultiDataSource _MultiDataSource;
@@ -43,7 +42,7 @@ namespace StreamerBotLib.DataSQL.Import
         /// </summary>
         private void LoadData()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Loading the database.");
+            LogWriter.DebugLog("LoadData", DebugLogTypes.DataManager, $"Loading the database.");
 
             void LoadFile(string filename)
             {
@@ -74,7 +73,7 @@ namespace StreamerBotLib.DataSQL.Import
         /// </summary>
         /// <param name="fileName">Name of the file to format, prepend debug directory.</param>
         /// <returns>File path, whether in debug directory or relative filename in current release directory - based on Current Working Directory.</returns>
-        private string FormatFileName(string fileName)
+        private static string FormatFileName(string fileName)
         {
             return
 #if DEBUG
@@ -1064,7 +1063,7 @@ namespace StreamerBotLib.DataSQL.Import
 
         }
 
-        private string ConvertDataRow(DataRow data, int maxcolumns)
+        private static string ConvertDataRow(DataRow data, int maxcolumns)
         {
             List<string> cols = [];
 

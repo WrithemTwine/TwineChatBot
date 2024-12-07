@@ -10,7 +10,6 @@ using StreamerBotLib.Systems;
 
 using System.Data;
 using System.Globalization;
-using System.Reflection;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -210,7 +209,7 @@ namespace StreamerBotLib.DataSQL
                 }
                 catch (Exception ex)
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "PostDataGridGUIAddRow");
                 }
 
                 if (Refcontext == null) { ClearDataContext(context); }

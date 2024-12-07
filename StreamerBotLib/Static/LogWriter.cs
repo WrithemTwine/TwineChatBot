@@ -17,9 +17,6 @@ namespace StreamerBotLib.Static
     /// </summary>
     public static class LogWriter
     {
-        // stream flush parameters
-        private static TimeSpan StreamFlush = new(0, 10, 0);
-        private static DateTime FlushTime = DateTime.Now;
 
         // file names & thread lock strings
         private const string StatusLog = "StatusLog.txt";
@@ -223,6 +220,10 @@ namespace StreamerBotLib.Static
         }
 
 #else
+        // stream flush parameters
+        private static TimeSpan StreamFlush = new(0, 10, 0);
+        private static readonly DateTime FlushTime = DateTime.Now;
+
         // streamwriters
         private static StreamWriter StatusLogWriter;
         private static StreamWriter ExceptionLogWriter;
@@ -242,7 +243,7 @@ namespace StreamerBotLib.Static
             if (!started)
             {
                 started = true;
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("StaticFlush", () =>
                 {
                     while (OptionFlags.ActiveToken)
                     {

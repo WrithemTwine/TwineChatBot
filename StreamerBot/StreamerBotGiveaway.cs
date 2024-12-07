@@ -40,7 +40,7 @@ namespace StreamerBot
         {
             if (DateTime.Now >= ChannelPtRetrievalDate + ChannelPtRefresh)
             {
-                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>((s) => GUITwitchBots.GetChannelPoints(UserName: s)));
+                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>(GUITwitchBots.GetChannelPoints));
                 ChannelPtRetrievalDate = DateTime.Now;
             }
         }

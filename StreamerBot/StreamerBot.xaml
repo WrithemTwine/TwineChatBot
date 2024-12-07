@@ -33,9 +33,7 @@
             <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
             <SqlModels:IntConvert x:Name="IntConverter" x:Key="IntConverter" />
             <SqlModels:TimeoutSecondsConverter x:Name="TimeoutSecConvert" x:Key="TimeoutSecConvert" />
-            <Enums:ViewerTypesString x:Name="ViewerTypesString" x:Key="ViewerTypesString" />
             <local:DebugFlags x:Name="DebugFlags" x:Key="DebugFlags" />
-
             <ContextMenu x:Key="DataGrid_ContextMenu" Name="DataGrid_ContextMenu">
                 <MenuItem x:Name="DataGridContextMenu_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
                 <!--<MenuItem x:Name="DataGridContextMenu_EditItem" Header="Edit Selected Row" Click="MenuItem_EditClick" />-->
@@ -50,7 +48,6 @@
                 <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
             </ContextMenu>
-
             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource {x:Type DataGrid}}">
                 <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
             </Style>
@@ -219,17 +216,21 @@
                             </StackPanel>
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <WrapPanel HorizontalAlignment="Center">
-                                    <GroupBox Header="Bot-EventSub Read Msgs" x:Name="GroupBox_Twitch_StartBots_BotEventSub">
+                                    <GroupBox Header="Bot-EventSub Read Msgs"
+                                              x:Name="GroupBox_Twitch_StartBots_BotEventSub">
                                         <WrapPanel>
                                             <TextBlock>
                                                 This bot reads chat messages from the monitor channel.
                                             </TextBlock>
-                                            <Label x:Name="Label_TwitchBot_EventSub_Start" Visibility="Collapsed">
-                                                <TextBlock Foreground="{DynamicResource Go}">The EventSub read chat bot is started!</TextBlock>
-                                            </Label>
-                                            <Label x:Name="Label_TwitchBot_EventSub_Stop" Visibility="Visible">
-                                                <TextBlock Foreground="{DynamicResource Stop}">The EventSub read chat bot is stopped!</TextBlock>
-                                            </Label>
+                                            <StackPanel Height="45">
+
+                                                <Label x:Name="Label_TwitchBot_EventSub_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">The EventSub read chat bot is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchBot_EventSub_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The EventSub read chat bot is stopped!</TextBlock>
+                                                </Label>
+                                            </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchBotEventSubAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
@@ -263,14 +264,16 @@
                                             <TextBlock>
                                                 This bot manages stream online, updates, offline, and raid notifications.
                                             </TextBlock>
-                                            <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Start"
+                                            <StackPanel Height="45">
+                                                <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Start"
                                                    Visibility="Collapsed">
-                                                <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
-                                            </Label>
-                                            <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Stop"
+                                                    <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Stop"
                                                    Visibility="Visible">
-                                                <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
-                                            </Label>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
+                                                </Label>
+                                            </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
                                                       IsChecked="{Binding TwitchStreamEventSubNoScopesAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
@@ -295,12 +298,14 @@
                                             <TextBlock>
                                                 This bot manages notifications for cheers, subscriptions, follows, and channel point redeems.
                                             </TextBlock>
-                                            <Label x:Name="Label_TwitchStreamer_EventSub_Start" Visibility="Collapsed">
-                                                <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
-                                            </Label>
-                                            <Label x:Name="Label_TwitchStreamer_EventSub_Stop" Visibility="Visible">
-                                                <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
-                                            </Label>
+                                            <StackPanel Height="45">
+                                                <Label x:Name="Label_TwitchStreamer_EventSub_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchStreamer_EventSub_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
+                                                </Label>
+                                            </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
                                                       IsChecked="{Binding TwitchStreamEventSubAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
@@ -326,13 +331,18 @@
                                     <GroupBox Header="Streamer-Multi-LiveStream Service">
                                         <StackPanel Orientation="Vertical">
                                             <WrapPanel>
-                                                <TextBlock>Bot will only start if multi-live channels are available.</TextBlock>
-                                                <Label x:Name="Label_TwitchMultiLive_Start" Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The Twitch LiveStream Monitor Client is started!</TextBlock>
-                                                </Label>
-                                                <Label x:Name="Label_TwitchMultiLive_Stop" Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The Twitch LiveStream Monitor Client is stopped!</TextBlock>
-                                                </Label>
+                                                <TextBlock>Bot will only start if 
+                                                    multi-live channels are available.</TextBlock>
+                                                <StackPanel Height="45">
+                                                    <Label x:Name="Label_TwitchMultiLive_Start" Visibility="Collapsed">
+                                                        <TextBlock Foreground="{DynamicResource Go}">The Twitch LiveStream Monitor Client is started!</TextBlock>
+                                                    </Label>
+                                                    <Label x:Name="Label_TwitchMultiLive_Stop" Visibility="Visible">
+                                                        <TextBlock Foreground="{DynamicResource Stop}">
+                                                            The Twitch LiveStream Monitor Client is stopped!
+                                                        </TextBlock>
+                                                    </Label>
+                                                </StackPanel>
                                                 <CheckBox 
                                                     DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
                                                     IsChecked="{Binding TwitchLiveStreamSvcAutoStart}" >
@@ -391,12 +401,14 @@
                                     </GroupBox>
                                     <GroupBox Header="Service-Media Overlay">
                                         <WrapPanel>
-                                            <Label x:Name="Label_OverlayService_Start" Visibility="Collapsed">
-                                                <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
-                                            </Label>
-                                            <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
-                                                <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
-                                            </Label>
+                                            <StackPanel Height="45">
+                                                <Label x:Name="Label_OverlayService_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
+                                                </Label>
+                                            </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
@@ -430,7 +442,6 @@
                             </ScrollViewer>
                         </DockPanel>
                     </TabItem>
-
                     <TabItem Header="Twitch"  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" >
                         <TabItem.Resources>
                             <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
@@ -452,7 +463,7 @@
                             </StackPanel>
 
                             <ScrollViewer x:Name="ScrollViewer_TwitchTokenForm" DockPanel.Dock="Left" 
-                                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                                          VerticalScrollBarVisibility="Auto">
                                 <WrapPanel>
 
                                     <StackPanel x:Name="StackPanel_TwitchTokenFlow" Visibility="Collapsed">
@@ -959,7 +970,7 @@
                                                 </GroupBox>
                                                 <Button Content="Force Re-Authorization" Width="150" Margin="10"
                                                         IsEnabled="True" Click="Button_TwitchAuthToken_ReAuthorize" />
-                                               <TextBlock Width="400">For 'Event Sub' bot to check for stream status and 
+                                                <TextBlock Width="400">For 'Event Sub' bot to check for stream status and 
                                                                 incoming raids, we need a 'no-scope' access token. Click the below 
                                                                 authorization button to create the token.</TextBlock>
                                                 <GroupBox Header="Bot Account Info" Width="410">
@@ -1100,11 +1111,9 @@
                         </DockPanel>
 
                     </TabItem>
-
                     <TabItem Header="Overlay" Name="TabItem_Bots_OverlayTab">
                         <Frame Source="pack://application:,,,/StreamerBotLib;component/Overlay/MediaOverlayPage.xaml" IsManipulationEnabled="True" />
                     </TabItem>
-
                 </TabControl>
             </TabItem>
             <TabItem Header="Options" x:Name="TabItem_DataOptions" >
@@ -2165,15 +2174,20 @@
                                                                       DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
                                                         </StackPanel>
                                                     </RadioButton>
-                                                    <RadioButton x:Name="RadioButton_GiveawayCustomRewards" VerticalContentAlignment="Center">
+                                                    <RadioButton x:Name="RadioButton_GiveawayCustomRewards" 
+                                                                 VerticalContentAlignment="Center">
                                                         <WrapPanel Orientation="Horizontal">
                                                             <Label Width="100">Channel Points</Label>
+                                                            <Button x:Name="Button_Giveaway_RefreshChannelPoints" 
+                                                                    Margin="5,0" Height="21" 
+                                                                    Padding="5,2" Content="Refresh" 
+                                                                    Click="Button_RefreshChannelPoints_Click" />
                                                             <ComboBox x:Name="ComboBox_Giveaway_ChanPts" 
                                                                       MinWidth="200" 
-                                                                      PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown" 
+                                                                      PreviewMouseLeftButtonDown = 
+                                                                      "ComboBox_Giveaway_PreviewMouseLeftButtonDown" 
                                                                       DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
-                                                            <Button x:Name="Button_Giveaway_RefreshChannelPoints" Margin="5,0" Height="21" 
-                                                                    Padding="5,2" Content="Refresh" Click="Button_RefreshChannelPoints_Click" />
+
                                                         </WrapPanel>
                                                     </RadioButton>
                                                 </StackPanel>
@@ -2182,10 +2196,13 @@
                                                 <CheckBox IsChecked="{Binding GiveawayMultiUser}" >
                                                     <Label Content="Allow more than 1 entry" />
                                                 </CheckBox>
-                                                <Label Margin="50,0,0,0" VerticalAlignment="Center" Width="Auto" Content="Max Entries" />
-                                                <TextBox Width="40" Text="{Binding GiveawayMaxEntries}" ToolTip="Can be changed during giveaway, lowered will 
+                                                <Label Margin="50,0,0,0" VerticalAlignment="Center" 
+                                                       Width="Auto" Content="Max Entries" />
+                                                <TextBox Width="40" Text="{Binding GiveawayMaxEntries}" 
+                                                         ToolTip="Can be changed during giveaway, lowered will 
                                                          remove excess entrants." 
-                                                         HorizontalContentAlignment="Center"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                         HorizontalContentAlignment="Center" 
+                                                         PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <StackPanel.Resources>
@@ -2194,14 +2211,22 @@
                                                         <Setter Property="Margin" Value="5,3"/>
                                                     </Style>
                                                 </StackPanel.Resources>
-                                                <Button x:Name="Button_GiveawayBegin" Content="Begin Giveaway" Click="Button_GiveawayBegin_Click" IsEnabled="False">
+                                                <Button x:Name="Button_GiveawayBegin" 
+                                                        Content="Begin Giveaway" 
+                                                        Click="Button_GiveawayBegin_Click" IsEnabled="False">
                                                     <Button.ToolTip>
-                                                        <TextBlock>The ChatBot needs to be started for chatting Giveaway messages. PubSub Bot 
-                                                            needs to be started for Channel Points redemption to be detected.</TextBlock>
+                                                        <TextBlock>The ChatBot needs to be started for 
+                                                            chatting Giveaway messages. PubSub Bot 
+                                                            needs to be started for Channel Points 
+                                                            redemption to be detected.</TextBlock>
                                                     </Button.ToolTip>
                                                 </Button>
-                                                <Button x:Name="Button_GiveawayEnd" Content="End Giveaway" Click="Button_GiveawayEnd_Click" IsEnabled="False" />
-                                                <Button x:Name="Button_GiveawayPickWinner" Content="Pick Winners" Click="Button_GiveawayPickWinner_Click" IsEnabled="False" />
+                                                <Button x:Name="Button_GiveawayEnd" 
+                                                        Content="End Giveaway" Click="Button_GiveawayEnd_Click" 
+                                                        IsEnabled="False" />
+                                                <Button x:Name="Button_GiveawayPickWinner" 
+                                                        Content="Pick Winners" 
+                                                        Click="Button_GiveawayPickWinner_Click" IsEnabled="False" />
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Number of Winners:</Label>
@@ -2209,29 +2234,36 @@
                                                          Text="{Binding GiveawayCount, Mode=TwoWay}" 
                                                          PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
                                                     <TextBox.ToolTip>
-                                                        <TextBlock>Specify how many viewers to select for the giveaway event.</TextBlock>
+                                                        <TextBlock>Specify how many viewers to select 
+                                                            for the giveaway event.</TextBlock>
                                                     </TextBox.ToolTip>
                                                 </TextBox>
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Giveaway start message:</Label>
-                                                <TextBox Text="{Binding GiveawayBegMsg, Mode=TwoWay}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                <TextBox Text="{Binding GiveawayBegMsg, Mode=TwoWay}" 
+                                                         PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Giveaway end message:</Label>
-                                                <TextBox Text="{Binding GiveawayEndMsg, Mode=TwoWay}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                <TextBox Text="{Binding GiveawayEndMsg, Mode=TwoWay}" 
+                                                         PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
                                             </StackPanel>
                                             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
                                                 <Label>Winner Message (#winner):</Label>
-                                                <TextBox Text="{Binding GiveawayWinMsg, Mode=TwoWay}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
+                                                <TextBox Text="{Binding GiveawayWinMsg, Mode=TwoWay}" 
+                                                         PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
                                                     <TextBox.ToolTip>
-                                                        <TextBlock>Use #user to include the name in the Giveaway announcement text.</TextBlock>
+                                                        <TextBlock>Use #user to include the name in the 
+                                                            Giveaway announcement text.</TextBlock>
                                                     </TextBox.ToolTip>
                                                 </TextBox>
                                             </StackPanel>
-                                            <StackPanel DockPanel.Dock="Top" Margin="0,10,0,2" Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <StackPanel DockPanel.Dock="Top" Margin="0,10,0,2" 
+                                                        Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <Label Content="Current Giveaway Entrants:" />
-                                                <Label Width="Auto" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" 
+                                                <Label Width="Auto" 
+                                                       DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}" 
                                                        Content="{Binding GiveawayCollection.Count, Mode=OneWay}"  />
                                             </StackPanel>
                                             <ListView DockPanel.Dock="Top" x:Name="listView" Width="300" 
@@ -2239,28 +2271,35 @@
                                                       ItemsSource="{Binding GiveawayCollection}">
                                                 <ListView.View>
                                                     <GridView>
-                                                        <GridViewColumn Header="Order" Width="70" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, 
-                                         AncestorType={x:Type ListViewItem}}, 
-                                         Converter={StaticResource IndexConverter}}"
+                                                        <GridViewColumn Header="Order" Width="70" 
+                                                                        DisplayMemberBinding="{Binding RelativeSource=
+                                                            {RelativeSource FindAncestor, 
+                                                            AncestorType={x:Type ListViewItem}}, 
+                                                            Converter={StaticResource IndexConverter}}"
                                                                         />
-                                                        <GridViewColumn Header="Entrant" Width="200" DisplayMemberBinding="{Binding UserName, Mode=OneWay}" />
+                                                        <GridViewColumn Header="Entrant" Width="200" 
+                                                                        DisplayMemberBinding="{Binding UserName, Mode=OneWay}" />
                                                     </GridView>
                                                 </ListView.View>
                                             </ListView>
 
                                         </DockPanel>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="1">Results of prior Giveaways recorded here! <LineBreak /> Data management is 
+                                        <TextBlock Grid.Row="0" Grid.Column="1">Results of prior 
+                                            Giveaways recorded here! <LineBreak /> Data management is 
                                             enabled or disabled in the Options tab.</TextBlock>
                                         <DataGrid x:Name="DG_User_Giveaway" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GiveawayUserData_CVS}}" 
                                                   IsReadOnly="False"  CanUserDeleteRows="True"  
-                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
+                                                  RowEditEnding="DataGrid_RowEditEnding" 
+                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                                                 <DataGridTemplateColumn Header="Date Time" SortMemberPath="DateTime" 
-                                                                        CellTemplate="{Binding Source={StaticResource DateGiveawayTemplate}}" 
-                                                                        CellEditingTemplate="{Binding Source={StaticResource EditDateGiveawayTemplate}}" />
+                                                                        CellTemplate = 
+                                                                        "{Binding Source={StaticResource DateGiveawayTemplate}}" 
+                                                                        CellEditingTemplate =
+                                                                        "{Binding Source={StaticResource EditDateGiveawayTemplate}}" />
                                                 <DataGridTextColumn Header="UserId" Binding="{Binding UserId}" />
                                                 <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                             </DataGrid.Columns>
@@ -2321,14 +2360,59 @@
                             <TabControl>
                                 <TabItem Header="Help">
                                     <StackPanel Orientation="Vertical">
-                                        <TextBlock><Run Text="The 'BuiltInCommands' are those established within the bot."/><LineBreak /><Run Text="The 'socials' (specific services): add your custom message for the social media and your access URL. E.g. &quot;Visit me on Twitter at: http://wwww.twitter.com/myuser&quot;. The command will show all socials except messages that are blank or the default 'Social media url here'."/><LineBreak /><LineBreak /><Run Text="The variables within message to format a custom response:"/><LineBreak /><Run Text="#user: the user specific to the command; either 'command invoker' user or parameter to the command"/><LineBreak /><Run Text="#url: the Twitch URL with the supplied user attached - specific to 'so == shoutout' command"/><LineBreak /><Run Text="#fieldvalue: placeholder for the value from a table lookup"/><LineBreak /><Run Text="#currencyname: placeholder for the currency name - extracted from table"/><LineBreak /><Run Text="#currencyvalue: the value of a currency"/><LineBreak /><LineBreak /><Run Text="#date: the current date"/><LineBreak /><Run Text="#time: the current time"/><LineBreak /></TextBlock>
+                                        <TextBlock>
+                                            <Run Text="The 'BuiltInCommands' are those established
+                                                within the bot."/><LineBreak /><Run Text="The 
+                                                'socials' (specific services): add your custom 
+                                                message for the social media and your access URL. 
+                                                E.g. &quot;Visit me on Twitter at: 
+                                                http://wwww.twitter.com/myuser&quot;. The command 
+                                                will show all socials except messages that are 
+                                                blank or the default 'Social media url here'."/>
+                                            <LineBreak />
+                                            <LineBreak />
+                                            <Run Text="The variables within message to format a custom
+                                                 response:"/><LineBreak />
+                                            <Run Text="#user: the user specific to the command; 
+                                                 either 'command invoker' user or parameter to the command" />
+                                            <LineBreak />
+                                            <Run Text="#url: the Twitch URL with the supplied user 
+                                                 attached - specific to 'so == shoutout' command"/>
+                                            <LineBreak />
+                                            <Run Text="#fieldvalue: placeholder for the value from
+                                                 a table lookup"/>
+                                            <LineBreak />
+                                            <Run Text="#currencyname: placeholder for the currency
+                                                 name - extracted from table"/>
+                                            <LineBreak />
+                                            <Run Text="#currencyvalue: the value of a currency"/>
+                                            <LineBreak />
+                                            <LineBreak />
+                                            <Run Text="#date: the current date"/>
+                                            <LineBreak />
+                                            <Run Text="#time: the current time"/>
+                                            <LineBreak />
+                                        </TextBlock>
                                         <Rectangle Width="800" Stretch="Fill" Height="1" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Label Content="Viewer Type Values: " />
-                                            <TextBlock Text="{Binding ViewerTypesValues, Mode=OneWay, Source={StaticResource ViewerTypesString}}" FlowDirection="LeftToRight" ToolTip="ViewerTypes for Command access rights" VerticalAlignment="Center" />
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <StackPanel Orientation="Vertical">
+                                                <Label Content="Viewer Type Values:" />
+                                                <ListBox Width="100" HorizontalAlignment="Left"
+                                                ItemsSource="{Binding Mode=OneWay, 
+                                                              Source={StaticResource EnumViewerTypes}}" 
+                                                      ToolTip="ViewerTypes for Command access rights">
+                                                </ListBox>
+                                            </StackPanel>
+                                            <TextBlock Margin="5" TextWrapping="Wrap" 
+                                                   Width="400" HorizontalAlignment="Left"> 
+                                            A value lower in the list permits access 
+                                            with the higher values, <LineBreak />
+                                            e.g. selecting  <LineBreak />
+                                            <Bold>'VIP'</Bold>  <LineBreak />
+                                            allows <LineBreak />
+                                            <Bold>'VIP, Mod, Broadcaster'</Bold> <LineBreak />
+                                            access rights.</TextBlock>
                                         </StackPanel>
-
-                                        <Label Content="A value to the right permits access with the leftward values, e.g. selecting 'VIP' allows 'VIP, Mod, Broadcaster' access rights. "/>
                                     </StackPanel>
                                 </TabItem>
                                 <TabItem Header="Built-In">
@@ -2693,7 +2777,9 @@
                                 </TabItem>
                             </TabControl>
                         </TabItem>
-                        <TabItem x:Name="TabItem_Data_Separator" IsEnabled="False" MinWidth="20" Width="20" Height="10" Visibility="Visible" />
+                        <TabItem x:Name="TabItem_Data_Separator" 
+                                 IsEnabled="False" MinWidth="20" 
+                                 Width="20" Height="10" Visibility="Visible" />
                         <TabItem x:Name="TabItem_Data_MultiLive" Header="MultiLive Monitor" Visibility="Visible">
                             <Frame x:Name="MultiLive_Data" Source="pack://application:,,,/StreamerBotLib;component/MultiLive/MultiLiveDataGrids.xaml" 
                                    IsManipulationEnabled="True" Loaded="MultiLive_Data_Loaded" />

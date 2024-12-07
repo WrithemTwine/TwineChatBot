@@ -53,7 +53,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(double[] x, double[] y)
+        public readonly double Distance(double[] x, double[] y)
         {
             double sum = 0.0;
 
@@ -83,7 +83,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(double x, double y)
+        public readonly double Distance(double x, double y)
         {
             double u = x - y;
             return u * u;
@@ -106,7 +106,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(Sparse<double> x, Sparse<double> y)
+        public readonly double Distance(Sparse<double> x, Sparse<double> y)
         {
             return Sparse(x, y);
         }
@@ -125,7 +125,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Distance(double x1, double y1, double x2, double y2)
+        public static double Distance(double x1, double y1, double x2, double y2)
         {
             double dx = x1 - x2;
             double dy = y1 - y2;
@@ -146,7 +146,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Similarity(double[] x, double[] y)
+        public readonly double Similarity(double[] x, double[] y)
         {
             return 1.0 / (1.0 + Distance(x, y));
         }
@@ -163,10 +163,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Similarity(Sparse<double> x, Sparse<double> y)
-        {
-            return 1.0 / (1.0 + Distance(x, y));
-        }
+        public readonly double Similarity(Sparse<double> x, Sparse<double> y) => 1.0 / (1.0 + Distance(x, y));
 
         /// <summary>
         ///   Gets a similarity measure between two points.
@@ -180,18 +177,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 #if NET45 || NET46 || NET462 || NETSTANDARD2_0
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        public double Similarity(double x, double y)
-        {
-            return 1.0 / (1.0 + Distance(x, y));
-        }
-
-
-
-
-
-
-
-
+        public readonly double Similarity(double x, double y) => 1.0 / (1.0 + Distance(x, y));
 
         /// <summary>
         ///   Computes the distance <c>d(x,y)</c> between points

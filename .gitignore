@@ -345,3 +345,4 @@ healthchecksdb
 
 /MaintainStreamerBotLib
 *.db
+/TestScrollViewer/TestScrollViewer.csproj

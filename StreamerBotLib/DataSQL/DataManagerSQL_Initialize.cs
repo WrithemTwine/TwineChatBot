@@ -8,7 +8,6 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.Data;
-using System.Reflection;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -20,7 +19,7 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         public void Initialize(SQLDBContext Refcontext = null)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Initializing the database.");
+            LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, $"Initializing the database.");
 
             constructingModel_Context = true;
 
@@ -41,7 +40,7 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         private void SetDefaultChannelEventsTable(SQLDBContext Refcontext = null)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting default channel events, adding any missing events.");
+            LogWriter.DebugLog("SetDefaultChannelEventsTable", DebugLogTypes.DataManager, $"Setting default channel events, adding any missing events.");
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -115,7 +114,7 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         private void SetDefaultCommandsTable(SQLDBContext Refcontext = null)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Setting up and checking default commands, adding missing commands.");
+            LogWriter.DebugLog("SetDefaultCommandsTable", DebugLogTypes.DataManager, $"Setting up and checking default commands, adding missing commands.");
 
             lock (GUIDataManagerLock.Lock)
             {
@@ -179,9 +178,9 @@ namespace StreamerBotLib.DataSQL
             Refcontext.SaveChanges(true);
         }
 
-        private void SetLearnedMessages(SQLDBContext Refcontext = null)
+        private static void SetLearnedMessages(SQLDBContext Refcontext = null)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.DataManager, $"Machine learning, setting learned messages.");
+            LogWriter.DebugLog("SetLearnedMessages", DebugLogTypes.DataManager, $"Machine learning, setting learned messages.");
 
             lock (GUIDataManagerLock.Lock)
             {

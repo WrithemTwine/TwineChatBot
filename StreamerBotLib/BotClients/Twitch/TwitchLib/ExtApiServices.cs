@@ -6,7 +6,7 @@ using TwitchLib.Api.Services;
 
 namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 {
-    public abstract class ExtApiService<T> : ApiService
+    public abstract class ExtApiService<T>(ITwitchAPI api, int checkIntervalInSeconds) : ApiService(api, checkIntervalInSeconds)
     {
         protected CoreMonitor<T> _monitor;
         protected IdBasedMonitor<T> _idBasedMonitor;
@@ -14,10 +14,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         protected IdBasedMonitor<T> IdBasedMonitor => _idBasedMonitor ??= new(_api);
         protected NameBasedMonitor<T> NameBasedMonitor => _nameBasedMonitor ??= new(_api);
-
-        protected ExtApiService(ITwitchAPI api, int checkIntervalInSeconds) : base(api, checkIntervalInSeconds)
-        {
-        }
 
         /// <summary>
         /// Sets the channels to monitor by id. Event's channel properties will be Ids in this case.

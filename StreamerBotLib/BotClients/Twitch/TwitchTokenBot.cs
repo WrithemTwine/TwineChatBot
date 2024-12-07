@@ -6,8 +6,6 @@ using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System.Reflection;
-
 using TwitchLib.Api;
 using TwitchLib.Api.Auth;
 using TwitchLib.Api.Core;
@@ -98,39 +96,45 @@ namespace StreamerBotLib.BotClients.Twitch
         /// access tokens, while the "AuthCode" mode uses the user authorized auth codes to then generate access tokens.
         /// </summary>
         /// <returns><code>true</code>-when token building is finished</returns>
-        public override void StartBot()
+        public override Task StartBot()
         {
-            if (IsActive == null || IsActive == false)
+            return Task.Run(() =>
             {
-                IsActive = true;
+                if (IsActive is null or false)
+                {
+                    IsActive = true;
 
-                if (OptionFlags.TwitchTokenUseAuth)
-                {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Building AuthCode mode tokens.");
-                    BuildAuthTokens(); // the user activated authcode mode
+                    if (OptionFlags.TwitchTokenUseAuth)
+                    {
+                        LogWriter.DebugLog("StartBot", DebugLogTypes.TwitchTokenBot, "Building AuthCode mode tokens.");
+                        BuildAuthTokens(); // the user activated authcode mode
+                    }
+                    else
+                    {
+                        LogWriter.DebugLog("StartBot", DebugLogTypes.TwitchTokenBot, "Building UserProvided-Token mode tokens.");
+                        BuildUserTokens(); // the user specifies the access tokens
+                    }
                 }
-                else
-                {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Building UserProvided-Token mode tokens.");
-                    BuildUserTokens(); // the user specifies the access tokens
-                }
-            }
+            });
         }
 
         /// <summary>
         /// Pause any token checking to permit changing token method: user-set vs auth code tokens
         /// </summary>
         /// <returns></returns>
-        public override void StopBot()
+        public override Task StopBot()
         {
-            if (IsActive == true)
+            return Task.Run(() =>
             {
-                IsActive = false;
-                // at this point, clear the helix api data and 'start bot' will reset it, even if token mode changed
-                StreamerHelixApi = null;
-                BotHelixApi = null;
-                StreamerNoScopesHelixApi = null;
-            }
+                if (IsActive == true)
+                {
+                    IsActive = false;
+                    // at this point, clear the helix api data and 'start bot' will reset it, even if token mode changed
+                    StreamerHelixApi = null;
+                    BotHelixApi = null;
+                    StreamerNoScopesHelixApi = null;
+                }
+            });
         }
 
         private void SetTwitchApis()
@@ -198,7 +202,7 @@ namespace StreamerBotLib.BotClients.Twitch
             StreamerAccessTokenChanged?.Invoke(this, new());
             StreamerNoScopesAccessTokenChanged?.Invoke(this, new());
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Finished building UserProvided-Token mode api settings.");
+            LogWriter.DebugLog("BuildUserTokens", DebugLogTypes.TwitchTokenBot, "Finished building UserProvided-Token mode api settings.");
         }
 
         /// <summary>
@@ -217,7 +221,7 @@ namespace StreamerBotLib.BotClients.Twitch
             if (IsActive == true && !TokenRenewalStarted)
             {
                 TokenRenewalStarted = true;
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, RenewToken);
+                ThreadManager.CreateThreadStart("StartRenewToken", RenewToken);
             }
         }
 
@@ -232,7 +236,7 @@ namespace StreamerBotLib.BotClients.Twitch
             while (IsActive == true && OptionFlags.ActiveToken)
             // continue renewing tokens while token bot is started and app is active
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Checking tokens.");
+                LogWriter.DebugLog("RenewToken", DebugLogTypes.TwitchTokenBot, "Checking tokens.");
                 CheckToken();
 
                 DateTime wakeup = DateTime.Now.AddSeconds(IntervalRandom.Next(MaxInterval / 2, MaxInterval));
@@ -265,7 +269,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         if ((DateTime.Now - BotAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
                         { // only check if we haven't checked in the last 1 second - avoid lots of checks in a single second
-                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Now checking Bot token.");
+                            LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"Now checking Bot token.");
                             // try to refresh Bot token
                             Tuple<string, string, int> Botresponse = ProcessToken(
                                 OptionFlags.TwitchAuthBotAuthCode,
@@ -297,7 +301,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
                         if ((DateTime.Now - StreamerNoScopesAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
                         { // only check if we haven't checked in the last 1 second - avoid lots of checks in a single second
-                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Now checking NoScopes token.");
+                            LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"Now checking NoScopes token.");
                             // try to refresh Bot token
                             Tuple<string, string, int> StreamerNoScopesresponse = ProcessToken(
                                 OptionFlags.TwitchAuthStreamerNoScopesAuthCode,
@@ -331,7 +335,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         {
                             if ((DateTime.Now - StreamerAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
                             { // only check if we haven't checked in the last 1 second - avoid lots of checks in a single second
-                                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Now checking Streamer token.");
+                                LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"Now checking Streamer token.");
                                 // try to refresh streamer token
                                 Tuple<string, string, int> Streamerresponse = ProcessToken(
                                     OptionFlags.TwitchAuthStreamerAuthCode,
@@ -391,7 +395,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "CheckToken");
             }
         }
 
@@ -421,12 +425,12 @@ namespace StreamerBotLib.BotClients.Twitch
             // only proceed if the clientId & client secret is valid
             if (!string.IsNullOrEmpty(clientId) && !string.IsNullOrEmpty(clientsecret))
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"clientId and clientsecret are not null.");
+                LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"clientId and clientsecret are not null.");
 
                 // if we have no auth code, tell the GUI user to authorize the app - since we have client ID & secret
                 if (string.IsNullOrEmpty(authcode))
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"auth code is null or empty.");
+                    LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"auth code is null or empty.");
 
                     // notify GUI if user needs to reauthenticate
                     if (NoScopes)
@@ -444,13 +448,13 @@ namespace StreamerBotLib.BotClients.Twitch
                 }
                 else // we have an authcode, try to get the first refresh token & access token
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"auth code is available.");
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"testing access token, it is {(validToken == null ? "invalid" : "valid")}");
+                    LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"auth code is available.");
+                    LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"testing access token, it is {(validToken == null ? "invalid" : "valid")}");
 
                     // clientId_!null, clientsecret_!null, authcode_!null, refreshtoken_null-try to get one
                     if (string.IsNullOrEmpty(refreshtoken))
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"refresh token is null or empty.");
+                        LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"refresh token is null or empty.");
 
                         try
                         {
@@ -460,11 +464,11 @@ namespace StreamerBotLib.BotClients.Twitch
                             AccessToken = BotAuthRefresh.AccessToken;
                             ExpiresIn = BotAuthRefresh.ExpiresIn;
 
-                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Twitch provided updated access & refresh tokens.");
+                            LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"Twitch provided updated access & refresh tokens.");
                         }
                         catch (BadRequestException AuthCodEx)
                         {
-                            LogWriter.LogException(AuthCodEx, MethodBase.GetCurrentMethod().Name);
+                            LogWriter.LogException(AuthCodEx, "ProcessToken");
                             // notify GUI if user needs to reauthenticate, failed auth code
                             if (NoScopes)
                             {
@@ -482,7 +486,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     }
                     else if (validToken == null) // if we already have a refresh token, try to refresh the access token; failure means user needs to reauthorize app
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Access token is no longer valid, refreshing the access token.");
+                        LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"Access token is no longer valid, refreshing the access token.");
 
                         // if we're here, we had a badrequesttokenexception 
 
@@ -495,13 +499,13 @@ namespace StreamerBotLib.BotClients.Twitch
                             AccessToken = BotTokenResponse.AccessToken;
                             ExpiresIn = BotTokenResponse.ExpiresIn;
 
-                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Twitch gave us a new fresh access token.");
+                            LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"Twitch gave us a new fresh access token.");
                         }
                         catch (BadRequestException ReqEx)
                         {  // the refresh token has failed, clear it all out and tell the user to reauthorize the app
-                            LogWriter.LogException(ReqEx, MethodBase.GetCurrentMethod().Name);
+                            LogWriter.LogException(ReqEx, "ProcessToken");
 
-                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, $"Twitch rejected the refresh token. User must reauthorize the application.");
+                            LogWriter.DebugLog("ProcessToken", DebugLogTypes.TwitchTokenBot, $"Twitch rejected the refresh token. User must reauthorize the application.");
 
                             // if we're here, the tokens are expired and need to start over with the authorization process
                             if (NoScopes)
@@ -542,7 +546,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <param name="AuthenticationFinished">An action to perform once the authentication is finished-specifically a GUI action.</param>
         internal void GenerateAuthCodeURL(string clientId, bool NoScopes, Action<string> OpenBrowser = null, Action AuthenticationFinished = null)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Request to generate an auth code URL.");
+            LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "Request to generate an auth code URL.");
 
             string seedvalue = (clientId + DateTime.Now.ToLongDateString()).Replace(" ", "");
             string[] splitseed = seedvalue.Split(['a', 'b', 'e', 'j', 'm', 'w', 'g']);
@@ -559,7 +563,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
             if (NoScopes)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating no scopes authorization URL.");
+                LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "Generating no scopes authorization URL.");
 
                 string buildURL = AuthBot.GetAuthorizationCodeUrl(
                     OptionFlags.TwitchAuthRedirectURL,
@@ -567,7 +571,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     state: State,
                     clientId: OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId);
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "URL generated.");
+                LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "URL generated.");
 
                 StreamerNoScopesAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
 
@@ -577,7 +581,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 // invoke event to get the user involved with authorizing the application
                 if (clientId == OptionFlags.TwitchAuthBotClientId) // determine if the client Id is the bot client
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating bot account authorization URL.");
+                    LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "Generating bot account authorization URL.");
 
                     string buildURL = AuthBot.GetAuthorizationCodeUrl(
                         OptionFlags.TwitchAuthRedirectURL,
@@ -587,13 +591,13 @@ namespace StreamerBotLib.BotClients.Twitch
                         state: State,
                         clientId: clientId);
 
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "URL generated.");
+                    LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "URL generated.");
 
                     BotAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
                 }
                 else
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Generating streamer account authorization URL.");
+                    LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "Generating streamer account authorization URL.");
 
                     string buildURL = AuthBot.GetAuthorizationCodeUrl(
                         OptionFlags.TwitchAuthRedirectURL,
@@ -601,7 +605,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         state: State,
                         clientId: clientId
                         );
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "URL generated.");
+                    LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "URL generated.");
 
                     StreamerAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
                 }
@@ -614,7 +618,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         internal static void ForceReauthorization()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Request to reauthorize the application. Clearing the authentication code(s).");
+            LogWriter.DebugLog("ForceReauthorization", DebugLogTypes.TwitchTokenBot, "Request to reauthorize the application. Clearing the authentication code(s).");
 
             OptionFlags.TwitchAuthBotAuthCode = "";
             OptionFlags.TwitchAuthBotAccessToken = "";

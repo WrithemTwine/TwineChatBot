@@ -4,7 +4,6 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Overlay;
 using StreamerBotLib.Static;
 
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -13,12 +12,9 @@ namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
-        private MediaOverlayPage MediaOverlayPage = null;
-        private MediaOverlay MediaOverlay = null;
-
         private void MediaOverlayServer_SetOverlayWindow(object sender, SetOverlayWindowEventArgs e)
         {
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            ThreadManager.CreateThreadStart("MediaOverlayServer_SetOverlayWindow", () =>
             {
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -123,8 +119,7 @@ namespace StreamerBot
             {
                 if (B.Item3.IsEnabled) // isenabled is a check the credentials are added to the bot
                 {
-
-                    DispatchStartBot(B.Item3.DataContext as IOModule);
+                    DispatchStartBotAsync(B.Item3.DataContext as IOModule);
                 }
             }
         }
@@ -157,16 +152,19 @@ namespace StreamerBot
                 {
                     (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
                 }
-                else if (child.GetType() == typeof(Label))
+                else if (child.GetType() == typeof(StackPanel))
                 {
-                    Label currLabel = (Label)child;
-                    if (currLabel.Name.Contains("Start"))
+                    foreach (UIElement SPchild in ((StackPanel)child).Children)
                     {
-                        currLabel.Visibility = Visibility.Visible;
-                    }
-                    else if (currLabel.Name.Contains("Stop"))
-                    {
-                        currLabel.Visibility = Visibility.Collapsed;
+                        Label currLabel = (Label)SPchild;
+                        if (currLabel.Name.Contains("Start"))
+                        {
+                            currLabel.Visibility = Visibility.Visible;
+                        }
+                        else if (currLabel.Name.Contains("Stop"))
+                        {
+                            currLabel.Visibility = Visibility.Collapsed;
+                        }
                     }
                 }
             }

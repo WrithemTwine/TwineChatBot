@@ -16,7 +16,7 @@ namespace StreamerBotLib.DataSQL
         public ObservableCollection<ArchiveMultiStream> CleanupList { get; } = [];
         private bool IsLiveStreamUpdated = false;
         public string MultiLiveStatusLog { get; private set; } = "";
-        private List<string> MultiLiveStatusList = [];
+        private readonly List<string> MultiLiveStatusList = [];
         private const int MaxList = 50;
 
         public ObservableCollection<ArchiveMultiStream> GetCleanupList()

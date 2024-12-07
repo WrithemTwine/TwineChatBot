@@ -17,6 +17,16 @@ namespace StreamerBotLib.Overlay.Models
 
         }
 
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as OverlayPage);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(OverlayType, OverlayHyperText);
+        }
+
         //public OverlayPage(OverlayActionType actionType)
         //{
         //    OverlayType = actionType.OverlayType.ToString();

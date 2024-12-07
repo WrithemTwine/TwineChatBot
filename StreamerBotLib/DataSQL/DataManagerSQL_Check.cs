@@ -79,8 +79,8 @@ namespace StreamerBotLib.DataSQL
         /// Determines if there are multiple streams based on the same start date.
         /// </summary>
         /// <param name="streamStart">The stream start date and time to check.</param>
-        /// <returns><code>true</code> if there are multiple streams
-        /// <code>false</code> if there is no more than one stream.</returns>
+        /// <returns><code>true</code> if there are multiple streams on the same day
+        /// <code>false</code> if there is no more than one stream for the current day.</returns>
         public bool CheckMultiStreams(DateTime streamStart, SQLDBContext Refcontext = null)
         {
             lock (GUIDataManagerLock.Lock)
@@ -88,7 +88,8 @@ namespace StreamerBotLib.DataSQL
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
                 bool result = (from s in context.StreamStats
-                               where (s.StreamStart == streamStart)
+                               // check for the Year/Month/Day are the same, ignoring the time
+                               where s.StreamStart.ToString("yyyy:M:dd") == streamStart.ToString("yyyy:M:dd")
                                select s).Count() > 1;
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;

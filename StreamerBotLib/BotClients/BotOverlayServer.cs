@@ -5,8 +5,6 @@ using StreamerBotLib.Overlay;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
-using System.Reflection;
-
 namespace StreamerBotLib.BotClients
 {
     /*
@@ -55,7 +53,7 @@ namespace StreamerBotLib.BotClients
         /// Queue to pipeline the alerts in an orderly and timed fashion, don't send alerts until
         /// ready (previous alert finishes).
         /// </summary>
-        private Queue<Thread> SendAlerts { get; set; } = new();
+        private Queue<Thread> SendAlerts { get; set; } = [];
         /// <summary>
         /// The alert count.
         /// </summary>
@@ -108,24 +106,27 @@ namespace StreamerBotLib.BotClients
         /// Probably starts the bot.
         /// </summary>
         /// <returns>True, the bot has started.</returns>
-        public override void StartBot()
+        public override Task StartBot()
         {
-            if (IsActive == null || IsActive == false)
+            return new(() =>
             {
-                IsActive = true;
-
-                if (OverlayPage == null)
+                if (IsActive == null || IsActive == false)
                 {
-                    SetOverlayWindow?.Invoke(this, new SetOverlayWindowEventArgs() { SetOverlay = SetOverlayWindowGUI });
-                }
+                    IsActive = true;
 
-                if (!AlertsThreadStarted)
-                {
-                    ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
-                }
+                    if (OverlayPage == null)
+                    {
+                        SetOverlayWindow?.Invoke(this, new SetOverlayWindowEventArgs() { SetOverlay = SetOverlayWindowGUI });
+                    }
 
-                InvokeBotStarted();
-            }
+                    if (!AlertsThreadStarted)
+                    {
+                        ThreadManager.CreateThreadStart("StartBot", () => ProcessAlerts(), waitState: ThreadWaitStates.Wait, Priority: ThreadExitPriority.High);
+                    }
+
+                    InvokeBotStarted();
+                }
+            });
         }
 
         /// <summary>
@@ -144,20 +145,23 @@ namespace StreamerBotLib.BotClients
         /// Should stop the bot.
         /// </summary>
         /// <returns>True for bot stopped.</returns>
-        public override void StopBot()
+        public override Task StopBot()
         {
-            if (IsActive == true)
+            return new(() =>
             {
-                IsActive = false;
+                if (IsActive == true)
+                {
+                    IsActive = false;
 
-                SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
-                SendTickerToServer -= OverlayPage?.GetupdatedTickerReceivedHandler();
+                    SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
+                    SendTickerToServer -= OverlayPage?.GetupdatedTickerReceivedHandler();
 
-                OverlayPage?.StopController();
-                OverlayPage = null;
+                    OverlayPage?.StopController();
+                    OverlayPage = null;
 
-                InvokeBotStopped();
-            }
+                    InvokeBotStopped();
+                }
+            });
         }
 
         #region Sending Msg mechansim
@@ -171,7 +175,7 @@ namespace StreamerBotLib.BotClients
         {
             lock (SendAlerts)
             {
-                SendAlerts.Enqueue(ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, () => SendAlert(e.OverlayAction)));
+                SendAlerts.Enqueue(ThreadManager.CreateThread("NewOverlayEventHandler", () => SendAlert(e.OverlayAction)));
                 NotifyActionQueueChanged();
             }
         }
@@ -203,7 +207,7 @@ namespace StreamerBotLib.BotClients
             SendOverlayToServer?.Invoke(this, overlayActionType);
 
 #if LOG_OVERLAY
-            LogWriter.OverlayLog(MethodBase.GetCurrentMethod().Name, $"BotOverlayServer - sending {overlayActionType.OverlayType} to the Overlay Server.");
+            LogWriter.OverlayLog("SendAlert", $"BotOverlayServer - sending {overlayActionType.OverlayType} to the Overlay Server.");
 #endif
 
             Thread.Sleep((int)overlayActionType.Duration * 1000); // sleep to pause and wait for the alert, to avoid collisions with next alert
@@ -279,16 +283,12 @@ namespace StreamerBotLib.BotClients
         #endregion
 
         #region unused interface
-        public override void Send(string s)
+        public override Task Send(string s)
         {
-            return;
+            return new(() => { });
         }
 
         public void GetAllFollowers()
-        {
-        }
-
-        public void GetAllFollowers(bool OverrideFollowers)
         {
         }
 

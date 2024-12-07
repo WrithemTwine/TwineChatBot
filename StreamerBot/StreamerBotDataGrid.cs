@@ -22,10 +22,9 @@ namespace StreamerBot
         {
             SystemsController.DataManage.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
         }
-
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            _ = Dispatcher.BeginInvoke(new Action(() =>
             {
                 switch (e.DatabaseModelName)
                 {
@@ -118,22 +117,18 @@ namespace StreamerBot
                 }
             }));
         }
-
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
         {
             BotController.ClearWatchTime();
         }
-
         private void Button_ClearCurrencyAccrlValues_Click(object sender, RoutedEventArgs e)
         {
             BotController.ClearAllCurrenciesValues();
         }
-
         private void Button_ClearNonFollowers_Click(object sender, RoutedEventArgs e)
         {
             BotController.ClearUsersNonFollowers();
         }
-
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (sender.GetType() == typeof(DataGrid))
@@ -184,7 +179,6 @@ namespace StreamerBot
                 }
             }
         }
-
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -192,7 +186,6 @@ namespace StreamerBot
 
             DGOpenEditWindow(item);
         }
-
         private void DGOpenEditWindow(DataGrid item)
         {
             Type SqlModel = item.Name switch
@@ -233,13 +226,11 @@ namespace StreamerBot
 
             PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
         }
-
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
             DGOpenEditWindow(item);
         }
-
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -249,7 +240,6 @@ namespace StreamerBot
                 // TODO: fix menu delete click - item.ItemsSource.
             }
         }
-
         private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -259,7 +249,6 @@ namespace StreamerBot
                 BotController.AddNewAutoShoutUser(dr.UserId, dr.Platform);
             }
         }
-
         private void MenuItem_LiveMonitorClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -271,7 +260,6 @@ namespace StreamerBot
 
             SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), true);
         }
-
         private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;

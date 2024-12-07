@@ -183,14 +183,11 @@
         internal static KDTreeNode<T> CreateRoot(double[][] points, T[] values, bool inPlace, out int leaves)
         {
             // Initial argument checks for creating the tree
-            if (points == null)
-            {
-                throw new ArgumentNullException("points");
-            }
+            ArgumentNullException.ThrowIfNull(points);
 
             if (values != null && points.Length != values.Length)
             {
-                throw new DimensionMismatchException("values");
+                throw new DimensionMismatchException(nameof(values));
             }
 
             if (!inPlace)
@@ -209,16 +206,16 @@
 
             // Create a comparer to compare individual array
             // elements at specified positions when sorting
-            ElementComparer comparer = new ElementComparer();
+            ElementComparer comparer = new();
 
             // Call the recursive algorithm to operate on the whole array (from 0 to points.Length)
-            KDTreeNode<T> Root = create(points, values, 0, dimensions, 0, points.Length, comparer, ref leaves);
+            KDTreeNode<T> Root = Create(points, values, 0, dimensions, 0, points.Length, comparer, ref leaves);
 
             // Create and return the newly formed tree
             return Root;
         }
 
-        private static KDTreeNode<T> create(double[][] points, T[] values,
+        private static KDTreeNode<T> Create(double[][] points, T[] values,
  int depth, int k, int start, int length, ElementComparer comparer, ref int leaves)
         {
             if (length <= 0)
@@ -248,8 +245,8 @@
             depth++;
 
             // Continue with the recursion, passing the appropriate left and right array sections
-            var left = create(points, values, depth, k, leftStart, leftLength, comparer, ref leaves);
-            var right = create(points, values, depth, k, rightStart, rightLength, comparer, ref leaves);
+            var left = Create(points, values, depth, k, leftStart, leftLength, comparer, ref leaves);
+            var right = Create(points, values, depth, k, rightStart, rightLength, comparer, ref leaves);
 
             if (left == null && right == null)
             {

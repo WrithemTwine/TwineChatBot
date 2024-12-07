@@ -57,6 +57,7 @@ namespace StreamerBot
 
         public StreamerBotWindow()
         {
+            OptionFlags.ActiveToken = true;
             StartBotDate = DateTime.Now;
             ThreadManager.SetGUIDispatcher(Dispatcher.CurrentDispatcher);
             LogWriter.WriteLog(StartBotDate, "Now starting active bot session status log");
@@ -68,8 +69,6 @@ namespace StreamerBot
 
             // TODO: determine database connection strings, start if available, defer until setup parameter(s) are added
             Controller = new();
-
-            //GUIDataManagerViews.DataViewsLoaded += StreamerBotWindow_DataViewsLoaded;
 
             InitializeComponent();
 
@@ -92,7 +91,7 @@ namespace StreamerBot
             ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<short>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
 
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, ProcessWatcher);
+            ThreadManager.CreateThreadStart(".ctor_StreamerBotWindow", ProcessWatcher);
 
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             StatusBarItem_BetaLabel.Visibility = version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -149,50 +148,50 @@ namespace StreamerBot
         /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
         private void UpdateData(Button targetclick, Action<string> InvokeMethod)
         {
-            if (!OptionFlags.CheckSettingIsDefault("TwitchChannelName", OptionFlags.TwitchChannelName)) // prevent operation if default value
+            if (!OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName), OptionFlags.TwitchChannelName)) // prevent operation if default value
             {
                 targetclick.IsEnabled = false;
 
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("UpdateData", () =>
                 {
                     try
                     {
-                        InvokeMethod.Invoke(Settings.Default.TwitchChannelName);
+                        InvokeMethod.Invoke(OptionFlags.TwitchChannelName);
                     }
                     catch (Exception ex)
                     {
-                        LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                        LogWriter.LogException(ex, "UpdateData");
                     }
                 });
             }
         }
         private void GuiTwitchBot_OnLiveStreamStarted(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received an livestream started event.");
+            LogWriter.DebugLog("GuiTwitchBot_OnLiveStreamStarted", DebugLogTypes.GUIEvents, "Received an livestream started event.");
 
             SetLiveStreamActive(true);
         }
         private void GuiTwitchBot_OnLiveStreamStopped(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received livestream stopped. Notify GUI to update appearance for offline.");
+            LogWriter.DebugLog("GuiTwitchBot_OnLiveStreamStopped", DebugLogTypes.GUIEvents, "Received livestream stopped. Notify GUI to update appearance for offline.");
 
             SetLiveStreamActive(false);
         }
         private void Button_RefreshCategory_Click(object sender, RoutedEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "User pushed the category button.");
+            LogWriter.DebugLog("Button_RefreshCategory_Click", DebugLogTypes.GUIEvents, "User pushed the category button.");
 
             BeginUpdateCategory();
         }
         private void BeginUpdateCategory()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
+            LogWriter.DebugLog("BeginUpdateCategory", DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
 
-            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => Controller.GetUserCategory()));
+            Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => BotController.GetUserCategory()));
         }
         private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIEvents, "Received update to the channel game category.");
+            LogWriter.DebugLog("BotEvents_GetChannelGameName", DebugLogTypes.GUIEvents, "Received update to the channel game category.");
 
             Dispatcher.Invoke(() =>
             {
@@ -279,7 +278,7 @@ namespace StreamerBot
 
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
-            TwitchCheckFocus();
+            TwitchCheckFocusAsync();
         }
 
         /// <summary>
@@ -499,7 +498,7 @@ namespace StreamerBot
             if ((sender as RadioButton).IsEnabled)
             {
                 (sender as RadioButton).IsEnabled = false;
-                DispatchStartBot((sender as RadioButton).DataContext as IOModule);
+                DispatchStartBotAsync((sender as RadioButton).DataContext as IOModule);
             }
         }
 
@@ -517,13 +516,13 @@ namespace StreamerBot
         }
 
         /// <summary>
-        /// Every time a text box changes, relative to access credentials, call the TwitchCheckFocus method, which checks the data entry for whether buttons can be enabled so the user can click them
+        /// Every time a text box changes, relative to access credentials, call the TwitchCheckFocusAsync method, which checks the data entry for whether buttons can be enabled so the user can click them
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
-            TwitchCheckFocus();
+            TwitchCheckFocusAsync();
         }
 
         private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -547,21 +546,21 @@ namespace StreamerBot
         {
             Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
-            TwitchCheckFocus();
+            TwitchCheckFocusAsync();
         }
 
         private void RefreshButtonNoScopes_Click(object sender, RoutedEventArgs e)
         {
             Label_Twitch_RefreshDate_NoScopes.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
-            TwitchCheckFocus();
+            TwitchCheckFocusAsync();
         }
 
         private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
         {
             Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
-            TwitchCheckFocus();
+            TwitchCheckFocusAsync();
         }
 
         #endregion
@@ -577,7 +576,7 @@ namespace StreamerBot
                 OptionFlags.TwitchPriorChannelName = TextBox_TwitchChannelUserName.Text;
             }
 
-            TwitchCheckFocus();
+            TwitchCheckFocusAsync();
         }
 
     }

@@ -11,8 +11,6 @@ using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Overlay.Server;
 using StreamerBotLib.Static;
 
-using System.Reflection;
-
 namespace StreamerBotLib.Overlay.Control
 {
     /// <summary>
@@ -55,11 +53,11 @@ namespace StreamerBotLib.Overlay.Control
         /// Send a popup alert to the Overlay http server.
         /// </summary>
         /// <param name="overlayPage">An object holding the html data to send to for the alert.</param>
-        public void SendAlert(OverlayPage overlayPage)
+        public static void SendAlert(OverlayPage overlayPage)
         {
             TwineBotWebServer.SendAlert(overlayPage);
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Sending alert, {overlayPage.OverlayType}, for display.");
+            LogWriter.DebugLog("SendAlert", DebugLogTypes.OverlayBot, $"Sending alert, {overlayPage.OverlayType}, for display.");
 
         }
 #endif
@@ -73,7 +71,7 @@ namespace StreamerBotLib.Overlay.Control
             {
                 TwineBotWebServer.StartServer();
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server started.");
+                LogWriter.DebugLog("StartServer", DebugLogTypes.OverlayBot, $"Overlay http server started.");
 
                 IsServerStarted = true;
             }
@@ -88,7 +86,7 @@ namespace StreamerBotLib.Overlay.Control
             {
                 TwineBotWebServer.StopServer();
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Overlay http server stopped.");
+                LogWriter.DebugLog("StopServer", DebugLogTypes.OverlayBot, $"Overlay http server stopped.");
                 IsServerStarted = false;
             }
         }
@@ -98,7 +96,7 @@ namespace StreamerBotLib.Overlay.Control
         /// doesn't have to display all of them on screen.
         /// </summary>
         /// <param name="items">A collection of the user selected items for the ticker.</param>
-        public void SetTickerItems(IEnumerable<SelectedTickerItem> items)
+        public static void SetTickerItems(IEnumerable<SelectedTickerItem> items)
         {
             TickerFormatter.SetTickersSelected(items);
         }

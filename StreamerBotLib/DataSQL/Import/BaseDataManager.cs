@@ -2,7 +2,6 @@
 
 using System.Data;
 using System.IO;
-using System.Reflection;
 
 namespace StreamerBotLib.DataSQL.Import
 {
@@ -11,7 +10,7 @@ namespace StreamerBotLib.DataSQL.Import
         protected string DataFileName;
         protected string BackupDataFileXML;
 
-        protected readonly Queue<Task> SaveTasks = new();
+        protected readonly Queue<Task> SaveTasks = [];
         protected bool SaveThreadStarted = false;
         protected const int SaveThreadWait = 10000;
         protected const int BackupSaveIntervalMins = 15;
@@ -31,7 +30,7 @@ namespace StreamerBotLib.DataSQL.Import
         /// </summary>
         /// <param name="fileName">Name of the file to format, prepend debug directory.</param>
         /// <returns>File path, whether in debug directory or relative filename in current release directory - based on Current Working Directory.</returns>
-        private string FormatFileName(string fileName)
+        private static string FormatFileName(string fileName)
         {
             return
 #if DEBUG
@@ -45,13 +44,12 @@ namespace StreamerBotLib.DataSQL.Import
                 ;
         }
 
-        protected void BeginLoadData(DataTableCollection dataTables)
+        protected static void BeginLoadData(DataTableCollection dataTables)
         {
             foreach (DataTable table in dataTables)
             {
                 table.BeginLoadData();
             }
-
         }
 
         protected void TryLoadFile(Action<string> LoadFile)
@@ -64,14 +62,14 @@ namespace StreamerBotLib.DataSQL.Import
                 }
                 catch (Exception ex) // catch if exception loading the data file, e.g. file corrupted from system crash
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "TryLoadFile");
                     File.Copy(DataFileName, $"Failed_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{Path.GetFileName(DataFileName)}");
                     LoadFile(BackupDataFileXML);
                 }
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "TryLoadFile");
             }
         }
 
@@ -100,7 +98,7 @@ namespace StreamerBotLib.DataSQL.Import
         //    if (!SaveThreadStarted) // only start the thread once per save cycle, flag is an object lock
         //    {
         //        SaveThreadStarted = true;
-        //        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
+        //        ThreadManager.CreateThreadStart("SaveData", PerformSaveOp, ThreadWaitStates.Wait, ThreadExitPriority.Low); // need to wait, else could corrupt datafile
         //    }
 
         //    lock (SaveTasks) // lock the Queue, block thread if currently save task has started
@@ -125,7 +123,7 @@ namespace StreamerBotLib.DataSQL.Import
         //                }
         //                catch (Exception ex)
         //                {
-        //                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+        //                    LogWriter.LogException(ex, "SaveData");
         //                }
         //            }
         //        }));
@@ -136,7 +134,7 @@ namespace StreamerBotLib.DataSQL.Import
         //        protected void PerformSaveOp()
         //        {
         //#if LogDataManager_Actions
-        //            LogWriter.DataActionLog(MethodBase.GetCurrentMethod().Name, $"Managed database save data.");
+        //            LogWriter.DataActionLog("PerformSaveOp", $"Managed database save data.");
         //#endif
 
         //            if (OptionFlags.ActiveToken) // don't sleep if exiting app

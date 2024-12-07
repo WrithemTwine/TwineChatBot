@@ -38,7 +38,7 @@ namespace StreamerBotLib.Overlay
         /// <summary>
         /// Updates the current theme per the user's selection.
         /// </summary>
-        private void SetTheme()
+        private static void SetTheme()
         {
             Application.Current.Resources.MergedDictionaries[0].Source = new(ThemeSelector.GetCurrentTheme(), UriKind.Absolute);
         }

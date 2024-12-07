@@ -32,14 +32,20 @@ namespace StreamerBotLib.MLearning.Accord.KNN
     /// 
     /// <typeparam name="TNode">The class type for the nodes of the tree.</typeparam>
     /// 
+    /// <remarks>
+    ///   Creates a new <see cref="KDTree&lt;T&gt;"/>.
+    /// </remarks>
+    ///
+    /// <param name="dimensions">The number of dimensions in the tree.</param>
+    ///
     [Serializable]
-    public class KDTreeBase<TNode> : BinaryTree<TNode>, IEnumerable<TNode>
+    public class KDTreeBase<TNode>(int dimensions) : BinaryTree<TNode>, IEnumerable<TNode>
     where TNode : KDTreeNodeBase<TNode>, IComparable<TNode>, new()
     {
 
         private int count;
-        private int dimensions;
-        private int leaves;
+        private readonly int dimensions = dimensions;
+        private readonly int leaves;
 
         private IMetric<double[]> distance = new Euclidean();
 
@@ -84,18 +90,6 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         public int Leaves
         {
             get { return leaves; }
-        }
-
-
-        /// <summary>
-        ///   Creates a new <see cref="KDTree&lt;T&gt;"/>.
-        /// </summary>
-        ///
-        /// <param name="dimensions">The number of dimensions in the tree.</param>
-        ///
-        public KDTreeBase(int dimensions)
-        {
-            this.dimensions = dimensions;
         }
 
         /// <summary>
@@ -159,7 +153,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 if (Root != null)
                 {
-                    nearest(Root, position, radius, list);
+                    Nearest(Root, position, radius, list);
                 }
 
                 return list;
@@ -170,7 +164,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 if (Root != null)
                 {
-                    nearest(Root, position, radius, list);
+                    Nearest(Root, position, radius, list);
                 }
 
                 return list;
@@ -192,7 +186,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
             if (Root != null)
             {
-                nearest(Root, position, radius, list);
+                Nearest(Root, position, radius, list);
             }
 
             return list;
@@ -213,7 +207,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
             if (Root != null)
             {
-                nearest(Root, position, list);
+                Nearest(Root, position, list);
             }
 
             return list;
@@ -229,8 +223,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         ///
         public TNode Nearest(double[] position)
         {
-            double distance;
-            return Nearest(position, out distance);
+            return Nearest(position, out _);
         }
 
         /// <summary>
@@ -248,7 +241,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             TNode result = Root;
             distance = Distance.Distance(Root.Position, position);
 
-            nearest(Root, position, ref result, ref distance);
+            Nearest(Root, position, ref result, ref distance);
 
             return result;
         }
@@ -273,7 +266,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             if (Root != null)
             {
                 int visited = 0;
-                approximate(Root, position, list, maxLeaves, ref visited);
+                Approximate(Root, position, list, maxLeaves, ref visited);
             }
 
             return list;
@@ -298,7 +291,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             int maxLeaves = (int)(leaves * percentage);
 
             int visited = 0;
-            approximateNearest(Root, position, ref result, ref distance, maxLeaves, ref visited);
+            ApproximateNearest(Root, position, ref result, ref distance, maxLeaves, ref visited);
 
             return result;
         }
@@ -338,7 +331,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             if (Root != null)
             {
                 int visited = 0;
-                approximate(Root, position, list, maxLeaves, ref visited);
+                Approximate(Root, position, list, maxLeaves, ref visited);
             }
 
             return list;
@@ -381,10 +374,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         protected static TNode CreateRoot(double[][] points, bool inPlace, out int leaves)
         {
             // Initial argument checks for creating the tree
-            if (points == null)
-            {
-                throw new ArgumentNullException("points");
-            }
+            ArgumentNullException.ThrowIfNull(points);
 
             if (!inPlace)
             {
@@ -397,16 +387,16 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
             // Create a comparer to compare individual array
             // elements at specified positions when sorting
-            ElementComparer comparer = new ElementComparer();
+            ElementComparer comparer = new();
 
             // Call the recursive algorithm to operate on the whole array (from 0 to points.Length)
-            TNode Root = create(points, 0, dimensions, 0, points.Length, comparer, ref leaves);
+            TNode Root = Create(points, 0, dimensions, 0, points.Length, comparer, ref leaves);
 
             // Create and return the newly formed tree
             return Root;
         }
 
-        private static TNode create(double[][] points,
+        private static TNode Create(double[][] points,
         int depth, int k, int start, int length, ElementComparer comparer, ref int leaves)
         {
             if (length <= 0)
@@ -435,8 +425,8 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             depth++;
 
             // Continue with the recursion, passing the appropriate left and right array sections
-            var left = create(points, depth, k, leftStart, leftLength, comparer, ref leaves);
-            var right = create(points, depth, k, rightStart, rightLength, comparer, ref leaves);
+            var left = Create(points, depth, k, leftStart, leftLength, comparer, ref leaves);
+            var right = Create(points, depth, k, rightStart, rightLength, comparer, ref leaves);
 
             if (left == null && right == null)
             {
@@ -461,7 +451,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         ///   Radius search.
         /// </summary>
         ///
-        private void nearest(TNode current, double[] position,
+        private void Nearest(TNode current, double[] position,
         double radius, ICollection<NodeDistance<TNode>> list)
         {
             // Check if the distance of the point from this
@@ -486,24 +476,24 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (current.Left != null)
                 {
-                    nearest(current.Left, position, radius, list);
+                    Nearest(current.Left, position, radius, list);
                 }
 
                 if (current.Right != null && Math.Abs(u) <= radius)
                 {
-                    nearest(current.Right, position, radius, list);
+                    Nearest(current.Right, position, radius, list);
                 }
             }
             else
             {
                 if (current.Right != null)
                 {
-                    nearest(current.Right, position, radius, list);
+                    Nearest(current.Right, position, radius, list);
                 }
 
                 if (current.Left != null && Math.Abs(u) <= radius)
                 {
-                    nearest(current.Left, position, radius, list);
+                    Nearest(current.Left, position, radius, list);
                 }
             }
         }
@@ -512,7 +502,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         ///   k-nearest neighbors search.
         /// </summary>
         ///
-        private void nearest(TNode current, double[] position, KDTreeNodeCollection<TNode> list)
+        private void Nearest(TNode current, double[] position, KDTreeNodeCollection<TNode> list)
         {
             // Compute distance from this node to the point
             double d = distance.Distance(position, current.Position);
@@ -535,29 +525,29 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (current.Left != null)
                 {
-                    nearest(current.Left, position, list);
+                    Nearest(current.Left, position, list);
                 }
 
                 if (current.Right != null && Math.Abs(u) <= list.Maximum)
                 {
-                    nearest(current.Right, position, list);
+                    Nearest(current.Right, position, list);
                 }
             }
             else
             {
                 if (current.Right != null)
                 {
-                    nearest(current.Right, position, list);
+                    Nearest(current.Right, position, list);
                 }
 
                 if (current.Left != null && Math.Abs(u) <= list.Maximum)
                 {
-                    nearest(current.Left, position, list);
+                    Nearest(current.Left, position, list);
                 }
             }
         }
 
-        private void nearest(TNode current, double[] position, ref TNode match, ref double minDistance)
+        private void Nearest(TNode current, double[] position, ref TNode match, ref double minDistance)
         {
             // Compute distance from this node to the point
             double d = distance.Distance(position, current.Position);
@@ -582,30 +572,30 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (current.Left != null)
                 {
-                    nearest(current.Left, position, ref match, ref minDistance);
+                    Nearest(current.Left, position, ref match, ref minDistance);
                 }
 
                 if (current.Right != null && u <= minDistance)
                 {
-                    nearest(current.Right, position, ref match, ref minDistance);
+                    Nearest(current.Right, position, ref match, ref minDistance);
                 }
             }
             else
             {
                 if (current.Right != null)
                 {
-                    nearest(current.Right, position, ref match, ref minDistance);
+                    Nearest(current.Right, position, ref match, ref minDistance);
                 }
 
                 if (current.Left != null && u <= minDistance)
                 {
-                    nearest(current.Left, position, ref match, ref minDistance);
+                    Nearest(current.Left, position, ref match, ref minDistance);
                 }
             }
         }
 
 
-        private bool approximate(TNode current, double[] position,
+        private bool Approximate(TNode current, double[] position,
         KDTreeNodeCollection<TNode> list, int maxLeaves, ref int visited)
         {
             // Compute distance from this node to the point
@@ -633,7 +623,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (current.Left != null)
                 {
-                    if (approximate(current.Left, position, list, maxLeaves, ref visited))
+                    if (Approximate(current.Left, position, list, maxLeaves, ref visited))
                     {
                         return true;
                     }
@@ -641,7 +631,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 if (current.Right != null && Math.Abs(u) <= list.Maximum)
                 {
-                    if (approximate(current.Right, position, list, maxLeaves, ref visited))
+                    if (Approximate(current.Right, position, list, maxLeaves, ref visited))
                     {
                         return true;
                     }
@@ -651,12 +641,12 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (current.Right != null)
                 {
-                    approximate(current.Right, position, list, maxLeaves, ref visited);
+                    Approximate(current.Right, position, list, maxLeaves, ref visited);
                 }
 
                 if (current.Left != null && Math.Abs(u) <= list.Maximum)
                 {
-                    if (approximate(current.Left, position, list, maxLeaves, ref visited))
+                    if (Approximate(current.Left, position, list, maxLeaves, ref visited))
                     {
                         return true;
                     }
@@ -666,7 +656,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             return false;
         }
 
-        private bool approximateNearest(TNode current, double[] position,
+        private bool ApproximateNearest(TNode current, double[] position,
         ref TNode match, ref double minDistance, int maxLeaves, ref int visited)
         {
             // Compute distance from this node to the point
@@ -699,7 +689,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (current.Left != null)
                 {
-                    if (approximateNearest(current.Left, position, ref match, ref minDistance, maxLeaves, ref visited))
+                    if (ApproximateNearest(current.Left, position, ref match, ref minDistance, maxLeaves, ref visited))
                     {
                         return true;
                     }
@@ -707,7 +697,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
 
                 if (current.Right != null && Math.Abs(u) <= minDistance)
                 {
-                    if (approximateNearest(current.Right, position, ref match, ref minDistance, maxLeaves, ref visited))
+                    if (ApproximateNearest(current.Right, position, ref match, ref minDistance, maxLeaves, ref visited))
                     {
                         return true;
                     }
@@ -717,13 +707,13 @@ namespace StreamerBotLib.MLearning.Accord.KNN
             {
                 if (current.Right != null)
                 {
-                    approximateNearest(current.Right, position,
+                    ApproximateNearest(current.Right, position,
                     ref match, ref minDistance, maxLeaves, ref visited);
                 }
 
                 if (current.Left != null && Math.Abs(u) <= minDistance)
                 {
-                    if (approximateNearest(current.Left, position, ref match, ref minDistance, maxLeaves, ref visited))
+                    if (ApproximateNearest(current.Left, position, ref match, ref minDistance, maxLeaves, ref visited))
                     {
                         return true;
                     }
@@ -743,12 +733,12 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             count++;
             var root = Root;
-            TNode node = insert(ref root, position, 0);
+            TNode node = Insert(ref root, position, 0);
             Root = root;
             return node;
         }
 
-        private TNode insert(ref TNode node, double[] position, int depth)
+        private TNode Insert(ref TNode node, double[] position, int depth)
         {
             if (node == null)
             {
@@ -767,13 +757,13 @@ namespace StreamerBotLib.MLearning.Accord.KNN
                 if (position[node.Axis] < node.Position[node.Axis])
                 {
                     TNode child = node.Left;
-                    newNode = insert(ref child, position, depth + 1);
+                    newNode = Insert(ref child, position, depth + 1);
                     node.Left = child;
                 }
                 else
                 {
                     TNode child = node.Right;
-                    newNode = insert(ref child, position, depth + 1);
+                    newNode = Insert(ref child, position, depth + 1);
                     node.Right = child;
                 }
 

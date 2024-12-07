@@ -9,7 +9,7 @@ namespace EFEntityEntryTesting.EF
         public DbSet<CategoryList> CategoryList { get; set; }
         public DbSet<Quotes> Quotes { get; set; }
 
-        private StreamWriter _writer = new("DebugTest.txt");
+        private readonly StreamWriter _writer = new("DebugTest.txt");
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -46,7 +46,7 @@ namespace StreamerBotLib.Models
             return other != null && UserName == other.UserName && Platform == other.Platform && UserId == other.UserId;
         }
 
-        public int GetHashCode(object Obj)
+        public static int GetHashCode(object Obj)
         {
             return (Obj as LiveUser).GetHashCode();
         }

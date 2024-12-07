@@ -28,8 +28,14 @@ namespace StreamerBotLib.MLearning.Accord.KNN
     /// 
     /// <typeparam name="TNode">The class type for the nodes of the tree.</typeparam>
     /// 
+    /// <remarks>
+    ///   Initializes a new instance of the <see cref="TreeNode{TNode}"/> class.
+    /// </remarks>
+    /// 
+    /// <param name="index">The index of this node in the children collection of its parent node.</param>
+    /// 
     [Serializable]
-    public class TreeNode<TNode> : ITreeNode<TNode>
+    public class TreeNode<TNode>(int index) : ITreeNode<TNode>
         where TNode : TreeNode<TNode>
     {
         /// <summary>
@@ -43,7 +49,7 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         ///   collection of children nodes of its parent.
         /// </summary>
         /// 
-        public int Index { get; set; }
+        public int Index { get; set; } = index;
 
         /// <summary>
         ///   Gets or sets the collection of child nodes
@@ -100,17 +106,5 @@ namespace StreamerBotLib.MLearning.Accord.KNN
         {
             get { return Children == null || Children.Length == 0; }
         }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref="TreeNode{TNode}"/> class.
-        /// </summary>
-        /// 
-        /// <param name="index">The index of this node in the children collection of its parent node.</param>
-        /// 
-        public TreeNode(int index)
-        {
-            Index = index;
-        }
-
     }
 }

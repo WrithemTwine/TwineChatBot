@@ -14,5 +14,15 @@
         {
             return (CategoryId + CategoryName).GetHashCode();
         }
-    };
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as CategoryData);
+        }
+
+        public override int GetHashCode()
+        {
+            return System.HashCode.Combine(CategoryId, CategoryName);
+        }
+    }
 }

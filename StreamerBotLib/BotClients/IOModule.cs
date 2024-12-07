@@ -51,14 +51,20 @@ namespace StreamerBotLib.BotClients
 
         #region interface
 
-        public virtual bool Connect()
+        public virtual async Task<bool> Connect()
         {
-            return false;
+            return await new Task<bool>(() =>
+            {
+                return false;
+            });
         }
 
-        public virtual bool Disconnect()
+        public virtual async Task<bool> Disconnect()
         {
-            return false;
+            return await new Task<bool>(() =>
+            {
+                return false;
+            });
         }
 
         public virtual bool ReceiveWhisper(Action<string> ReceiveWhisperCallback)
@@ -66,9 +72,9 @@ namespace StreamerBotLib.BotClients
             throw new NotImplementedException();
         }
 
-        public virtual void Send(string s)
+        public virtual async Task Send(string s)
         {
-            return;
+            await new Task(() => { });
         }
 
         public virtual bool SendWhisper(string user, string s)
@@ -76,17 +82,22 @@ namespace StreamerBotLib.BotClients
             throw new NotImplementedException();
         }
 
-        public virtual void StartBot()
+        public virtual Task StartBot()
         {
+            return new Task(() => { });
         }
 
-        public virtual void StopBot()
+        public virtual Task StopBot()
         {
+            return new Task(() => { });
         }
 
-        public virtual bool ExitBot()
+        public virtual async Task<bool> ExitBot()
         {
-            return true;
+            return await new Task<bool>(() =>
+            {
+                return true;
+            });
         }
         #endregion
     }

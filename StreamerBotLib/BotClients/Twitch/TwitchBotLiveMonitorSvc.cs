@@ -4,14 +4,14 @@ using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System.Reflection;
-
 using TwitchLib.Api.Core.Exceptions;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchBotLiveMonitorSvc : TwitchBotsBase
     {
+        private readonly TwitchTokenBot tokenBot;
+
         /// <summary>
         /// Listens for new stream activity, such as going live, updated live stream, and stream goes offline.
         /// </summary>
@@ -20,11 +20,12 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// To get MultiLive channels for monitoring live stream
         /// </summary>
-        private static IDataManagerReadOnly DataManageReadOnly = SystemsController.DataManage;
+        private static readonly IDataManagerReadOnly DataManageReadOnly = SystemsController.DataManage;
 
-        public TwitchBotLiveMonitorSvc()
+        internal TwitchBotLiveMonitorSvc(TwitchTokenBot TokenBot)
         {
             BotClientName = Bots.TwitchMultiBot;
+            tokenBot = TokenBot;
 
             DataManageReadOnly.UpdatedMonitoringChannels += DataManageReadOnly_UpdatedMonitoringChannels;
         }
@@ -37,43 +38,46 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Build the LiveStreamMonitor service, add available multichannel user ids, and start the service.
         /// </summary>
-        public override void StartBot()
+        public override Task StartBot()
         {
-            try
+            return Task.Run(() =>
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotSendChat, "Starting bot.");
-
-                if (IsActive is null or false)
+                try
                 {
-                    ConnectLiveMonitorService();
+                    LogWriter.DebugLog("StartBot", DebugLogTypes.TwitchBotSendChat, "Starting bot.");
+
+                    if (IsActive is null or false)
+                    {
+                        ConnectLiveMonitorService();
+                        if (SetLiveMonitorChannels())
+                        {
+                            LiveStreamMonitor.Start();
+                            IsActive = true;
+                            InvokeBotStarted();
+                        }
+                        else
+                        {
+                            InvokeBotFailedStart();
+                        }
+                    }
+                }
+                catch (TokenExpiredException)
+                {
+                    LogWriter.DebugLog("StartBot", DebugLogTypes.TwitchTokenBot, "Livestream bot starting - checking tokens.");
+                    tokenBot.CheckToken();
                     if (SetLiveMonitorChannels())
                     {
                         LiveStreamMonitor.Start();
                         IsActive = true;
                         InvokeBotStarted();
                     }
-                    else
-                    {
-                        InvokeBotFailedStart();
-                    }
                 }
-            }
-            catch (TokenExpiredException)
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream bot starting - checking tokens.");
-                tokenBot.CheckToken();
-                if (SetLiveMonitorChannels())
+                catch (Exception ex)
                 {
-                    LiveStreamMonitor.Start();
-                    IsActive = true;
-                    InvokeBotStarted();
+                    LogWriter.LogException(ex, "StartBot");
+                    InvokeBotFailedStart();
                 }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                InvokeBotFailedStart();
-            }
+            });
         }
 
         /// <summary>
@@ -83,10 +87,10 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (LiveStreamMonitor == null)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotSendChat, "Creating new Livestream instance.");
+                LogWriter.DebugLog("ConnectLiveMonitorService", DebugLogTypes.TwitchBotSendChat, "Creating new Livestream instance.");
                 LiveStreamMonitor = new(tokenBot.StreamerHelixApi, (int)Math.Round(OptionFlags.TwitchGoLiveFrequency, 0));
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBotSendChat, $"Using {(int)Math.Round(OptionFlags.TwitchGoLiveFrequency, 0)} seconds live-check frequency.");
+                LogWriter.DebugLog("ConnectLiveMonitorService", DebugLogTypes.TwitchBotSendChat, $"Using {(int)Math.Round(OptionFlags.TwitchGoLiveFrequency, 0)} seconds live-check frequency.");
 
                 // check if there is an unauthorized http access exception; we have an expired token
                 LiveStreamMonitor.AccessTokenUnauthorized += LiveStreamMonitor_AccessTokenUnauthorized;
@@ -95,7 +99,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void LiveStreamMonitor_AccessTokenUnauthorized(object sender, EventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchTokenBot, "Livestream - checking tokens.");
+            LogWriter.DebugLog("LiveStreamMonitor_AccessTokenUnauthorized", DebugLogTypes.TwitchTokenBot, "Livestream - checking tokens.");
             tokenBot.CheckToken();
         }
 
@@ -118,39 +122,41 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Stop the LiveMonitor Service, including a watch on other channels.
         /// </summary>
-        public override void StopBot()
+        public override Task StopBot()
         {
-            try
+            return Task.Run(() =>
             {
-                if (IsActive == true)
+                try
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchMultiLiveBot, "Stopping bot.");
+                    if (IsActive == true)
+                    {
+                        LogWriter.DebugLog("StopBot", DebugLogTypes.TwitchMultiLiveBot, "Stopping bot.");
 
-                    LiveStreamMonitor?.Stop();
-                    IsActive = false;
-                    InvokeBotStopped();
+                        LiveStreamMonitor?.Stop();
+                        IsActive = false;
+                        InvokeBotStopped();
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-            }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, "StopBot");
+                }
+            });
         }
 
         /// <summary>
         /// Stops the bot and prepares to exit.
         /// </summary>
         /// <returns>true when the bot is stopped.</returns>
-        public override bool ExitBot()
+        public override Task<bool> ExitBot()
         {
-            if (IsActive == true)
+            return Task.Run(async () =>
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchMultiLiveBot, "Stopping and exiting bot.");
-
-                StopBot();
-            }
-            LiveStreamMonitor = null;
-            return base.ExitBot();
+                LogWriter.DebugLog("ExitBot", DebugLogTypes.TwitchMultiLiveBot, "Stopping and exiting bot.");
+                await StopBot();
+                LiveStreamMonitor = null;
+                return true;
+            });
         }
     }
 }

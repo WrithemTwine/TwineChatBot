@@ -58,7 +58,7 @@ namespace StreamerBotLib.Overlay
 
         public void ReceivedOverlayEvent(object sender, OverlayActionType e)
         {
-            Controller.SendAlert(new OverlayPage()
+            OverlayController.SendAlert(new OverlayPage()
             {
                 OverlayType = e.OverlayType.ToString(),
                 OverlayHyperText = ProcessHyperText.ProcessOverlay(
@@ -230,7 +230,7 @@ namespace StreamerBotLib.Overlay
         {
             SelectedTickerItems selectedTickerItems = ((SelectedTickerItems)Resources["TickerSelectedItems"]);
             selectedTickerItems.SaveSelections();
-            Controller.SetTickerItems(selectedTickerItems.GetSelectedTickers());
+            OverlayController.SetTickerItems(selectedTickerItems.GetSelectedTickers());
             UpdateLinks();
         }
 

@@ -22,6 +22,7 @@ namespace StreamerBotLib.DataSQL.Models
 
         public ICollection<MultiLiveStreams> MultiLiveStreams { get; } = [];
 
+        [AllowNull]
         public MultiSummaryLiveStreams? MultiSummaryLiveStreams { get; set; }
 
         public bool Equals(MultiChannels x, MultiChannels y)

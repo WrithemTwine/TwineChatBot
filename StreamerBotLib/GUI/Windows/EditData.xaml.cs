@@ -15,7 +15,6 @@ using StreamerBotLib.Static;
 
 using System.ComponentModel;
 using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -30,7 +29,6 @@ namespace StreamerBotLib.GUI.Windows
     public partial class EditData : Window, INotifyPropertyChanged
     {
         private bool IsClosing;
-        private bool AddedStringEvent;
         private IDataManagerReadOnly DataManage { get; set; }
         private const int ValueWidth = 325;
         private const int LabelWidth = 150;
@@ -369,7 +367,7 @@ namespace StreamerBotLib.GUI.Windows
                         }
                         catch (Exception ex)
                         {
-                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                            LogWriter.LogException(ex, "Button_OKClick");
                         }
                     }
                     AddNewRow?.Invoke(this, new(CurrData));
@@ -377,7 +375,7 @@ namespace StreamerBotLib.GUI.Windows
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "Button_OKClick");
             }
             Close();
 
@@ -511,7 +509,7 @@ namespace StreamerBotLib.GUI.Windows
         {
             TextBox saveMediaPath = sender as TextBox;
 
-            FileDialog pickFile = new OpenFileDialog()
+            OpenFileDialog pickFile = new()
             {
                 Multiselect = false,
                 CheckFileExists = true,
@@ -738,7 +736,7 @@ namespace StreamerBotLib.GUI.Windows
                         }
                         catch (Exception ex)
                         {
-                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                            LogWriter.LogException(ex, "ApplyButton_Click");
                         }
                     }
 
@@ -759,7 +757,7 @@ namespace StreamerBotLib.GUI.Windows
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "ApplyButton_Click");
             }
             Close();
         }
@@ -1761,7 +1759,7 @@ namespace StreamerBotLib.GUI.Windows
                         }
                         catch (Exception ex)
                         {
-                            LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                            LogWriter.LogException(ex, "Button_OKClick");
                         }
                     }
 
@@ -1784,7 +1782,7 @@ namespace StreamerBotLib.GUI.Windows
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "Button_OKClick");
             }
             Close();
         }

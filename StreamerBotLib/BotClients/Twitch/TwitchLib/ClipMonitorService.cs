@@ -2,7 +2,6 @@
 using StreamerBotLib.Static;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Clips.CreateClip;
@@ -147,7 +146,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "GetAllClipsAsync");
                 return null;
             }
         }
@@ -165,7 +164,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "OnServiceTimerTick");
             }
         }
 
@@ -190,7 +189,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "CreateClip");
                 return null;
             }
         }

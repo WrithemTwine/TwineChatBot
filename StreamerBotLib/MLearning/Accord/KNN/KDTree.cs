@@ -38,19 +38,15 @@
     /// <seealso cref="SPTree"/>
     /// <seealso cref="VPTree"/>
     /// 
+    /// <remarks>
+    ///   Creates a new <see cref="KDTree"/>.
+    /// </remarks>
+    /// 
+    /// <param name="dimensions">The number of dimensions in the tree.</param>
+    /// 
     [Serializable]
-    public class KDTree : KDTreeBase<KDTreeNode>
+    public class KDTree(int dimensions) : KDTreeBase<KDTreeNode>(dimensions)
     {
-        /// <summary>
-        ///   Creates a new <see cref="KDTree"/>.
-        /// </summary>
-        /// 
-        /// <param name="dimensions">The number of dimensions in the tree.</param>
-        /// 
-        public KDTree(int dimensions)
-            : base(dimensions)
-        {
-        }
 
         /// <summary>
         ///   Creates a new k-dimensional tree from the given points.
@@ -71,19 +67,11 @@
         public static KDTree<T> FromData<T>(double[][] points, T[] values,
             IMetric<double[]> distance, bool inPlace = false)
         {
-            if (values == null)
-            {
-                throw new ArgumentNullException("values");
-            }
+            ArgumentNullException.ThrowIfNull(values);
 
-            if (distance == null)
-            {
-                throw new ArgumentNullException("distance");
-            }
+            ArgumentNullException.ThrowIfNull(distance);
 
-            int leaves;
-
-            var root = KDTree<T>.CreateRoot(points, values, inPlace, out leaves);
+            var root = KDTree<T>.CreateRoot(points, values, inPlace, out int leaves);
 
             return new KDTree<T>(points[0].Length, root, points.Length, leaves)
             {

@@ -197,8 +197,7 @@
         /// 
         public double Score(TInput input)
         {
-            int value;
-            var result = Scores(input, out value);
+            var result = Scores(input, out int value);
             return result[value];
         }
 
@@ -252,7 +251,7 @@
         /// 
         public double[][] Scores(TInput[] input)
         {
-            return Scores(input, create<double>(input));
+            return Scores(input, Create<double>(input));
         }
 
 
@@ -305,8 +304,7 @@
         /// 
         public double Score(TInput input, out double decision)
         {
-            int value;
-            double[] result = Scores(input, out value);
+            double[] result = Scores(input, out int value);
             decision = value;
             return result[value];
         }
@@ -370,35 +368,31 @@
         /// 
         public double[] Scores(TInput input, out double decision, double[] result)
         {
-            int value;
-            Scores(input, out value, result);
+            Scores(input, out int value, result);
             decision = value;
             return result;
         }
 
         double[] IMultilabelRefScoreClassifier<TInput, bool[]>.Scores(TInput input, ref bool[] decision, double[] result)
         {
-            decision = createOrReuse(input, decision);
-            int value;
-            Scores(input, out value, result);
+            decision = CreateOrReuse(input, decision);
+            Scores(input, out int value, result);
             Vector.OneHot(value, decision);
             return result;
         }
 
         double[] IMultilabelRefScoreClassifier<TInput, int[]>.Scores(TInput input, ref int[] decision, double[] result)
         {
-            decision = createOrReuse(input, decision);
-            int value;
-            Scores(input, out value, result);
+            decision = CreateOrReuse(input, decision);
+            Scores(input, out int value, result);
             Vector.OneHot(value, decision);
             return result;
         }
 
         double[] IMultilabelRefScoreClassifier<TInput, double[]>.Scores(TInput input, ref double[] decision, double[] result)
         {
-            decision = createOrReuse(input, decision);
-            int value;
-            Scores(input, out value, result);
+            decision = CreateOrReuse(input, decision);
+            Scores(input, out int value, result);
             Vector.OneHot(value, decision);
             return result;
         }
@@ -462,7 +456,7 @@
         /// 
         public double[][] Scores(TInput[] input, ref int[] decision)
         {
-            return Scores(input, ref decision, create<double>(input));
+            return Scores(input, ref decision, Create<double>(input));
         }
 
         /// <summary>
@@ -477,22 +471,22 @@
         /// 
         public double[][] Scores(TInput[] input, ref double[] decision)
         {
-            return Scores(input, ref decision, create<double>(input));
+            return Scores(input, ref decision, Create<double>(input));
         }
 
         double[][] IMultilabelScoreClassifierBase<TInput, int[]>.Scores(TInput[] input, ref int[][] decision)
         {
-            return ToMultilabel().Scores(input, ref decision, create<double>(input));
+            return ToMultilabel().Scores(input, ref decision, Create<double>(input));
         }
 
         double[][] IMultilabelScoreClassifierBase<TInput, bool[]>.Scores(TInput[] input, ref bool[][] decision)
         {
-            return ToMultilabel().Scores(input, ref decision, create<double>(input));
+            return ToMultilabel().Scores(input, ref decision, Create<double>(input));
         }
 
         double[][] IMultilabelScoreClassifierBase<TInput, double[]>.Scores(TInput[] input, ref double[][] decision)
         {
-            return ToMultilabel().Scores(input, ref decision, create<double>(input));
+            return ToMultilabel().Scores(input, ref decision, Create<double>(input));
         }
 
 
@@ -513,7 +507,7 @@
         /// 
         public double[] Score(TInput[] input, ref int[] decision, double[] result)
         {
-            decision = createOrReuse(input, decision);
+            decision = CreateOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
             {
                 result[i] = Score(input[i], out decision[i]);
@@ -535,7 +529,7 @@
         ///   
         public double[] Score(TInput[] input, ref double[] decision, double[] result)
         {
-            decision = createOrReuse(input, decision);
+            decision = CreateOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
             {
                 result[i] = Score(input[i], out decision[i]);
@@ -559,7 +553,7 @@
         ///   avoiding unnecessary memory allocations.</param>
         public double[][] Scores(TInput[] input, ref int[] decision, double[][] result)
         {
-            decision = createOrReuse(input, decision);
+            decision = CreateOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
             {
                 Scores(input[i], out decision[i], result[i]);
@@ -582,7 +576,7 @@
         /// 
         public double[][] Scores(TInput[] input, ref double[] decision, double[][] result)
         {
-            decision = createOrReuse(input, decision);
+            decision = CreateOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
             {
                 Scores(input[i], out decision[i], result[i]);
@@ -593,7 +587,7 @@
 
         double[][] IMultilabelScoreClassifierBase<TInput, bool[]>.Scores(TInput[] input, ref bool[][] decision, double[][] result)
         {
-            decision = createOrReuse(input, decision);
+            decision = CreateOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
             {
                 ToMultilabel().Scores(input[i], ref decision[i], result[i]);
@@ -604,11 +598,10 @@
 
         double[][] IMultilabelScoreClassifierBase<TInput, int[]>.Scores(TInput[] input, ref int[][] decision, double[][] result)
         {
-            decision = createOrReuse(input, decision);
-            int value;
+            decision = CreateOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
             {
-                Scores(input[i], out value, result[i]);
+                Scores(input[i], out int value, result[i]);
                 decision[i] = Vector.OneHot(value, decision[i]);
             }
             return result;
@@ -616,11 +609,10 @@
 
         double[][] IMultilabelScoreClassifierBase<TInput, double[]>.Scores(TInput[] input, ref double[][] decision, double[][] result)
         {
-            decision = createOrReuse(input, decision);
-            int value;
+            decision = CreateOrReuse(input, decision);
             for (int i = 0; i < input.Length; i++)
             {
-                Scores(input[i], out value, result[i]);
+                Scores(input[i], out int value, result[i]);
                 decision[i] = Vector.OneHot(value, decision[i]);
             }
             return result;

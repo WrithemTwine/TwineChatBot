@@ -63,7 +63,7 @@ namespace StreamerBotLib.Overlay.Communication
                             }
                             catch (ArgumentException ex)
                             {
-                                LogWriter.LogException(ex, Method: MethodBase.GetCurrentMethod().Name);
+                                LogWriter.LogException(ex, Method: "WatchPipe");
 
                             }
                         }

@@ -60,7 +60,7 @@ namespace StreamerBotLib.Systems
         public void TestAddUsers()
         {
             int getUsers = 20;
-            Random random = new Random();
+            Random random = new();
 
             UserJoined(((IDataManagerTestMethods)DataManage).TestGetRandomUsers(random.Next(getUsers)).ToList());
 
@@ -127,12 +127,12 @@ namespace StreamerBotLib.Systems
             // prevent starting another thread
             if (ProcessMsgs == null || !ProcessMsgs.IsAlive)
             {
-                ProcessMsgs = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
+                ProcessMsgs = ThreadManager.CreateThread("NotifyBotStart", ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
                 ProcessMsgs.Start();
             }
 
             SystemActions.StartElapsedTimerThread();
-            SystemActions.ManageLearnedMsgList();
+            ActionSystem.ManageLearnedMsgList();
         }
 
         public void NotifyBotStop()
@@ -421,21 +421,21 @@ namespace StreamerBotLib.Systems
         {
             try
             {
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("UpdateUserJoinedList", () =>
                 {
-                    ThreadManager.AddTaskToGUIDispatcher(new Task(() =>
+                    ThreadManager.AddTaskToGUIDispatcher(() =>
                     {
                         _ = new BotOperation(() =>
                         {
                             ActionSystem.UpdateGUICurrUsers();
                         });
                     }
-                    ));
+                    );
                 });
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "UpdateUserJoinedList");
             }
         }
 
@@ -673,17 +673,17 @@ namespace StreamerBotLib.Systems
             }
             catch (InvalidOperationException InvalidOp)
             {
-                LogWriter.LogException(InvalidOp, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(InvalidOp, "ProcessCommand");
                 SendMessage(InvalidOp.Message);
             }
             catch (NullReferenceException NullRef)
             {
-                LogWriter.LogException(NullRef, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(NullRef, "ProcessCommand");
                 SendMessage(NullRef.Message);
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "ProcessCommand");
             }
         }
 

@@ -9,7 +9,6 @@ using StreamerBotLib.Static;
 
 using System.ComponentModel;
 using System.Globalization;
-using System.Reflection;
 
 namespace StreamerBotLib.Systems
 {
@@ -52,7 +51,7 @@ namespace StreamerBotLib.Systems
             if (ElapsedThread == null && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
             {
                 ChatBotStarted = true;
-                ElapsedThread = ThreadManager.CreateThread(MethodBase.GetCurrentMethod().Name, ElapsedCommandTimers);
+                ElapsedThread = ThreadManager.CreateThread("StartElapsedTimerThread", ElapsedCommandTimers);
                 ElapsedThread.Start();
             }
         }
@@ -94,7 +93,7 @@ namespace StreamerBotLib.Systems
                     {
                         if (RepeatList.UniqueAdd(item))
                         {
-                            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () => RepeatCmd(item));
+                            ThreadManager.CreateThreadStart("ElapsedCommandTimers", () => RepeatCmd(item));
                         }
                         else
                         {
@@ -111,7 +110,7 @@ namespace StreamerBotLib.Systems
             }
             catch (ThreadInterruptedException ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "ElapsedCommandTimers");
             }
         }
 
@@ -178,13 +177,13 @@ namespace StreamerBotLib.Systems
                                 {
                                     if (ComputeRepeat())
                                     {
-                                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Performing {cmd.Command}.");
+                                        LogWriter.DebugLog("RepeatCmd", DebugLogTypes.CommandSystem, $"Performing {cmd.Command}.");
                                         OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), [], DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                                    LogWriter.LogException(ex, "RepeatCmd");
                                 }
                             }
                         }
@@ -209,7 +208,7 @@ namespace StreamerBotLib.Systems
             }
             catch (ThreadInterruptedException ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "RepeatCmd");
             }
         }
 
@@ -341,14 +340,14 @@ namespace StreamerBotLib.Systems
         /// <param name="Source">The name of the Bot calling the shout-outs, for purposes of which platform to call the category.</param>
         private void AutoShoutUsers()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Received AutoShoutUsers command.");
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Now checking if each active user is on the shout list.");
+            LogWriter.DebugLog("AutoShoutUsers", DebugLogTypes.CommandSystem, "Received AutoShoutUsers command.");
+            LogWriter.DebugLog("AutoShoutUsers", DebugLogTypes.CommandSystem, "Now checking if each active user is on the shout list.");
 
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            ThreadManager.CreateThreadStart("AutoShoutUsers", () =>
             {
                 foreach (LiveUser u in StreamViewers.GetCurrentActiveUsers())
                 {
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Checking for auto-shout: {u.UserName}, {u.UserId}, {u.Platform}");
+                    LogWriter.DebugLog("AutoShoutUsers", DebugLogTypes.CommandSystem, $"Checking for auto-shout: {u.UserName}, {u.UserId}, {u.Platform}");
                     CheckShout(u, out _);
                 }
             });
@@ -376,7 +375,7 @@ namespace StreamerBotLib.Systems
                 if (response != "" && response != "/me ")
                 {
                     OnProcessCommand(response, multi);
-                    LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
+                    LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
                 }
             }
         }
@@ -558,7 +557,7 @@ namespace StreamerBotLib.Systems
             {
                 string ParamUser = arglist.Count == 1 ? arglist[0].Replace("@", "") : User.UserName;
 
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("ParseCommand", () =>
                 {
                     DateTime created = BotController.GetUserAccountAge(ParamUser, User.Platform);
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -771,7 +770,7 @@ namespace StreamerBotLib.Systems
 
                     if (cmdrow.Message.Contains(MsgVars.category.ToString()))
                     {
-                        ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                        ThreadManager.CreateThreadStart("ParseCommand", () =>
                         {
                             lock (GUI.GUIDataManagerLock.Lock)
                             {
@@ -785,7 +784,7 @@ namespace StreamerBotLib.Systems
                                 OnProcessCommand(resultcat, cmdrow.SendMsgCount);
 
 
-                                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
+                                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
 
                                 CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
                                     Action: DefaultCommand.so.ToString(),
@@ -802,7 +801,7 @@ namespace StreamerBotLib.Systems
 
                         if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so))
                         {
-                            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.CommandSystem, $"Found !so message without a category, {result}");
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Found !so message without a category, {result}");
                         }
                     }
                 }

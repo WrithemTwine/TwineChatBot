@@ -10,7 +10,6 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.Collections.ObjectModel;
-using System.Reflection;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
@@ -53,13 +52,11 @@ namespace StreamerBotLib.BotIOController
         private const int SendMsgDelay = 750;
         // 600ms between messages, permits about 100 messages max in 60 seconds == 1 minute
         // 759ms between messages, permits about 80 messages max in 60 seconds == 1 minute
-        private Queue<Task> Operations { get; set; } = new();   // an ordered list, enqueue into one end, dequeue from other end
+        private Queue<Task> Operations { get; set; } = [];   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored channels
 
         public BotController()
         {
-            OptionFlags.ActiveToken = true;
-
             Systems = new();
             Systems.PostChannelMessage += Systems_PostChannelMessage;
             Systems.BanUserRequest += Systems_BanUserRequest;
@@ -86,14 +83,14 @@ namespace StreamerBotLib.BotIOController
         /// <summary>
         /// Initializes a Helix api.
         /// </summary>
-        public static void TwitchInitializeHelix()
+        public static async Task TwitchInitializeHelix()
         {
-            BotsTwitch.InitializeHelix();
+            await BotsTwitch.InitializeHelix();
         }
 
-        public static void NotifyInvalidTwitchTokens()
+        public static async void NotifyInvalidTwitchTokens()
         {
-            BotsTwitch.NotifyInvalidTwitchTokens();
+            await BotsTwitch.NotifyInvalidTwitchTokens();
         }
 
         /// <summary>
@@ -103,7 +100,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="e"></param>
         private void TwitchBots_InvalidTwitchAccess(object sender, InvalidAccessTokenEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "");
+            LogWriter.DebugLog("TwitchBots_InvalidTwitchAccess", DebugLogTypes.BotController, "");
 
             InvalidAuthorizationToken?.Invoke(this, e);
         }
@@ -116,9 +113,9 @@ namespace StreamerBotLib.BotIOController
         private void HandleBotEvent(object sender, BotEventArgs e)
         {
             //AppDispatcher.BeginInvoke(() =>
-            ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+            ThreadManager.CreateThreadStart("HandleBotEvent", () =>
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Event, {e.MethodName}, received from bots to post into system.");
+                LogWriter.DebugLog("HandleBotEvent", DebugLogTypes.BotController, $"Event, {e.MethodName}, received from bots to post into system.");
 
                 try
                 {
@@ -234,7 +231,7 @@ namespace StreamerBotLib.BotIOController
                 }
                 catch (Exception ex)
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "HandleBotEvent");
                 }
             });
         }
@@ -246,7 +243,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="e">Contains the message to send to the bots.</param>
         private void Systems_PostChannelMessage(object sender, PostChannelMessageEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received message to post to chat: {e.Msg}");
+            LogWriter.DebugLog("Systems_PostChannelMessage", DebugLogTypes.BotController, $"Received message to post to chat: {e.Msg}");
 
             Send(e.Msg, e.RepeatMsg);
         }
@@ -311,28 +308,28 @@ namespace StreamerBotLib.BotIOController
         {
             try
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "User wants to exit the bot.");
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending a Twitch Stream Offline message.");
+                LogWriter.DebugLog("ExitBots", DebugLogTypes.BotController, "User wants to exit the bot.");
+                LogWriter.DebugLog("ExitBots", DebugLogTypes.BotController, "Sending a Twitch Stream Offline message.");
 
                 TwitchStreamOffline(null);
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Waiting for any queued messages to finish sending to the channel.");
+                LogWriter.DebugLog("ExitBots", DebugLogTypes.BotController, "Waiting for any queued messages to finish sending to the channel.");
 
                 SendThread?.Join(); // wait until all the messages are sent to ask bots to close
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Stopping bots.");
+                LogWriter.DebugLog("ExitBots", DebugLogTypes.BotController, "Stopping bots.");
 
                 foreach (IBotTypes bot in BotsList)
                 {
                     bot.StopBots();
                 }
 
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Sending an exit to the data system.");
+                LogWriter.DebugLog("ExitBots", DebugLogTypes.BotController, "Sending an exit to the data system.");
                 Systems.Exit();
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "ExitBots");
             }
         }
 
@@ -363,7 +360,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void ClearWatchTime()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received \"Clear Watch Time\" request.");
+            LogWriter.DebugLog("ClearWatchTime", DebugLogTypes.BotController, $"Received \"Clear Watch Time\" request.");
 
             SystemsController.ClearWatchTime();
         }
@@ -373,7 +370,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void ClearAllCurrenciesValues()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received \"Clear All Currencies Values\" request.");
+            LogWriter.DebugLog("ClearAllCurrenciesValues", DebugLogTypes.BotController, "Received \"Clear All Currencies Values\" request.");
 
             SystemsController.ClearAllCurrenciesValues();
         }
@@ -383,7 +380,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void ClearUsersNonFollowers()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received \"Clear Users Non Followers\" request.");
+            LogWriter.DebugLog("ClearUsersNonFollowers", DebugLogTypes.BotController, "Received \"Clear Users Non Followers\" request.");
 
             SystemsController.ClearUsersNonFollowers();
         }
@@ -394,7 +391,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="Enabled">True or False to set System Events in bulk.</param>
         public static void SetSystemEventsEnabled(bool Enabled)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set System Events Enabled\" " +
+            LogWriter.DebugLog("SetSystemEventsEnabled", DebugLogTypes.BotController, $"Received a \"Set System Events Enabled\" " +
                 $"request to set all events to {Enabled}.");
 
             SystemsController.SetSystemEventsEnabled(Enabled);
@@ -406,7 +403,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="Enabled">True or False to set built-in commands in bulk.</param>
         public static void SetBuiltInCommandsEnabled(bool Enabled)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set Built-in " +
+            LogWriter.DebugLog("SetBuiltInCommandsEnabled", DebugLogTypes.BotController, $"Received a \"Set Built-in " +
                 $"Commands Enabled\" request set all events to {Enabled}.");
 
             SystemsController.SetBuiltInCommandsEnabled(Enabled);
@@ -418,7 +415,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="Enabled">True or False to set user defined commands in bulk.</param>
         public static void SetUserDefinedCommandsEnabled(bool Enabled)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set User Defined " +
+            LogWriter.DebugLog("SetUserDefinedCommandsEnabled", DebugLogTypes.BotController, $"Received a \"Set User Defined " +
                 $"Commands Enabled\" request set all events to {Enabled}.");
 
             SystemsController.SetUserDefinedCommandsEnabled(Enabled);
@@ -430,7 +427,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="Enabled">True or False to set WebHooks Webhooks in bulk.</param>
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a \"Set WebHooks Webhooks Enabled\" " +
+            LogWriter.DebugLog("SetDiscordWebhooksEnabled", DebugLogTypes.BotController, $"Received a \"Set WebHooks Webhooks Enabled\" " +
                 $"request to set all events to {Enabled}.");
 
             SystemsController.SetDiscordWebhooksEnabled(Enabled);
@@ -442,7 +439,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="UserName">The username to add into the database for the autoshout table.</param>
         public static void AddNewAutoShoutUser(string Userid, Platform platform)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
+            LogWriter.DebugLog("AddNewAutoShoutUser", DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
                 $"request to add= {Userid} =to the database.");
 
             SystemsController.AddNewAutoShoutUser(Userid, platform);
@@ -458,8 +455,8 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void ForceTwitchAuthReauthorization()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
+            LogWriter.DebugLog("ForceTwitchAuthReauthorization", DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
+            LogWriter.DebugLog("ForceTwitchAuthReauthorization", DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
 
             BotsTwitch.ForceTwitchReauthorization();
         }
@@ -473,7 +470,7 @@ namespace StreamerBotLib.BotIOController
         /// <returns>The username for the bot account.</returns>
         public static string GetBotName(Platform Source)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received a request for the Bot username.");
+            LogWriter.DebugLog("GetBotName", DebugLogTypes.BotController, "Received a request for the Bot username.");
 
             return Source switch
             {
@@ -482,7 +479,7 @@ namespace StreamerBotLib.BotIOController
             };
         }
 
-        public void GetUserCategory()
+        public static void GetUserCategory()
         {
             GetUserCategory(OptionFlags.TwitchChannelName, OptionFlags.TwitchStreamerUserId, Platform.Twitch);
         }
@@ -498,7 +495,7 @@ namespace StreamerBotLib.BotIOController
         {
             if (bots == Platform.Twitch)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received request to provide the " +
+                LogWriter.DebugLog("GetUserCategory", DebugLogTypes.BotController, $"Received request to provide the " +
                     $"streaming category for the channel named: {ChannelName}, with {UserId} userId.");
 
                 return BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName).CategoryName;
@@ -513,7 +510,7 @@ namespace StreamerBotLib.BotIOController
         {
             if (bots == Platform.Twitch)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received request " +
+                LogWriter.DebugLog("GetUserAccountAge", DebugLogTypes.BotController, $"Received request " +
                     $"to ask Twitch for {UserName}'s account age.");
 
                 return BotsTwitch.GetUserAccountAge(UserName: UserName);
@@ -528,7 +525,7 @@ namespace StreamerBotLib.BotIOController
         {
             if (bots == Platform.Twitch)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received request " +
+                LogWriter.DebugLog("VerifyUserExist", DebugLogTypes.BotController, $"Received request " +
                     $"to ask Twitch to verify if the user {ChannelName} exists.");
 
                 return BotsTwitch.VerifyUserExist(ChannelName);
@@ -556,9 +553,9 @@ namespace StreamerBotLib.BotIOController
 
             if (bots == Platform.Twitch)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received request to " +
+                LogWriter.DebugLog("ModifyChannelInformation", DebugLogTypes.BotController, $"Received request to " +
                     $"change the Twitch channel information to Title: {Title}, Category: {CategoryName}.");
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "One of these values can be null, because there are " +
+                LogWriter.DebugLog("ModifyChannelInformation", DebugLogTypes.BotController, "One of these values can be null, because there are " +
                     "separate !settitle and !setcategory commands, where these separate values can come through this class method.");
 
                 result = BotsTwitch.ModifyChannelInformation(Title, CategoryName, CategoryId);
@@ -571,7 +568,7 @@ namespace StreamerBotLib.BotIOController
         {
             if (bots == Platform.Twitch)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a request " +
+                LogWriter.DebugLog("RaidChannel", DebugLogTypes.BotController, $"Received a request " +
                     $"to raid the: {ToChannelName}, Twitch channel.");
 
                 BotsTwitch.RaidChannel(ToChannelName);
@@ -582,7 +579,7 @@ namespace StreamerBotLib.BotIOController
         {
             if (bots == Platform.Twitch)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Received a request to " +
+                LogWriter.DebugLog("CancelRaidChannel", DebugLogTypes.BotController, $"Received a request to " +
                     $"cancel the pending Twitch channel raid.");
 
                 BotsTwitch.CancelRaidChannel();
@@ -593,13 +590,13 @@ namespace StreamerBotLib.BotIOController
         {
             if (OptionFlags.IsStreamOnline)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Found the stream is online.");
+                LogWriter.DebugLog("GetViewerCount", DebugLogTypes.BotController, "Found the stream is online.");
 
-                ThreadManager.CreateThreadStart(MethodBase.GetCurrentMethod().Name, () =>
+                ThreadManager.CreateThreadStart("GetViewerCount", () =>
                 {
                     if (bots == Platform.Twitch || bots == Platform.Default)
                     {
-                        LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received a request to get the " +
+                        LogWriter.DebugLog("GetViewerCount", DebugLogTypes.BotController, "Received a request to get the " +
                             "current viewer count for the Twitch streamer channel.");
 
                         BotsTwitch.GetViewerCount();
@@ -617,7 +614,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="AuthenticationFinished">A callback method once the bot concludes using the auth code to get an access/refresh token.</param>
         public static void TwitchTokenAuthCodeAuthorize(string clientId, bool NoScopes, Action<string> OpenBrowser, Action AuthenticationFinished)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received request to activate " +
+            LogWriter.DebugLog("TwitchTokenAuthCodeAuthorize", DebugLogTypes.BotController, "Received request to activate " +
                 "a Twitch authorization code for a specific client Id, which returns an initial access token and a refresh token to begin accessing Twitch.");
 
             BotsTwitch.TwitchActivateAuthCode(clientId, NoScopes, OpenBrowser, AuthenticationFinished);
@@ -628,7 +625,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public static void CreateClip()
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Recieved a request to create a Twitch clip.");
+            LogWriter.DebugLog("CreateClip", DebugLogTypes.BotController, "Recieved a request to create a Twitch clip.");
 
             BotsTwitch.CreateClip();
         }
@@ -652,7 +649,7 @@ namespace StreamerBotLib.BotIOController
             HandleBotEventNewFollowers(ConvertFollowers(Follower.Channel, Platform.Twitch));
         }
 
-        public void TwitchStopBulkFollowers()
+        public static void TwitchStopBulkFollowers()
         {
             HandleBotEventStopBulkFollowers();
         }
@@ -754,8 +751,8 @@ namespace StreamerBotLib.BotIOController
         /// <param name="e"></param>
         internal void TwitchMultiStreamOnline(OnStreamOnlineArgs e)
         {
-            HandleMultiLiveOnStreamOnline(e.Stream.UserId, e.Stream.UserName, e.Stream.Title,
-                e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId, e.Stream.GameName);
+            HandleMultiLiveOnStreamOnline(new(e.Stream.UserName, Platform.Twitch, e.Stream.UserId), e.Stream.Title,
+                e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId);
         }
 
         internal void TwitchStreamOnline(NewStreamOnlineEventArgs e)
@@ -890,7 +887,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchOutgoingRaid(OnStreamRaidResponseEventArgs e)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "");
+            LogWriter.DebugLog("TwitchOutgoingRaid", DebugLogTypes.BotController, "");
 
             HandleOutgoingRaidData(e.ToChannel, e.CreatedAt, Platform.Twitch);
         }
@@ -945,7 +942,7 @@ namespace StreamerBotLib.BotIOController
             // currently only need the invoking user DisplayName and the reward title, for determining the reward is used for the giveaway.
             // much more data exists in the resulting data output
 
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Received Twitch Channel Point Reward {e.ChannelPointsCustomRewardRedemption.Reward.Title}. Now processing.");
+            LogWriter.DebugLog("TwitchChannelPointsRewardRedeemed", DebugLogTypes.TwitchBots, $"Received Twitch Channel Point Reward {e.ChannelPointsCustomRewardRedemption.Reward.Title}. Now processing.");
 
             HandleCustomReward(
                 new(e.ChannelPointsCustomRewardRedemption.UserName, Platform.Twitch, e.ChannelPointsCustomRewardRedemption.UserId),
@@ -1003,16 +1000,16 @@ namespace StreamerBotLib.BotIOController
             OnStreamCategoryChanged?.Invoke(this, new() { GameId = categoryData.CategoryId, GameName = categoryData.CategoryName });
         }
 
-        private void HandleMultiLiveOnStreamOnline(string userid, string username, string Title, DateTime StartedAt, string GameId, string Category, Platform platform = Platform.Twitch)
+        private static void HandleMultiLiveOnStreamOnline(LiveUser User, string Title, DateTime StartedAt, string Category)
         {
             DateTime CurrTime = StartedAt.ToLocalTime();
 
             // true posted new event, false did not post
-            bool PostedLive = SystemsController.DataManage.PostMultiStreamDate(userid, username, Platform.Twitch, CurrTime);
+            bool PostedLive = SystemsController.DataManage.PostMultiStreamDate(User.UserId, User.UserName, User.Platform, CurrTime);
 
             if (PostedLive)
             {
-                bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(userid, Platform.Twitch, CurrTime);
+                bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(User.UserId, User.Platform, CurrTime);
 
                 if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                 {
@@ -1022,10 +1019,10 @@ namespace StreamerBotLib.BotIOController
                     // keys for exchanging codes for representative names
                     Dictionary<string, string> dictionary = new()
                         {
-                            { "#user", username },
+                            { "#user", User.UserName },
                             { "#category", Category },
                             { "#title", Title },
-                            { "#url", username }
+                            { "#url", User.UserName }
                         };
 
                     SystemsController.DataManage.PostMultiLiveLog(VariableParser.ParseReplace(msg, dictionary));
@@ -1036,7 +1033,7 @@ namespace StreamerBotLib.BotIOController
                         {
                             DiscordWebhook.SendMessage(u.Item2,
                                 VariableParser.ParseReplace(msg, dictionary),
-                                VariableParser.BuildPlatformUrl(username, Platform.Twitch));
+                                VariableParser.BuildPlatformUrl(User.UserName, User.Platform));
                         }
                     }
                 }
@@ -1113,7 +1110,7 @@ namespace StreamerBotLib.BotIOController
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "HandleOnStreamOnline");
             }
         }
 
@@ -1125,13 +1122,13 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleOnStreamOffline(Platform platform, string HostedChannel = null, DateTime? RaidTime = null)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Received a livestream offline status update.");
+            LogWriter.DebugLog("HandleOnStreamOffline", DebugLogTypes.BotController, "Received a livestream offline status update.");
 
             ManageOfflineStream(platform);
 
             if (OptionFlags.IsStreamOnline)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, "Start notifying about the offline stream.");
+                LogWriter.DebugLog("HandleOnStreamOffline", DebugLogTypes.BotController, "Start notifying about the offline stream.");
 
                 ManageBotsStreamStatusChanged(false);
 
@@ -1148,7 +1145,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="Start">True to start services for stream online, False to stop services for stream offline.</param>
         public static void ManageBotsStreamStatusChanged(bool Start)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.BotController, $"Starting any stopped bots or " +
+            LogWriter.DebugLog("ManageBotsStreamStatusChanged", DebugLogTypes.BotController, $"Starting any stopped bots or " +
                 $"stopping any started bots, based on the current active livestream={Start} status.");
 
             // loop the bots and send message to start or stop based on stream online or offline status
@@ -1172,7 +1169,7 @@ namespace StreamerBotLib.BotIOController
             if (StartedChatBots.Count == 1 && args == null)
             {
                 SendThread = ThreadManager.CreateThread(
-                                                        MethodBase.GetCurrentMethod().Name,
+                                                        "HandleChatBotStarted",
                                                         BeginProcMsgs,
                                                         Priority: ThreadExitPriority.Normal);
                 SendThread.Start();
@@ -1355,7 +1352,7 @@ namespace StreamerBotLib.BotIOController
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "HandleUserBanned");
             }
         }
 
@@ -1399,7 +1396,7 @@ namespace StreamerBotLib.BotIOController
 
             if (approval != null)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, $"Custom reward {RewardTitle} requires approval.");
+                LogWriter.DebugLog("HandleCustomReward", DebugLogTypes.TwitchBots, $"Custom reward {RewardTitle} requires approval.");
 
                 switch (User.Platform)
                 {
@@ -1418,7 +1415,7 @@ namespace StreamerBotLib.BotIOController
 
             if (OptionFlags.MediaOverlayChannelPoints)
             {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.OverlayBot, $"Checking Channel Point Redemption {RewardTitle} for an Overlay request.");
+                LogWriter.DebugLog("HandleCustomReward", DebugLogTypes.OverlayBot, $"Checking Channel Point Redemption {RewardTitle} for an Overlay request.");
 
                 Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, User);
             }

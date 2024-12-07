@@ -6,7 +6,6 @@ using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System.Globalization;
-using System.Reflection;
 using System.Resources;
 
 namespace StreamerBotLib.Systems
@@ -166,7 +165,7 @@ namespace StreamerBotLib.Systems
         /// <returns>A list of command name-help pairs.</returns>
         public static List<Command> GetCommandHelp()
         {
-            List<Command> temp = new();
+            List<Command> temp = [];
 
             foreach (MsgVars a in Enum.GetValues(typeof(MsgVars)))
             {
@@ -182,7 +181,7 @@ namespace StreamerBotLib.Systems
                 // catch the 'MissingManifestResourceException' where no resource contains the desired string
                 catch (Exception ex)
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "GetCommandHelp");
                 }
             }
 

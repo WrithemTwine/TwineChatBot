@@ -4,7 +4,7 @@ namespace EFEntityEntryTesting.EF
 {
     internal class DataManager
     {
-        private EFTestDataContext _context;
+        private readonly EFTestDataContext _context;
 
         public ObservableCollection<Quotes> Quotes { get; }
         public ObservableCollection<CategoryList> CategoryList { get; }

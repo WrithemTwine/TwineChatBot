@@ -2,6 +2,8 @@
 
 using StreamerBotLib.Enums;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(CurrencyName))]
@@ -26,7 +28,9 @@ namespace StreamerBotLib.DataSQL.Models
         public double Value { get; set; } = value;
         public string CurrencyName { get; set; } = currencyName;
 
+        [AllowNull]
         public Users? User { get; set; }
+        [AllowNull]
         public CurrencyType? CurrencyType { get; set; }
 
         public static Currency operator +(Currency lhs, Currency rhs)

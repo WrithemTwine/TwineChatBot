@@ -41,10 +41,8 @@ namespace StreamerBotLib.Overlay.Models
 
             if (File.Exists(FileNameStyle))
             {
-                using (StreamReader sr = new(FileNameStyle))
-                {
-                    OverlayStyleText = sr.ReadToEnd();
-                }
+                using StreamReader sr = new(FileNameStyle);
+                OverlayStyleText = sr.ReadToEnd();
             }
             else
             {

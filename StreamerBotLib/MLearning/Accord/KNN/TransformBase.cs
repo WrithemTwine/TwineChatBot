@@ -135,7 +135,7 @@
         /// 
         public virtual TOutput[] Transform(TInput input, TOutput[] result)
         {
-            return Transform(new[] { input }, new[] { result })[0];
+            return Transform([input], [result])[0];
         }
 
         /// <summary>
