@@ -71,6 +71,7 @@ namespace StreamerBotLib.BotClients
         /// </summary>
         public event EventHandler OnTwitchTokensInitialized;
 
+        private Stream _CurrStream;
         public Stream CurrStream
         {
             get
@@ -80,7 +81,6 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        private Stream _CurrStream;
 
 #if USEQUEUELOGGER
         private ConcurrentQueue<string> StatusMessages;
@@ -188,8 +188,8 @@ namespace StreamerBotLib.BotClients
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
 
             TwitchHelixBot.GetChannelGameName += TwitchHelixBot_GetChannelGameName;
-            TwitchHelixBot.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
-            TwitchHelixBot.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
+            //TwitchHelixBot.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
+            //TwitchHelixBot.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
             TwitchHelixBot.GetStreamsViewerCount += TwitchBotUserSvc_OnGetStreamsViewerCount;
             TwitchHelixBot.OnBulkFollowsUpdate += TwitchHelixBot_OnBulkFollowsUpdate;
             TwitchHelixBot.BulkFollowsCompleted += TwitchHelixBot_BulkFollowsCompleted;
@@ -216,6 +216,7 @@ namespace StreamerBotLib.BotClients
             TwitchStreamerEventSubBotNoScopes.NewStreamOffline += TwitchStreamerEventSubBot_NewStreamOffline;
             TwitchStreamerEventSubBotNoScopes.NewChannelUpdate += TwitchStreamerEventSubBot_NewChannelUpdate;
             TwitchStreamerEventSubBotNoScopes.NewChannelRaid += TwitchStreamerEventSubBot_NewChannelRaid;
+            TwitchStreamerEventSubBotNoScopes.OutChannelRaid += TwitchStreamerEventSubBotNoScopes_OutChannelRaid;
             TwitchStreamerEventSubBotNoScopes.NewStreamOnline += TwitchStreamerEventSubBot_NewStreamOnline;
 
             TwitchTokenBot.AccessTokensInitialized += TwitchTokenBot_AccessTokensInitialized;
@@ -240,7 +241,6 @@ namespace StreamerBotLib.BotClients
                 TwitchBotClipSvc.HandlersAdded = true;
             }
 
-
             if (TwitchBotLiveMonitorSvc.IsActive == true && !TwitchBotLiveMonitorSvc.HandlersAdded)
             {
                 LogWriter.DebugLog("RegisterHandlers", DebugLogTypes.TwitchBots,
@@ -250,7 +250,6 @@ namespace StreamerBotLib.BotClients
 
                 TwitchBotLiveMonitorSvc.HandlersAdded = true;
             }
-
         }
 
         #region Bot EventSub Bot - listen to chat messages
@@ -373,6 +372,16 @@ namespace StreamerBotLib.BotClients
                     ViewerCount = e.ChannelRaid.Viewers,
                     LiveUser = new(e.ChannelRaid.FromBroadcasterUserName, Platform.Twitch, e.ChannelRaid.FromBroadcasterUserId)
                 });
+        }
+
+        private void TwitchStreamerEventSubBotNoScopes_OutChannelRaid(object sender, NewChannelRaidEventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchOutgoingRaid,
+                            new OnStreamRaidResponseEventArgs()
+                            {
+                                ToChannel = e.ChannelRaid.ToBroadcasterUserName,
+                                CreatedAt = e.RaidTime
+                            });
         }
 
         #endregion
@@ -587,19 +596,19 @@ namespace StreamerBotLib.BotClients
             TwitchHelixBot.CancelRaidChannel();
         }
 
-        private void TwitchBotUserSvc_StartRaidEventResponse(object sender, OnStreamRaidResponseEventArgs e)
-        {
-            LogWriter.DebugLog("TwitchBotUserSvc_StartRaidEventResponse", DebugLogTypes.TwitchBots, "Registering the raid command, to track the raid as bot doesn't receive a now-completed raid message.");
+        //private void TwitchBotUserSvc_StartRaidEventResponse(object sender, OnStreamRaidResponseEventArgs e)
+        //{
+        //    LogWriter.DebugLog("TwitchBotUserSvc_StartRaidEventResponse", DebugLogTypes.TwitchBots, "Registering the raid command, to track the raid as bot doesn't receive a now-completed raid message.");
 
-            StartRaid(e.ToChannel, e.CreatedAt.ToLocalTime());
-        }
+        //    // StartRaid(e.ToChannel, e.CreatedAt.ToLocalTime());
+        //}
 
-        private void TwitchBotUserSvc_CancelRaidEvent(object sender, EventArgs e)
-        {
-            LogWriter.DebugLog("TwitchBotUserSvc_CancelRaidEvent", DebugLogTypes.TwitchBots, "Registering the cancel raid command, to stop the raid tracking code.");
+        //private void TwitchBotUserSvc_CancelRaidEvent(object sender, EventArgs e)
+        //{
+        //    LogWriter.DebugLog("TwitchBotUserSvc_CancelRaidEvent", DebugLogTypes.TwitchBots, "Registering the cancel raid command, to stop the raid tracking code.");
 
-            CancelRaidLoop();
-        }
+        //    CancelRaidLoop();
+        //}
 
         public static void GetViewerCount()
         {
@@ -941,7 +950,7 @@ namespace StreamerBotLib.BotClients
             RegisterHandlers();
 
             // start thread to retrieve all clips
-            BulkLoadClips = ThreadManager.CreateThread("TwitchBotClipSvc_OnBotStarted", ProcessClips);
+            BulkLoadClips = ThreadManager.CreateThread("TwitchBotClipSvc_OnBotStarted", ProcessClipsAsync);
             MultiThreadOps.Add(BulkLoadClips);
             BulkLoadClips.Start();
         }
@@ -961,7 +970,7 @@ namespace StreamerBotLib.BotClients
         public void GetChannelClips(Action<List<Models.Clip>> ReturnData)
         {
             LogWriter.DebugLog("GetChannelClips", DebugLogTypes.TwitchBots, "Performing a request to get channel clips.");
-            ThreadManager.CreateThreadStart("GetChannelClips", () => ProcessChannelClips(ReturnData));
+            ThreadManager.CreateThreadStart("GetChannelClips", () => ProcessChannelClipsAsync(ReturnData));
         }
 
         /// <summary>
@@ -1060,7 +1069,7 @@ namespace StreamerBotLib.BotClients
 
         private bool StartClips { get; set; }
 
-        private async void ProcessClips()
+        private async void ProcessClipsAsync()
         {
             if (!StartClips)
             {
@@ -1072,7 +1081,7 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        private async void ProcessChannelClips(Action<List<Models.Clip>> ActionCallback)
+        private async void ProcessChannelClipsAsync(Action<List<Models.Clip>> ActionCallback)
         {
             List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> result = [];
             TwitchBotClipSvc ChannelClips = new(TwitchTokenBot);
@@ -1086,104 +1095,103 @@ namespace StreamerBotLib.BotClients
             ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
         }
 
-        private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
-        private DateTime OutRaidStarted;
-        private Thread RaidLoop = null;
-        private readonly string RaidLock = "lock";
+        //private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
+        //private DateTime OutRaidStarted;
+        //private Thread RaidLoop = null;
+        //private readonly string RaidLock = "lock";
 
-        /// <summary>
-        /// Establishes a Twitch raid procedure to hold up to 90 seconds, per Twitch API doc, where the user can still cancel the 
-        /// raid and the bots can't respond to stream going offline until after the raid completes.
-        /// 
-        /// When the user quick raids (clicks a raid now button before the timer completes), this check continues waiting until timer completes.
-        /// </summary>
-        /// <param name="ToChannelName"></param>
-        /// <param name="RaidCreated"></param>
-        private void StartRaid(string ToChannelName, DateTime RaidCreated)
-        {
-            LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Starting internal raid loop procedure to " +
-                "send 'stream offline' events across the application to finish an active stream.");
-            LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Twitch no longer notifies through the Twitch " +
-                "Chat API that a raid occurred for a channel.");
-            LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "But, Twitch added to the API to permit a bot " +
-                "to start a raid, meaning, anyone with command access to the channel can initiate a raid, alongside the streamer.");
-            LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "So, this procedure tracks the following 90 " +
-                "seconds, in case the user cancels the raid.");
-            LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Otherwise, after 90 seconds, regardless if " +
-                "the user completes the raid early (clicked 'raid now' button) and notify rest of the bot of the raid.");
+        ///// <summary>
+        ///// Establishes a Twitch raid procedure to hold up to 90 seconds, per Twitch API doc, where the user can still cancel the 
+        ///// raid and the bots can't respond to stream going offline until after the raid completes.
+        ///// 
+        ///// When the user quick raids (clicks a raid now button before the timer completes), this check continues waiting until timer completes.
+        ///// </summary>
+        ///// <param name="ToChannelName"></param>
+        ///// <param name="RaidCreated"></param>
+        //private void StartRaid(string ToChannelName, DateTime RaidCreated)
+        //{
+        //    LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Starting internal raid loop procedure to " +
+        //        "send 'stream offline' events across the application to finish an active stream.");
+        //    LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Twitch no longer notifies through the Twitch " +
+        //        "Chat API that a raid occurred for a channel.");
+        //    LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "But, Twitch added to the API to permit a bot " +
+        //        "to start a raid, meaning, anyone with command access to the channel can initiate a raid, alongside the streamer.");
+        //    LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "So, this procedure tracks the following 90 " +
+        //        "seconds, in case the user cancels the raid.");
+        //    LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Otherwise, after 90 seconds, regardless if " +
+        //        "the user completes the raid early (clicked 'raid now' button) and notify rest of the bot of the raid.");
 
 
-            lock (RaidLock)
-            {
-                OutRaidStarted = RaidCreated;
-            }
+        //    lock (RaidLock)
+        //    {
+        //        OutRaidStarted = RaidCreated;
+        //    }
 
-            if (RaidLoop == null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
-            {
-                RaidLoop = ThreadManager.CreateThread("StartRaid", () =>
-                {
-                    LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Start to wait on the raid.");
+        //    if (RaidLoop == null && OptionFlags.IsStreamOnline) // create only 1 thread & when stream is online
+        //    {
+        //        RaidLoop = ThreadManager.CreateThread("StartRaid", () =>
+        //        {
+        //            LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Start to wait on the raid.");
 
-                    // declare locals, so we can use a thread-safe lock
-                    DateTime LocalRaidStart;
-                    bool LocalRaidStarted;
+        //            // declare locals, so we can use a thread-safe lock
+        //            DateTime LocalRaidStart;
+        //            bool LocalRaidStarted;
 
-                    lock (RaidLock)
-                    {
-                        LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Acknowledged the raid start time.");
+        //            lock (RaidLock)
+        //            {
+        //                LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Acknowledged the raid start time.");
 
-                        LocalRaidStart = OutRaidStarted;
-                        LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
-                    }
+        //                LocalRaidStart = OutRaidStarted;
+        //                LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
+        //            }
 
-                    while (DateTime.Now - LocalRaidStart <= DefaultOutRaid && LocalRaidStarted)
-                    { // check for 90 seconds
-                        LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, $"Checking if {LocalRaidStart}+{DefaultOutRaid.Seconds} seconds is after " +
-                            $"the current time. And wait some time to check again if user cancels the raid (via !cancelraid command).");
+        //            while (DateTime.Now - LocalRaidStart <= DefaultOutRaid && LocalRaidStarted)
+        //            { // check for 90 seconds
+        //                LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, $"Checking if {LocalRaidStart}+{DefaultOutRaid.Seconds} seconds is after " +
+        //                    $"the current time. And wait some time to check again if user cancels the raid (via !cancelraid command).");
 
-                        lock (RaidLock)
-                        { // update values, in case they changed - use thread lock safety as another thread may change these
-                            LocalRaidStart = OutRaidStarted;
-                            LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
-                        }
-                        Thread.Sleep(5000);
-                    }
+        //                lock (RaidLock)
+        //                { // update values, in case they changed - use thread lock safety as another thread may change these
+        //                    LocalRaidStart = OutRaidStarted;
+        //                    LocalRaidStarted = OptionFlags.TwitchOutRaidStarted;
+        //                }
+        //                Thread.Sleep(5000);
+        //            }
 
-                    // if the raid wasn't canceled after the loop finished, send raid event to main bot
-                    if (LocalRaidStarted)
-                    {
-                        LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Raid succeeded. Proceeding to inform the " +
-                            "rest of the application to shutdown any bots for going offline and recording the outgoing raid details.");
+        //            // if the raid wasn't canceled after the loop finished, send raid event to main bot
+        //            if (LocalRaidStarted)
+        //            {
+        //                LogWriter.DebugLog("StartRaid", DebugLogTypes.TwitchBots, "Raid succeeded. Proceeding to inform the " +
+        //                    "rest of the application to shutdown any bots for going offline and recording the outgoing raid details.");
 
-                        InvokeBotEvent(this, BotEvents.TwitchOutgoingRaid,
-                            new OnStreamRaidResponseEventArgs()
-                            {
-                                ToChannel = ToChannelName,
-                                CreatedAt = OutRaidStarted
-                            });
+        //                InvokeBotEvent(this, BotEvents.TwitchOutgoingRaid,
+        //                    new OnStreamRaidResponseEventArgs()
+        //                    {
+        //                        ToChannel = ToChannelName,
+        //                        CreatedAt = OutRaidStarted
+        //                    });
 
-                        RaidCompleted?.Invoke(this, new());
-                    }
-                    RaidLoop = null;
-                });
-                RaidLoop.Start();
-            }
+        //                RaidCompleted?.Invoke(this, new());
+        //            }
+        //            RaidLoop = null;
+        //        });
+        //        RaidLoop.Start();
+        //    }
 
-        }
+        //}
 
-        /// <summary>
-        /// Settings an option, thread safe, to cancel the pending Twitch raid.
-        /// </summary>
-        private void CancelRaidLoop()
-        {
-            LogWriter.DebugLog("CancelRaidLoop", DebugLogTypes.TwitchBots, "Received a 'cancel raid' request.");
+        ///// <summary>
+        ///// Settings an option, thread safe, to cancel the pending Twitch raid.
+        ///// </summary>
+        //private void CancelRaidLoop()
+        //{
+        //    LogWriter.DebugLog("CancelRaidLoop", DebugLogTypes.TwitchBots, "Received a 'cancel raid' request.");
 
-            lock (RaidLock)
-            {
-                OptionFlags.TwitchOutRaidStarted = false;
-            }
-        }
-
+        //    lock (RaidLock)
+        //    {
+        //        OptionFlags.TwitchOutRaidStarted = false;
+        //    }
+        //}
 
         #endregion
 

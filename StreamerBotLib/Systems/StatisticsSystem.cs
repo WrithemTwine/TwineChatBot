@@ -71,6 +71,8 @@ namespace StreamerBotLib.Systems
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, StreamViewers.Count);
                 if (OptionFlags.ManageUsers)
                 {
+                    LogWriter.DebugLog("UserJoined", DebugLogTypes.StatSystem,
+                        $"Adding to database {User.Count()} users now joined to the channel.");
                     DataManage.UserJoined(User, CurrTime);
                 }
             }
@@ -220,8 +222,7 @@ namespace StreamerBotLib.Systems
             if (OptionFlags.ManageStreamStats)
             {
                 LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Posting the final livestream stats.");
-
-                DataManage.PostStreamStat(CurrStream);
+                DataManage.PostStreamStat(StreamStat.Create(CurrStream)); // create new instance due to clearing stats in async operation before posted to database
             }
 
             LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Wrap up clearing the stream stats.");

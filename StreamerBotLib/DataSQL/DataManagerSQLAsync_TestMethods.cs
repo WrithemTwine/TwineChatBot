@@ -1,10 +1,8 @@
-﻿using StreamerBotLib.GUI;
-using StreamerBotLib.Interfaces;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
 
 namespace StreamerBotLib.DataSQL
 {
-    public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
+    internal partial class DataManagerSQLAsync
     {
         #region Test Method Verification
 
@@ -17,9 +15,9 @@ namespace StreamerBotLib.DataSQL
         /// <param name="gamename">The category the raiding stream had at the raid time.</param>
         /// <returns><code>true: when record is found.</code>
         /// <code>false: when record is not found.</code></returns>
-        public bool TestInRaidData(string userId, DateTime time, int viewers, string gamename, SQLDBContext Refcontext = null)
+        internal Task<bool> TestInRaidData(string userId, DateTime time, int viewers, string gamename, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = (from I in context.InRaidData
@@ -27,7 +25,7 @@ namespace StreamerBotLib.DataSQL
                               select I).Any();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
@@ -37,9 +35,9 @@ namespace StreamerBotLib.DataSQL
         /// <param name="dateTime">The date & time of the raid.</param>
         /// <returns><code>true: when record is found.</code>
         /// <code>false: when record is not found.</code></returns>
-        public bool TestOutRaidData(string HostedChannel, DateTime dateTime, SQLDBContext Refcontext = null)
+        internal Task<bool> TestOutRaidData(string HostedChannel, DateTime dateTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = (from O in context.OutRaidData
@@ -47,12 +45,12 @@ namespace StreamerBotLib.DataSQL
                               select O).Any();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
-        public IEnumerable<LiveUser> TestGetRandomUsers(int count, SQLDBContext Refcontext = null)
+        internal Task<List<LiveUser>> TestGetRandomUsers(int count, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var Users = (from U in context.Users select U).ToList();
@@ -69,7 +67,7 @@ namespace StreamerBotLib.DataSQL
                 if (Refcontext == null) { ClearDataContext(context); }
 
                 return result;
-            }
+            });
         }
 
         #endregion

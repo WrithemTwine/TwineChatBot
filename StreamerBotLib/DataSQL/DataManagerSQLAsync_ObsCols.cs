@@ -2,24 +2,19 @@
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Static;
 
-using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 
 namespace StreamerBotLib.DataSQL
 {
-    public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
+    internal partial class DataManagerSQLAsync
     {
-        private readonly ConcurrentQueue<Action> RefreshObsCollections = [];
-        private bool IsProcessRefreshThreadStarted;
-
         #region LocalView ObservableCollection
 
         private readonly SQLDBContext GUIContext;
 
-        public object GetObservableCollection(DataTables dataTable)
+        internal object GetObservableCollection(DataTables dataTable)
         {
             LogWriter.DebugLog("GetObservableCollection", DebugLogTypes.DataManager,
                 $"Getting the observable collection for {dataTable}.");
@@ -62,7 +57,6 @@ namespace StreamerBotLib.DataSQL
                 _ => throw new NotImplementedException()
             };
         }
-
 
         private Task<ObservableCollection<Models.BanReasons>> GetBanReasonsLocalObservableAsync()
         {
@@ -336,10 +330,15 @@ namespace StreamerBotLib.DataSQL
 
         #endregion
 
+        internal void NotifyDataCollectionUpdated(string TableName)
+        {
+            OnDataCollectionUpdated?.Invoke(this, new(TableName));
+        }
+
         #region Refresh Collections
         private void RefreshBanReasonsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.BanReasons.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons));
@@ -348,7 +347,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshBanRulesObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.BanRules.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.BanRules));
@@ -357,7 +356,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshCategoryListObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.CategoryList.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList));
@@ -366,7 +365,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshChannelEventsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.ChannelEvents.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents));
@@ -375,7 +374,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshClipsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.Clips.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.Clips));
@@ -384,7 +383,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshCommandsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.Commands.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.Commands));
@@ -393,7 +392,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshCommandsUserObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.CommandsUser.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser));
@@ -402,7 +401,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshCurrencyObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.Currency.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.Currency));
@@ -411,7 +410,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshCurrencyTypeObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.CurrencyType.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType));
@@ -420,7 +419,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshCustomWelcomeObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.CustomWelcome.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome));
@@ -429,7 +428,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshFollowersObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.Followers.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.Followers));
@@ -438,7 +437,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshGameDeadCounterObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.GameDeadCounter.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter));
@@ -447,7 +446,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshGiveawayUserDataObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.GiveawayUserData.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData));
@@ -456,7 +455,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshInRaidDataObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.InRaidData.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData));
@@ -465,7 +464,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshLearnMsgsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.LearnMsgs.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs));
@@ -474,7 +473,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshModeratorApproveObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.ModeratorApprove.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove));
@@ -483,7 +482,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshMultiChannelsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.MultiChannels.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels));
@@ -492,7 +491,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshMultiLiveStreamsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.MultiLiveStreams.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams));
@@ -501,7 +500,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshMultiSummaryLiveStreamsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.MultiSummaryLiveStreams.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams));
@@ -510,7 +509,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshMultiWebhooksObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.MultiWebhooks.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks));
@@ -519,7 +518,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshOldFollowUsersObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.OldFollowUsers.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers));
@@ -528,7 +527,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshOutRaidDataObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.OutRaidData.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData));
@@ -537,7 +536,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshOverlayServicesObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.OverlayServices.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices));
@@ -546,7 +545,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshOverlayTickerObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.OverlayTicker.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker));
@@ -555,7 +554,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshQuotesObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.Quotes.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.Quotes));
@@ -564,7 +563,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshShoutOutsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.ShoutOuts.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts));
@@ -573,7 +572,7 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshStreamStatsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.StreamStats.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats));
@@ -582,25 +581,33 @@ namespace StreamerBotLib.DataSQL
 
         private void RefreshUsersObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
+                LogWriter.DebugLog("RefreshUsersObservableCollection",
+                    DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
                 await GUIContext.Users.LoadAsync();
+                LogWriter.DebugLog("RefreshUsersObservableCollection",
+    DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
                 NotifyDataCollectionUpdated(nameof(GUIContext.Users));
             });
         }
 
         private void RefreshUserStatsObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
+                LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+                  DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
                 await GUIContext.UserStats.LoadAsync();
+                LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+   DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
                 NotifyDataCollectionUpdated(nameof(GUIContext.UserStats));
             });
         }
 
         private void RefreshWebhooksObservableCollection()
         {
-            PostNewObsCollectionTask(async () =>
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
             {
                 await GUIContext.Webhooks.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks));
@@ -608,29 +615,5 @@ namespace StreamerBotLib.DataSQL
         }
 
         #endregion
-
-        private void PostNewObsCollectionTask(Action updateTask)
-        {
-            if (!IsProcessRefreshThreadStarted)
-            {
-                IsProcessRefreshThreadStarted = true;
-                ThreadManager.CreateThreadStart("PostNewObsCollectionTask", ProcessRefreshTasksAsync);
-            }
-
-            RefreshObsCollections.Enqueue(updateTask);
-        }
-
-        private void ProcessRefreshTasksAsync()
-        {
-            while (OptionFlags.ActiveToken)
-            {
-                while (RefreshObsCollections.TryDequeue(out var obsCollectionAction))
-                {
-                    ThreadManager.AddTaskToGUIDispatcher(obsCollectionAction);
-                }
-
-                Thread.Sleep(500);
-            }
-        }
     }
 }

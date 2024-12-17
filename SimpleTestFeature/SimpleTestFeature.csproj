@@ -11,7 +11,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-    <PackageReference Include="TwitchLib.Api" Version="3.9.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.10.0-preview-796c294" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.10.0-preview-796c294" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.10.0-preview-796c294" />
   </ItemGroup>
 
 </Project>

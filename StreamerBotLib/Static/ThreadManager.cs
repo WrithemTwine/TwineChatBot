@@ -56,9 +56,9 @@ namespace StreamerBotLib.Static
         /// and to specify priority for the thread stoping order.
         /// </summary>
         /// <param name="task">The task to add to the GUI dispatcher.</param>
-        public static void AddTaskToGUIDispatcher(Action task)
+        public static void AddTaskToGUIDispatcher(Action action)
         {
-            GUIDispatcher.InvokeAsync(async () => await Task.Run(() => task));
+            GUIDispatcher.Invoke(() => action);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace StreamerBotLib.Static
         /// <param name="task">The task to add to the GUI dispatcher.</param>
         public static void AddTaskToGUIDispatcher(Task task)
         {
-            GUIDispatcher.InvokeAsync(() => task.RunSynchronously());
+            GUIDispatcher.Invoke(() => task.RunSynchronously());
         }
 
         /// <summary>

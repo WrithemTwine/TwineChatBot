@@ -2,8 +2,10 @@
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.TableMeta;
 using StreamerBotLib.Events;
+using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
+using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.Data;
@@ -18,14 +20,26 @@ namespace StreamerBot
         #region DataGrid Columns and Editing
         private ManageWindows PopupWindows { get; set; } = new();
 
+        private event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataGridUpdated;
+
         private void DataManagerLoaded()
         {
+            GUIDataManagerViews.DataViewsLoaded += GUIDataManagerViews_DataViewsLoaded;
             SystemsController.DataManage.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
         }
+
+        private void GUIDataManagerViews_DataViewsLoaded(object sender, EventArgs e)
+        {
+            GUIDataManagerViews gUIDataManagerViews = Resources["DataViews"] as GUIDataManagerViews;
+            OnDataGridUpdated += gUIDataManagerViews.DataManager_OnDataCollectionUpdated;
+        }
+
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
             _ = Dispatcher.BeginInvoke(new Action(() =>
             {
+                LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
+                   StreamerBotLib.Enums.DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");
                 switch (e.DatabaseModelName)
                 {
                     case "BanReasons":
@@ -115,6 +129,8 @@ namespace StreamerBot
                     case null:
                         break;
                 }
+
+                //OnDataGridUpdated?.Invoke(this, new(e.DatabaseModelName));
             }));
         }
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)

@@ -93,7 +93,7 @@ namespace StreamerBotLib.Systems
                     {
                         if (RepeatList.UniqueAdd(item))
                         {
-                            ThreadManager.CreateThreadStart("ElapsedCommandTimers", () => RepeatCmd(item));
+                            ThreadManager.CreateThreadStart($"ElapsedCommandTimers-{item.Command}", () => RepeatCmd(item));
                         }
                         else
                         {

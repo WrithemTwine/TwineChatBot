@@ -405,10 +405,15 @@ namespace StreamerBotLib.Systems
             var FirstUsers = StreamViewers.AddUsersFirstJoinedChannel(UserNames);
 
             ActionSystem.UserJoined(UserNames, Curr);
-            foreach (LiveUser user in FirstUsers)
+
+            if (OptionFlags.FirstUserJoinedMsg)
             {
-                UserWelcomeMessage(user);
+                foreach (LiveUser user in FirstUsers)
+                {
+                    UserWelcomeMessage(user);
+                }
             }
+
             UpdateUserJoinedList();
 
             foreach (LiveUser L in StreamViewers.GetUsersLeft(UserNames))
@@ -562,9 +567,12 @@ namespace StreamerBotLib.Systems
                 ActionSystem.ModJoined(MsgReceived.DisplayName);
             }
 
-            foreach (LiveUser user in StreamViewers.AddUsersFirstChatMessage([User]))
+            if (OptionFlags.FirstUserChatMsg)
             {
-                UserWelcomeMessage(user);
+                foreach (LiveUser user in StreamViewers.AddUsersFirstChatMessage([User]))
+                {
+                    UserWelcomeMessage(user);
+                }
             }
 
             #region Currency Games

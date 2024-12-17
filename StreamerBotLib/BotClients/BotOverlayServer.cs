@@ -7,15 +7,6 @@ using StreamerBotLib.Static;
 
 namespace StreamerBotLib.BotClients
 {
-    /*
-     * This class originally implemented a named pipe server to send messages to a receiving .exe operating a webserver client. 
-     * Re-working this class so the webserver operates in a .dll and this class spawns the main window and subsequent server process.
-     * 
-     * MediaOverlayServer needs to be modified:
-     * 1) as .exe - use named pipe server
-     * 2) as .dll - open the main window here, directly connect the alert mechanism
-     *
-     */
 
     public class BotOverlayServer : IOModule, IBotTypes
     {
@@ -108,7 +99,7 @@ namespace StreamerBotLib.BotClients
         /// <returns>True, the bot has started.</returns>
         public override Task StartBot()
         {
-            return new(() =>
+            return Task.Run(() =>
             {
                 if (IsActive == null || IsActive == false)
                 {
@@ -147,7 +138,7 @@ namespace StreamerBotLib.BotClients
         /// <returns>True for bot stopped.</returns>
         public override Task StopBot()
         {
-            return new(() =>
+            return Task.Run(() =>
             {
                 if (IsActive == true)
                 {
@@ -285,7 +276,7 @@ namespace StreamerBotLib.BotClients
         #region unused interface
         public override Task Send(string s)
         {
-            return new(() => { });
+            return Task.Run(() => { });
         }
 
         public void GetAllFollowers()

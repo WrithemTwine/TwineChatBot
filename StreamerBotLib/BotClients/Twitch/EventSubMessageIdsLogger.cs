@@ -14,7 +14,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (!MsgLogging)
             {
-                ThreadManager.CreateThreadStart("MsgLogCleanup", () =>
+                ThreadManager.CreateThreadStart(Task.Run(async () =>
                 {
                     MessageIdLog.Clear();
 
@@ -23,9 +23,9 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         MessageIdLog.RemoveAll((M) => DateTime.Now - M.MessageTimestamp > interval);
 
-                        Thread.Sleep(500);
+                        await Task.Delay(500);
                     }
-                });
+                }));
             }
         }
 

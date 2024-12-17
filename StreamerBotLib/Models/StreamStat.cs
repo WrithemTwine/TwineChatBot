@@ -56,6 +56,35 @@ namespace StreamerBotLib.Models
               streamStats.ChannelChallenge,
               streamStats.MaxUsers);
 
+        /// <summary>
+        /// Copy a new instance to separate the data.
+        /// </summary>
+        /// <param name="streamStats">Contains statistical data.</param>
+        /// <returns>A new object with copied data.</returns>
+        public static StreamStat Create(StreamStat streamStats) => new(
+              streamStats.StreamStart,
+              streamStats.StreamEnd,
+              streamStats.NewFollows,
+              streamStats.NewSubscribers,
+              streamStats.GiftSubs,
+              streamStats.Bits,
+              streamStats.Raids,
+              streamStats.Hosted,
+              streamStats.UsersBanned,
+              streamStats.UsersTimedOut,
+              streamStats.ModeratorsPresent,
+              streamStats.SubsPresent,
+              streamStats.VIPsPresent,
+              streamStats.TotalChats,
+              streamStats.CommandMsgs,
+              streamStats.AutomatedEvents,
+              streamStats.AutomatedCommands,
+              streamStats.WebhookMsgs,
+              streamStats.ClipsMade,
+              streamStats.ChannelPtCount,
+              streamStats.ChannelChallenge,
+              streamStats.MaxUsers);
+
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
         public int NewFollows { get; set; } = newFollows;

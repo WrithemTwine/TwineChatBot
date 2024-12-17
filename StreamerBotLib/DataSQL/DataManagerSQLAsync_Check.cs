@@ -1,17 +1,15 @@
 ﻿using StreamerBotLib.Enums;
-using StreamerBotLib.GUI;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 
 namespace StreamerBotLib.DataSQL
 {
-    public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
+    internal partial class DataManagerSQLAsync
     {
         #region Check_Methods
 
-        public bool CheckCurrency(LiveUser User, double value, string CurrencyName, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckCurrency(LiveUser User, double value, string CurrencyName, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = (from C in context.Currency
@@ -21,34 +19,34 @@ namespace StreamerBotLib.DataSQL
                 if (Refcontext == null) { ClearDataContext(context); }
 
                 return result;
-            }
+            });
         }
 
-        public bool CheckField(string table, string field, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckField(string table, string field, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = (context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}").FindProperty(field) != null);
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
-        public bool CheckFollower(string User, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckFollower(string User, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                var result = CheckFollower(User, default, context);
+                var result = await CheckFollower(User, default, context);
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
-        public bool CheckFollower(string User, DateTime ToDateTime, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckFollower(string User, DateTime ToDateTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = (from f in context.Followers
@@ -56,12 +54,12 @@ namespace StreamerBotLib.DataSQL
                               select f).Any();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
-        public Tuple<string, string> CheckModApprovalRule(ModActionType modActionType, string ModAction, SQLDBContext Refcontext = null)
+        internal Task<Tuple<string, string>> CheckModApprovalRule(ModActionType modActionType, string ModAction, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = (from M in context.ModeratorApprove
@@ -72,7 +70,7 @@ namespace StreamerBotLib.DataSQL
                                   )).FirstOrDefault();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
@@ -81,19 +79,21 @@ namespace StreamerBotLib.DataSQL
         /// <param name="streamStart">The stream start date and time to check.</param>
         /// <returns><code>true</code> if there are multiple streams on the same day
         /// <code>false</code> if there is no more than one stream for the current day.</returns>
-        public bool CheckMultiStreams(DateTime streamStart, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckMultiStreams(DateTime streamStart, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
                 bool result = (from s in context.StreamStats
-                               // check for the Year/Month/Day are the same, ignoring the time
-                               where s.StreamStart.ToString("yyyy:M:dd") == streamStart.ToString("yyyy:M:dd")
+                                   // check for the Year/Month/Day are the same, ignoring the time
+                               where s.StreamStart.Year == streamStart.Year
+                               && s.StreamStart.Month == streamStart.Month
+                               && s.StreamStart.Day == streamStart.Day
                                select s).Count() > 1;
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
@@ -102,9 +102,9 @@ namespace StreamerBotLib.DataSQL
         /// <param name="cmd">The command to verify the permission.</param>
         /// <param name="permission">The supplied permission to check.</param>
         /// <returns><code>true</code> - the permission is allowed to the command. <code>false</code> - the command permission is not allowed.</returns>
-        public bool CheckPermission(string cmd, ViewerTypes permission, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckPermission(string cmd, ViewerTypes permission, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -113,7 +113,7 @@ namespace StreamerBotLib.DataSQL
                                select c).FirstOrDefault().Permission > permission;
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
@@ -121,9 +121,9 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="UserName">The UserName to shoutout.</param>
         /// <returns>true if in the ShoutOut table.</returns>
-        public bool CheckShoutName(string UserId, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckShoutName(string UserId, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -132,7 +132,7 @@ namespace StreamerBotLib.DataSQL
                                select s).Any();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
@@ -140,9 +140,9 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="CurrTime">The time to check</param>
         /// <returns><code>true</code>: the stream already has a data entry; <code>false</code>: the stream has no data entry</returns>
-        public bool CheckStreamTime(DateTime CurrTime, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckStreamTime(DateTime CurrTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -151,7 +151,7 @@ namespace StreamerBotLib.DataSQL
                                select s).Any();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
@@ -159,12 +159,12 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="User">The user to check in the database.</param>
         /// <returns><code>true</code> if the <paramref name="User"/> has arrived anytime, <code>false</code> otherwise.</returns>
-        public bool CheckUser(LiveUser User, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckUser(LiveUser User, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
-                return CheckUser(User, default, Refcontext);
-            }
+                return await CheckUser(User, default, Refcontext);
+            });
         }
 
         /// <summary>
@@ -173,9 +173,9 @@ namespace StreamerBotLib.DataSQL
         /// <param name="User">The user to verify.</param>
         /// <param name="ToDateTime">Specify the date to check if the user arrived to the channel prior to this date and time.</param>
         /// <returns><c>True</c> if the <paramref name="User"/> has been in channel before <paramref name="ToDateTime"/>, <c>false</c> otherwise.</returns>
-        public bool CheckUser(LiveUser User, DateTime ToDateTime, SQLDBContext Refcontext = null)
+        internal Task<bool> CheckUser(LiveUser User, DateTime ToDateTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -184,7 +184,7 @@ namespace StreamerBotLib.DataSQL
                                select s).Any();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
@@ -192,9 +192,9 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="User">The user to check for a welcome message.</param>
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
-        public string CheckWelcomeUser(string UserId, SQLDBContext Refcontext = null)
+        internal Task<string> CheckWelcomeUser(string UserId, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -203,7 +203,7 @@ namespace StreamerBotLib.DataSQL
                                  select s.Message).FirstOrDefault() ?? "";
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         #endregion Check_Methods

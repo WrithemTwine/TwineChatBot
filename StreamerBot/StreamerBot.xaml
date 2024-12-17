@@ -267,11 +267,11 @@
                                             <StackPanel Height="45">
                                                 <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Start"
                                                    Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Go}">The EventSub Service is started!</TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Stop"
                                                    Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The EventSub Service is stopped!</TextBlock>
                                                 </Label>
                                             </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
@@ -300,10 +300,10 @@
                                             </TextBlock>
                                             <StackPanel Height="45">
                                                 <Label x:Name="Label_TwitchStreamer_EventSub_Start" Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Go}">The EventSub Service is started!</TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchStreamer_EventSub_Stop" Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The EventSub Service is stopped!</TextBlock>
                                                 </Label>
                                             </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
@@ -369,12 +369,15 @@
                                     </GroupBox>
                                     <GroupBox Header="Streamer-Clip Service">
                                         <WrapPanel>
-                                            <Label x:Name="Label_TwitchClip_Start" Visibility="Collapsed">
-                                                <TextBlock Foreground="{DynamicResource Go}">The Twitch Clip Client is started!</TextBlock>
-                                            </Label>
-                                            <Label x:Name="Label_TwitchClip_Stop" Visibility="Visible">
-                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Clip Client is stopped!</TextBlock>
-                                            </Label>
+                                            <StackPanel Height="45">
+                                                <Label x:Name="Label_TwitchClip_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">The Twitch Clip Client is started!</TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchClip_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">The Twitch Clip Client is stopped!</TextBlock>
+                                                </Label>
+
+                                            </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
@@ -1790,7 +1793,7 @@
                                     <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" Content="Disable All" Click="Button_DiscordWebhooks_Click" />
                                 </StackPanel>
                                 <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top"
-                                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Webhooks_CVS}}"
+                                          ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Webhooks_CVS}}"
                                           CanUserDeleteRows="True" IsReadOnly="False" 
                                           ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding" >
                                     <DataGrid.Columns>
@@ -1823,7 +1826,7 @@
                                             The default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".<LineBreak />
                                         </TextBlock>
                                         <DataGrid x:Name="DG_ModApprove" DockPanel.Dock="Top"
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ModeratorApprove_CVS}}" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_ModeratorApprove_CVS}}" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening"
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                      >
@@ -1860,7 +1863,7 @@
                                                 can be identified as hate or spam.</Run></TextBlock>
 
                                         <DataGrid x:Name="DG_Mod_BanReasons" Grid.Row="1" Grid.Column="0"  Margin="5" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_BanReasons_CVS}}" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_BanReasons_CVS}}" 
                                                   CanUserDeleteRows="False" CanUserAddRows="False" 
                                                   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening"  >
@@ -1883,7 +1886,7 @@
                                         </TextBlock>
 
                                         <DataGrid x:Name="DG_Mod_BanRules" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_BanRules_CVS}}" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_BanRules_CVS}}" 
                                                   CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
@@ -1901,7 +1904,7 @@
                                         </DataGrid>
 
                                         <DataGrid x:Name="DG_Mod_LearnMsgs" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_LearnMsgs_CVS}}" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_LearnMsgs_CVS}}" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
@@ -1911,7 +1914,6 @@
                                                 <DataGridTextColumn Header="Learning Message" Width="650" Binding="{Binding TeachingMsg}" />
                                             </DataGrid.Columns>
                                         </DataGrid>
-
                                     </Grid>
                                 </TabItem>
                             </TabControl>
@@ -1952,7 +1954,7 @@
                                                         Click="Button_ClearWatchTime_Click" Margin="15,0,15,0" />
                                             </StackPanel>
                                             <DataGrid x:Name="DG_Users" 
-                                                      ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Users_CVS}}" 
+                                                      ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Users_CVS}}" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False" CanUserDeleteRows="True" 
                                                       RowDetailsTemplate="{StaticResource DG_RowDetailDT_Users}" RowEditEnding="DataGrid_RowEditEnding" >
                                                 <DataGrid.Columns>
@@ -1974,7 +1976,7 @@
                                         <DockPanel x:Name="DockPanel_UserData_Followers" Grid.Row="0" Grid.Column="2">
                                             <Label Content="Follower List - Bot Account Needs to be a Moderator To View this List" DockPanel.Dock="Top" />
                                             <DataGrid x:Name="DG_Followers" 
-                                                      ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Follows_CVS}}" 
+                                                      ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Follows_CVS}}" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True" 
                                                       RowDetailsTemplate="{StaticResource DG_RowDetailDT_Followers}" 
@@ -1994,7 +1996,7 @@
                                     <DockPanel>
 
                                         <DataGrid x:Name="DG_OldFollowUsers" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OldFollowUsers_CVS}}" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OldFollowUsers_CVS}}" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
                                                   AutoGenerateColumns="True" RowEditEnding="DataGrid_RowEditEnding" >
@@ -2020,7 +2022,7 @@
                                         </StackPanel>
 
                                         <DataGrid x:Name="DG_User_Shoutouts" Grid.Row="1" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ShoutOuts_CVS}}"
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_ShoutOuts_CVS}}"
                                                   CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                             <DataGrid.Columns>
@@ -2034,7 +2036,7 @@
                                         <TextBlock Grid.Row="0" Grid.Column="2" Text="Specify a custom message per UserName, tied to Welcome Message 
                                                    options - first appearance or first message. Otherwise, system falls back onto default." />
                                         <DataGrid x:Name="DG_CustomWelcome" Grid.Row="1" Grid.Column="2" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CustomWelcome_CVS}}"
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CustomWelcome_CVS}}"
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening"  >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" 
@@ -2066,7 +2068,7 @@
                                                 <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" 
                                                         Content="Clear All Currency Values" VerticalAlignment="Center" 
                                                         HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
-                                                <DataGrid x:Name="DG_CurrencyType" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CurrencyType_CVS}}"
+                                                <DataGrid x:Name="DG_CurrencyType" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CurrencyType_CVS}}"
                                                           Grid.Row="1" Grid.Column="0" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                           CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                       >
@@ -2077,7 +2079,9 @@
                                                         <DataGridTextColumn Header="Max Value" Binding="{Binding MaxValue, StringFormat={}{0:N0}}" />
                                                     </DataGrid.Columns>
                                                 </DataGrid>
-                                                <DataGrid x:Name="DG_Currency" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Currency_CVS}}" 
+                                                <DataGrid x:Name="DG_Currency" 
+                                                          ItemsSource="{Binding IsAsync=True, Mode=OneWay, 
+                                                    Source={StaticResource DG_Currency_CVS}}" 
                                                           Grid.Row="1" Grid.Column="2"  RowEditEnding="DataGrid_RowEditEnding" 
                                                           ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                                     <DataGrid.Columns>
@@ -2289,7 +2293,7 @@
                                             Giveaways recorded here! <LineBreak /> Data management is 
                                             enabled or disabled in the Options tab.</TextBlock>
                                         <DataGrid x:Name="DG_User_Giveaway" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GiveawayUserData_CVS}}" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_GiveawayUserData_CVS}}" 
                                                   IsReadOnly="False"  CanUserDeleteRows="True"  
                                                   RowEditEnding="DataGrid_RowEditEnding" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" >
@@ -2311,7 +2315,7 @@
                                         <DockPanel Grid.Row="0" Grid.Column="0">
                                             <TextBlock DockPanel.Dock="Top">"User Quotes - Use '!addquote {quote text}', '!quote'(show how many), '!quote {#}'(specific), and '!removequote {#}' to manage quotes in stream chat" <LineBreak />
                                             When adding a new row, ensure "Number" doesn't duplicate in the list.</TextBlock>
-                                            <DataGrid x:Name="DG_User_Quotes" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Quotes_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True" 
+                                            <DataGrid x:Name="DG_User_Quotes" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Quotes_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening"
                                                       RowEditEnding="DataGrid_RowEditEnding" >
                                                 <DataGrid.Columns>
@@ -2341,7 +2345,7 @@
                                         <Button x:Name="Button_SystemEvents_Disabled" Width="80" Content="Disable All" Click="Button_SystemEvents_Click" />
                                     </StackPanel>
                                 </StackPanel>
-                                <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ChannelEvents_CVS}}"  Grid.Row="1" Grid.Column="2" CanUserAddRows="False" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening"  RowEditEnding="DataGrid_RowEditEnding" >
+                                <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_ChannelEvents_CVS}}"  Grid.Row="1" Grid.Column="2" CanUserAddRows="False" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening"  RowEditEnding="DataGrid_RowEditEnding" >
                                     <DataGrid.ToolTip>
                                         <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;."/></TextBlock>
                                     </DataGrid.ToolTip>
@@ -2361,36 +2365,35 @@
                                 <TabItem Header="Help">
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock>
-                                            <Run Text="The 'BuiltInCommands' are those established
-                                                within the bot."/><LineBreak /><Run Text="The 
+                                            The 'BuiltInCommands' are those established
+                                                within the bot.<LineBreak />The 
                                                 'socials' (specific services): add your custom 
                                                 message for the social media and your access URL. 
+                                            <LineBreak />
                                                 E.g. &quot;Visit me on Twitter at: 
                                                 http://wwww.twitter.com/myuser&quot;. The command 
                                                 will show all socials except messages that are 
-                                                blank or the default 'Social media url here'."/>
+                                                blank or the default 'Social media url here'.
                                             <LineBreak />
                                             <LineBreak />
-                                            <Run Text="The variables within message to format a custom
-                                                 response:"/><LineBreak />
-                                            <Run Text="#user: the user specific to the command; 
-                                                 either 'command invoker' user or parameter to the command" />
+                                            The variables within message to format a custom
+                                                 response:<LineBreak />
+                                            #user: the user specific to the command; either 'command invoker'
+                                            user or parameter to the command
                                             <LineBreak />
-                                            <Run Text="#url: the Twitch URL with the supplied user 
-                                                 attached - specific to 'so == shoutout' command"/>
+                                            #url: the Twitch URL with the supplied user attached - 
+                                            specific to 'so == shoutout' command
                                             <LineBreak />
-                                            <Run Text="#fieldvalue: placeholder for the value from
-                                                 a table lookup"/>
+                                           #fieldvalue: placeholder for the value from a table lookup
                                             <LineBreak />
-                                            <Run Text="#currencyname: placeholder for the currency
-                                                 name - extracted from table"/>
+                                            #currencyname: placeholder for the currency name - extracted from table
                                             <LineBreak />
-                                            <Run Text="#currencyvalue: the value of a currency"/>
+                                            #currencyvalue: the value of a currency
                                             <LineBreak />
                                             <LineBreak />
-                                            <Run Text="#date: the current date"/>
+                                            #date: the current date
                                             <LineBreak />
-                                            <Run Text="#time: the current time"/>
+                                            #time: the current time
                                             <LineBreak />
                                         </TextBlock>
                                         <Rectangle Width="800" Stretch="Fill" Height="1" />
@@ -2432,7 +2435,7 @@
                                         <DockPanel Grid.Row="1">
                                             <Label DockPanel.Dock="Top" Content="Built-in Commands:" />
                                             <DataGrid DockPanel.Dock="Top" x:Name="DG_BuiltInCommands" 
-                                                      ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Commands_CVS}}" 
+                                                      ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Commands_CVS}}" 
                                                       CanUserDeleteRows="False" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       FrozenColumnCount="4" RowEditEnding="DataGrid_RowEditEnding">
@@ -2449,7 +2452,9 @@
                                                     <DataGridTextColumn Header="Repeat Timer" Binding="{Binding RepeatTimer, Converter={StaticResource IntConverter}}" />
 
                                                     <DataGridTemplateColumn Header="Category" 
-                                                                            CellTemplate="{Binding Mode=OneWay, Source={StaticResource CategoryDataTemplate}}" />
+                                                                            CellTemplate="{Binding Mode=OneWay, Source={StaticResource CategoryDataTemplate}}"
+                                                                            CellEditingTemplate="{Binding Mode=OneWay, 
+                                                                                                Source={StaticResource EditCategoryDataTemplate}}"/>
 
                                                     <DataGridCheckBoxColumn Header="Lookup Data" Binding="{Binding LookupData}" />
                                                     <DataGridTextColumn Header="Table" Binding="{Binding Table}" />
@@ -2485,7 +2490,7 @@
                                             <DataGrid x:Name="DG_UserDefinedCommands" 
                                                       DockPanel.Dock="Top" 
                                                       DataContext="{Binding}"
-                                                      ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CommandsUser_CVS}}" 
+                                                      ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CommandsUser_CVS}}" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       FrozenColumnCount="4" 
                                                       IsSynchronizedWithCurrentItem="True"
@@ -2502,8 +2507,12 @@
                                                     <DataGridTextColumn Header="Usage" Binding="{Binding Usage}" Width="250" />
                                                     <DataGridCheckBoxColumn Header="Param" Binding="{Binding AllowParam}" />
                                                     <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="250" />
-                                                    <DataGridTextColumn Header="Repeat Timer" Binding="{Binding RepeatTimer, Converter={StaticResource IntConverter}}" />
-                                                    <DataGridCheckBoxColumn Header="Category" Binding="{Binding Category, Converter={StaticResource CategoryConverter}, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+                                                    <DataGridTextColumn Header="Repeat Timer" 
+                                                                        Binding="{Binding RepeatTimer, Converter={StaticResource IntConverter}}" />
+                                                    <DataGridTemplateColumn Header="Category" Width="250"
+                                                                            CellTemplate="{Binding Mode=OneWay, Source={StaticResource CategoryDataTemplate}}"
+                                                                            CellEditingTemplate="{Binding Mode=OneWay, 
+                                                                                                    Source={StaticResource EditCategoryDataTemplate}}" />
                                                     <DataGridCheckBoxColumn Header="Lookup Data" Binding="{Binding LookupData}" />
                                                     <DataGridTextColumn Header="Table" Binding="{Binding Table}" />
                                                     <DataGridTextColumn Header="KeyField" Binding="{Binding KeyField}" />
@@ -2564,7 +2573,8 @@
                                                 </StackPanel>
                                             </GroupBox>
                                         </WrapPanel>
-                                        <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}" CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                        <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}" CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource IntConverter}}" />
@@ -2583,7 +2593,7 @@
                                 <TabItem Header="Ticker">
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Top">This tab displays the data used in the 'Last User' ticker.</TextBlock>
-                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}" CanUserDeleteRows="False" 
+                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}" CanUserDeleteRows="False" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Ticker Name" ItemsSource="{Binding Source={StaticResource EnumOverlayTickerItem}}" SelectedItemBinding="{Binding TickerName}" IsReadOnly="True" />
@@ -2607,22 +2617,10 @@
                                                     ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" 
-                                                  RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}" 
-                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
-                                            <DataGrid.Columns>
-                                                <DataGridTemplateColumn Header="Stream Start" 
-                                                                        CellTemplate="{StaticResource DateStreamStartTemplate}" 
-                                                                        CellEditingTemplate="{StaticResource EditStreamStartTemplate}" 
-                                                                        SortMemberPath="StreamStart" SortDirection="Descending" />
-                                                <DataGridTemplateColumn Header="Stream End" 
-                                                                        CellTemplate="{StaticResource DateStreamEndTemplate}" 
-                                                                        CellEditingTemplate="{StaticResource EditStreamEndTemplate}" 
-                                                                        SortMemberPath="StreamEnd" />
-                                                <DataGridTemplateColumn Header="Duration" CellTemplate="{StaticResource StreamDurationTemplate}" SortMemberPath="Duration" />
-                                                <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
-                                                <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, StringFormat={}{0:N0}}" />
+                                        
+                                        <!-- #region Stream Stat extra datagrid columns -->
+                                        <!--
+                                        
                                                 <DataGridTextColumn Header="New Subs" Binding="{Binding NewSubscribers, StringFormat={}{0:N0}}" />
                                                 <DataGridTextColumn Header="Gift Subs" Binding="{Binding GiftSubs, StringFormat={}{0:N0}}" />
                                                 <DataGridTextColumn Header="Bits" Binding="{Binding Bits, StringFormat={}{0:N0}}" />
@@ -2641,9 +2639,32 @@
                                                 <DataGridTextColumn Header="Clips Made" Binding="{Binding ClipsMade, StringFormat={}{0:N0}}" />
                                                 <DataGridTextColumn Header="Channel Pt Count" Binding="{Binding ChannelPtCount, StringFormat={}{0:N0}}" />
                                                 <DataGridTextColumn Header="Channel Challenge" Binding="{Binding ChannelChallenge, StringFormat={}{0:N0}}" />
+                                        -->
+                                        <!-- #endregion End Stream Stat extra datagrid columns -->
+
+                                        <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" 
+                                                  RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}" 
+                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                            <DataGrid.Columns>
+                                                <DataGridTemplateColumn Header="Stream Start" 
+                                                                        CellTemplate="{StaticResource DateStreamStartTemplate}" 
+                                                                        CellEditingTemplate="{StaticResource EditStreamStartTemplate}" 
+                                                                        SortMemberPath="StreamStart" SortDirection="Descending" />
+                                                <DataGridTemplateColumn Header="Stream End" 
+                                                                        CellTemplate="{StaticResource DateStreamEndTemplate}" 
+                                                                        CellEditingTemplate="{StaticResource EditStreamEndTemplate}" 
+                                                                        SortMemberPath="StreamEnd" />
+                                                <DataGridTemplateColumn Header="Duration" CellTemplate="{StaticResource StreamDurationTemplate}" SortMemberPath="Duration" />
+                                                <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
+                                                <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, StringFormat={}{0:N0}}" />
+                                        
                                                 <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
 
-                                                <DataGridCheckBoxColumn Header="Category" Binding="{Binding Category, Converter={StaticResource CategoryConverter}, NotifyOnValidationError=True, ValidatesOnDataErrors=True}" />
+                                                <DataGridTemplateColumn Header="Category" 
+                                                                        CellTemplate="{Binding Mode=OneWay, Source={StaticResource CategoryDataTemplate}}"
+                                                                        CellEditingTemplate="{Binding Mode=OneWay, 
+                                                                                            Source={StaticResource EditCategoryDataTemplate}}"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>
@@ -2672,7 +2693,7 @@
                                         <DockPanel x:Name="DockPanel_StreamData_Raids_Incoming" Grid.Row="0" Grid.Column="0">
                                             <TextBlock DockPanel.Dock="Top">This table saves incoming raids to your channel, so you can show 
                                                 them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
-                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}"
+                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}"
                                                       IsReadOnly="False"   CanUserDeleteRows="True" 
                                                       RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                                 <DataGrid.Columns>
@@ -2693,7 +2714,7 @@
                                             <TextBlock DockPanel.Dock="Top">This table saves outgoing raids from your channel, so you know the 
                                                 channels you've raided and can spread the love.</TextBlock>
                                             <DataGrid x:Name="DG_OutRaids" 
-                                                      ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OutRaidData_CVS}}" 
+                                                      ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OutRaidData_CVS}}" 
                                                       CanUserDeleteRows="True" 
                                                       IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening">
@@ -2727,12 +2748,15 @@
                                             </TextBlock>
                                         </Label>
                                         <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" IsReadOnly="True" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" IsReadOnly="True" 
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category Id" Binding="{Binding CategoryId}" IsReadOnly="True" />
-                                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" IsReadOnly="True" />
+                                                <DataGridTextColumn Header="Category"
+                                                                    Binding="{Binding Category, 
+                                                                            Converter={StaticResource ConvertCategory}}" 
+                                                                    IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Stream Count" Binding="{Binding StreamCount}" />
                                             </DataGrid.Columns>
                                         </DataGrid>
@@ -2740,7 +2764,7 @@
                                             <TextBlock>Death Counter per Category</TextBlock>
                                         </Label>
                                         <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" 
-                                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" 
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
@@ -2760,7 +2784,7 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="Clip List"/>
-                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" 
+                                        <DataGrid x:Name="DG_Clips" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" 
                                                   Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>

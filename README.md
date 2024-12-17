@@ -1,19 +1,6 @@
 # TwineChatBot
 Twitch bots written using .NET 8.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file and future support may include SQL databases for storage. 
 
---------------------------
-# Application - Multi-Live Bot:
-
-This bot utilizes TwitchLib containing the LiveStreamMonitorService. 
-
-A user can use an existing Twitch channel user name or establish a new channel user account (recommended) as a bot. The application has further detail about how to get a 'client id' and 'access token'.
-
-The user can add:
-   - Discord links (current support, additional upon request) to post Twitch Channels going live
-   - Message to display/send to Discord/social media, a tooltip shows the keyword variables per the user to include in the message
-   - Channel Names - a list of channels to monitor for going live, and can be adjusted while the bot is active
-   - Live Stream Stats - can view/edit the data the bot monitors, disabled while the bot is active (the updates don't refresh and crash the GUI)
-
 ----------------------------------
 # Application - Twine Streamer Bot 
 (documentation updated periodically, may not reflect actual current feature set)
@@ -23,11 +10,9 @@ Features: This bot utilizes TwitchLib.
 The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, and responses to channel events.
 
 Implements:
-   - Twitch Chat bot
-   - Twitch Live bot
-   - Twitch Follower bot
-   - Twitch "Clip" bot
-   - Twitch PubSub Bot
+   - Twitch EventSub bot - read chats, stream online-offline, raids in/out, follower, channel point redemptions, bits/cheers, subscriptions viewer/gift
+   - Twitch Multi-Live bot - monitor other streamer channels to post promotion to Discord channel(s)
+   - Twitch "Clip" bot - new 
 
    - App Services Bot
      - Media Overlay Server
@@ -92,14 +77,13 @@ Options to manage bot actions (enable or disable):
       - Update all followers when bot starts
       - Remove non-followers from Followers table
       - Notification message for new follows
-      - Option to refresh all followers every specified number of hours - after Follow bot starts
-   - Uses PubSub to listen to Channel Point Redemptions
+      - Option to refresh all followers every specified number of hours (status unfollow isn't a Twitch API message, rather, check the whole list for current follower listing) - after Follow bot starts
+   - Uses EventSub to listen to Channel Point Redemptions
        - For Giveaways
-       - Future features upon request, per PubSub API
+       - Future features upon request, per EventSub API
    - Automatically start when app starts:
-      - Twitch Chat bot
+      - Twitch EventSub bot
       - Twitch Live bot
-      - Twitch Follow bot
       - Twitch Clip bot
       - Multi-Live bot features - when Multi-Live Bot app is not started
 
@@ -121,8 +105,8 @@ Twitch (some features depend on settings)
       - monitors channel for active clips
         - option to post to chat
         - option to post to Discord via Webhook
-   - PubSub bot
-      - listens to topics from Twitch to receive realtime updates
+   - EventSub bot
+      - set up subscriptions with Twitch to receive realtime updates
         - Custom Rewards redemption (Channel Points)
         - (future features) more topics available via Twitch API
     When Multi-Live Bot

@@ -53,7 +53,7 @@ namespace StreamerBotLib.BotClients
 
         public virtual async Task<bool> Connect()
         {
-            return await new Task<bool>(() =>
+            return await Task.Run(() =>
             {
                 return false;
             });
@@ -61,7 +61,7 @@ namespace StreamerBotLib.BotClients
 
         public virtual async Task<bool> Disconnect()
         {
-            return await new Task<bool>(() =>
+            return await Task.Run(() =>
             {
                 return false;
             });
@@ -74,7 +74,7 @@ namespace StreamerBotLib.BotClients
 
         public virtual async Task Send(string s)
         {
-            await new Task(() => { });
+            await Task.Run(() => { });
         }
 
         public virtual bool SendWhisper(string user, string s)
@@ -84,17 +84,17 @@ namespace StreamerBotLib.BotClients
 
         public virtual Task StartBot()
         {
-            return new Task(() => { });
+            return Task.Run(() => { });
         }
 
         public virtual Task StopBot()
         {
-            return new Task(() => { });
+            return Task.Run(() => { });
         }
 
         public virtual async Task<bool> ExitBot()
         {
-            return await new Task<bool>(() =>
+            return await Task.Run(() =>
             {
                 return true;
             });

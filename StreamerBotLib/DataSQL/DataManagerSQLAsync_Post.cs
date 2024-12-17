@@ -2,7 +2,6 @@
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
-using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
@@ -13,13 +12,13 @@ using System.Globalization;
 
 namespace StreamerBotLib.DataSQL
 {
-    public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
+    internal partial class DataManagerSQLAsync
     {
         #region Post_Methods
 
-        public void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta, SQLDBContext Refcontext = null)
+        internal Task PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -28,182 +27,182 @@ namespace StreamerBotLib.DataSQL
                     // show all, but GUI access-controls will prevent these certain tables from having new rows (channel events doesn't need a new row for another event, except API driven and application will already update it)
                     if (tableMeta.TableName == "BanReasons")
                     {
-                        context.BanReasons.Add((Models.BanReasons)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.BanReasons.AddAsync((Models.BanReasons)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshBanReasonsObservableCollection();
                     }
                     else if (tableMeta.TableName == "BanRules")
                     {
-                        context.BanRules.Add((Models.BanRules)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.BanRules.AddAsync((Models.BanRules)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshBanRulesObservableCollection();
                     }
                     else if (tableMeta.TableName == "CategoryList")
                     {
-                        context.CategoryList.Add((Models.CategoryList)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.CategoryList.AddAsync((Models.CategoryList)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshCategoryListObservableCollection();
                     }
                     else if (tableMeta.TableName == "ChannelEvents")
                     {
-                        context.ChannelEvents.Add((Models.ChannelEvents)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.ChannelEvents.AddAsync((Models.ChannelEvents)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshChannelEventsObservableCollection();
                     }
                     else if (tableMeta.TableName == "Clips")
                     {
-                        context.Clips.Add((Models.Clips)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.Clips.AddAsync((Models.Clips)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshClipsObservableCollection();
                     }
                     else if (tableMeta.TableName == "Commands")
                     {
-                        context.Commands.Add((Models.Commands)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.Commands.AddAsync((Models.Commands)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshCommandsObservableCollection();
                     }
                     else if (tableMeta.TableName == "CommandsUser")
                     {
-                        context.CommandsUser.Add((Models.CommandsUser)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.CommandsUser.AddAsync((Models.CommandsUser)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshCommandsUserObservableCollection();
                     }
                     else if (tableMeta.TableName == "Currency")
                     {
-                        context.Currency.Add((Models.Currency)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.Currency.AddAsync((Models.Currency)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshCurrencyObservableCollection();
                     }
                     else if (tableMeta.TableName == "CurrencyType")
                     {
-                        context.CurrencyType.Add((Models.CurrencyType)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.CurrencyType.AddAsync((Models.CurrencyType)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshCurrencyTypeObservableCollection();
                     }
                     else if (tableMeta.TableName == "CustomWelcome")
                     {
-                        context.CustomWelcome.Add((Models.CustomWelcome)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.CustomWelcome.AddAsync((Models.CustomWelcome)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshCustomWelcomeObservableCollection();
                     }
                     else if (tableMeta.TableName == "Followers")
                     {
-                        context.Followers.Add((Models.Followers)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.Followers.AddAsync((Models.Followers)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshFollowersObservableCollection();
                     }
                     else if (tableMeta.TableName == "GameDeadCounter")
                     {
-                        context.GameDeadCounter.Add((Models.GameDeadCounter)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.GameDeadCounter.AddAsync((Models.GameDeadCounter)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshGameDeadCounterObservableCollection();
                     }
                     else if (tableMeta.TableName == "GiveawayUserData")
                     {
-                        context.GiveawayUserData.Add((Models.GiveawayUserData)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.GiveawayUserData.AddAsync((Models.GiveawayUserData)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshGiveawayUserDataObservableCollection();
                     }
                     else if (tableMeta.TableName == "InRaidData")
                     {
-                        context.InRaidData.Add((Models.InRaidData)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.InRaidData.AddAsync((Models.InRaidData)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshInRaidDataObservableCollection();
                     }
                     else if (tableMeta.TableName == "LearnMsgs")
                     {
-                        context.LearnMsgs.Add((Models.LearnMsgs)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.LearnMsgs.AddAsync((Models.LearnMsgs)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshLearnMsgsObservableCollection();
                     }
                     else if (tableMeta.TableName == "ModeratorApprove")
                     {
-                        context.ModeratorApprove.Add((Models.ModeratorApprove)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.ModeratorApprove.AddAsync((Models.ModeratorApprove)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshModeratorApproveObservableCollection();
                     }
                     else if (tableMeta.TableName == "MultiChannels")
                     {
-                        context.MultiChannels.Add((Models.MultiChannels)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.MultiChannels.AddAsync((Models.MultiChannels)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshMultiChannelsObservableCollection();
                     }
                     else if (tableMeta.TableName == "MultiLiveStreams")
                     {
-                        context.MultiLiveStreams.Add((Models.MultiLiveStreams)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.MultiLiveStreams.AddAsync((Models.MultiLiveStreams)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshMultiLiveStreamsObservableCollection();
                     }
                     else if (tableMeta.TableName == "MultiSummaryLiveStreams")
                     {
-                        context.MultiSummaryLiveStreams.Add((Models.MultiSummaryLiveStreams)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.MultiSummaryLiveStreams.AddAsync((Models.MultiSummaryLiveStreams)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshMultiSummaryLiveStreamsObservableCollection();
                     }
                     else if (tableMeta.TableName == "MultiWebhooks")
                     {
-                        context.MultiWebhooks.Add((Models.MultiWebhooks)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.MultiWebhooks.AddAsync((Models.MultiWebhooks)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshMultiWebhooksObservableCollection();
                     }
                     else if (tableMeta.TableName == "OldFollowUsers")
                     {
-                        context.OldFollowUsers.Add((Models.OldFollowUsers)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.OldFollowUsers.AddAsync((Models.OldFollowUsers)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshOldFollowUsersObservableCollection();
                     }
                     else if (tableMeta.TableName == "OutRaidData")
                     {
-                        context.OutRaidData.Add((Models.OutRaidData)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        context.OutRaidData.AddAsync((Models.OutRaidData)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshOutRaidDataObservableCollection();
                     }
                     else if (tableMeta.TableName == "OverlayServices")
                     {
-                        context.OverlayServices.Add((Models.OverlayServices)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.OverlayServices.AddAsync((Models.OverlayServices)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshOverlayServicesObservableCollection();
                     }
                     else if (tableMeta.TableName == "OverlayTicker")
                     {
-                        context.OverlayTicker.Add((Models.OverlayTicker)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.OverlayTicker.AddAsync((Models.OverlayTicker)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshOverlayTickerObservableCollection();
                     }
                     else if (tableMeta.TableName == "Quotes")
                     {
-                        context.Quotes.Add((Models.Quotes)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.Quotes.AddAsync((Models.Quotes)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshQuotesObservableCollection();
                     }
                     else if (tableMeta.TableName == "ShoutOuts")
                     {
-                        context.ShoutOuts.Add((Models.ShoutOuts)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.ShoutOuts.AddAsync((Models.ShoutOuts)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshShoutOutsObservableCollection();
                     }
                     else if (tableMeta.TableName == "StreamStats")
                     {
-                        context.StreamStats.Add((Models.StreamStats)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.StreamStats.AddAsync((Models.StreamStats)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshStreamStatsObservableCollection();
                     }
                     else if (tableMeta.TableName == "Users")
                     {
-                        context.Users.Add((Models.Users)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.Users.AddAsync((Models.Users)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshUsersObservableCollection();
                     }
                     else if (tableMeta.TableName == "UserStats")
                     {
-                        context.UserStats.Add((Models.UserStats)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.UserStats.AddAsync((Models.UserStats)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshUserStatsObservableCollection();
                     }
                     else if (tableMeta.TableName == "Webhooks")
                     {
-                        context.Webhooks.Add((Models.Webhooks)tableMeta.GetModelEntity());
-                        context.SaveChanges(true);
+                        await context.Webhooks.AddAsync((Models.Webhooks)tableMeta.GetModelEntity());
+                        await context.SaveChangesAsync();
                         RefreshWebhooksObservableCollection();
                     }
                 }
@@ -214,19 +213,19 @@ namespace StreamerBotLib.DataSQL
 
                 if (Refcontext == null) { ClearDataContext(context); }
 
-            }
+            });
         }
 
-        public bool PostCategory(CategoryData categoryData, SQLDBContext Refcontext = null)
+        internal Task<bool> PostCategory(CategoryData categoryData, SQLDBContext Refcontext = null)
         {
-            bool found = false;
-            if (string.IsNullOrEmpty(categoryData.CategoryId) && string.IsNullOrEmpty(categoryData.CategoryName))
+            return Task.Run(async () =>
             {
-                found = false;
-            }
-            else
-            {
-                lock (GUIDataManagerLock.Lock)
+                bool found = false;
+                if (string.IsNullOrEmpty(categoryData.CategoryId) && string.IsNullOrEmpty(categoryData.CategoryName))
+                {
+                    found = false;
+                }
+                else
                 {
                     SQLDBContext context = Refcontext ?? BuildDataContext();
                     CategoryList categoryList = (from CL in context.CategoryList
@@ -234,42 +233,41 @@ namespace StreamerBotLib.DataSQL
                                                  select CL).FirstOrDefault();
                     if (categoryList == default)
                     {
-                        context.CategoryList.Add(new(categoryId: categoryData.CategoryId, category: categoryData.CategoryName, streamCount: 0));
+                        await context.CategoryList.AddAsync(new(categoryId: categoryData.CategoryId, category: categoryData.CategoryName, streamCount: 0));
                         found = true;
                     }
-                    context.SaveChanges(true);
+                    await context.SaveChangesAsync();
                     RefreshCategoryListObservableCollection();
                     if (Refcontext == null) { ClearDataContext(context); }
                 }
-            }
-            return found;
+                return found;
+            });
         }
 
-        public void PostCategoryStream(CategoryData categoryData, int StreamCount = 0, SQLDBContext Refcontext = null)
+        internal Task PostCategoryStream(CategoryData categoryData, int StreamCount = 0, SQLDBContext Refcontext = null)
         {
-            PostCategory(categoryData);
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                CategoryList category = (from CL in context.CategoryList
-                                         where (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName)) || CL.CategoryId == categoryData.CategoryId
-                                         select CL).FirstOrDefault();
+            return Task.Run(async () =>
+             {
+                 SQLDBContext context = Refcontext ?? BuildDataContext();
+                 await PostCategory(categoryData, context);
+                 CategoryList category = (from CL in context.CategoryList
+                                          where (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName)) || CL.CategoryId == categoryData.CategoryId
+                                          select CL).FirstOrDefault();
 
-                if (OptionFlags.IsStreamOnline)
-                {
-                    category.StreamCount++;
-                }
+                 if (OptionFlags.IsStreamOnline)
+                 {
+                     category.StreamCount++;
+                 }
 
-                context.SaveChanges(true);
-                RefreshCategoryListObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
-            }
-
+                 await context.SaveChangesAsync();
+                 RefreshCategoryListObservableCollection();
+                 if (Refcontext == null) { ClearDataContext(context); }
+             });
         }
 
-        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, SQLDBContext Refcontext = null)
+        internal Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 bool result;
                 SQLDBContext context = Refcontext ?? BuildDataContext();
@@ -277,20 +275,20 @@ namespace StreamerBotLib.DataSQL
                       where (C.ClipId == ClipId)
                       select C).Any())
                 {
-                    context.Clips.Add(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, language: Language, duration: (float)Duration, url: Url));
-                    context.SaveChanges(true);
+                    await context.Clips.AddAsync(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, language: Language, duration: (float)Duration, url: Url));
+                    await context.SaveChangesAsync();
                     RefreshClipsObservableCollection();
                     result = true;
                 }
                 result = false;
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
-        public string PostCommand(string cmd, CommandParams Params, SQLDBContext Refcontext = null)
+        internal Task<string> PostCommand(string cmd, CommandParams Params, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 string result;
                 SQLDBContext context = Refcontext ?? BuildDataContext();
@@ -298,34 +296,34 @@ namespace StreamerBotLib.DataSQL
                       where Com.CmdName == cmd
                       select Com).Any())
                 {
-                    context.CommandsUser.Add(new(cmdName: cmd, addMe: Params.AddMe, permission: Params.Permission,
-                    isEnabled: Params.IsEnabled, message: Params.Message, repeatTimer: Params.Timer, sendMsgCount: Params.RepeatMsg, category: [Params.Category],
-                    allowParam: Params.AllowParam, usage: Params.Usage, lookupData: Params.LookupData, table: Params.Table, keyField: GetKey(Params.Table),
-                    dataField: Params.Field, currencyField: Params.Currency, unit: Params.Unit, action: Params.Action, top: Params.Top, sort: Params.Sort));
+                    await context.CommandsUser.AddAsync(new(cmdName: cmd, addMe: Params.AddMe, permission: Params.Permission,
+                         isEnabled: Params.IsEnabled, message: Params.Message, repeatTimer: Params.Timer, sendMsgCount: Params.RepeatMsg, category: [Params.Category],
+                         allowParam: Params.AllowParam, usage: Params.Usage, lookupData: Params.LookupData, table: Params.Table, keyField: GetKey(Params.Table).Result,
+                         dataField: Params.Field, currencyField: Params.Currency, unit: Params.Unit, action: Params.Action, top: Params.Top, sort: Params.Sort));
 
-                    context.SaveChanges(true);
+                    await context.SaveChangesAsync();
                     RefreshCommandsUserObservableCollection();
                     result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
                 }
                 result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(Msg.MsgAddCommandFailed), cmd);
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
         /// <summary>
         /// Post a new currency type to the database. Will add new currency records for existing users.
         /// </summary>
         /// <param name="currencyType"></param>
-        public void PostCurrencyType(Models.CurrencyType currencyType, SQLDBContext Refcontext = null)
+        internal Task PostCurrencyType(Models.CurrencyType currencyType, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
                 if (!(from CT in context.CurrencyType where CT.CurrencyName == currencyType.CurrencyName select CT).Any())
                 {
-                    context.CurrencyType.Add(currencyType);
+                    await context.CurrencyType.AddAsync(currencyType);
 
                     List<Models.CurrencyType> types = new(context.CurrencyType);
 
@@ -335,22 +333,22 @@ namespace StreamerBotLib.DataSQL
                         {
                             if (!(from C in context.Currency where (C.User == U && C.CurrencyName == t.CurrencyName) select C).Any())
                             {
-                                context.Currency.Add(new(userId: U.UserId, value: 0, currencyName: t.CurrencyName));
+                                await context.Currency.AddAsync(new(userId: U.UserId, value: 0, currencyName: t.CurrencyName));
                             }
                         }
                     }
                 }
 
-                context.SaveChanges(true);
+                await context.SaveChangesAsync();
                 RefreshCurrencyTypeObservableCollection();
                 RefreshCurrencyObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName, SQLDBContext Refcontext = null)
+        internal Task PostCurrencyUpdate(LiveUser User, double value, string CurrencyName, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 Currency currency = (from C in context.Currency
@@ -360,15 +358,15 @@ namespace StreamerBotLib.DataSQL
                 {
                     currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.MaxValue);
                 }
-                context.SaveChanges(true);
+                await context.SaveChangesAsync();
                 RefreshCurrencyObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public void PostCurrencyUpdate(List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> Updates, string CurrencyName, SQLDBContext Refcontext = null)
+        internal Task PostCurrencyUpdate(List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> Updates, string CurrencyName, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -382,15 +380,15 @@ namespace StreamerBotLib.DataSQL
                     }
                 }
 
-                context.SaveChanges(true);
+                context.SaveChangesAsync();
                 RefreshCurrencyObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1, SQLDBContext Refcontext = null)
+        internal Task<int> PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 GameDeadCounter update = (from G in context.GameDeadCounter where G.Category == currCategory select G).FirstOrDefault();
@@ -409,63 +407,63 @@ namespace StreamerBotLib.DataSQL
                 {
                     update = context.GameDeadCounter.Add(new(category: currCategory)).Entity;
                 }
-                context.SaveChanges(true);
+                await context.SaveChangesAsync();
                 RefreshGameDeadCounterObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return update?.Counter ?? 0;
-            }
+            });
         }
 
-        public void PostGiveawayData(string UserId, DateTime dateTime, SQLDBContext Refcontext = null)
+        internal Task PostGiveawayData(string UserId, DateTime dateTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                context.GiveawayUserData.Add(new(dateTime: dateTime, userId: UserId));
-                context.SaveChanges(true);
+                await context.GiveawayUserData.AddAsync(new(dateTime: dateTime, userId: UserId));
+                await context.SaveChangesAsync();
 
                 RefreshGiveawayUserDataObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public void PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename, SQLDBContext Refcontext = null)
+        internal Task PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                PostNewUser(user, time, context);
-                PostCategory(gamename, context);
-                context.InRaidData.Add(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
-                context.SaveChanges(true);
+                await PostNewUser(user, time, context);
+                await PostCategory(gamename, context);
+                await context.InRaidData.AddAsync(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
+                await context.SaveChangesAsync();
                 RefreshUsersObservableCollection();
                 RefreshCategoryListObservableCollection();
                 RefreshInRaidDataObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public void PostLearnMsgsRow(string Message, MsgTypes MsgType, SQLDBContext Refcontext = null)
+        internal Task PostLearnMsgsRow(string Message, MsgTypes MsgType, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 if (!(from M in context.LearnMsgs
                       where M.TeachingMsg == Message
                       select M).Any())
                 {
-                    context.LearnMsgs.Add(new(msgType: MsgType, teachingMsg: Message));
+                    await context.LearnMsgs.AddAsync(new(msgType: MsgType, teachingMsg: Message));
                     LearnMsgChanged = true;
                 }
-                context.SaveChanges(true);
+                await context.SaveChangesAsync();
                 RefreshLearnMsgsObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform, SQLDBContext Refcontext = null)
+        internal Task<bool> PostMergeUserStats(string CurrUser, string SourceUser, Platform platform, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 IEnumerable<Currency> userCurrency = from uCu in context.Currency where uCu.User.UserName == CurrUser select uCu;
@@ -489,7 +487,7 @@ namespace StreamerBotLib.DataSQL
                     currUserstat += sourceUser;
 
                     context.UserStats.Remove(sourceUser);
-                    context.SaveChanges(true);
+                    await context.SaveChangesAsync();
 
                     result = true;
                 }
@@ -503,30 +501,30 @@ namespace StreamerBotLib.DataSQL
 
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
-        public void PostNewAutoShoutUser(string UserId, Platform platform, SQLDBContext Refcontext = null)
+        internal Task PostNewAutoShoutUser(string UserId, Platform platform, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 if (!(from SO in context.ShoutOuts where (SO.UserId == UserId && SO.Platform == platform) select SO).Any())
                 {
-                    context.ShoutOuts.Add(new(userId: UserId, platform: platform));
+                    await context.ShoutOuts.AddAsync(new(userId: UserId, platform: platform));
                 }
-                context.SaveChanges(true);
+                await context.SaveChangesAsync();
                 RefreshShoutOutsObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public void PostNewAutoShoutUser(LiveUser liveUser, SQLDBContext Refcontext = null)
+        internal void PostNewAutoShoutUser(LiveUser liveUser, SQLDBContext Refcontext = null)
         {
             PostNewAutoShoutUser(liveUser.UserId, liveUser.Platform, Refcontext);
         }
 
-        //public void PostNewData(TableMeta.TableMeta tableMeta, SQLDBContext Refcontext = null)
+        //internal void PostNewData(TableMeta.TableMeta tableMeta, SQLDBContext Refcontext = null)
         //{
         //    lock (GUIDataManagerLock.Lock)
         //    {
@@ -632,38 +630,38 @@ namespace StreamerBotLib.DataSQL
         //                break;
         //        }
 
-        //            context.SaveChanges(true);
+        //            context.SaveChangesAsync();
         //        if (Refcontext == null) { ClearDataContext(context); }
         //    }
         //}
 
-        public void PostOutgoingRaid(string HostedChannel, DateTime dateTime, SQLDBContext Refcontext = null)
+        internal Task PostOutgoingRaid(string HostedChannel, DateTime dateTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                context.OutRaidData.Add(new(channelRaided: HostedChannel, raidDate: dateTime));
-                context.SaveChanges(true);
+                await context.OutRaidData.AddAsync(new(channelRaided: HostedChannel, raidDate: dateTime));
+                await context.SaveChangesAsync();
                 RefreshOutRaidDataObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public int PostQuote(string Text, SQLDBContext Refcontext = null)
+        internal Task<int> PostQuote(string Text, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 List<Quotes> quotes = new(from Q in context.Quotes select Q);
                 int opennum = (from Q in context.Quotes select Q.Number)
                     .IntersectBy(Enumerable.Range(1, quotes.Count > 0 ? quotes.Max((f) => f.Number) : 1), q => q).Min();
 
-                context.Quotes.Add(new(number: opennum, quote: Text));
-                context.SaveChanges(true);
+                await context.Quotes.AddAsync(new(number: opennum, quote: Text));
+                await context.SaveChangesAsync();
                 RefreshQuotesObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return opennum;
-            }
+            });
         }
 
         /// <summary>
@@ -671,38 +669,41 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="StreamStart">The time of stream start.</param>
         /// <returns><code>true: for posting a new stream start;</code> <code>false: when a stream start date row already exists</code></returns>
-        public bool PostStream(DateTime StreamStart, string Category, SQLDBContext Refcontext = null)
+        internal Task<bool> PostStream(DateTime StreamStart, string Category, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 bool addstream = !(from S in context.StreamStats where S.StreamStart == StreamStart select S).Any();
                 if (addstream)
                 {
-                    context.StreamStats.Add(new(streamStart: StreamStart, streamEnd: StreamStart));
-                    context.SaveChanges(true);
+                    await context.StreamStats.AddAsync(new(streamStart: StreamStart, streamEnd: StreamStart));
+                    await context.SaveChangesAsync();
                     RefreshStreamStatsObservableCollection();
                 }
 
                 if (Refcontext == null) { ClearDataContext(context); }
                 return addstream;
-            }
+            });
         }
 
-        public void PostStreamStat(StreamStat streamStat, SQLDBContext Refcontext = null)
+        internal Task PostStreamStat(StreamStat streamStat, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                StreamStats currStream = (from S in context.StreamStats where S.StreamStart == streamStat.StreamStart select S).FirstOrDefault();
+                StreamStats currStream = (from S in context.StreamStats
+                                          where S.StreamStart == streamStat.StreamStart
+                                          select S).FirstOrDefault();
                 if (currStream != default)
                 {
                     currStream.Update(streamStat);
-                    context.SaveChanges(true);
+                    LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, $"Updated stream stats for stream started {streamStat.StreamStart}.");
+                    await context.SaveChangesAsync();
                     RefreshStreamStatsObservableCollection();
                 }
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
         /// <summary>
@@ -710,19 +711,19 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="User">The user to add the custom welcome message.</param>
         /// <param name="WelcomeMsg">The message for the user.</param>
-        public void PostUserCustomWelcome(LiveUser User, string WelcomeMsg, SQLDBContext Refcontext = null)
+        internal Task PostUserCustomWelcome(LiveUser User, string WelcomeMsg, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 if (!(from W in context.CustomWelcome where W.UserId == User.UserId select W).Any())
                 {
-                    context.CustomWelcome.Add(new(userId: User.UserId, platform: User.Platform, message: WelcomeMsg));
-                    context.SaveChanges(true);
+                    await context.CustomWelcome.AddAsync(new(userId: User.UserId, platform: User.Platform, message: WelcomeMsg));
+                    await context.SaveChangesAsync();
                     RefreshCustomWelcomeObservableCollection();
                     if (Refcontext == null) { ClearDataContext(context); }
                 }
-            }
+            });
         }
 
         #endregion Post_Methods

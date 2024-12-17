@@ -1,354 +1,989 @@
-﻿using StreamerBotLib.DataSQL.Import;
-using StreamerBotLib.DataSQL.Models;
+﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
-using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
+using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
 
-using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Data;
-using System.Globalization;
 
 namespace StreamerBotLib.DataSQL
 {
-    /*
-
-!command: <switches-optional> <message>
-
-switches:
--t:<table>   (requires -f)
--f:<field>    (requires -t)
--c:<currency> (requires -f, optional switch)
--unit:<field units>   (optional with -f, but recommended)
-
--p:<permission>
--top:<number>
--s:<sort>
--a:<action>
--e:<true|false> // IsEnabled
--param:<allow params to command>
--timer:<seconds>
--use:<usage message>
--category:<All-defaul>
-
--m:<message> -> The message to display, may include parameters (e.g. #user, #field).
- */
-
-    public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
+    /// <summary>
+    /// A wrapper class to manage sequential DbContext access, which is not thread-safe. 
+    /// https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
+    /// </summary>
+    public class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
     {
-        private readonly DataManagerFactory dbContextFactory = new();
+        private readonly DataManagerSQLAsync _dataManager;
 
-        private bool constructingModel_Context;
-        private bool BulkFollowerUpdate;
+        public string MultiLiveStatusLog { get; private set; }
+        private readonly List<string> MultiLiveStatusList = [];
+        private const int MaxList = 50;
 
-        /// <summary>
-        /// always true to begin one learning cycle
-        /// </summary>
-        private bool LearnMsgChanged = true;
-
-        private readonly ConcurrentQueue<IEnumerable<Follow>> followsQueue = new();
-
-        private readonly string DefaulSocialMsg = LocalizedMsgSystem.GetVar(Msg.MsgDefaultSocialMsg);
-        private DateTime CurrStreamStart { get; set; } = default;
+        public ObservableCollection<ArchiveMultiStream> CleanupList { get; } = [];
 
         public event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
+
         public event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
+
+        public event EventHandler UpdatedMonitoringChannels;
 
         public DataManagerSQL()
         {
-            GUIContext = dbContextFactory.CreateDbContext();
+            _dataManager = new DataManagerSQLAsync();
 
-            if (!OptionFlags.EFCDataImportedDataGram)
+            _dataManager.OnDataCollectionUpdated += _dataManager_OnDataCollectionUpdated;
+            _dataManager.OnBulkFollowersAddFinished += _dataManager_OnBulkFollowersAddFinished;
+            _dataManager.UpdatedMonitoringChannels += _dataManager_UpdatedMonitoringChannels;
+        }
+
+        private void _dataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
+        {
+            UpdatedMonitoringChannels?.Invoke(this, new());
+        }
+
+        private void _dataManager_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
+        {
+            OnBulkFollowersAddFinished?.Invoke(this, e);
+        }
+
+        private void _dataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
+        {
+            OnDataCollectionUpdated?.Invoke(this, e);
+        }
+
+        //#region Process Queue
+
+        //private readonly ConcurrentQueue<Action> concurrentQueue = new();
+
+        //private void PostAction(Action action)
+        //{
+        //    concurrentQueue.Enqueue(action);
+        //}
+
+        //private async void ProcessQueuedActions()
+        //{
+        //    while (OptionFlags.ActiveToken)
+        //    {
+        //        while (concurrentQueue.TryDequeue(out Action action))
+        //        {
+        //            await Task.Run(action);
+        //        }
+
+        //        Thread.Sleep(500);
+        //    }
+        //}
+
+        //#endregion
+
+        public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
+        {
+            lock (_dataManager)
             {
-                bool LogStatus = OptionFlags.LogBotStatus;  // save current logging status
+                return _dataManager.CheckCurrency(User, value, CurrencyName).Result;
+            }
+        }
 
-                OptionFlags.LogBotStatus = true; // force logging operations to status during import
+        public bool CheckField(string table, string field)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckField(table, field).Result;
+            }
+        }
 
-                var context = BuildDataContext();
+        public bool CheckFollower(string User)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckFollower(User).Result;
+            }
+        }
 
-                ImportDataSources importDataSources = new(); // load the primary database data
-                importDataSources.ConvertData(context, this); // convert data loaded from main and multilive data files
-                context.SaveChanges(true);
+        public bool CheckFollower(string User, DateTime ToDateTime)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckFollower(User, ToDateTime).Result;
+            }
+        }
 
-                OptionFlags.LogBotStatus = LogStatus; // restore preferred log status after import
-                OptionFlags.EFCDataImportedDataGram = true;
+        public Tuple<string, string> CheckModApprovalRule(ModActionType modActionType, string ModAction)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckModApprovalRule(modActionType, ModAction).Result;
+            }
+        }
+
+        public bool CheckMultiChannelName(string UserName, Platform platform)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckMultiChannelName(UserName, platform).Result;
+            }
+        }
+
+        public bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckMultiStreamDate(UserId, platform, dateTime).Result;
+            }
+        }
+
+        public bool CheckMultiStreams(DateTime streamStart)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckMultiStreams(streamStart).Result;
+            }
+        }
+
+        public bool CheckPermission(string cmd, ViewerTypes permission)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckPermission(cmd, permission).Result;
+            }
+        }
+
+        public bool CheckShoutName(string UserId)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckShoutName(UserId).Result;
+            }
+        }
+
+        public bool CheckStreamTime(DateTime CurrTime)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckStreamTime(CurrTime).Result;
+            }
+        }
+
+        public bool CheckUser(LiveUser User)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckUser(User).Result;
+            }
+        }
+
+        public bool CheckUser(LiveUser User, DateTime ToDateTime)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckUser(User, ToDateTime).Result;
+            }
+        }
+
+        public string CheckWelcomeUser(string User)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.CheckWelcomeUser(User).Result;
+            }
+        }
+
+        public void ClearAllCurrencyValues()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.ClearAllCurrencyValues();
+            }
+        }
+
+        public void ClearUsersNotFollowers()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.ClearUsersNotFollowers();
+            }
+        }
+
+        public void ClearWatchTime()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.ClearWatchTime();
+            }
+        }
+
+        public void DeleteDataRows(IEnumerable<DataRow> dataRows)
+        {
+            lock (_dataManager) { }
+        }
+
+        public string EditCommand(string cmd, List<string> Arglist)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.EditCommand(cmd, Arglist).Result;
+            }
+        }
+
+        public Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.FindRemedy(viewerTypes, msgTypes).Result;
+            }
+        }
+
+        public ObservableCollection<ArchiveMultiStream> GetCleanupList()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetCleanupList();
+            }
+        }
+
+        public CommandData GetCommand(string cmd)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetCommand(cmd).Result;
+            }
+        }
+
+        public IEnumerable<string> GetCommandList(bool prefix)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetCommandList(prefix).Result;
+            }
+        }
+
+        public string GetCommandString()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetCommandString().Result;
+            }
+        }
+
+        public List<string> GetCurrencyNames()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetCurrencyNames().Result;
+            }
+        }
+
+        public int GetDeathCounter(string currCategory)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetDeathCounter(currCategory).Result;
+            }
+        }
+
+        public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi)
+        {
+            lock (_dataManager)
+            {
+                Tuple<string, bool, short> data = _dataManager.GetEventRowData(rowcriteria).Result;
+                Enabled = data.Item2;
+                Multi = data.Item3;
+                return data.Item1;
+            }
+        }
+
+        public int GetFollowerCount()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetFollowerCount().Result;
+            }
+        }
+
+        public List<CategoryData> GetGameCategories()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetGameCategories().Result;
+            }
+        }
+
+        public string GetKey(string Table)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetKey(Table).Result;
+            }
+        }
+
+        public IEnumerable<string> GetKeys(string Table)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetKeys(Table).Result;
+            }
+        }
+
+        public List<string> GetMultiChannelIds(Platform platform)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetMultiChannelIds(platform).Result;
+            }
+        }
+
+        public List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetMultiWebHooks().Result;
+            }
+        }
+
+        public string GetNewestFollower()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetNewestFollower().Result;
+            }
+        }
+
+        public object GetObservableCollection(DataTables dataTable)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetObservableCollection(dataTable);
+            }
+        }
+
+        public Dictionary<string, List<string>> GetOverlayActions()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetOverlayActions().Result;
+            }
+        }
+
+        public List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetOverlayActions(overlayType, overlayAction, username).Result;
+            }
+        }
+
+        public string GetQuote(int QuoteNum)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetQuote(QuoteNum).Result;
+            }
+        }
+
+        public int GetQuoteCount()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetQuoteCount().Result;
+            }
+        }
+
+        public List<string> GetSocialComs()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetSocialComs().Result;
+            }
+        }
+
+        public string GetSocials()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetSocials().Result;
+            }
+        }
+        public StreamStat GetStreamData(DateTime dateTime)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetStreamData(dateTime).Result;
+            }
+        }
+
+        public List<string> GetTableFields(string TableName)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetTableFields(TableName).Result;
+            }
+        }
+
+        public List<string> GetTableNames()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetTableNames().Result;
+            }
+        }
+
+        public List<TickerItem> GetTickerItems()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetTickerItems().Result;
+            }
+        }
+
+        public Tuple<string, int, List<string>> GetTimerCommand(string Cmd)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetTimerCommand(Cmd).Result;
+            }
+        }
+
+        public List<Tuple<string, int, List<string>>> GetTimerCommands()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetTimerCommands().Result;
+            }
+        }
+
+        public int GetTimerCommandTime(string Cmd)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetTimerCommandTime(Cmd).Result;
+            }
+        }
+
+        public string GetUsage(string command)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetUsage(command).Result;
+            }
+        }
+
+        public LiveUser GetUser(string UserName)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetUser(UserName).Result;
+            }
+        }
+
+        public string GetUserId(LiveUser User)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetUserId(User).Result;
+            }
+        }
+
+        public List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.GetWebhooks(webhooksSource, webhooks).Result;
+            }
+        }
+
+        public void GUIRowEditSave()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.GUIRowEditSave();
+            }
+        }
+
+        public void Initialize()
+        {
+            lock (_dataManager)
+            {
+                Task.Run(async () =>
+                {
+                    await _dataManager.Initialize();
+                });
+            }
+        }
+
+        public void NotifyStopBulkFollowers()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.NotifyStopBulkFollowers();
+            }
+        }
+
+        public object[] PerformQuery(CommandsBase row, int Top)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PerformQuery(row, Top).Result;
+            }
+        }
+
+        public object PerformQuery(CommandsBase row, string ParamValue)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PerformQuery(row, ParamValue).Result;
+            }
+        }
+
+        public bool PostCategory(CategoryData categoryData)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostCategory(categoryData).Result;
+            }
+        }
+
+        public void PostCategoryStream(CategoryData category, int StreamCount)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostCategoryStream(category, StreamCount);
+            }
+        }
+
+        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostClip(ClipId, CreatedAt, Duration, GameId, Language, Title, Url, fromUserId, fromUserName).Result;
+            }
+        }
+
+        public string PostCommand(string cmd, CommandParams Params)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostCommand(cmd, Params).Result;
+            }
+        }
+
+        public void PostCurrencyType(Models.CurrencyType currencyType)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostCurrencyType(currencyType);
+            }
+        }
+
+        public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostCurrencyUpdate(User, value, CurrencyName);
+            }
+        }
+
+        public void PostCurrencyUpdate(List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> Updates, string CurrencyName)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostCurrencyUpdate(Updates, CurrencyName);
+            }
+        }
+
+        public void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostDataGridGUIAddRow(tableMeta);
+            }
+        }
+
+        public int PostDeathCounterUpdate(string currCategory, bool Reset, int updateValue)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostDeathCounterUpdate(currCategory, Reset, updateValue).Result;
+            }
+        }
+
+        public bool PostFollower(Follow follow)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostFollower(follow).Result;
+            }
+        }
+
+        public IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostFollowers(follows).Result;
+            }
+        }
+
+        public void PostGiveawayData(string UserId, DateTime dateTime)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostGiveawayData(UserId, dateTime);
+            }
+        }
+
+        public void PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostInRaidData(user, time, viewers, gamename);
+            }
+        }
+
+        public void PostLearnMsgsRow(string Message, MsgTypes MsgType)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostLearnMsgsRow(Message, MsgType);
+            }
+        }
+
+        public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostMergeUserStats(CurrUser, SourceUser, platform).Result;
+            }
+        }
+
+        public void PostMonitorChannel(IEnumerable<LiveUser> liveUsers)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostMonitorChannel(liveUsers);
+            }
+        }
+
+        public void PostMultiLiveLog(string LogItem)
+        {
+            lock (_dataManager)
+            {
+                MultiLiveStatusList.Insert(0, LogItem);
+
+                if (MultiLiveStatusList.Count > MaxList)
+                {
+                    MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
+                }
+                MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
+                _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
+            }
+        }
+
+        public bool PostMultiStreamDate(LiveUser liveUser, DateTime onDate)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostMultiStreamDate(liveUser, onDate).Result;
+            }
+        }
+
+        public void PostNewAutoShoutUser(string UserId, Platform platform)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostNewAutoShoutUser(UserId, platform);
+            }
+        }
+
+        public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostOutgoingRaid(HostedChannel, dateTime);
+            }
+        }
+
+        public int PostQuote(string Text)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostQuote(Text).Result;
+            }
+        }
+
+        public bool PostStream(DateTime StreamStart, string Category)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.PostStream(StreamStart, Category).Result;
+            }
+        }
+
+        public void PostStreamStat(StreamStat streamStat)
+        {
+            lock (_dataManager)
+            {
+                LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, $"Posting stream stats for stream started {streamStat.StreamStart}.");
+
+                _dataManager.PostStreamStat(streamStat);
+            }
+        }
+
+        public void PostUserCustomWelcome(LiveUser User, string WelcomeMsg)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.PostUserCustomWelcome(User, WelcomeMsg);
+            }
+        }
+
+        public void RemoveAllFollowers()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.RemoveAllFollowers();
+            }
+        }
+
+        public void RemoveAllGiveawayData()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.RemoveAllGiveawayData();
+            }
+        }
+
+        public void RemoveAllInRaidData()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.RemoveAllInRaidData();
+            }
+        }
+
+        public void RemoveAllOutRaidData()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.RemoveAllOutRaidData();
+            }
+        }
+
+        public void RemoveAllOverlayTickerData()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.RemoveAllOverlayTickerData();
+            }
+        }
+
+        public void RemoveAllStreamStats()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.RemoveAllStreamStats();
+            }
+        }
+
+        public void RemoveAllUsers()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.RemoveAllUsers();
+            }
+        }
+
+        public bool RemoveCommand(string command)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.RemoveCommand(command).Result;
+            }
+        }
+
+        public bool RemoveQuote(int QuoteNum)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.RemoveQuote(QuoteNum).Result;
+            }
+        }
+
+        public void SetBuiltInCommandsEnabled(bool Enabled)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.SetBuiltInCommandsEnabled(Enabled);
+            }
+        }
+
+        [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
+        public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled)
+        {
+            lock (_dataManager) { }
+        }
+
+        public void SetSystemEventsEnabled(bool Enabled)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.SetSystemEventsEnabled(Enabled);
+            }
+        }
+
+        public void SetUserDefinedCommandsEnabled(bool Enabled)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.SetUserDefinedCommandsEnabled(Enabled);
+            }
+        }
+
+        public void SetWebhooksEnabled(bool Enabled)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.SetWebhooksEnabled(Enabled);
+            }
+        }
+
+        public void StartBulkFollowers()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.StartBulkFollowers();
+            }
+        }
+
+        public void SummarizeStreamData()
+        {
+            lock (_dataManager)
+            {
+                _dataManager.SummarizeStreamData();
+            }
+        }
+
+        public void SummarizeStreamData(ArchiveMultiStream archiveRecord)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.SummarizeStreamData(archiveRecord);
+            }
+        }
+
+        public IEnumerable<LiveUser> TestGetRandomUsers(int count)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.TestGetRandomUsers(count).Result;
+            }
+        }
+
+        public bool TestInRaidData(string user, DateTime time, int viewers, string gamename)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.TestInRaidData(user, time, viewers, gamename).Result;
+            }
+        }
+
+        public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.TestOutRaidData(HostedChannel, dateTime).Result;
+            }
+        }
+
+        public void UpdateCurrency(List<string> Users, DateTime dateTime)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.UpdateCurrency(Users, dateTime);
+            }
+        }
+
+        public void UpdateFollowers(IEnumerable<Follow> follows)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.UpdateFollowers(follows);
+            }
+        }
+
+        public List<LearnMsgRecord> UpdateLearnedMsgs()
+        {
+            lock (_dataManager)
+            {
+                return _dataManager.UpdateLearnedMsgs().Result;
+            }
+        }
+
+        public void UpdateOverlayTicker(OverlayTickerItem item, string name)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.UpdateOverlayTicker(item, name);
+            }
+        }
+
+        public void UpdateStats(DBUserStats Stat, string userId, Platform platform)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.UpdateStats(Stat, userId, platform);
+            }
+        }
+
+        public void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.UpdateWatchTime(Users, CurrTime);
+            }
+        }
+
+        public void UpdateWatchTime(LiveUser User, DateTime CurrTime)
+        {
+            lock (_dataManager)
+            {
+                UpdateWatchTime([User], CurrTime);
+            }
+        }
+
+        public void UserJoined(LiveUser User, DateTime NowSeen)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.UserJoined(User, NowSeen);
+            }
+        }
+
+        public void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen)
+        {
+            lock (_dataManager)
+            {
+                LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
+                    $"Updating {Users.Count()} users now joined to the channel.");
+                _dataManager.UserJoined(Users, NowSeen);
+            }
+        }
+
+        public void UserLeft(LiveUser User, DateTime LastSeen)
+        {
+            lock (_dataManager)
+            {
+                _dataManager.UserLeft(User, LastSeen);
             }
         }
 
         public void Exit()
         {
-            GUIContext.SaveChanges(true);
-            GUIContext.Dispose();
-        }
-
-        private SQLDBContext BuildDataContext()
-        {
-            return dbContextFactory.CreateDbContext();
-        }
-
-        private void ClearDataContext(SQLDBContext context)
-        {
-            context.Dispose();
-        }
-
-        public void NotifyDataCollectionUpdated(string TableName)
-        {
-            OnDataCollectionUpdated?.Invoke(this, new(TableName));
-        }
-
-        public void DeleteDataRows(IEnumerable<DataRow> dataRows, SQLDBContext Refcontext = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string EditCommand(string cmd, List<string> Arglist, SQLDBContext Refcontext = null)
-        {
-            string result = "";
-
-            lock (GUIDataManagerLock.Lock)
+            lock (_dataManager)
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
-                CommandsBase EditCom = (from C in context.CommandsBase
-                                        where C.CmdName == cmd
-                                        select C).FirstOrDefault();
-
-                if (EditCom != default)
-                {
-                    foreach (string k in EditParamsDict.Keys)
-                    {
-                        EditCom.GetType().GetProperty(k).SetValue(EditCom, EditParamsDict[k]);
-                    }
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
-                    context.SaveChanges(true);
-
-                    if (Enum.GetNames<DefaultCommand>().Contains(cmd))
-                    {
-                        RefreshCommandsObservableCollection();
-                    }
-                    else
-                    {
-                        RefreshCommandsUserObservableCollection();
-                    }
-                }
-                else
-                {
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
-
-                }
-                if (Refcontext == null) { ClearDataContext(context); }
-            }
-            return result;
-        }
-
-        public object[] PerformQuery(CommandsBase row, int Top = 0, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-
-                IEnumerable<object> output = row.Table switch
-                {
-                    nameof(Currency) => (from C in context.Currency where C.CurrencyName == row.CurrencyField orderby C.User.UserName select new Tuple<object, object>(C[row.KeyField], C[row.DataField])),
-                    nameof(Followers) => (from F in context.Followers orderby F.User.UserName select F),
-                    nameof(UserStats) => (from US in context.UserStats orderby US.User.UserName select new Tuple<object, object>(US[row.KeyField], US[row.DataField])),
-                    _ => [""]
-                };
-
-                if (row.Sort == CommandSort.DESC)
-                {
-                    output = output.OrderByDescending((o) => (o as Tuple<object, object>).Item1);
-                }
-
-                if (row.Top > 0)
-                {
-                    output = output.Take(row.Top);
-                }
-
-                if (Refcontext == null) { ClearDataContext(context); }
-                return output.ToArray();
-            }
-        }
-
-        public object PerformQuery(CommandsBase row, string ParamValue, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-
-                object output = row.Table switch
-                {
-                    nameof(Currency) => (from C in context.Currency where (C.User.UserName == ParamValue && C.CurrencyName == row.CurrencyField) select C[row.DataField ?? "Value"]).FirstOrDefault(),
-                    nameof(CustomWelcome) => (from W in context.CustomWelcome where W.User.UserName == ParamValue select W[row.DataField]).FirstOrDefault(),
-                    nameof(Followers) => (from F in context.Followers where F.User.UserName == ParamValue select F).FirstOrDefault(),
-                    nameof(UserStats) => (from US in context.UserStats where US.User.UserName == ParamValue select US[row.DataField]).FirstOrDefault(),
-                    nameof(CommandsBase) => (from C in context.CommandsBase where C.CmdName == ParamValue select C[row.DataField]).FirstOrDefault(),
-                    _ => ""
-                };
-
-                if (output != null && row.Table == nameof(Followers))
-                {
-                    output = ((Followers)output).IsFollower ? ((Followers)output).FollowedDate : LocalizedMsgSystem.GetVar(Msg.MsgNotFollower);
-                }
-
-                if (Refcontext == null) { ClearDataContext(context); }
-                return output;
-            }
-        }
-
-        public bool RemoveCommand(string command, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                bool found = false;
-
-                CommandsUser cmd = (from C in context.CommandsUser where C.CmdName == command select C).FirstOrDefault();
-                if (cmd != default)
-                {
-                    context.CommandsUser.Remove(cmd);
-                    found = true;
-                }
-                context.SaveChanges(true);
-                RefreshCommandsUserObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
-                return found;
-            }
-        }
-
-        public bool RemoveQuote(int QuoteNum, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                bool found = false;
-
-                Quotes quotes = (from Q in context.Quotes where Q.Number == QuoteNum select Q).FirstOrDefault();
-                if (quotes != default)
-                {
-                    context.Quotes.Remove(quotes);
-                    found = true;
-                }
-                context.SaveChanges(true);
-                RefreshQuotesObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
-                return found;
-            }
-        }
-
-        #region Set_IsEnabled Methods
-        public void SetBuiltInCommandsEnabled(bool Enabled, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                foreach (var Command in (from C in context.Commands
-                                         join D in
-                                             (from def in Enum.GetNames<DefaultCommand>().Union(Enum.GetNames<DefaultSocials>().ToList())
-                                              select def) on C.CmdName equals D into DefCmds
-                                         from DC in DefCmds.DefaultIfEmpty()
-                                         where DC != null
-                                         orderby C.CmdName
-                                         select C))
-                {
-                    Command.IsEnabled = Enabled;
-                }
-                context.SaveChanges(true);
-                RefreshCommandsObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
-            }
-        }
-
-        public void SetWebhooksEnabled(bool Enabled, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-
-                foreach (var webhook in context.Webhooks)
-                {
-                    webhook.IsEnabled = Enabled;
-                }
-                context.SaveChanges(true);
-                RefreshWebhooksObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
-            }
-        }
-
-        [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
-        public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false, SQLDBContext Refcontext = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetSystemEventsEnabled(bool Enabled, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                foreach (var Sys in context.ChannelEvents)
-                {
-                    Sys.IsEnabled = Enabled;
-                }
-                context.SaveChanges(true);
-                RefreshChannelEventsObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
-            }
-        }
-
-        /// <summary>
-        /// Sets the 'IsEnabled' column for all records of the Commands table, specifically the user created commands (not the default commands).
-        /// </summary>
-        /// <param name="Enabled">The value to set for 'IsEnabled'.</param>
-        public void SetUserDefinedCommandsEnabled(bool Enabled, SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                foreach (var Command in (from C in context.Commands
-                                         join D in (from def in Enum.GetNames<DefaultCommand>().Union([.. Enum.GetNames<DefaultSocials>()])
-                                                    select def) on C.CmdName equals D into UsrCmds
-                                         from UC in UsrCmds.DefaultIfEmpty()
-                                         where UC == null
-                                         orderby C.CmdName
-                                         select C))
-                {
-                    Command.IsEnabled = Enabled;
-                }
-                context.SaveChanges(true);
-                RefreshCommandsUserObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
-            }
-        }
-
-        #endregion
-
-        private void LearnMsgs_LearnMsgsRowDeleted(object sender, EventArgs e)
-        {
-            LogWriter.DebugLog("LearnMsgs_LearnMsgsRowDeleted", DebugLogTypes.DataManager, $"Machine learning, whether learned message rows are deleted.");
-
-            LearnMsgChanged = true;
-        }
-
-        private void LearnMsgs_TableNewRow(object sender, DataTableNewRowEventArgs e)
-        {
-            LogWriter.DebugLog("LearnMsgs_TableNewRow", DebugLogTypes.DataManager, $"Machine learning, whether adding a new learned message.");
-
-            LearnMsgChanged = true;
-        }
-
-        public void GUIRowEditSave(SQLDBContext Refcontext = null)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-
-                context.SaveChanges(true); // tracked entities displayed in GUI DataGrid; user performed an edit, need to save any changes
-
-                if (Refcontext == null) { ClearDataContext(context); }
+                _dataManager.Exit();
             }
         }
     }

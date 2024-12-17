@@ -4,6 +4,7 @@ using StreamerBotLib.Systems;
 
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace StreamerBotLib.Static
 {
@@ -31,7 +32,6 @@ namespace StreamerBotLib.Static
         /// <returns>The plural context of the provided words based on number.</returns>
         public static string PluralityOnlyWord(int src, MsgVars msgVars)
         {
-
             return PluralityOnlyWord(src, msgVars);
         }
 
@@ -150,7 +150,12 @@ namespace StreamerBotLib.Static
 
         public static string AddEscapeFormat(string SrcText)
         {
-            return SrcText.Replace("'", "''");
+            return Regex.Replace(SrcText, "''*", "''");
+        }
+
+        public static string RemoveEscapeFormat(string SrcText)
+        {
+            return Regex.Replace(SrcText, "''*", "'");
         }
 
     }

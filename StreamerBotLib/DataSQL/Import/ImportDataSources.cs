@@ -146,7 +146,7 @@ namespace StreamerBotLib.DataSQL.Import
         /// </summary>
         /// <param name="context">The new Database context to use for importing data.</param>
         /// <param name="dataManagerSQL">To access already built methods for entering data into the database using the application data flow.</param>
-        public void ConvertData(SQLDBContext context, DataManagerSQL dataManagerSQL)
+        public void ConvertData(SQLDBContext context, DataManagerSQLAsync dataManagerSQL)
         {
             int totalTables = _DataSource?.Tables.Count ?? 0 + _MultiDataSource?.Tables.Count ?? 0;
             int totalRows = 0;
@@ -640,7 +640,7 @@ namespace StreamerBotLib.DataSQL.Import
                             {
                                 channelsRow.UserName = L.ChannelName;
                             }
-                            dataManagerSQL.PostMultiStreamDate(userid: channelsRow.UserId, username: channelsRow.UserName, platform: Platform.Twitch, onDate: L.LiveDate);
+                            dataManagerSQL.PostMultiStreamDate(liveUser: new(userId: channelsRow.UserId, userName: channelsRow.UserName, botSource: Platform.Twitch), onDate: L.LiveDate);
                         }
                         else
                         {

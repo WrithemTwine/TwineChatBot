@@ -33,6 +33,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private readonly Dictionary<string, string> SubscriptionIdKeys = [];
 
+        public event EventHandler<NewChannelRaidEventArgs> OutChannelRaid;
         public event EventHandler<NewChannelRaidEventArgs> NewChannelRaid;
         public event EventHandler<NewStreamOfflineEventArgs> NewStreamOffline;
         public event EventHandler<NewStreamOnlineEventArgs> NewStreamOnline;
@@ -74,9 +75,16 @@ namespace StreamerBotLib.BotClients.Twitch
                          m.MessageId == args.Notification.Metadata.MessageId &&
                          m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
                      })
-                )
+                   )
                 {
-                    NewChannelRaid?.Invoke(this, new(args.Notification.Payload.Event));
+                    if (args.Notification.Payload.Event.FromBroadcasterUserId == OptionFlags.TwitchStreamerUserId)
+                    {
+                        OutChannelRaid?.Invoke(this, new(args.Notification.Payload.Event, args.Notification.Metadata.MessageTimestamp.ToLocalTime()));
+                    }
+                    else
+                    {
+                        NewChannelRaid?.Invoke(this, new(args.Notification.Payload.Event, args.Notification.Metadata.MessageTimestamp.ToLocalTime()));
+                    }
                 }
             });
         }
@@ -149,6 +157,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 CreateEventSubSubscription(new ChannelUpdateHandler().SubscriptionType, "2", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "to_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+                CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "from_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new StreamOfflineHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
             });
         }

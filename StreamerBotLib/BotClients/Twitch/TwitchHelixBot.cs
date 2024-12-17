@@ -462,10 +462,10 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     OptionFlags.TwitchOutRaidStarted = true;
                     StartRaidResponse response = StartRaid(OptionFlags.TwitchStreamerUserId, ToUserName: ToChannelName).Result;
-                    if (response != null)
-                    {
-                        NotifyStartRaidResponse(ToChannelName, response);
-                    }
+                    //if (response != null)
+                    //{
+                    //    NotifyStartRaidResponse(ToChannelName, response);
+                    //}
                     return true;
                 });
             }
@@ -478,7 +478,7 @@ namespace StreamerBotLib.BotClients.Twitch
             _ = PerformAction("CancelRaidChannel", () =>
             {
                 CancelRaid(OptionFlags.TwitchStreamerUserId).Start();
-                NotifyCancelRaid();
+                //NotifyCancelRaid();
                 return true;
             });
         }
@@ -547,24 +547,24 @@ namespace StreamerBotLib.BotClients.Twitch
             GetStreamsViewerCount?.Invoke(this, new() { ViewerCount = getStreamsResponse?.Streams[0]?.ViewerCount ?? 0 });
         }
 
-        private void NotifyStartRaidResponse(string ToChannelName, StartRaidResponse response)
-        {
-            LogWriter.DebugLog("NotifyStartRaidResponse", DebugLogTypes.TwitchHelixBot, "Posting the start of a raid to another channel through the 'StartRaidEventResponse' event.");
+        //private void NotifyStartRaidResponse(string ToChannelName, StartRaidResponse response)
+        //{
+        //    LogWriter.DebugLog("NotifyStartRaidResponse", DebugLogTypes.TwitchHelixBot, "Posting the start of a raid to another channel through the 'StartRaidEventResponse' event.");
 
-            StartRaidEventResponse?.Invoke(this, new()
-            {
-                ToChannel = ToChannelName,
-                CreatedAt = response.Data[0].CreatedAt,
-                IsMature = response.Data[0].IsMature
-            });
-        }
+        //    StartRaidEventResponse?.Invoke(this, new()
+        //    {
+        //        ToChannel = ToChannelName,
+        //        CreatedAt = response.Data[0].CreatedAt,
+        //        IsMature = response.Data[0].IsMature
+        //    });
+        //}
 
-        private void NotifyCancelRaid()
-        {
-            LogWriter.DebugLog("NotifyCancelRaid", DebugLogTypes.TwitchHelixBot, "Posting to cancel current raid through 'CancelRaidEvent' event.");
+        //private void NotifyCancelRaid()
+        //{
+        //    LogWriter.DebugLog("NotifyCancelRaid", DebugLogTypes.TwitchHelixBot, "Posting to cancel current raid through 'CancelRaidEvent' event.");
 
-            CancelRaidEvent?.Invoke(this, new());
-        }
+        //    CancelRaidEvent?.Invoke(this, new());
+        //}
 
         #endregion
 

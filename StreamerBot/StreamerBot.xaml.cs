@@ -21,12 +21,10 @@ using System.Windows.Threading;
 
 namespace StreamerBot
 {
-    // TODO: add "announcement" option to commands, to use Twitch's 'announcement' chat adornment
+    // TODO: add "announcement" option to commands, to use Twitch's 'announcement' chat adornment: https://dev.twitch.tv/docs/api/reference/#send-chat-announcement
     // TODO: add "shoutout" user option to invoke Twitch's chat level shoutout option
     // TODO: look at using "localhost" for the clip's referback URL to grab a clip to send to overlay-reconnect into Overlay
 
-    // TODO: consider a flag in datamanager to more reliably commit when viewers enter and exit channel-to decrease lag when users join and leave & displayed in the GUI 
-    // TODO: verify "get chatters" - currently not capturing current active users- consider shortening time to capture user changes
     // TODO: raid-out currently didn't note for a raid-but, other bot may have interfered with performing the call and capturing the raid call
     // TODO: review expired token handling for null calls
 
@@ -67,7 +65,6 @@ namespace StreamerBot
 
             WatchProcessOps = true;
 
-            // TODO: determine database connection strings, start if available, defer until setup parameter(s) are added
             Controller = new();
 
             InitializeComponent();

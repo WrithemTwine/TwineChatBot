@@ -1005,7 +1005,7 @@ namespace StreamerBotLib.BotIOController
             DateTime CurrTime = StartedAt.ToLocalTime();
 
             // true posted new event, false did not post
-            bool PostedLive = SystemsController.DataManage.PostMultiStreamDate(User.UserId, User.UserName, User.Platform, CurrTime);
+            bool PostedLive = SystemsController.DataManage.PostMultiStreamDate(User, CurrTime);
 
             if (PostedLive)
             {

@@ -136,9 +136,11 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public void CreateClip()
         {
-            LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, "Creating a new clip.");
-
-            _ = ClipMonitorService.CreateClip(OptionFlags.TwitchStreamerUserId);
+            if (IsActive == true)
+            {
+                LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, "Creating a new clip.");
+                _ = ClipMonitorService?.CreateClip(OptionFlags.TwitchStreamerUserId);
+            }
         }
     }
 }

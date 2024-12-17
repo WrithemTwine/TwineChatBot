@@ -35,8 +35,6 @@
         </Setter>
     </Style>
 
-    <SqlModels:CategoryConverter x:Name="CategoryConverter" x:Key="CategoryConverter" />
-
     <!--#region DataGrid DateTime templates -->
     <DataTemplate x:Key="DateFirstSeenTemplate">
         <StackPanel>
@@ -490,15 +488,18 @@
 
     <!--#endregion-->
 
+    <GUI:ConvertCategory x:Name="ConvertCategory" x:Key="ConvertCategory" />
+    <GUI:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
 
     <DataTemplate x:Key="CategoryDataTemplate">
         <StackPanel>
-            <TextBlock Text="{Binding Category}" />
+            <TextBlock Text="{Binding Category, Converter={StaticResource ConvertCategory}}" TextWrapping="Wrap" Width="250" />
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="EditCategoryDataTemplate">
         <StackPanel>
+            <ComboBox ItemsSource="{Binding Category, Converter={StaticResource EditConvertCategory}}" />
         </StackPanel>
     </DataTemplate>
 

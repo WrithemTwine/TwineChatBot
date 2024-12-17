@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#define USE_POOLED_DBCONTEXT4
+
+#if !USE_POOLED_DBCONTEXT
+
+using Microsoft.EntityFrameworkCore;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -12,3 +16,4 @@ namespace StreamerBotLib.DataSQL
         }
     }
 }
+#endif

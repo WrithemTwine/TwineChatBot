@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
@@ -11,28 +10,32 @@ using System.Data;
 
 namespace StreamerBotLib.DataSQL
 {
-    public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
+    internal partial class DataManagerSQLAsync
     {
         #region Construct default items
         /// <summary>
         /// Perform table setup procedures
         /// </summary>
-        public void Initialize(SQLDBContext Refcontext = null)
+        internal Task Initialize(SQLDBContext Refcontext = null)
         {
-            LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, $"Initializing the database.");
+            return Task.Run(() =>
+            {
+                LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, $"Initializing the database.");
 
-            constructingModel_Context = true;
+                constructingModel_Context = true;
 
-            SQLDBContext context = Refcontext ?? BuildDataContext();
+                SQLDBContext context = Refcontext ?? BuildDataContext();
 
-            SetDefaultChannelEventsTable(context);  // check all default ChannelEvents names
-            SetDefaultCommandsTable(context); // check all default Commands
-            SetLearnedMessages(context);
+                SetDefaultChannelEventsTable(context);  // check all default ChannelEvents names
+                SetDefaultCommandsTable(context); // check all default Commands
+                SetLearnedMessages(context);
+                //CleanCategories(context);
 
-            constructingModel_Context = false;
+                constructingModel_Context = false;
 
-            if (Refcontext == null) { ClearDataContext(context); }
-            OptionFlags.DataLoaded = true;
+                if (Refcontext == null) { ClearDataContext(context); }
+                OptionFlags.DataLoaded = true;
+            });
         }
 
         /// <summary>
@@ -108,7 +111,6 @@ namespace StreamerBotLib.DataSQL
             }
             Refcontext.SaveChanges(true);
         }
-
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>
@@ -165,7 +167,7 @@ namespace StreamerBotLib.DataSQL
                                                         usage: C.param.Usage,
                                                         lookupData: C.param.LookupData,
                                                         table: C.param.Table,
-                                                        keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table) : "",
+                                                        keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table).Result : "",
                                                         dataField: C.param.Field,
                                                         currencyField: C.param.Currency,
                                                         unit: C.param.Unit,
@@ -177,7 +179,6 @@ namespace StreamerBotLib.DataSQL
             }
             Refcontext.SaveChanges(true);
         }
-
         private static void SetLearnedMessages(SQLDBContext Refcontext = null)
         {
             LogWriter.DebugLog("SetLearnedMessages", DebugLogTypes.DataManager, $"Machine learning, setting learned messages.");
@@ -205,6 +206,48 @@ namespace StreamerBotLib.DataSQL
             }
             Refcontext.SaveChanges(true);
         }
+
+        private void CleanCategories(SQLDBContext Refcontext = null)
+        {
+            lock (GUIDataManagerLock.Lock)
+            {
+                List<CategoryList> CatsToReplace = [];
+
+                foreach (CategoryList C in Refcontext.CategoryList)
+                {
+                    if (C.Category.Contains("''''"))
+                    {
+                        CatsToReplace.Add(C);
+                    }
+                }
+
+                Refcontext.CategoryList.RemoveRange(CatsToReplace);
+                CatsToReplace.ForEach((c) => c.Category = FormatData.AddEscapeFormat(c.Category));
+                Refcontext.CategoryList.AddRange(CatsToReplace);
+
+                foreach (var CU in Refcontext.CommandsBase)
+                {
+                    if (CU.Category is null || CU.Category.Contains(""))
+                    {
+                        CU.Category.Clear();
+                        CU.Category.Add("All");
+                    }
+
+                    if (CU.Category.Count > 1)
+                    {
+                        List<string> Temp = new(CU.Category);
+                        CU.Category.Clear();
+
+                        foreach (string s in Temp)
+                        {
+                            CU.Category.UniqueAdd(s.Trim());
+                        }
+                    }
+                }
+                Refcontext.SaveChanges(true);
+            }
+        }
+
         #endregion
     }
 }

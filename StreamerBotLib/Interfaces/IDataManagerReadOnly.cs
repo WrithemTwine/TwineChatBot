@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.DataSQL;
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 
 using System.Collections.ObjectModel;
@@ -11,36 +10,36 @@ namespace StreamerBotLib.Interfaces
         event EventHandler UpdatedMonitoringChannels;
         ObservableCollection<ArchiveMultiStream> CleanupList { get; }
         string MultiLiveStatusLog { get; }
-        bool CheckField(string table, string field, SQLDBContext Refcontext = null);
-        bool CheckPermission(string cmd, ViewerTypes permission, SQLDBContext Refcontext = null);
-        bool CheckShoutName(string UserName, SQLDBContext Refcontext = null);
-        string GetKey(string Table, SQLDBContext Refcontext = null);
-        string GetSocials(SQLDBContext Refcontext = null);
-        string GetUsage(string command, SQLDBContext Refcontext = null);
-        CommandData GetCommand(string cmd, SQLDBContext Refcontext = null);
-        Tuple<string, int, List<string>> GetTimerCommand(string Cmd, SQLDBContext Refcontext = null);
-        List<Tuple<string, int, List<string>>> GetTimerCommands(SQLDBContext Refcontext = null);
-        string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi, SQLDBContext Refcontext = null);
-        List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks, SQLDBContext Refcontext = null);
-        List<LearnMsgRecord> UpdateLearnedMsgs(SQLDBContext Refcontext = null);
-        List<string> GetTableFields(string TableName, SQLDBContext Refcontext = null);
-        List<string> GetTableNames(SQLDBContext Refcontext = null);
-        List<CategoryData> GetGameCategories(SQLDBContext Refcontext = null);
-        List<string> GetCurrencyNames(SQLDBContext Refcontext = null);
-        bool CheckFollower(string User, SQLDBContext Refcontext = null);
-        bool CheckUser(LiveUser User, SQLDBContext Refcontext = null);
-        bool CheckFollower(string User, DateTime ToDateTime, SQLDBContext Refcontext = null);
-        bool CheckUser(LiveUser User, DateTime ToDateTime, SQLDBContext Refcontext = null);
-        string GetUserId(LiveUser User, SQLDBContext Refcontext = null);
-        IEnumerable<string> GetKeys(string Table, SQLDBContext Refcontext = null);
-        int GetTimerCommandTime(string Cmd, SQLDBContext Refcontext = null);
-        bool CheckMultiChannelName(string UserName, Platform platform, SQLDBContext Refcontext = null);
-        List<string> GetMultiChannelIds(Platform platform, SQLDBContext Refcontext = null);
-        List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks(SQLDBContext Refcontext = null);
-        bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime, SQLDBContext Refcontext = null);
-        LiveUser GetUser(string UserName, SQLDBContext Refcontext = null);
-        string GetCommandString(SQLDBContext Refcontext = null);
-        IEnumerable<string> GetCommandList(bool prefix = true, SQLDBContext Refcontext = null);
+        bool CheckField(string table, string field);
+        bool CheckPermission(string cmd, ViewerTypes permission);
+        bool CheckShoutName(string UserName);
+        string GetKey(string Table);
+        string GetSocials();
+        string GetUsage(string command);
+        CommandData GetCommand(string cmd);
+        Tuple<string, int, List<string>> GetTimerCommand(string Cmd);
+        List<Tuple<string, int, List<string>>> GetTimerCommands();
+        string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi);
+        List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks);
+        List<LearnMsgRecord> UpdateLearnedMsgs();
+        List<string> GetTableFields(string TableName);
+        List<string> GetTableNames();
+        List<CategoryData> GetGameCategories();
+        List<string> GetCurrencyNames();
+        bool CheckFollower(string User);
+        bool CheckUser(LiveUser User);
+        bool CheckFollower(string User, DateTime ToDateTime);
+        bool CheckUser(LiveUser User, DateTime ToDateTime);
+        string GetUserId(LiveUser User);
+        IEnumerable<string> GetKeys(string Table);
+        int GetTimerCommandTime(string Cmd);
+        bool CheckMultiChannelName(string UserName, Platform platform);
+        List<string> GetMultiChannelIds(Platform platform);
+        List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks();
+        bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime);
+        LiveUser GetUser(string UserName);
+        string GetCommandString();
+        IEnumerable<string> GetCommandList(bool prefix = true);
         ObservableCollection<ArchiveMultiStream> GetCleanupList();
     }
 }

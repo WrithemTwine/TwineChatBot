@@ -33,7 +33,7 @@ namespace StreamerBotLib.Systems
                             lock (StreamViewers)
                             {
                                 DataManage.UpdateCurrency(new(from LiveUser U in StreamViewers.GetCurrentActiveUsers()
-                                                              select U.UserName), DateTime.Now.ToLocalTime());
+                                                              select U.UserId), DateTime.Now.ToLocalTime());
                             }
                             // randomly extend the time delay up to 2times as long
                             Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));

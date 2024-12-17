@@ -1,45 +1,26 @@
-﻿using StreamerBotLib.DataSQL.Models;
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
-using StreamerBotLib.GUI;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 
 using System.Data;
 
-
 namespace StreamerBotLib.DataSQL
 {
-    public partial class DataManagerSQL : IDataManager, IDataManagerReadOnly, IDataManagerTestMethods
+    internal partial class DataManagerSQLAsync
     {
-        public void UpdateCurrency(List<string> Users, DateTime dateTime, SQLDBContext Refcontext = null)
+        internal Task UpdateCurrency(List<string> Users, DateTime dateTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                foreach (string U in Users)
-                {
-                    var CurrUser = (from user in context.Users where user.UserName == U select user).FirstOrDefault();
-                    UpdateCurrency(ref CurrUser, dateTime);
-                }
 
-                if (Refcontext == null)
+                await context.Users.Join(Users, (u) => u.UserId, (user) => user, (dbusers, curr) => dbusers).ForEachAsync((u) =>
                 {
-                    context.SaveChanges(true);
-                    RefreshCurrencyObservableCollection();
-                    ClearDataContext(context);
-                }
-            }
-        }
-
-        private void UpdateCurrency(ref Users User, DateTime CurrTime)
-        {
-            lock (GUIDataManagerLock.Lock)
-            {
-                if (User != null)
-                {
-                    TimeSpan clock = CurrTime - User.LastDateSeen;
-                    foreach (Currency currency in User.Currency)
+                    TimeSpan clock = dateTime - u.LastDateSeen;
+                    foreach (Currency currency in u.Currency)
                     {
                         currency.Value =
                             Math.Min(
@@ -47,15 +28,21 @@ namespace StreamerBotLib.DataSQL
                                 Math.Round((currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
                             );
                     }
-                    User.LastDateSeen = CurrTime;
+                    u.LastDateSeen = dateTime;
+                });
+
+                if (Refcontext == null)
+                {
+                    await context.SaveChangesAsync();
+                    RefreshCurrencyObservableCollection();
+                    ClearDataContext(context);
                 }
-            }
+            });
         }
 
-
-        public List<LearnMsgRecord> UpdateLearnedMsgs(SQLDBContext Refcontext = null)
+        internal Task<List<LearnMsgRecord>> UpdateLearnedMsgs(SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(() =>
             {
                 List<LearnMsgRecord> result;
                 SQLDBContext context = Refcontext ?? BuildDataContext();
@@ -71,77 +58,76 @@ namespace StreamerBotLib.DataSQL
                 }
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
-            }
+            });
         }
 
-        public void UpdateOverlayTicker(OverlayTickerItem item, string name, SQLDBContext Refcontext = null)
+        internal Task UpdateOverlayTicker(OverlayTickerItem item, string name, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 OverlayTicker ticker = (from T in context.OverlayTicker where T.TickerName == item select T).FirstOrDefault();
                 if (ticker == default)
                 {
-                    context.OverlayTicker.Add(new(tickerName: item, userName: name));
+                    await context.OverlayTicker.AddAsync(new(tickerName: item, userName: name));
                 }
                 else
                 {
                     ticker.UserName = name;
                 }
-                context.SaveChanges(true);
+                await context.SaveChangesAsync();
                 RefreshOverlayTickerObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
-            }
+            });
         }
 
-        public void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime, SQLDBContext Refcontext = null)
+        internal Task UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
-                foreach (LiveUser L in Users)
+                await context.Users.Join(Users, (u) => u.UserId, (user) => user.UserId, (dbusers, curr) => dbusers).ForEachAsync(async (u) =>
                 {
-                    Users curruser = (from S in context.Users
-                                      where (S.UserId == L.UserId && S.Platform == L.Platform)
-                                      select S).FirstOrDefault();
-
-                    if (curruser.UserStats == default
-                        && (from US in context.UserStats where US.UserId == L.UserId select US).FirstOrDefault() == default)
+                    if (u.UserStats == default)
                     {
-                        context.UserStats.Add(new(userId: L.UserId, platform: L.Platform));
+                        await context.UserStats.AddAsync(new(userId: u.UserId, platform: u.Platform));
                     }
 
-                    if (curruser.LastDateSeen < CurrStreamStart)
+                    if (u.LastDateSeen < CurrStreamStart)
                     {
-                        curruser.LastDateSeen = CurrStreamStart;
+                        u.LastDateSeen = CurrStreamStart;
                     }
 
-                    if (CurrTime > curruser.LastDateSeen && CurrTime > CurrStreamStart)
+                    if (CurrTime > u.LastDateSeen && CurrTime > CurrStreamStart)
                     {
-                        curruser.UserStats.WatchTime = curruser.UserStats.WatchTime.Add(CurrTime - curruser.LastDateSeen);
+                        u.UserStats.WatchTime = u.UserStats.WatchTime.Add(CurrTime - u.LastDateSeen);
                     }
-                }
+
+                });
+
                 if (Refcontext == null)
                 {
-                    context.SaveChanges(true);
-                    RefreshUsersObservableCollection();
-                    RefreshUserStatsObservableCollection();
+                    await context.SaveChangesAsync();
+                    //RefreshUsersObservableCollection();
+                    //RefreshUserStatsObservableCollection();
+
+                    GUIContext.Users.Load();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Users));
+                    GUIContext.UserStats.Load();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats));
+
+
                     ClearDataContext(context);
                 }
-            }
-        }
-
-        public void UpdateWatchTime(LiveUser User, DateTime CurrTime, SQLDBContext Refcontext = null)
-        {
-            UpdateWatchTime([User], CurrTime, Refcontext);
+            });
         }
 
         #region Update User Stats
 
-        public void UpdateStats(DBUserStats Stat, string userId, Platform platform, SQLDBContext Refcontext = null)
+        internal Task UpdateStats(DBUserStats Stat, string userId, Platform platform, SQLDBContext Refcontext = null)
         {
-            lock (GUIDataManagerLock.Lock)
+            return Task.Run(async () =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -173,11 +159,11 @@ namespace StreamerBotLib.DataSQL
                 }
                 if (Refcontext == null)
                 {
-                    context.SaveChanges(true);
+                    await context.SaveChangesAsync();
                     RefreshUserStatsObservableCollection();
                     ClearDataContext(context);
                 }
-            }
+            });
         }
 
         #endregion

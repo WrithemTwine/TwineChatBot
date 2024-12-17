@@ -23,7 +23,7 @@ namespace StreamerBotLib.DataSQL.Models
         /// <summary>
         /// Formatted with escape characters
         /// </summary>
-        public string Category { get; set; } = FormatData.AddEscapeFormat(category);
+        public string Category { get; set; } = FormatData.AddEscapeFormat(category.Trim());
 
         public int StreamCount { get; set; } = streamCount;
 

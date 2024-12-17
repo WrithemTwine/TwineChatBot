@@ -13,7 +13,7 @@ namespace StreamerBotLib.BotClients.Twitch
         private readonly TwitchTokenBot tokenBot;
 
         private const int SingleChatLength = 500;
-        private readonly Queue<Task> TaskSend = new();
+        //private readonly Queue<Task> TaskSend = new();
         private readonly List<string> newSendMsg = [];
 
         internal TwitchBotSendChatClient(TwitchTokenBot TokenBot)
@@ -72,7 +72,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         {
                             LogWriter.LogException(ex, "Send");
                             tokenBot.CheckToken();
-                            Thread.Sleep(500 * (x + 1));
+                            Task.Delay(500 * (x + 1));
                             x++;
                         }
                         catch (Exception ex)
@@ -80,7 +80,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Found exception.");
 
                             LogWriter.LogException(ex, "Send");
-                            Thread.Sleep(500 * (x + 1));
+                            Task.Delay(500 * (x + 1));
                             x++;
                         }
                     }

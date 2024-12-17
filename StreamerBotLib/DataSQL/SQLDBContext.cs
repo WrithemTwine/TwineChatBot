@@ -2,6 +2,8 @@
 #define DEBUG_LOG1 // rename to DEBUG_LOG to enable the debug log
 #endif
 
+#define USE_POOLED_DBCONTEXT4
+
 #if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
 #endif
@@ -53,7 +55,6 @@ namespace StreamerBotLib.DataSQL
         public DbSet<Quotes> Quotes { get; set; }
         public DbSet<StreamStats> StreamStats { get; set; }
         public DbSet<Webhooks> Webhooks { get; set; }
-
         public DbSet<WebhooksBase> WebhooksBase { get; set; }
         #endregion
 
@@ -81,33 +82,34 @@ namespace StreamerBotLib.DataSQL
             // these flags build the different connections to specific databases
             // for splitting code to each release build package
 
+#if !USE_POOLED_DBCONTEXT
+            optionsBuilder
 
 #if DEBUG || RELEASE_SQLITE
-            optionsBuilder
                 .UseSqlite(OptionFlags.EFCConnectStringSqlite)
 #if DEBUG_LOG
-                .LogTo(DebugLog.WriteLine, LogLevel.Information) // This line enables logging to a file
-#endif  
-                ;
-
-#elif RELEASE_POSTGRE
-            optionsBuilder.UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL);
-#elif RELEASE_COSMOS
-            optionsBuilder.UseCosmos(OptionFlags.EFCConnectStringCosmos, OptionFlags.EFCDbNameCosmos);
-#elif RELEASE_KNET
-            optionsBuilder.UseKafkaCluster(
-                OptionFlags.EFCKNetApplicationId, 
-                OptionFlags.EFCDbNameKNet, 
-                OptionFlags.EFCKNetBootstrapServers
-                );
-#elif RELEASE_SQLSERVER
-            optionsBuilder.UseSqlServer(OptionFlags.EFCConnectStringSqlServer);
-#elif RELEASE_MYSQL
-            optionsBuilder.UseMySql(
-                OptionFlags.EFCConnectStringMySql, 
-                ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql));
+                            .LogTo(DebugLog.WriteLine, LogLevel.Information) // This line enables logging to a file
 #endif
 
+#elif RELEASE_POSTGRE
+                        .UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL)
+#elif RELEASE_COSMOS
+                        .UseCosmos(OptionFlags.EFCConnectStringCosmos, OptionFlags.EFCDbNameCosmos)
+#elif RELEASE_KNET
+                        .UseKafkaCluster(
+                            OptionFlags.EFCKNetApplicationId, 
+                            OptionFlags.EFCDbNameKNet, 
+                            OptionFlags.EFCKNetBootstrapServers
+                            )
+#elif RELEASE_SQLSERVER
+                        .UseSqlServer(OptionFlags.EFCConnectStringSqlServer)
+#elif RELEASE_MYSQL
+                        .UseMySql(
+                            OptionFlags.EFCConnectStringMySql, 
+                            ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql))
+#endif
+            ;
+#endif
 
         }
 
