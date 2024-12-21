@@ -289,7 +289,10 @@ namespace StreamerBot
 
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            Controller.Systems.GUISaveDataGridEdits();
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                Controller.Systems.GUISaveDataGridEdits();
+            }
         }
 
         #endregion

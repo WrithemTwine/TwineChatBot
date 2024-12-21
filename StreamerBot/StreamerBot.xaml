@@ -60,17 +60,20 @@
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom" Visibility="Collapsed" x:Name="StatusBar_TwitchAuth_BotAuthCodeInvalid">
             <StatusBarItem Padding="0" Margin="0">
-                <TextBlock Foreground="{StaticResource BrightStop}" Text="The Twitch-Bot Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
+                <TextBlock Foreground="{StaticResource BrightStop}" 
+                           Text="The Twitch-Bot Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
             </StatusBarItem>
         </StatusBar>
         <StatusBar DockPanel.Dock="Bottom" Visibility="Collapsed" x:Name="StatusBar_TwitchAuth_NoScopesAuthCodeInvalid">
             <StatusBarItem Padding="0" Margin="0">
-                <TextBlock Foreground="{StaticResource BrightStop}" Text="The Twitch Account-no scopes- authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
+                <TextBlock Foreground="{StaticResource BrightStop}" 
+                           Text="The Twitch Account-no scopes- authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
             </StatusBarItem>
         </StatusBar>
         <StatusBar DockPanel.Dock="Bottom" Visibility="Collapsed" x:Name="StatusBar_TwitchAuth_StreamerAuthCodeInvalid">
             <StatusBarItem Padding="0" Margin="0">
-                <TextBlock Foreground="{StaticResource BrightStop}" Text="The Twitch-Streamer Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
+                <TextBlock Foreground="{StaticResource BrightStop}" 
+                           Text="The Twitch-Streamer Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot."/>
             </StatusBarItem>
         </StatusBar>
         <StatusBar DockPanel.Dock="Bottom" Height="55" DataContext="{Binding Mode=OneWay, Source={StaticResource DataViews}}">
@@ -84,7 +87,8 @@
                     <StackPanel x:Name="StatusBarItem_NewStableVersion" Height="35" Panel.ZIndex="5" Visibility="Collapsed">
                         <wv2:WebView2 x:Name="WebView2_GitHub_StableVersion" 
                                   Visibility="Collapsed" 
-                                  DataContext="" Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubStableLink}}" 
+                                  DataContext="" 
+                                      Source="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.GitHubStableLink}}" 
                                   NavigationCompleted="WebView2_GitHub_StableVersion_NavigationCompleted"/>
 
                         <TextBlock 
@@ -206,8 +210,8 @@
                                 For optimal operation, don't turn start and stop the bots rapidly - allow some time between
                                     each operation.<LineBreak />
                                 Changing the Twitch username and/or password can invalidate the access token.<LineBreak /><LineBreak />
-                                Start and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being active, as it 
-                                    awaits for a new 'Stream Online' event.
+                                Start and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being 
+                                    active, as it awaits for a new 'Stream Online' event.
                                 </TextBlock>
                             </Expander>
                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center">
@@ -223,24 +227,33 @@
                                                 This bot reads chat messages from the monitor channel.
                                             </TextBlock>
                                             <StackPanel Height="45">
-
                                                 <Label x:Name="Label_TwitchBot_EventSub_Start" Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The EventSub read chat bot is started!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Go}">
+                                                        The EventSub read chat bot is started!
+                                                    </TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchBot_EventSub_Stop" Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The EventSub read chat bot is stopped!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">
+                                                        The EventSub read chat bot is stopped!
+                                                    </TextBlock>
                                                 </Label>
                                             </StackPanel>
-                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchBotEventSubAutoStart}">
+                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                                      IsChecked="{Binding TwitchBotEventSubAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
 
-                                            <RadioButton DataContext="{Binding TwitchBotEventSubChatClient, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                            <RadioButton 
+                                                DataContext="{Binding TwitchBotEventSubChatClient, Mode=OneWay, 
+                                                Source={StaticResource TwitchBot}}" 
                                                          x:Name="Radio_Twitch_BotEventSubStart" 
-                                                         IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                         IsEnabled="False" 
+                                                PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Start EventSub Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding TwitchBotEventSubChatClient, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                            <RadioButton 
+                                                DataContext="{Binding TwitchBotEventSubChatClient, Mode=OneWay,
+                                                Source={StaticResource TwitchBot}}" 
                                                          x:Name="Radio_Twitch_BotEventSubStop" IsEnabled="False" IsChecked="True" 
                                                          PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Stop EventSub Bot</TextBlock>
@@ -249,11 +262,15 @@
                                                 <WrapPanel>
                                                     <CheckBox DataContext="{Binding TwitchBotEventSubConnectOnline, 
                                                         Mode=OneWay, Source={x:Static s:Settings.Default}}">
-                                                        <TextBlock>Connect when stream is online</TextBlock>
+                                                        <TextBlock>
+                                                            Connect when stream is online
+                                                        </TextBlock>
                                                     </CheckBox>
                                                     <CheckBox DataContext="{Binding TwitchBotEventSubDisconnectOffline, 
                                                         Mode=OneWay, Source={x:Static s:Settings.Default}}">
-                                                        <TextBlock>Disconnect when stream is offline</TextBlock>
+                                                        <TextBlock>
+                                                            Disconnect when stream is offline
+                                                        </TextBlock>
                                                     </CheckBox>
                                                 </WrapPanel>
                                             </GroupBox>
@@ -267,11 +284,15 @@
                                             <StackPanel Height="45">
                                                 <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Start"
                                                    Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The EventSub Service is started!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Go}">
+                                                        The EventSub Service is started!
+                                                    </TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchStreamer_EventSubNoScopes_Stop"
                                                    Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The EventSub Service is stopped!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">
+                                                        The EventSub Service is stopped!
+                                                    </TextBlock>
                                                 </Label>
                                             </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
@@ -279,13 +300,16 @@
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
                                             <RadioButton 
-                                                DataContext="{Binding TwitchStreamerEventSubBotNoScopes, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                                DataContext="{Binding TwitchStreamerEventSubBotNoScopes, Mode=OneWay, 
+                                                Source={StaticResource TwitchBot}}" 
                                                 x:Name="Radio_Twitch_StreamerEventSubNoScopesStart" 
-                                                IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                IsEnabled="False" 
+                                                PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Start EventSub Bot</TextBlock>
                                             </RadioButton>
                                             <RadioButton 
-                                                DataContext="{Binding TwitchStreamerEventSubBotNoScopes, Mode=OneWay, Source={StaticResource TwitchBot}}"
+                                                DataContext="{Binding TwitchStreamerEventSubBotNoScopes, Mode=OneWay, 
+                                                Source={StaticResource TwitchBot}}"
                                                 x:Name="Radio_Twitch_StreamerEventSubNoScopesStop" 
                                                 IsEnabled="False" IsChecked="True" 
                                                 PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
@@ -296,31 +320,45 @@
                                     <GroupBox Header="Streamer-EventSub Events">
                                         <WrapPanel>
                                             <TextBlock>
-                                                This bot manages notifications for cheers, subscriptions, follows, and channel point redeems.
+                                                This bot manages notifications for cheers, subscriptions, follows, 
+                                                and channel point redeems.
                                             </TextBlock>
                                             <StackPanel Height="45">
                                                 <Label x:Name="Label_TwitchStreamer_EventSub_Start" Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The EventSub Service is started!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Go}">
+                                                        The EventSub Service is started!
+                                                    </TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchStreamer_EventSub_Stop" Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The EventSub Service is stopped!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">
+                                                        The EventSub Service is stopped!
+                                                    </TextBlock>
                                                 </Label>
                                             </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
                                                       IsChecked="{Binding TwitchStreamEventSubAutoStart}">
-                                                <TextBlock>Auto-start when application starts</TextBlock>
+                                                <TextBlock>
+                                                    Auto-start when application starts
+                                                </TextBlock>
                                             </CheckBox>
-                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchAddFollowersStart}">
-                                                <TextBlock>Add all followers when starting bot</TextBlock>
+                                            <CheckBox DataContext="{Binding Mode=OneWay, 
+                                                Source={x:Static s:Settings.Default}}" 
+                                                      IsChecked="{Binding TwitchAddFollowersStart}">
+                                                <TextBlock>
+                                                    Add all followers when starting bot
+                                                </TextBlock>
                                             </CheckBox>
                                             <RadioButton 
-                                                DataContext="{Binding TwitchStreamerEventSubBotScopes, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                                DataContext="{Binding TwitchStreamerEventSubBotScopes, Mode=OneWay, 
+                                                Source={StaticResource TwitchBot}}" 
                                                 x:Name="Radio_Twitch_StreamerEventSubStart" 
-                                                IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                IsEnabled="False" 
+                                                PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Start EventSub Bot</TextBlock>
                                             </RadioButton>
                                             <RadioButton 
-                                                DataContext="{Binding TwitchStreamerEventSubBotScopes, Mode=OneWay, Source={StaticResource TwitchBot}}"
+                                                DataContext="{Binding TwitchStreamerEventSubBotScopes, Mode=OneWay, 
+                                                Source={StaticResource TwitchBot}}"
                                                 x:Name="Radio_Twitch_StreamerEventSubStop" 
                                                 IsEnabled="False" IsChecked="True" 
                                                 PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
@@ -335,7 +373,9 @@
                                                     multi-live channels are available.</TextBlock>
                                                 <StackPanel Height="45">
                                                     <Label x:Name="Label_TwitchMultiLive_Start" Visibility="Collapsed">
-                                                        <TextBlock Foreground="{DynamicResource Go}">The Twitch LiveStream Monitor Client is started!</TextBlock>
+                                                        <TextBlock Foreground="{DynamicResource Go}">
+                                                            The Twitch LiveStream Monitor Client is started!
+                                                        </TextBlock>
                                                     </Label>
                                                     <Label x:Name="Label_TwitchMultiLive_Stop" Visibility="Visible">
                                                         <TextBlock Foreground="{DynamicResource Stop}">
@@ -349,7 +389,8 @@
                                                     <TextBlock>Auto-start when application starts</TextBlock>
                                                 </CheckBox>
                                                 <RadioButton 
-                                                    DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                                    DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay,
+                                                    Source={StaticResource TwitchBot}}" 
                                                     x:Name="Radio_Twitch_LiveBotStart" 
                                                     IsEnabled="False" 
                                                     PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
@@ -371,31 +412,48 @@
                                         <WrapPanel>
                                             <StackPanel Height="45">
                                                 <Label x:Name="Label_TwitchClip_Start" Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The Twitch Clip Client is started!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Go}">
+                                                        The Twitch Clip Client is started!
+                                                    </TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_TwitchClip_Stop" Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The Twitch Clip Client is stopped!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">
+                                                        The Twitch Clip Client is stopped!
+                                                    </TextBlock>
                                                 </Label>
-
                                             </StackPanel>
-                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
+                                            <CheckBox DataContext="{Binding Mode=OneWay, 
+                                                Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStart" IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, 
+                                                Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStart" 
+                                                         IsEnabled="False" 
+                                                         PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Start Clip Service Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStop" IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
+                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, 
+                                                Source={StaticResource TwitchBot}}" x:Name="Radio_Twitch_ClipBotStop" 
+                                                         IsEnabled="False" IsChecked="True" 
+                                                         PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
                                                 <TextBlock>Stop Clip Service Bot</TextBlock>
                                             </RadioButton>
                                             <Label x:Name="Label_TwitchClip_Error" Visibility="Collapsed" Height="Auto">
-                                                <TextBlock Foreground="{DynamicResource Stop}">The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                <TextBlock Foreground="{DynamicResource Stop}">
+                                                    The Twitch Clip Client failed to start! Check the Access Token 
+                                                    Refresh Date and the Token Scope.
+                                                </TextBlock>
                                             </Label>
                                             <GroupBox Header="Activate Per Online Status" Width="Auto">
                                                 <StackPanel>
-                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipConnectOnline}">
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, 
+                                                        Source={x:Static s:Settings.Default}}" 
+                                                              IsChecked="{Binding TwitchClipConnectOnline}">
                                                         <TextBlock>Connect when stream is online</TextBlock>
                                                     </CheckBox>
-                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchClipDisconnectOffline}">
+                                                    <CheckBox DataContext="{Binding Mode=OneWay, 
+                                                        Source={x:Static s:Settings.Default}}" 
+                                                              IsChecked="{Binding TwitchClipDisconnectOffline}">
                                                         <TextBlock>Discconnect when stream is offline</TextBlock>
                                                     </CheckBox>
                                                 </StackPanel>
@@ -406,33 +464,46 @@
                                         <WrapPanel>
                                             <StackPanel Height="45">
                                                 <Label x:Name="Label_OverlayService_Start" Visibility="Collapsed">
-                                                    <TextBlock Foreground="{DynamicResource Go}">The Media Overlay Service is started!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Go}">
+                                                        The Media Overlay Service is started!
+                                                    </TextBlock>
                                                 </Label>
                                                 <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
-                                                    <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service is stopped!</TextBlock>
+                                                    <TextBlock Foreground="{DynamicResource Stop}">
+                                                        The Media Overlay Service is stopped!
+                                                    </TextBlock>
                                                 </Label>
                                             </StackPanel>
                                             <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayAutoStart}">
                                                 <TextBlock>Auto-start when application starts</TextBlock>
                                             </CheckBox>
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, 
+                                                Source={StaticResource AppServices}}" 
                                                          x:Name="Radio_Services_OverlayBotStart" 
-                                                         IsEnabled="False" PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
+                                                         IsEnabled="False" 
+                                                         PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                          >
                                                 <TextBlock>Start Overlay Service Bot</TextBlock>
                                             </RadioButton>
-                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
+                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay,
+                                                Source={StaticResource AppServices}}" 
                                                          x:Name="Radio_Services_OverlayBotStop" 
-                                                         IsEnabled="False" IsChecked="True" PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown"
+                                                         IsEnabled="False" IsChecked="True" 
+                                                         PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown"
                                                          >
                                                 <TextBlock>Stop Overlay Service Bot</TextBlock>
                                             </RadioButton>
                                             <Label x:Name="Label_OverlayServer_Error" Visibility="Collapsed" Height="Auto">
-                                                <TextBlock Foreground="{DynamicResource Stop}">The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</TextBlock>
+                                                <TextBlock Foreground="{DynamicResource Stop}">
+                                                    The Media Overlay Service failed to start! Check the Access 
+                                                    Token Refresh Date and the Token Scope.
+                                                </TextBlock>
                                             </Label>
                                             <GroupBox Width="Auto" Header="Activate Per Online Status">
                                                 <WrapPanel Orientation="Vertical">
-                                                    <CheckBox  DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding MediaOverlayStartWithStream}">
+                                                    <CheckBox  DataContext="{Binding Mode=OneWay,
+                                                        Source={x:Static s:Settings.Default}}" 
+                                                               IsChecked="{Binding MediaOverlayStartWithStream}">
                                                         <TextBlock>
                                                             Start-stream online, Stop-stream offline.
                                                         </TextBlock>
@@ -1783,19 +1854,25 @@
                         </TabItem>
                         <TabItem Header="Webhooks">
                             <DockPanel LastChildFill="True">
-                                <TextBlock IsEnabled="False" DockPanel.Dock="Top">Add Webhook links, one per line. Bot will report notifications to each 
+                                <TextBlock IsEnabled="False" DockPanel.Dock="Top">Add Webhook links, one per line. 
+                                    Bot will report notifications to each 
                                     Webhook. *The incorrect 'Kind' will prevent the notification.<LineBreak />
-                                Use 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, 
+                                Use 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 
+                                    'AddEveryone'=false removes 'everyone' from message, 
                                     some servers don't permit full notification tagging.<LineBreak />
                                 </TextBlock>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0,0,0,10">
-                                    <Button x:Name="Button_DiscordWebhooks_Enabled" Width="80" Margin="10,0" Content="Enable All" Click="Button_DiscordWebhooks_Click" />
-                                    <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" Content="Disable All" Click="Button_DiscordWebhooks_Click" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" 
+                                            DockPanel.Dock="Top" Margin="0,0,0,10">
+                                    <Button x:Name="Button_DiscordWebhooks_Enabled" Width="80" Margin="10,0" Content="Enable All" 
+                                            Click="Button_DiscordWebhooks_Click" />
+                                    <Button x:Name="Button_DiscordWebhooks_Disabled" Width="80" 
+                                            Content="Disable All" Click="Button_DiscordWebhooks_Click" />
                                 </StackPanel>
                                 <DataGrid x:Name="DG_Webhooks" DockPanel.Dock="Top"
                                           ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Webhooks_CVS}}"
+                                          
                                           CanUserDeleteRows="True" IsReadOnly="False" 
-                                          ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding" >
+                                          ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
                                         <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
@@ -1827,6 +1904,7 @@
                                         </TextBlock>
                                         <DataGrid x:Name="DG_ModApprove" DockPanel.Dock="Top"
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_ModeratorApprove_CVS}}" 
+                               
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening"
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                      >
@@ -1864,6 +1942,7 @@
 
                                         <DataGrid x:Name="DG_Mod_BanReasons" Grid.Row="1" Grid.Column="0"  Margin="5" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_BanReasons_CVS}}" 
+                                                
                                                   CanUserDeleteRows="False" CanUserAddRows="False" 
                                                   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening"  >
@@ -1887,6 +1966,7 @@
 
                                         <DataGrid x:Name="DG_Mod_BanRules" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_BanRules_CVS}}" 
+                                               
                                                   CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
@@ -1905,6 +1985,7 @@
 
                                         <DataGrid x:Name="DG_Mod_LearnMsgs" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_LearnMsgs_CVS}}" 
+                                                 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
@@ -1955,6 +2036,7 @@
                                             </StackPanel>
                                             <DataGrid x:Name="DG_Users" 
                                                       ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Users_CVS}}" 
+                                                     
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False" CanUserDeleteRows="True" 
                                                       RowDetailsTemplate="{StaticResource DG_RowDetailDT_Users}" RowEditEnding="DataGrid_RowEditEnding" >
                                                 <DataGrid.Columns>
@@ -1977,6 +2059,7 @@
                                             <Label Content="Follower List - Bot Account Needs to be a Moderator To View this List" DockPanel.Dock="Top" />
                                             <DataGrid x:Name="DG_Followers" 
                                                       ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Follows_CVS}}" 
+                                                     
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True" 
                                                       RowDetailsTemplate="{StaticResource DG_RowDetailDT_Followers}" 
@@ -1997,6 +2080,7 @@
 
                                         <DataGrid x:Name="DG_OldFollowUsers" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OldFollowUsers_CVS}}" 
+                                                 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
                                                   AutoGenerateColumns="True" RowEditEnding="DataGrid_RowEditEnding" >
@@ -2023,6 +2107,7 @@
 
                                         <DataGrid x:Name="DG_User_Shoutouts" Grid.Row="1" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_ShoutOuts_CVS}}"
+                                                
                                                   CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                             <DataGrid.Columns>
@@ -2037,6 +2122,7 @@
                                                    options - first appearance or first message. Otherwise, system falls back onto default." />
                                         <DataGrid x:Name="DG_CustomWelcome" Grid.Row="1" Grid.Column="2" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CustomWelcome_CVS}}"
+                                               
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening"  >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" 
@@ -2068,7 +2154,9 @@
                                                 <Button x:Name="Button_ClearCurrencyAccrlValues" Grid.Column="2" Height="20" Width="147" 
                                                         Content="Clear All Currency Values" VerticalAlignment="Center" 
                                                         HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
-                                                <DataGrid x:Name="DG_CurrencyType" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CurrencyType_CVS}}"
+                                                <DataGrid x:Name="DG_CurrencyType"
+                                                          ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CurrencyType_CVS}}"
+                                                    
                                                           Grid.Row="1" Grid.Column="0" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                           CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                       >
@@ -2082,6 +2170,7 @@
                                                 <DataGrid x:Name="DG_Currency" 
                                                           ItemsSource="{Binding IsAsync=True, Mode=OneWay, 
                                                     Source={StaticResource DG_Currency_CVS}}" 
+                                                        
                                                           Grid.Row="1" Grid.Column="2"  RowEditEnding="DataGrid_RowEditEnding" 
                                                           ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                                     <DataGrid.Columns>
@@ -2294,6 +2383,7 @@
                                             enabled or disabled in the Options tab.</TextBlock>
                                         <DataGrid x:Name="DG_User_Giveaway" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_GiveawayUserData_CVS}}" 
+                                                
                                                   IsReadOnly="False"  CanUserDeleteRows="True"  
                                                   RowEditEnding="DataGrid_RowEditEnding" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" >
@@ -2315,7 +2405,11 @@
                                         <DockPanel Grid.Row="0" Grid.Column="0">
                                             <TextBlock DockPanel.Dock="Top">"User Quotes - Use '!addquote {quote text}', '!quote'(show how many), '!quote {#}'(specific), and '!removequote {#}' to manage quotes in stream chat" <LineBreak />
                                             When adding a new row, ensure "Number" doesn't duplicate in the list.</TextBlock>
-                                            <DataGrid x:Name="DG_User_Quotes" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Quotes_CVS}}" IsReadOnly="False"   CanUserDeleteRows="True" 
+                                            <DataGrid x:Name="DG_User_Quotes" 
+                                                      ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Quotes_CVS}}" 
+                                                        
+                                                   IsReadOnly="False"  
+                                                      CanUserDeleteRows="True" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening"
                                                       RowEditEnding="DataGrid_RowEditEnding" >
                                                 <DataGrid.Columns>
@@ -2345,7 +2439,9 @@
                                         <Button x:Name="Button_SystemEvents_Disabled" Width="80" Content="Disable All" Click="Button_SystemEvents_Click" />
                                     </StackPanel>
                                 </StackPanel>
-                                <DataGrid x:Name="DG_CommonMsgs" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_ChannelEvents_CVS}}"  Grid.Row="1" Grid.Column="2" CanUserAddRows="False" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening"  RowEditEnding="DataGrid_RowEditEnding" >
+                                <DataGrid x:Name="DG_CommonMsgs" 
+                                          ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_ChannelEvents_CVS}}"  
+                                          Grid.Row="1" Grid.Column="2" CanUserAddRows="False" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening"  RowEditEnding="DataGrid_RowEditEnding" >
                                     <DataGrid.ToolTip>
                                         <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;."/></TextBlock>
                                     </DataGrid.ToolTip>
@@ -2436,6 +2532,7 @@
                                             <Label DockPanel.Dock="Top" Content="Built-in Commands:" />
                                             <DataGrid DockPanel.Dock="Top" x:Name="DG_BuiltInCommands" 
                                                       ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Commands_CVS}}" 
+                                                     
                                                       CanUserDeleteRows="False" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       FrozenColumnCount="4" RowEditEnding="DataGrid_RowEditEnding">
@@ -2491,6 +2588,7 @@
                                                       DockPanel.Dock="Top" 
                                                       DataContext="{Binding}"
                                                       ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CommandsUser_CVS}}" 
+                                                   
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       FrozenColumnCount="4" 
                                                       IsSynchronizedWithCurrentItem="True"
@@ -2574,7 +2672,9 @@
                                             </GroupBox>
                                         </WrapPanel>
                                         <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" 
-                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}" CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}"
+                                                  
+                                                  CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource IntConverter}}" />
@@ -2593,8 +2693,11 @@
                                 <TabItem Header="Ticker">
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Top">This tab displays the data used in the 'Last User' ticker.</TextBlock>
-                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}" CanUserDeleteRows="False" 
-                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding" >
+                                        <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}"
+                                                  
+                                                  CanUserDeleteRows="False" 
+                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                                                  RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Ticker Name" ItemsSource="{Binding Source={StaticResource EnumOverlayTickerItem}}" SelectedItemBinding="{Binding TickerName}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
@@ -2617,7 +2720,7 @@
                                                     ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
                                             <Button Content="Stop Random Test Stream" Height="20" Margin="10,0" Click="EndDebugStream_Click" />
                                         </StackPanel>
-                                        
+
                                         <!-- #region Stream Stat extra datagrid columns -->
                                         <!--
                                         
@@ -2644,6 +2747,7 @@
 
                                         <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" 
+                                                 
                                                   RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
@@ -2658,7 +2762,7 @@
                                                 <DataGridTemplateColumn Header="Duration" CellTemplate="{StaticResource StreamDurationTemplate}" SortMemberPath="Duration" />
                                                 <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
                                                 <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, StringFormat={}{0:N0}}" />
-                                        
+
                                                 <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
 
                                                 <DataGridTemplateColumn Header="Category" 
@@ -2693,7 +2797,9 @@
                                         <DockPanel x:Name="DockPanel_StreamData_Raids_Incoming" Grid.Row="0" Grid.Column="0">
                                             <TextBlock DockPanel.Dock="Top">This table saves incoming raids to your channel, so you can show 
                                                 them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
-                                            <DataGrid x:Name="DG_InRaids" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}"
+                                            <DataGrid x:Name="DG_InRaids"
+                                                      ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}"
+                                                      
                                                       IsReadOnly="False"   CanUserDeleteRows="True" 
                                                       RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                                 <DataGrid.Columns>
@@ -2715,6 +2821,7 @@
                                                 channels you've raided and can spread the love.</TextBlock>
                                             <DataGrid x:Name="DG_OutRaids" 
                                                       ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_OutRaidData_CVS}}" 
+                                                    
                                                       CanUserDeleteRows="True" 
                                                       IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening">
@@ -2748,7 +2855,9 @@
                                             </TextBlock>
                                         </Label>
                                         <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" 
-                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" IsReadOnly="True" 
+                                                  ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" 
+                                                  
+                                                  IsReadOnly="True" 
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
@@ -2765,6 +2874,7 @@
                                         </Label>
                                         <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" 
+                                                  
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
@@ -2785,6 +2895,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Row="0" Content="Clip List"/>
                                         <DataGrid x:Name="DG_Clips" ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" 
+                                                  
                                                   Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>

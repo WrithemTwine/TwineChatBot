@@ -1,4 +1,5 @@
 ﻿#define USE_POOLED_DBCONTEXT0
+#define USE_SAME_CONTEXT0
 
 using Microsoft.EntityFrameworkCore;
 
@@ -69,7 +70,7 @@ switches:
 
 #if USE_POOLED_DBCONTEXT
             var options = new DbContextOptionsBuilder<SQLDBContext>()
-#if DEBUG || RELEASE_SQLITE
+#if DEBUG || DEBUG_VIEWXAML|| RELEASE_SQLITE
                 .UseSqlite(OptionFlags.EFCConnectStringSqlite)
 #if DEBUG_LOG
                 .LogTo(DebugLog.WriteLine, LogLevel.Information) // This line enables logging to a file
@@ -118,9 +119,9 @@ switches:
 
         #region Process Queue
 
-        private readonly ConcurrentQueue<Task<object>> concurrentQueue = new();
+        private readonly ConcurrentQueue<Task> concurrentQueue = new();
 
-        private void PostAction(Task<object> action)
+        private void PostAction(Task action)
         {
             concurrentQueue.Enqueue(action);
         }
@@ -146,6 +147,16 @@ switches:
             GUIContext.Dispose();
         }
 
+#if USE_SAME_CONTEXT
+        private SQLDBContext BuildDataContext()
+        {
+            return GUIContext;
+        }
+
+        private void ClearDataContext(SQLDBContext context)
+        {
+        }
+#else
         private SQLDBContext BuildDataContext()
         {
             return dbContextFactory.CreateDbContext();
@@ -155,6 +166,9 @@ switches:
         {
             context.Dispose();
         }
+#endif
+
+
 
         internal void DeleteDataRows(IEnumerable<DataRow> dataRows, SQLDBContext Refcontext = null)
         {

@@ -85,7 +85,13 @@ namespace StreamerBotLib.GUI
             GiveawayCollection = ActionSystem.GiveawayCollection;
             CurrUserList = ActionSystem.CurrUserJoin;
 
+
+            // commenting this method or using "Debug_ViewXaml" build config and building allows the xaml designer to display
+            // the xaml design; otherwise, xaml designer throws an exception
+#if !DEBUG_VIEWXAML
             SetObservables();
+#endif
+
             SetCommandCollection();
 
             DataViewsLoaded?.Invoke(this, new());

@@ -20,7 +20,7 @@
 		<Authors>WrithemTwine</Authors>
 		<Company>TwineStreamerBot</Company>
 		<ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
-		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer</Configurations>
+		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>

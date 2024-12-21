@@ -14,10 +14,15 @@
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<Copyright>2024</Copyright>
-		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer</Configurations>
+		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
+	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU'">
 	  <NoWarn>1701;1702;SYSLIB0051</NoWarn>
 	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
@@ -75,14 +80,14 @@
 		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.4.2" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'" />
 
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'" />
 
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' &#xD;&#xA;						  Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' &#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' &#xD;&#xA;						  Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' &#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU'" />
 
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.11" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'" />
 		
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' &#xD;&#xA;						  Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' &#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' &#xD;&#xA;						  Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' &#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'&#xD;&#xA;						  OR '$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU'">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

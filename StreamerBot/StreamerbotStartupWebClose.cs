@@ -53,7 +53,7 @@ namespace StreamerBot
         private void SetDatabaseChoice()
         {
             if (!
-#if DEBUG || RELEASE_SQLITE
+#if DEBUG || DEBUG_VIEWXAML || RELEASE_SQLITE
             OptionFlags.EFCDatabaseProviderSqlite
 #elif RELEASE_POSTGRE
             OptionFlags.EFCDatabaseProviderPostgreSQL

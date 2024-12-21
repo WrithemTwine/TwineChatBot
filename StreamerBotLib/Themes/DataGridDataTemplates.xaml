@@ -1,9 +1,11 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:SqlModels="clr-namespace:StreamerBotLib.DataSQL.Models"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
-    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase">
+    xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    mc:Ignorable="d">
 
     <Style TargetType="{x:Type DataGrid}">
         <Setter Property="AlternationCount" Value="1" />
@@ -192,7 +194,7 @@
             <!--<DatePicker SelectedDate="{Binding ThroughDate}" />-->
         </StackPanel>
     </DataTemplate>
-    
+
     <!--#endregion-->
 
     <!--#region DataGrid RowDetail DataTemplates -->
@@ -249,7 +251,8 @@
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" /> <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
 
@@ -371,7 +374,7 @@
 
                 <TextBlock Grid.Row="0" Grid.Column="0">First Date seen:</TextBlock>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FirstDateSeen, StringFormat={}{0:g}}" />
-     
+
                 <TextBlock Grid.Row="1" Grid.Column="0">Followed Date:</TextBlock>
                 <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Follower.FollowedDate, FallbackValue=\&quot;Not a Follower\&quot;, StringFormat=\{0:g\}}" />
 

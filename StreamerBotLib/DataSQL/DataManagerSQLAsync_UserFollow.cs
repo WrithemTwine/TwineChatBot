@@ -331,13 +331,8 @@ namespace StreamerBotLib.DataSQL
                     await UserJoined(L, NowSeen, context);
                 }
                 await context.SaveChangesAsync();
-                //RefreshUsersObservableCollection();
-                //RefreshUserStatsObservableCollection();
-                await GUIContext.Users.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(Models.Users));
-                await GUIContext.UserStats.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(Models.UserStats));
-
+                RefreshUsersObservableCollection();
+                RefreshUserStatsObservableCollection();
                 if (Refcontext == null) { ClearDataContext(context); }
             });
         }

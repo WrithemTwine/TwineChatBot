@@ -85,7 +85,7 @@ namespace StreamerBotLib.DataSQL
 #if !USE_POOLED_DBCONTEXT
             optionsBuilder
 
-#if DEBUG || RELEASE_SQLITE
+#if DEBUG || DEBUG_VIEWXAML|| RELEASE_SQLITE
                 .UseSqlite(OptionFlags.EFCConnectStringSqlite)
 #if DEBUG_LOG
                             .LogTo(DebugLog.WriteLine, LogLevel.Information) // This line enables logging to a file
