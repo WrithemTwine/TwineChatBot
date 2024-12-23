@@ -4,14 +4,39 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EFEntityEntryTesting"
-        xmlns:EF="clr-namespace:EFEntityEntryTesting.EF"
+        xmlns:GUI="clr-namespace:EFEntityEntryTesting.GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Closed="Window_Closed">
     <Window.Resources>
-        <EF:DataManager x:Key="EFDataManager" />
+        <GUI:GUIDataManager x:Key="GUIDataManager" />
     </Window.Resources>
-    <DockPanel DataContext="{StaticResource EFDataManager}">
-        <DataGrid DockPanel.Dock="Left" ItemsSource="{Binding Quotes}" AutoGenerateColumns="True" Width="250" />
-        <DataGrid DockPanel.Dock="Right" ItemsSource="{Binding CategoryList}" AutoGenerateColumns="True" Width="250" />
+    <DockPanel DataContext="{StaticResource GUIDataManager}">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="5,5,0,5" />
+                    <Setter Property="Padding" Value="7,2" />
+                </Style>
+            </StackPanel.Resources>
+            <Button x:Name="Button_StartStream" Content="Start Stream" Click="Button_StartStream_Click" />
+            <Button x:Name="Button_RandomUsers" Content="Add Random Users" Click="Button_RandomUsers_Click" IsEnabled="False" />
+            <Button Name="Button_EndStream" Content="End Stream" Click="Button_EndStream_Click" IsEnabled="False" />
+        </StackPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusBar_StatusUpdate" Text="StatusUnchanged" />
+            </StatusBarItem>
+        </StatusBar>
+        <TabControl>
+            <TabItem Header="User">
+                <DataGrid x:Name="DB_Users" ItemsSource="{Binding Users}" AutoGenerateColumns="True" />
+            </TabItem>
+            <TabItem Header="Currency">
+                <DataGrid x:Name="Db_Currency" ItemsSource="{Binding Currencies}" AutoGenerateColumns="True" />
+            </TabItem>
+            <TabItem Header="CurrencyType">
+                <DataGrid x:Name="Db_CurrencyType" ItemsSource="{Binding CurrencyTypes}" AutoGenerateColumns="True" />
+            </TabItem>
+        </TabControl>
     </DockPanel>
 </Window>
