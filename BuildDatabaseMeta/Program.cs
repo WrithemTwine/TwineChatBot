@@ -64,7 +64,7 @@ namespace BuildDatabaseMeta
                         {
                             string PropName = p.PropertyType.Name.Contains("ICollection") ? $"ICollection<{p.PropertyType.GenericTypeArguments[0].FullName}>" : p.PropertyType.FullName;
 
-                            if (!FileNames.Contains(p.Name))
+                            if (!FileNames.Contains(p.Name) && !p.Name.Contains("Calls"))
                             {
                                 props.Add($"              {{ \"{p.Name}\", typeof({PropName}) }}");
                                 values.Add($"                 {{ \"{p.Name}\", tableData.{p.Name} }}");

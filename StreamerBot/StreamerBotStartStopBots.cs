@@ -185,16 +185,19 @@ namespace StreamerBot
                 {
                     (child as RadioButton).IsEnabled = (child as RadioButton).IsChecked != true;
                 }
-                else if (child.GetType() == typeof(Label))
+                else if (child.GetType() == typeof(StackPanel))
                 {
-                    Label currLabel = (Label)child;
-                    if (currLabel.Name.Contains("Start"))
+                    foreach (UIElement SPchild in ((StackPanel)child).Children)
                     {
-                        currLabel.Visibility = Visibility.Collapsed;
-                    }
-                    else if (currLabel.Name.Contains("Stop"))
-                    {
-                        currLabel.Visibility = Visibility.Visible;
+                        Label currLabel = (Label)SPchild;
+                        if (currLabel.Name.Contains("Start"))
+                        {
+                            currLabel.Visibility = Visibility.Collapsed;
+                        }
+                        else if (currLabel.Name.Contains("Stop"))
+                        {
+                            currLabel.Visibility = Visibility.Visible;
+                        }
                     }
                 }
             }

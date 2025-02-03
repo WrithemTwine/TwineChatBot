@@ -42,7 +42,7 @@ namespace StreamerBotLib.DataSQL.Models
         public string Message { get; set; } = message;
         public int RepeatTimer { get; set; } = repeatTimer;
         public short SendMsgCount { get; set; } = sendMsgCount;
-        public ICollection<string> Category { get; set; } = category;
+        public ICollection<string> Category { get; set; } = category ?? ["All"];
         public bool AllowParam { get; set; } = allowParam;
         public string Usage { get; set; } = usage;
         public bool LookupData { get; set; } = lookupData;

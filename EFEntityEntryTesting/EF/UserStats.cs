@@ -2,12 +2,12 @@
 
 using Microsoft.EntityFrameworkCore;
 
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 
 namespace EFEntityEntryTesting.EF
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
-
+    [DebuggerDisplay("UserId={UserId}, WatchTime={WatchTime}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class UserStats(
                            TimeSpan watchTime,
@@ -35,9 +35,7 @@ namespace EFEntityEntryTesting.EF
         public int CallCommands { get; set; } = callCommands;
         public int RewardRedeems { get; set; } = rewardRedeems;
         public int ClipsCreated { get; set; } = clipsCreated;
-
-        [AllowNull]
-        public Users User { get; set; }
+        public Users? User { get; set; }
 
         public static UserStats operator +(UserStats userStats, UserStats otherStats)
         {

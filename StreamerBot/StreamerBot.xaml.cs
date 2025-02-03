@@ -45,7 +45,7 @@ namespace StreamerBot
         private DateTime ChannelPtRetrievalDate = DateTime.MinValue;
         private readonly TimeSpan ChannelPtRefresh = new(0, 15, 0);
 
-        private short TwitchFollowerCurrRefreshHrs = 0;
+        private int TwitchFollowerCurrRefreshHrs = 0;
         private readonly TimeSpan CheckRefreshDate = new(7, 0, 0, 0);
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace StreamerBot
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
 
-            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<short>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
+            ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
 
             ThreadManager.CreateThreadStart(".ctor_StreamerBotWindow", ProcessWatcher);
@@ -260,12 +260,6 @@ namespace StreamerBot
                     Settings.Default.AppCurrWorkingAppData = true;
                 }
             }
-
-
-            if (!OptionFlags.DataLoaded)
-            {
-                MessageBox.Show(LocalizedMsgSystem.GetVar(MsgBox.MsgBoxDataLoadedMsg), LocalizedMsgSystem.GetVar(MsgBox.MsgBoxDataLoadedTitle));
-            }
         }
 
         private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)
@@ -353,7 +347,7 @@ namespace StreamerBot
 
             TB_Twitch_ClientID.IsEnabled = setvalue;
             Btn_Twitch_RefreshDate.IsEnabled = setvalue;
-            Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
+            //Slider_TimeFollowerPollSeconds.IsEnabled = setvalue;
             Slider_TimeGoLivePollSeconds.IsEnabled = setvalue;
             Slider_TimeClipPollSeconds.IsEnabled = setvalue;
 

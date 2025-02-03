@@ -2,8 +2,6 @@
 
 using StreamerBotLib.Enums;
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(RaidDate))]
@@ -28,8 +26,6 @@ namespace StreamerBotLib.DataSQL.Models
         public int ViewerCount { get; set; } = viewerCount;
         public DateTime RaidDate { get; set; } = raidDate;
         public string Category { get; set; } = category;
-
-        [AllowNull]
         public Users? User { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EFEntityEntryTesting.Enums;
+using EFEntityEntryTesting.Static;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,7 @@ namespace EFEntityEntryTesting.EF
     internal class DataManager
     {
         private readonly EFTestDataContext _context;
+        private readonly EFTestDataContext _currencycontext;
 
         private readonly EFTestDataContext _GUIcontext;
 
@@ -22,7 +24,8 @@ namespace EFEntityEntryTesting.EF
 
             SetData();
 
-            _GUIcontext = new EFTestDataContext();
+            _GUIcontext = new();
+            _currencycontext = new();
         }
 
         private void SetData()
@@ -41,9 +44,10 @@ namespace EFEntityEntryTesting.EF
                     string userId = randomId.Next(40000, 1000000).ToString();
                     string userName = $"User{x}";
                     _context.Users.Add(new(now, now, now, userId, userName, Platform.Twitch));
+                    _context.UserStats.Add(new(watchTime: new TimeSpan(0), 0, 0, 0, 0, userId: userId, platform: Platform.Twitch));
                     _context.Currency.Add(new(userId: userId, currencyName: currencyType.CurrencyName, platform: Platform.Twitch));
+                    _context.SaveChanges();
                 }
-                _context.SaveChanges();
             }
         }
 
@@ -82,12 +86,12 @@ namespace EFEntityEntryTesting.EF
             }
         }
 
-        private async Task RefreshUsersObsCol()
+        private async Task RefreshUsersObsColAsync()
         {
             await _GUIcontext.Users.LoadAsync();
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Users)));
         }
-        private async Task RefreshCurrencyObsCol()
+        private async Task RefreshCurrencyObsColAsync()
         {
             await _GUIcontext.Currency.LoadAsync();
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Currency)));
@@ -113,54 +117,73 @@ namespace EFEntityEntryTesting.EF
             }
         }
 
-        public void PostUsersJoined(List<string> userId, DateTime dateTime, Platform platform = Platform.Twitch)
+        public async Task PostUsersJoinedAsync(List<string> userId, DateTime dateTime, Platform platform = Platform.Twitch)
         {
-            lock (_context)
+            await Task.Run(() =>
             {
-                _context.Users.IntersectBy(userId, (u) => u.UserId).ForEachAsync((c) =>
+                foreach (Users user in from u in _context.Users
+                                       where userId.Contains(u.UserId)
+                                       select u)
                 {
-                    c.CurrLoginDate = dateTime;
-                    c.LastDateSeen = dateTime;
-                });
-                _context.SaveChanges();
-                RefreshUsersObsCol();
-            }
+                    user.CurrLoginDate = dateTime;
+                    user.LastDateSeen = dateTime;
+                    LogWriter.DebugLog("UsersJoined", Models.DebugLogTypes.DataManager, $"{user.UserName} joined, curr login {user.CurrLoginDate}, last date {user.LastDateSeen}.");
+                }
+            });
+
+            await _context.SaveChangesAsync();
+            await RefreshUsersObsColAsync();
         }
 
-        public void PostUsersLeft(List<string> userId, DateTime dateTime, Platform platform = Platform.Twitch)
+        public async Task PostUsersLeftAsync(List<string> userId, DateTime dateTime, Platform platform = Platform.Twitch)
         {
-            lock (_context)
+            await Task.Run(() =>
             {
-                _context.Users.IntersectBy(userId, (u) => u.UserId).ForEachAsync((c) =>
+                foreach (Users user in from u in _context.Users
+                                       where userId.Contains(u.UserId)
+                                       select u)
                 {
-                    c.LastDateSeen = dateTime;
-                });
-                _context.SaveChanges();
-                RefreshUsersObsCol();
-            }
+                    user.LastDateSeen = dateTime;
+                    LogWriter.DebugLog("UsersLeft", Models.DebugLogTypes.DataManager, $"{user.UserName} left, last date {user.LastDateSeen}.");
+                }
+            });
+
+            await _context.SaveChangesAsync();
+            await RefreshUsersObsColAsync();
         }
 
-        public void UpdateCurrency(ICollection<string> Users, DateTime dateTime, Platform platform = Platform.Twitch)
+        public async Task UpdateCurrencyAsync(ICollection<string> Users, DateTime dateTime, Platform platform = Platform.Twitch)
         {
-            lock (_context)
+            await Task.Run(() =>
             {
-                _context.Users.Join(Users, (u) => u.UserId, (user) => user, (dbusers, curr) => dbusers).ForEachAsync((u) =>
+                foreach (Users user in from u in _currencycontext.Users
+                                       where Users.Contains(u.UserId)
+                                       select u)
                 {
-                    TimeSpan clock = dateTime - u.LastDateSeen;
-                    foreach (Currency currency in u.Currency)
+                    TimeSpan clock = dateTime - user.LastDateSeen;
+
+                    UserStats stats = (from u in _currencycontext.UserStats
+                                       where u.UserId == user.UserId
+                                       select u).FirstOrDefault();
+
+                    stats.WatchTime += clock;
+                    foreach (Currency currency in user.Currency)
                     {
                         currency.Value =
                             Math.Min(
                                 currency.CurrencyType.MaxValue,
-                                Math.Round((currency.Value + currency.CurrencyType.AccrueAmt)
-                                            * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
+                                Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt
+                                            * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
                             );
                     }
-                    u.LastDateSeen = dateTime;
-                });
-                _context.SaveChanges();
-                RefreshCurrencyObsCol();
-            }
+                    user.LastDateSeen = dateTime;
+                    LogWriter.DebugLog("UpdateCurrency", Models.DebugLogTypes.DataManager,
+                        $"{user.UserName} currency, curr login {user.CurrLoginDate}, last date {user.LastDateSeen}, currency {user.Currency.FirstOrDefault()?.Value}.");
+                }
+            });
+
+            await _currencycontext.SaveChangesAsync();
+            await RefreshCurrencyObsColAsync();
         }
 
         #endregion

@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -36,36 +39,36 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.InRaidData(
-            viewerCount: Convert.ToInt32(ViewerCount),
-            raidDate: RaidDate,
-            category: Category,
-            userId: UserId,
+            viewerCount: Convert.ToInt32(ViewerCount), 
+            raidDate: RaidDate, 
+            category: Category, 
+            userId: UserId, 
             platform: Platform
         );
         }
         public void CopyUpdates(Models.InRaidData modelData)
         {
-            if (modelData.ViewerCount != ViewerCount)
+          if (modelData.ViewerCount != ViewerCount)
             {
                 modelData.ViewerCount = ViewerCount;
             }
 
-            if (modelData.RaidDate != RaidDate)
+          if (modelData.RaidDate != RaidDate)
             {
                 modelData.RaidDate = RaidDate;
             }
 
-            if (modelData.Category != Category)
+          if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }
 
-            if (modelData.UserId != UserId)
+          if (modelData.UserId != UserId)
             {
                 modelData.UserId = UserId;
             }
 
-            if (modelData.Platform != Platform)
+          if (modelData.Platform != Platform)
             {
                 modelData.Platform = Platform;
             }

@@ -14,7 +14,7 @@ namespace StreamerBotLib.Systems
 {
     internal partial class ActionSystem : INotifyPropertyChanged
     {
-        private static Thread ElapsedThread;
+        private static bool ElapsedThread;
         private bool ChatBotStarted;
 
         private const int ThreadSleep = 5000;
@@ -48,11 +48,11 @@ namespace StreamerBotLib.Systems
         public void StartElapsedTimerThread()
         {
             // don't start another thread if the current is still active
-            if (ElapsedThread == null && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
+            if (!ElapsedThread && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive))
             {
                 ChatBotStarted = true;
-                ElapsedThread = ThreadManager.CreateThread("StartElapsedTimerThread", ElapsedCommandTimers);
-                ElapsedThread.Start();
+                ThreadManager.CreateThreadStart("StartElapsedTimerThread", ElapsedCommandTimers);
+                ElapsedThread = true;
             }
         }
 
@@ -62,8 +62,7 @@ namespace StreamerBotLib.Systems
         public void StopElapsedTimerThread()
         {
             ChatBotStarted = false;
-            ElapsedThread?.Join();
-            ElapsedThread = null;
+            ElapsedThread = false;
         }
 
         /// <summary>
@@ -116,6 +115,9 @@ namespace StreamerBotLib.Systems
 
         private bool ComputeRerunLoop()
         {
+            LogWriter.DebugLog("ComputeRerunLoop", DebugLogTypes.CommandSystem,
+                $"Variable values: OptionFlags.ActiveToken {OptionFlags.ActiveToken}, ChatBotStarted {ChatBotStarted}, OptionFlags.RepeatTimerCommands {OptionFlags.RepeatTimerCommands}, OptionFlags.RepeatWhenLive {OptionFlags.RepeatWhenLive}, OptionFlags.IsStreamOnline {OptionFlags.IsStreamOnline}, (OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive {(OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive}");
+
             return OptionFlags.ActiveToken
                     && ChatBotStarted
                     && OptionFlags.RepeatTimerCommands
@@ -123,12 +125,15 @@ namespace StreamerBotLib.Systems
         }
         private bool ComputeRerunLoop(List<string> CategoryList)
         {
+            LogWriter.DebugLog("ComputeRerunLoop", DebugLogTypes.CommandSystem, $"CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory)) {CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))}");
+
             return ComputeRerunLoop()
                     && (CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory)));
         }
-
         private bool ComputeRepeat()
         {
+            LogWriter.DebugLog("ComputeRepeat", DebugLogTypes.CommandSystem, $"OptionFlags.RepeatNoAdjustment {OptionFlags.RepeatNoAdjustment}, OptionFlags.RepeatTimerComSlowdown {OptionFlags.RepeatTimerComSlowdown}, OptionFlags.RepeatUseThresholds {OptionFlags.RepeatUseThresholds}, !OptionFlags.RepeatAboveUserCount {!OptionFlags.RepeatAboveUserCount}, viewers >= OptionFlags.RepeatUserCount {viewers >= OptionFlags.RepeatUserCount}, !OptionFlags.RepeatAboveUserCount || viewers >= OptionFlags.RepeatUserCount {!OptionFlags.RepeatAboveUserCount || viewers >= OptionFlags.RepeatUserCount}, !OptionFlags.RepeatAboveChatCount {!OptionFlags.RepeatAboveChatCount}, chats >= OptionFlags.RepeatChatCount {chats >= OptionFlags.RepeatChatCount}, !OptionFlags.RepeatAboveChatCount || chats >= OptionFlags.RepeatChatCount {!OptionFlags.RepeatAboveChatCount || chats >= OptionFlags.RepeatChatCount}");
+
             return OptionFlags.RepeatNoAdjustment // no limits, just perform repeat command
               || OptionFlags.RepeatTimerComSlowdown // diluted command, performance time
               || (OptionFlags.RepeatUseThresholds
@@ -151,6 +156,9 @@ namespace StreamerBotLib.Systems
             {
                 while (OptionFlags.ActiveToken && repeat != 0 && ComputeRerunLoop(cmd.CategoryList))
                 {
+                    LogWriter.DebugLog("RepeatCmd", DebugLogTypes.CommandSystem, $"Command {cmd.Command}");
+                    LogWriter.DebugLog("RepeatCmd", DebugLogTypes.CommandSystem, $"OptionFlags.ActiveToken {OptionFlags.ActiveToken}, repeat != 0 {repeat != 0}, OptionFlags.IsStreamOnline {OptionFlags.IsStreamOnline}, OptionFlags.RepeatLiveReset {OptionFlags.RepeatLiveReset}, !ResetLive {!ResetLive}");
+
                     if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                     {
                         if (OptionFlags.RepeatLiveResetShow) // perform command when repeat timers are reset based on live online stream
@@ -166,6 +174,8 @@ namespace StreamerBotLib.Systems
                     {
                         ResetLive = false;
                     }
+
+                    LogWriter.DebugLog("RepeatCmd", DebugLogTypes.CommandSystem, $"cmd.CheckFireTime() {cmd.CheckFireTime()}");
 
                     if (OptionFlags.ActiveToken && cmd.CheckFireTime())
                     {
@@ -569,7 +579,6 @@ namespace StreamerBotLib.Systems
                     OnProcessCommand(VariableParser.ParseReplace(cmdrow.Message, datavalues));
 
                 });
-
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
             {
@@ -635,7 +644,8 @@ namespace StreamerBotLib.Systems
                     ? PartyCommand(command, User.UserName, arglist.Count > 0 ? arglist[0] : "", cmdrow)
                     : ElapsedTimer ? "" : LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop);
             }
-            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart) || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart)
+                || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
             {
                 result = cmdrow.Message;
                 OptionFlags.SetParty(command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart));
@@ -813,7 +823,8 @@ namespace StreamerBotLib.Systems
             }
 
             result ??= "";
-            result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "") ? "/me " : "") + result;
+            result = ((((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") && result != "")
+                ? "/me " : "") + result;
 
             multi = cmdrow.SendMsgCount;
 

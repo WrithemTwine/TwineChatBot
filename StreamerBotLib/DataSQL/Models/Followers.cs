@@ -3,13 +3,12 @@
 using StreamerBotLib.Enums;
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
     [Index(nameof(StatusChangeDate), nameof(UserId), nameof(FollowedDate), IsDescending = [true, false, true])]
-    [DebuggerDisplay("UserId={UserId}, UserName={F.User.UserName}, IsFollower={IsFollower}")]
+    [DebuggerDisplay("UserId={UserId}, UserName={User.UserName}, IsFollower={IsFollower}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Followers(
                            bool isFollower,
@@ -38,10 +37,8 @@ namespace StreamerBotLib.DataSQL.Models
         public string Category { get; set; } = category;
         public DateTime AddDate { get; set; } = addDate;
 
-        [AllowNull]
         public Users? User { get; set; }
-        [AllowNull]
-        public CategoryList? CategoryList { get; set; }
+        public CategoryList CategoryList { get; set; } = null!;
 
         //public ICollection<OldFollowUsers> OldFollowUsers { get; } = [];
     }

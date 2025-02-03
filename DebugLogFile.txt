@@ -1,0 +1,10 @@
+12/23/2024 13:52:56-Exit-ThreadManager-Closed all threads started through ThreadManager.
+12/23/2024 13:52:56-.ctor_GUIDataManager_SetObsCol-ThreadManager-ThreadManager starting a thread for .ctor_GUIDataManager_SetObsCol.
+12/23/2024 14:17:12-Exit-ThreadManager-Closed all threads started through ThreadManager.
+12/23/2024 14:17:12-.ctor_GUIDataManager_SetObsCol-ThreadManager-ThreadManager starting a thread for .ctor_GUIDataManager_SetObsCol.
+12/23/2024 15:41:30-Exit-ThreadManager-Closed all threads started through ThreadManager.
+12/23/2024 15:41:30-.ctor_GUIDataManager_SetObsCol-ThreadManager-ThreadManager starting a thread for .ctor_GUIDataManager_SetObsCol.
+12/27/2024 15:01:17-Exit-ThreadManager-Closed all threads started through ThreadManager.
+12/27/2024 15:01:17-.ctor_GUIDataManager_SetObsCol-ThreadManager-ThreadManager starting a thread for .ctor_GUIDataManager_SetObsCol.
+12/30/2024 00:37:25-Exit-ThreadManager-Closed all threads started through ThreadManager.
+12/30/2024 00:37:25-.ctor_GUIDataManager_SetObsCol-ThreadManager-ThreadManager starting a thread for .ctor_GUIDataManager_SetObsCol.

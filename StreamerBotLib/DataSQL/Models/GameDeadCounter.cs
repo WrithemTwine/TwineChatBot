@@ -18,6 +18,6 @@ namespace StreamerBotLib.DataSQL.Models
         public string Category { get; set; } = category;
         public int Counter { get; set; } = counter;
 
-        public CategoryList CategoryList { get; set; }
+        public CategoryList? CategoryList { get; set; }
     }
 }

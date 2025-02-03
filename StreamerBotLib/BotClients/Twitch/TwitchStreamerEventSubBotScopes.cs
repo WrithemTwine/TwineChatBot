@@ -53,9 +53,13 @@ namespace StreamerBotLib.BotClients.Twitch
         internal TwitchStreamerEventSubBotScopes(ILoggerFactory loggerFactory,
             IEventSubMessageIdsLogger messageIdsLogger, TwitchTokenBot TokenBot)
         {
+            LogWriter.DebugLog(".ctor_TwitchStreamerEventSubBotScopes", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Building the TwitchStreamerEventSubBotScopes object.");
+
             BotClientName = Enums.Bots.TwitchStreamerEventSubScopes;
             tokenBot = TokenBot;
             eventSubMessageIdsLogger = messageIdsLogger;
+
+            LogWriter.DebugLog(".ctor_TwitchStreamerEventSubBotScopes", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Attaching events to handle bot actions.");
 
             _eventSubWebsocketClient = new(loggerFactory);
 
@@ -77,6 +81,8 @@ namespace StreamerBotLib.BotClients.Twitch
         #region Subscription Events
         private Task ChannelPointsCustomRewardRedemptionAdd(object sender, ChannelPointsCustomRewardRedemptionArgs args)
         {
+            LogWriter.DebugLog("ChannelPointsCustomRewardRedemptionAdd", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Processing ChannelPointsCustomRewardRedemption event.");
+
             return Task.Run(() =>
             {
                 if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
@@ -93,6 +99,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task ChannelSubscriptionMessage(object sender, ChannelSubscriptionMessageArgs args)
         {
+            LogWriter.DebugLog("ChannelSubscriptionMessage", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Processing ChannelSubscriptionMessage event.");
+
             return Task.Run(() =>
             {
                 if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
@@ -109,6 +117,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task ChannelSubscribe(object sender, ChannelSubscribeArgs args)
         {
+            LogWriter.DebugLog("ChannelSubscribe", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Processing ChannelSubscribe event.");
+
             return Task.Run(() =>
             {
                 if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
@@ -125,6 +135,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task ChannelSubscriptionGift(object sender, ChannelSubscriptionGiftArgs args)
         {
+            LogWriter.DebugLog("ChannelSubscriptionGift", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Processing ChannelSubscriptionGift event.");
+
             return Task.Run(() =>
             {
                 if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
@@ -141,6 +153,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task ChannelCheer(object sender, ChannelCheerArgs args)
         {
+            LogWriter.DebugLog("ChannelCheer", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Processing ChannelCheer event.");
+
             return Task.Run(() =>
             {
                 if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
@@ -157,6 +171,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task ChannelFollow(object sender, ChannelFollowArgs args)
         {
+            LogWriter.DebugLog("ChannelFollow", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Processing ChannelFollow event.");
+
             return Task.Run(() =>
             {
                 if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
@@ -173,6 +189,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task OnChannelChatMessage(object sender, ChannelChatMessageArgs args)
         {
+            LogWriter.DebugLog("OnChannelChatMessage", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Processing OnChannelChatMessage event.");
+
             return Task.Run(() =>
             {
                 if (eventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
@@ -271,8 +289,12 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 try
                 {
+                    LogWriter.DebugLog("StartBot", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Attempting to start bot.");
+
                     if (IsActive == null || IsActive == false)
                     {
+                        LogWriter.DebugLog("StartBot", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Bot inactive, starting bot.");
+
                         await StartAsync(new());
                     }
                 }
@@ -288,6 +310,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            LogWriter.DebugLog("StartAsync", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Connecting EventSub websocket.");
             await _eventSubWebsocketClient.ConnectAsync();
         }
 
@@ -295,6 +318,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             ThreadManager.CreateThreadStart("StartServices", () =>
             {
+                LogWriter.DebugLog("StartServices", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Starting EventSub subscription services.");
+
                 CreateEventSubSubscription(new ChannelPointsCustomRewardRedemptionAddHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new ChannelSubscriptionMessageHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
                 CreateEventSubSubscription(new ChannelSubscribeHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
@@ -314,10 +339,14 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             return Task.Run(async () =>
             {
+                LogWriter.DebugLog("StopBot", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Attempting to stop bot.");
+
                 try
                 {
                     if (IsActive == true)
                     {
+                        LogWriter.DebugLog("StopBot", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Bot active, now stopping bot.");
+
                         await StopAsync(new());
                         if (!OptionFlags.TwitchStreamerUseToken)
                         {
@@ -351,6 +380,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
+            LogWriter.DebugLog("StopAsync", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Disconnecting websocket.");
             await _eventSubWebsocketClient.DisconnectAsync();
         }
 
@@ -393,10 +423,12 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private Task OnWebsocketConnected(object sender, WebsocketConnectedArgs args)
         {
+            LogWriter.DebugLog("OnWebsocketConnected", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Websocket connected.");
             return Task.Run(() =>
             {
                 if (!args.IsRequestedReconnect)
                 {
+                    LogWriter.DebugLog("OnWebsocketConnected", Enums.DebugLogTypes.TwitchStreamerEventSubBot, "Initiating services.");
                     StartServices();
                 }
 

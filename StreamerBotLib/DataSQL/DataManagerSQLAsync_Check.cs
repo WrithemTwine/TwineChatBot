@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
+using StreamerBotLib.Static;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -61,6 +62,8 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
+                LogWriter.DebugLog("CheckModApprovalRule", DebugLogTypes.DataManager, $"Now checking for mod approval rule for {ModAction}.");
+
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 var result = (from M in context.ModeratorApprove
                               where (M.ModActionType == modActionType && M.ModActionName == ModAction)

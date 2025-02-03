@@ -196,6 +196,7 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.GUIDataViews => OptionFlags.EnableDebugGUIDataViews ? line : "",
                 DebugLogTypes.GUIBotComs => OptionFlags.EnableDebugGUIBotComs ? line : "",
                 DebugLogTypes.GUIMultiLive => OptionFlags.EnableDebugGUIMultiLive ? line : "",
+                DebugLogTypes.TwitchStreamerNoScopesEventSubBot => OptionFlags.EnableDebugTwitchStreamerNoScopesEventSubBot ? line : "",
                 _ => "",
             };
             #endregion

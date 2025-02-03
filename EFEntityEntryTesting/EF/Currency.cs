@@ -27,8 +27,6 @@ namespace EFEntityEntryTesting.EF
     {
         public double Value { get; set; } = value;
         public string CurrencyName { get; set; } = currencyName;
-
-        [AllowNull]
         public Users User { get; set; }
         [AllowNull]
         public CurrencyType? CurrencyType { get; set; }

@@ -2499,5 +2499,17 @@ namespace StreamerBotLib.Properties {
                 this["TwitchStreamEventSubNoScopesAutoStart"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchStreamerNoScopesEventSubBot {
+            get {
+                return ((bool)(this["EnableDebugTwitchStreamerNoScopesEventSubBot"]));
+            }
+            set {
+                this["EnableDebugTwitchStreamerNoScopesEventSubBot"] = value;
+            }
+        }
     }
 }

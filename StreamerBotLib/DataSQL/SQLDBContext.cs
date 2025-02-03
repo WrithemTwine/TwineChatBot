@@ -169,7 +169,9 @@ namespace StreamerBotLib.DataSQL
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.Follower)
                 .WithOne(f => f.User)
-                .HasForeignKey<Followers>(f => new { f.UserId, f.Platform });
+                .HasForeignKey<Followers>(f => new { f.UserId, f.Platform })
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<InRaidData>()
                 .HasOne(r => r.User)

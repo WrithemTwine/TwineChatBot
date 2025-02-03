@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -33,30 +36,30 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.MultiSummaryLiveStreams(
-            streamCount: Convert.ToInt32(StreamCount),
-            throughDate: ThroughDate,
-            userId: UserId,
+            streamCount: Convert.ToInt32(StreamCount), 
+            throughDate: ThroughDate, 
+            userId: UserId, 
             platform: Platform
         );
         }
         public void CopyUpdates(Models.MultiSummaryLiveStreams modelData)
         {
-            if (modelData.StreamCount != StreamCount)
+          if (modelData.StreamCount != StreamCount)
             {
                 modelData.StreamCount = StreamCount;
             }
 
-            if (modelData.ThroughDate != ThroughDate)
+          if (modelData.ThroughDate != ThroughDate)
             {
                 modelData.ThroughDate = ThroughDate;
             }
 
-            if (modelData.UserId != UserId)
+          if (modelData.UserId != UserId)
             {
                 modelData.UserId = UserId;
             }
 
-            if (modelData.Platform != Platform)
+          if (modelData.Platform != Platform)
             {
                 modelData.Platform = Platform;
             }

@@ -223,6 +223,8 @@ namespace StreamerBotLib.BotClients
             TwitchTokenBot.BotAcctAuthCodeExpired += TwitchTokenBot_BotAcctAuthCodeExpired;
             TwitchTokenBot.StreamerAcctAuthCodeExpired += TwitchTokenBot_StreamerAcctAuthCodeExpired;
             TwitchTokenBot.StreamerNoScopesAuthCodeExpired += TwitchTokenBot_StreamerNoScopesAuthCodeExpired;
+            TwitchTokenBot.BotAccessTokenChanged += TwitchTokenBot_BotAccessTokenChanged;
+            TwitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged;
         }
 
         private void TwitchTokenBot_AccessTokensInitialized(object sender, EventArgs e)
@@ -350,7 +352,7 @@ namespace StreamerBotLib.BotClients
         }
         private void TwitchStreamerEventSubBot_NewStreamOffline(object sender, NewStreamOfflineEventArgs e)
         {
-            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOffline", DebugLogTypes.TwitchBots, $"Registered a stream is offline,{e.StreamOffline.BroadcasterUserName}.");
+            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOffline", DebugLogTypes.TwitchBots, $"Registered a stream is offline, {e.StreamOffline.BroadcasterUserName}.");
 
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOffline", DebugLogTypes.TwitchBots, "Now posting to data system the stream is offline.");
             ManageStreamOnlineOfflineStatus(false);
@@ -941,6 +943,57 @@ namespace StreamerBotLib.BotClients
             TwitchTokenBot.ForceReauthorization();
         }
 
+        #region EventSub Bots
+
+        private const int EventSubRestartDelayTime = 2000;
+
+        private void TwitchTokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
+        {
+            //Queue<TwitchBotsBase> StreamerEventSubBots = new();
+
+            //if (TwitchStreamerEventSubBotNoScopes.IsActive == true)
+            //{
+            //    StreamerEventSubBots.Enqueue(TwitchStreamerEventSubBotNoScopes);
+            //}
+
+            //if (TwitchStreamerEventSubBotScopes.IsActive == true)
+            //{
+            //    StreamerEventSubBots.Enqueue(TwitchStreamerEventSubBotScopes);
+            //}
+
+            //ThreadManager.CreateThreadStart("BotsTwitch_StreamerTokenChanged", async () =>
+            //{
+            //    if (StreamerEventSubBots.TryDequeue(out TwitchBotsBase EventSubBot))
+            //    {
+            //        await EventSubBot.StopBot();
+            //        await Task.Delay(EventSubRestartDelayTime);
+            //        await EventSubBot.StartBot();
+            //    }
+            //});
+        }
+
+        private void TwitchTokenBot_BotAccessTokenChanged(object sender, EventArgs e)
+        {
+            //Queue<TwitchBotsBase> BotEventSubBots = new();
+
+            //if (TwitchBotEventSubChatClient.IsActive == true)
+            //{
+            //    BotEventSubBots.Enqueue(TwitchBotEventSubChatClient);
+            //}
+
+            //ThreadManager.CreateThreadStart("BotsTwitch_StreamerTokenChanged", async () =>
+            //{
+            //    if (BotEventSubBots.TryDequeue(out TwitchBotsBase EventSubBot))
+            //    {
+            //        await EventSubBot.StopBot();
+            //        await Task.Delay(EventSubRestartDelayTime);
+            //        await EventSubBot.StartBot();
+            //    }
+            //});
+        }
+
+        #endregion
+
         #endregion
 
         #region Token Clip Service
@@ -989,7 +1042,7 @@ namespace StreamerBotLib.BotClients
 
         public override void GetAllFollowers()
         {
-            if (OptionFlags.ManageFollowers && OptionFlags.TwitchAddFollowersStart)
+            if (OptionFlags.ManageFollowers)// && OptionFlags.TwitchAddFollowersStart)
             {
                 LogWriter.DebugLog("GetAllFollowers", DebugLogTypes.TwitchBots, "Processing request to update all followers to " +
                     "the streamer's channel.");
@@ -1073,6 +1126,8 @@ namespace StreamerBotLib.BotClients
         {
             if (!StartClips)
             {
+                LogWriter.DebugLog("ProcessClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
+
                 StartClips = true;
                 ClipList = await TwitchBotClipSvc.GetAllClipsAsync();
 
@@ -1083,6 +1138,8 @@ namespace StreamerBotLib.BotClients
 
         private async void ProcessChannelClipsAsync(Action<List<Models.Clip>> ActionCallback)
         {
+            LogWriter.DebugLog("ProcessChannelClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
+
             List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> result = [];
             TwitchBotClipSvc ChannelClips = new(TwitchTokenBot);
             await ChannelClips.StartBot();

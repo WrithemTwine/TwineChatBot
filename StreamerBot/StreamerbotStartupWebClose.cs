@@ -212,15 +212,17 @@ namespace StreamerBot
                     LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "The access tokens are available and ready to start bots.");
                     LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Starting any bots when the user checked 'auto-start bots'.");
 
-                    foreach (Tuple<bool, Platform, RadioButton> tuple in from Tuple<bool, Platform, RadioButton> tuple in BotOps
-                                                                         where tuple.Item1 && tuple.Item3.IsEnabled
-                                                                         select tuple)
+                    Dispatcher.BeginInvoke(() =>
                     {
-                        DispatchStartBotAsync(tuple.Item3.DataContext as IOModule);
-                        LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
-                    }
-
-                    LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
+                        foreach (Tuple<bool, Platform, RadioButton> tuple in from Tuple<bool, Platform, RadioButton> tuple in BotOps
+                                                                             where tuple.Item1 && tuple.Item3.IsEnabled
+                                                                             select tuple)
+                        {
+                            DispatchStartBotAsync(tuple.Item3.DataContext as IOModule);
+                            LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
+                        }
+                        LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
+                    });
                 }
             });
         }

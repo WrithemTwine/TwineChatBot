@@ -18,6 +18,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
         internal TwitchBotSendChatClient(TwitchTokenBot TokenBot)
         {
+            LogWriter.DebugLog(".ctor_TwitchBotSendChatClient", DebugLogTypes.TwitchBotSendChat, "Building the TwitchBotSendChatClient.");
+
             BotClientName = Bots.TwitchBotSendChatClient;
             tokenBot = TokenBot;
         }
@@ -77,8 +79,8 @@ namespace StreamerBotLib.BotClients.Twitch
                         }
                         catch (Exception ex)
                         {
-                            LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Found exception.");
-
+                            LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Found exception. Checking the access token.");
+                            tokenBot.CheckToken();
                             LogWriter.LogException(ex, "Send");
                             Task.Delay(500 * (x + 1));
                             x++;

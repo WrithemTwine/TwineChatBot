@@ -48,6 +48,7 @@ namespace StreamerBotLib.Systems
 
         internal static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
         {
+            LogWriter.DebugLog("GetApprovalRule", DebugLogTypes.ModerationSystem, $"Checking for approval rule for {Command}.");
             return DataManage.CheckModApprovalRule(ActionType, FormatData.AddEscapeFormat(Command));
         }
 
@@ -58,6 +59,7 @@ namespace StreamerBotLib.Systems
         /// <param name="Request">The Task of the request to perform once approved.</param>
         public void AddApprovalRequest(string Description, Task Request)
         {
+            LogWriter.DebugLog("AddApprovalRequest", DebugLogTypes.ModerationSystem, $"Adding a new approval request for {Description}.");
             bool ItemCount = false;
             lock (RequestApprovalList)
             {
@@ -77,6 +79,7 @@ namespace StreamerBotLib.Systems
         /// <returns>A numbered list of request descriptions.</returns>
         public List<string> GetDescriptions()
         {
+            LogWriter.DebugLog("GetDescriptions", DebugLogTypes.ModerationSystem, $"Getting approval list.");
             describe.Clear();
             lock (RequestApprovalList)
             {
@@ -97,6 +100,7 @@ namespace StreamerBotLib.Systems
         /// <returns>The description label of the request.</returns>
         public string GetLabel(string Idx)
         {
+            LogWriter.DebugLog("GetLabel", DebugLogTypes.ModerationSystem, $"Getting the label, {RequestApprovalList[Convert.ToInt32(Idx)].Item1}.");
             lock (RequestApprovalList)
             {
                 return RequestApprovalList[Convert.ToInt32(Idx)].Item1;
@@ -111,6 +115,7 @@ namespace StreamerBotLib.Systems
         {
             lock (RequestApprovalList)
             {
+                LogWriter.DebugLog("RunApprovedRequest", DebugLogTypes.ModerationSystem, $"Performing approval for {Label}.");
                 Tuple<string, Task, DateTime> RemoveTuple = null;
                 foreach (var tuple in from Tuple<string, Task, DateTime> tuple in RequestApprovalList
                                       where tuple.Item1 == Label
@@ -135,6 +140,8 @@ namespace StreamerBotLib.Systems
         {
             while (RequestApprovalList.Count > 0)
             {
+                LogWriter.DebugLog("MonitorApprovals", DebugLogTypes.ModerationSystem, $"Found {RequestApprovalList.Count} items to approve.");
+
                 DateTime Expiry = DateTime.Now;
                 List<Tuple<string, Task, DateTime>> toRemove = [];
 

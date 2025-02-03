@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -36,36 +39,36 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.ChannelEvents(
-            name: Name,
-            repeatMsg: Convert.ToInt16(RepeatMsg),
-            addMe: AddMe,
-            isEnabled: IsEnabled,
+            name: Name, 
+            repeatMsg: Convert.ToInt16(RepeatMsg), 
+            addMe: AddMe, 
+            isEnabled: IsEnabled, 
             message: Message
         );
         }
         public void CopyUpdates(Models.ChannelEvents modelData)
         {
-            if (modelData.Name != Name)
+          if (modelData.Name != Name)
             {
                 modelData.Name = Name;
             }
 
-            if (modelData.RepeatMsg != RepeatMsg)
+          if (modelData.RepeatMsg != RepeatMsg)
             {
                 modelData.RepeatMsg = RepeatMsg;
             }
 
-            if (modelData.AddMe != AddMe)
+          if (modelData.AddMe != AddMe)
             {
                 modelData.AddMe = AddMe;
             }
 
-            if (modelData.IsEnabled != IsEnabled)
+          if (modelData.IsEnabled != IsEnabled)
             {
                 modelData.IsEnabled = IsEnabled;
             }
 
-            if (modelData.Message != Message)
+          if (modelData.Message != Message)
             {
                 modelData.Message = Message;
             }

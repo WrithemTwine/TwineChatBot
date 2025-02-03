@@ -76,6 +76,7 @@ namespace StreamerBotLib.BotClients
             OverlayPage = window;
             SendOverlayToServer += OverlayPage.GetOverlayActionReceivedHandler();
             SendTickerToServer += OverlayPage.GetupdatedTickerReceivedHandler();
+            OverlayPage.CheckAutoStart();
         }
 
         public void ManageStreamOnlineOfflineStatus(bool Start)

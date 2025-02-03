@@ -193,9 +193,16 @@ namespace StreamerBotLib.GUI.Windows
                         Binding categoryvalue = new()
                         {
                             Path = new(Data),
+                            Source = CurrData.Values[Data],
+                            FallbackValue = new List<string>() { "All" },
                             Converter = new CategoryConverter()
                         };
-                        Binding allcategories = new() { Source = DataManage.GetGameCategories(), Mode = BindingMode.OneWayToSource };
+                        Binding allcategories = new() 
+                        { 
+                            Source = DataManage.GetGameCategories(), 
+                            Path = new(Data), 
+                            Mode = BindingMode.TwoWay 
+                        };
                         ((ListBox)valueElement).SetBinding(ListBox.ItemsSourceProperty, allcategories);
                         ((ListBox)valueElement).SetBinding(ListBox.SelectedItemProperty, categoryvalue);
 

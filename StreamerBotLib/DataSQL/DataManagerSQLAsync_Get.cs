@@ -60,7 +60,7 @@ namespace StreamerBotLib.DataSQL
             return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                string result = string.Join(", ", GetCommandList());
+                string result = string.Join(", ", GetCommandList().Result);
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
             });
@@ -325,7 +325,7 @@ namespace StreamerBotLib.DataSQL
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 Tuple<string, int, List<string>> result = (from R in context.Commands
-                                                           where R.RepeatTimer > 0
+                                                           where R.IsEnabled && R.RepeatTimer > 0
                                                            select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))).FirstOrDefault();
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;
@@ -338,7 +338,7 @@ namespace StreamerBotLib.DataSQL
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
                 List<Tuple<string, int, List<string>>> result = new(from R in context.CommandsBase
-                                                                    where R.RepeatTimer > 0
+                                                                    where R.IsEnabled && R.RepeatTimer > 0
                                                                     select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category)));
                 if (Refcontext == null) { ClearDataContext(context); }
                 return result;

@@ -338,280 +338,371 @@ namespace StreamerBotLib.DataSQL
         #region Refresh Collections
         private void RefreshBanReasonsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.BanReasons.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.BanReasons.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons));
+                });
+            }));
         }
 
         private void RefreshBanRulesObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.BanRules.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.BanRules));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.BanRules.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.BanRules));
+                });
+            }));
         }
 
         private void RefreshCategoryListObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.CategoryList.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.CategoryList.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList));
+                });
+            }));
         }
 
         private void RefreshChannelEventsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.ChannelEvents.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.ChannelEvents.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents));
+                });
+            }));
         }
 
         private void RefreshClipsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.Clips.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Clips));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.Clips.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Clips));
+                });
+            }));
         }
 
         private void RefreshCommandsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.Commands.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Commands));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.Commands.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Commands));
+                });
+            }));
         }
 
         private void RefreshCommandsUserObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.CommandsUser.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.CommandsUser.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser));
+                });
+            }));
         }
 
         private void RefreshCurrencyObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.Currency.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Currency));
-            });
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await GUIContext.Currency.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Currency));
+                });
+            }));
         }
 
         private void RefreshCurrencyTypeObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.CurrencyType.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.CurrencyType.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType));
+                });
+            }));
         }
 
         private void RefreshCustomWelcomeObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.CustomWelcome.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.CustomWelcome.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome));
+                });
+            }));
         }
 
         private void RefreshFollowersObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.Followers.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Followers));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.Followers.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Followers));
+                });
+            }));
         }
 
         private void RefreshGameDeadCounterObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.GameDeadCounter.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.GameDeadCounter.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter));
+                });
+            }));
         }
 
         private void RefreshGiveawayUserDataObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.GiveawayUserData.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.GiveawayUserData.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData));
+                });
+            }));
         }
 
         private void RefreshInRaidDataObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.InRaidData.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.InRaidData.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData));
+                });
+            }));
         }
 
         private void RefreshLearnMsgsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.LearnMsgs.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.LearnMsgs.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs));
+                });
+            }));
         }
 
         private void RefreshModeratorApproveObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.ModeratorApprove.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.ModeratorApprove.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove));
+                });
+            }));
         }
 
         private void RefreshMultiChannelsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.MultiChannels.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.MultiChannels.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels));
+                });
+            }));
         }
 
         private void RefreshMultiLiveStreamsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.MultiLiveStreams.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.MultiLiveStreams.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams));
+                });
+            }));
         }
 
         private void RefreshMultiSummaryLiveStreamsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.MultiSummaryLiveStreams.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.MultiSummaryLiveStreams.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams));
+                });
+            }));
         }
 
         private void RefreshMultiWebhooksObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.MultiWebhooks.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.MultiWebhooks.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks));
+                });
+            }));
         }
 
         private void RefreshOldFollowUsersObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.OldFollowUsers.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.OldFollowUsers.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers));
+                });
+            }));
         }
 
         private void RefreshOutRaidDataObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.OutRaidData.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.OutRaidData.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData));
+                });
+            }));
         }
 
         private void RefreshOverlayServicesObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.OverlayServices.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.OverlayServices.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices));
+                });
+            }));
         }
 
         private void RefreshOverlayTickerObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.OverlayTicker.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.OverlayTicker.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker));
+                });
+            }));
         }
 
         private void RefreshQuotesObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.Quotes.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Quotes));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.Quotes.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Quotes));
+                });
+            }));
         }
 
         private void RefreshShoutOutsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.ShoutOuts.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.ShoutOuts.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts));
+                });
+            }));
         }
 
         private void RefreshStreamStatsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.StreamStats.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    await GUIContext.StreamStats.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats));
+                });
+            }));
         }
 
         private void RefreshUsersObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                LogWriter.DebugLog("RefreshUsersObservableCollection",
-                    DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
-                await GUIContext.Users.LoadAsync();
-                LogWriter.DebugLog("RefreshUsersObservableCollection",
-    DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
-                NotifyDataCollectionUpdated(nameof(GUIContext.Users));
-            });
+                ThreadManager.CreateThreadStart("RefreshUsersObservableCollection", async () =>
+                {
+                    LogWriter.DebugLog("RefreshUsersObservableCollection",
+                        DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
+                    await GUIContext.Users.LoadAsync();
+                    LogWriter.DebugLog("RefreshUsersObservableCollection",
+        DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Users));
+                });
+            }));
         }
 
         private void RefreshUserStatsObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                LogWriter.DebugLog("RefreshUserStatsObservableCollection",
-                  DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
-                await GUIContext.UserStats.LoadAsync();
-                LogWriter.DebugLog("RefreshUserStatsObservableCollection",
-   DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
-                NotifyDataCollectionUpdated(nameof(GUIContext.UserStats));
-            });
+                ThreadManager.CreateThreadStart("RefreshUserStatsObservableCollection", async () =>
+                {
+                    LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+                      DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
+                    await GUIContext.UserStats.LoadAsync();
+                    LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+       DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats));
+                });
+            }));
         }
 
         private void RefreshWebhooksObservableCollection()
         {
-            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            concurrentQueue.Enqueue(new Task(() =>
             {
-                await GUIContext.Webhooks.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks));
-            });
+                ThreadManager.CreateThreadStart("RefreshWebhooksObservableCollection", async () =>
+                {
+                    await GUIContext.Webhooks.LoadAsync();
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks));
+                });
+            }));
+
         }
 
         #endregion

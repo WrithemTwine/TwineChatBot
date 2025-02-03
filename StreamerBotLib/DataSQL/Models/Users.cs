@@ -3,7 +3,6 @@
 using StreamerBotLib.Enums;
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
@@ -35,13 +34,10 @@ namespace StreamerBotLib.DataSQL.Models
         public ICollection<Currency> Currency { get; } = [];
         public ICollection<GiveawayUserData> GiveawayUserData { get; } = [];
         public ICollection<InRaidData> InRaidDataList { get; } = [];
-        [AllowNull]
         public Followers? Follower { get; set; }
-        [AllowNull]
         public ShoutOuts? ShoutOuts { get; set; }
-        [AllowNull]
         public CustomWelcome? CustomWelcome { get; set; }
-        public UserStats UserStats { get; set; }
+        public UserStats? UserStats { get; set; }
 
     }
 }

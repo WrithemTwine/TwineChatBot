@@ -25,7 +25,7 @@ namespace StreamerBotLib.DataSQL
                         currency.Value =
                             Math.Min(
                                 currency.CurrencyType.MaxValue,
-                                Math.Round((currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
+                                Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
                             );
                     }
                     u.LastDateSeen = dateTime;

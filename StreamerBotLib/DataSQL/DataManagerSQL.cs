@@ -32,6 +32,11 @@ namespace StreamerBotLib.DataSQL
 
         public event EventHandler UpdatedMonitoringChannels;
 
+        /// <summary>
+        /// Cache a list to maintain until user adjusts commands, they remain unchanged
+        /// </summary>
+        private List<Tuple<string, int, List<string>>> RepeatTimerList = [];
+
         public DataManagerSQL()
         {
             _dataManager = new DataManagerSQLAsync();
@@ -55,30 +60,6 @@ namespace StreamerBotLib.DataSQL
         {
             OnDataCollectionUpdated?.Invoke(this, e);
         }
-
-        //#region Process Queue
-
-        //private readonly ConcurrentQueue<Action> concurrentQueue = new();
-
-        //private void PostAction(Action action)
-        //{
-        //    concurrentQueue.Enqueue(action);
-        //}
-
-        //private async void ProcessQueuedActions()
-        //{
-        //    while (OptionFlags.ActiveToken)
-        //    {
-        //        while (concurrentQueue.TryDequeue(out Action action))
-        //        {
-        //            await Task.Run(action);
-        //        }
-
-        //        Thread.Sleep(500);
-        //    }
-        //}
-
-        //#endregion
 
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
@@ -225,6 +206,8 @@ namespace StreamerBotLib.DataSQL
         {
             lock (_dataManager)
             {
+                RepeatTimerList.Clear(); // update may contain change to repeat timers, hence, reset the timer listing
+
                 return _dataManager.EditCommand(cmd, Arglist).Result;
             }
         }
@@ -443,7 +426,12 @@ namespace StreamerBotLib.DataSQL
         {
             lock (_dataManager)
             {
-                return _dataManager.GetTimerCommand(Cmd).Result;
+                if (RepeatTimerList.Count == 0)
+                {
+                    RepeatTimerList = _dataManager.GetTimerCommands().Result;
+                }
+
+                return RepeatTimerList.Find((r)=> r.Item1 == Cmd);
             }
         }
 
@@ -451,7 +439,12 @@ namespace StreamerBotLib.DataSQL
         {
             lock (_dataManager)
             {
-                return _dataManager.GetTimerCommands().Result;
+                if (RepeatTimerList.Count == 0)
+                {
+                    RepeatTimerList = _dataManager.GetTimerCommands().Result;
+                }
+
+                return RepeatTimerList;
             }
         }
 
@@ -459,7 +452,12 @@ namespace StreamerBotLib.DataSQL
         {
             lock (_dataManager)
             {
-                return _dataManager.GetTimerCommandTime(Cmd).Result;
+                if (RepeatTimerList.Count == 0)
+                {
+                    RepeatTimerList = _dataManager.GetTimerCommands().Result;
+                }
+
+                return RepeatTimerList.Find((r) => r.Item1 == Cmd).Item2;
             }
         }
 
@@ -566,6 +564,8 @@ namespace StreamerBotLib.DataSQL
         {
             lock (_dataManager)
             {
+                RepeatTimerList.Clear(); // new command may have a repeat timer, clear to reset the timer list
+
                 return _dataManager.PostCommand(cmd, Params).Result;
             }
         }
@@ -599,6 +599,11 @@ namespace StreamerBotLib.DataSQL
             lock (_dataManager)
             {
                 _dataManager.PostDataGridGUIAddRow(tableMeta);
+
+                if (tableMeta.TableName is "Commands" or "CommandsUser") 
+                { // some update to Commands or CommandsUser, reset the repeat timer command list - in case the user changed the timer value
+                    RepeatTimerList.Clear();
+                }
             }
         }
 
@@ -837,6 +842,8 @@ namespace StreamerBotLib.DataSQL
         {
             lock (_dataManager)
             {
+                RepeatTimerList.Clear(); // clear the list for enabled change - the timers don't respond for disabled commands
+
                 _dataManager.SetUserDefinedCommandsEnabled(Enabled);
             }
         }

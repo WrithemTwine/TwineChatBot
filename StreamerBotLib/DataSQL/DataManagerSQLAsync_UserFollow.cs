@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#define USE_SAME_CONTEXT0
+
+using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
@@ -111,7 +113,12 @@ namespace StreamerBotLib.DataSQL
             {
                 ProcessFollowQueuestarted = true;
 
+#if USE_SAME_CONTEXT
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+#else
                 ThreadManager.CreateThreadStart("PostFollowsQueue", async () =>
+#endif
+
                 {
                     SQLDBContext context = Refcontext ?? BuildDataContext();
 
@@ -148,13 +155,13 @@ namespace StreamerBotLib.DataSQL
                     RefreshUsersObservableCollection();
                     NotifyDataCollectionUpdated("CurrFollowers");
 
-                    if (Refcontext == null) { ClearDataContext(context); }
                     ProcessFollowQueuestarted = false;
 
                     if (!BulkFollowerUpdate)
                     {
-                        await StopBulkFollows();
+                        await StopBulkFollows(context);
                     }
+                    if (Refcontext == null) { ClearDataContext(context); }
                 });
             }
         }
@@ -237,48 +244,38 @@ namespace StreamerBotLib.DataSQL
                 }
                 else // if pruning followers, there won't be multiple 'UserId' records
                 {
-                    //foreach (Followers F in (from OF in context.Followers where !OF.IsFollower select OF))
-                    //{
-                    //    if (!(from OFU in context.OldFollowUsers where OFU.UserId == F.UserId select OFU).Any())
-                    //    {
-                    //        context.OldFollowUsers.Add(new OldFollowUsers(F, F.User.UserName, currtime));
-                    //    }
-                    //}
-                    //context.SaveChangesAsync();
-
-                    //foreach (OldFollowUsers OF in context.OldFollowUsers)
-                    //{
-                    //    Followers currFollow = (from F in context.Followers where F.UserId == OF.UserId && F.Platform == OF.Platform select F).FirstOrDefault();
-                    //    if (currFollow != null)
-                    //    {
-                    //        currFollow.StatusChangeDate = currtime;
-                    //    }
-                    //}
-
-                    foreach (Followers OldFollowlist in
-
-                                        from NonFollows in (from F in context.Followers
-                                                            where !F.IsFollower
-                                                            select F)
-                                        join OF in context.OldFollowUsers
-                                        on NonFollows.UserId equals OF.UserId
-                                        where NonFollows.User.UserName != OF.UserName && NonFollows.Platform == OF.Platform
-                                        select NonFollows)
+                    foreach (Followers F in (from f in context.Followers
+                                             where !f.IsFollower
+                                             select f))
                     {
-                        await context.OldFollowUsers.AddAsync(new OldFollowUsers(OldFollowlist, OldFollowlist.User.UserName, currtime));
+                        if (F.User != null)
+                        {
+                            if (!(from f in context.OldFollowUsers
+                                  where f.UserId == F.UserId && f.UserName == F.User.UserName && f.Platform == F.Platform
+                                  select f).Any())
+                            {
+                                LogWriter.DebugLog("StopBulkFollows", DebugLogTypes.DataManager, $"Moving follower {F.User.UserName} to OldFollowUsers table.");
+                                context.OldFollowUsers.Add(new OldFollowUsers(F, F.User.UserName, currtime));
+                            }
+                        }
+                        else
+                        {
+                            Users currUser = (from U in context.Users
+                                              where U.UserId == F.UserId
+                                              select U).FirstOrDefault();
+                            if (!(from f in context.OldFollowUsers
+                                  where f.UserId == F.UserId && f.UserName == currUser.UserName && f.Platform == F.Platform
+                                  select f).Any())
+                            {
+                                LogWriter.DebugLog("StopBulkFollows", DebugLogTypes.DataManager, $"Moving user {F.User.UserName} to OldFollowUsers table.");
+
+                                context.OldFollowUsers.Add(new OldFollowUsers(F, currUser.UserName, currtime));
+                            }
+                        }
                     }
+
                     context.Followers.RemoveRange(from F in context.Followers where !F.IsFollower select F);
-                    await context.SaveChangesAsync();
-
-                    foreach (Followers UpdatedFollower in (from F in context.Followers
-                                                           join Match in context.OldFollowUsers
-                                                           on F.UserId equals Match.UserId
-                                                           where F.Platform == Match.Platform && F.FollowedDate == F.StatusChangeDate
-                                                           select F)
-                        )
-                    {
-                        UpdatedFollower.StatusChangeDate = currtime;
-                    }
+                    context.OldFollowUsers.RemoveRange(from F in context.OldFollowUsers where F.IsFollower select F); // clean accidental current followers included
                     await context.SaveChangesAsync();
                 }
                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));
@@ -392,7 +389,6 @@ namespace StreamerBotLib.DataSQL
                 }
             });
         }
-
 
     }
 }

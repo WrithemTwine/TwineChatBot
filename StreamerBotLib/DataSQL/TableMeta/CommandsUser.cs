@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -24,7 +27,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public StreamerBotLib.Enums.CommandAction Action { get => (StreamerBotLib.Enums.CommandAction)Values["Action"]; set => Values["Action"] = value; }
         public System.Int32 Top { get => (System.Int32)Values["Top"]; set => Values["Top"] = value; }
         public StreamerBotLib.Enums.CommandSort Sort { get => (StreamerBotLib.Enums.CommandSort)Values["Sort"]; set => Values["Sort"] = value; }
-        public System.Int32 Calls { get => (System.Int32)Values["Calls"]; set => Values["Calls"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -53,8 +55,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "Unit", tableData.Unit },
                  { "Action", tableData.Action },
                  { "Top", tableData.Top },
-                 { "Sort", tableData.Sort },
-                 { "Calls", tableData.Calls }
+                 { "Sort", tableData.Sort }
             };
         }
         public Dictionary<string, Type> Meta => new()
@@ -78,140 +79,133 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "Unit", typeof(System.String) },
               { "Action", typeof(StreamerBotLib.Enums.CommandAction) },
               { "Top", typeof(System.Int32) },
-              { "Sort", typeof(StreamerBotLib.Enums.CommandSort) },
-              { "Calls", typeof(System.Int32) }
+              { "Sort", typeof(StreamerBotLib.Enums.CommandSort) }
         };
         public object GetModelEntity()
         {
             return new Models.CommandsUser(
-            cmdName: CmdName,
-            addMe: AddMe,
-            permission: Permission,
-            isEnabled: IsEnabled,
-            announce: Announce,
-            message: Message,
-            repeatTimer: Convert.ToInt32(RepeatTimer),
-            sendMsgCount: Convert.ToInt16(SendMsgCount),
-            category: Category,
-            allowParam: AllowParam,
-            usage: Usage,
-            lookupData: LookupData,
-            table: Table,
-            keyField: KeyField,
-            dataField: DataField,
-            currencyField: CurrencyField,
-            unit: Unit,
-            action: Action,
-            top: Convert.ToInt32(Top),
-            sort: Sort,
-            calls: Convert.ToInt32(Calls)
+            cmdName: CmdName, 
+            addMe: AddMe, 
+            permission: Permission, 
+            isEnabled: IsEnabled, 
+            announce: Announce, 
+            message: Message, 
+            repeatTimer: Convert.ToInt32(RepeatTimer), 
+            sendMsgCount: Convert.ToInt16(SendMsgCount), 
+            category: Category, 
+            allowParam: AllowParam, 
+            usage: Usage, 
+            lookupData: LookupData, 
+            table: Table, 
+            keyField: KeyField, 
+            dataField: DataField, 
+            currencyField: CurrencyField, 
+            unit: Unit, 
+            action: Action, 
+            top: Convert.ToInt32(Top), 
+            sort: Sort
         );
         }
         public void CopyUpdates(Models.CommandsUser modelData)
         {
-            if (modelData.CmdName != CmdName)
+          if (modelData.CmdName != CmdName)
             {
                 modelData.CmdName = CmdName;
             }
 
-            if (modelData.AddMe != AddMe)
+          if (modelData.AddMe != AddMe)
             {
                 modelData.AddMe = AddMe;
             }
 
-            if (modelData.Permission != Permission)
+          if (modelData.Permission != Permission)
             {
                 modelData.Permission = Permission;
             }
 
-            if (modelData.IsEnabled != IsEnabled)
+          if (modelData.IsEnabled != IsEnabled)
             {
                 modelData.IsEnabled = IsEnabled;
             }
 
-            if (modelData.Announce != Announce)
+          if (modelData.Announce != Announce)
             {
                 modelData.Announce = Announce;
             }
 
-            if (modelData.Message != Message)
+          if (modelData.Message != Message)
             {
                 modelData.Message = Message;
             }
 
-            if (modelData.RepeatTimer != RepeatTimer)
+          if (modelData.RepeatTimer != RepeatTimer)
             {
                 modelData.RepeatTimer = RepeatTimer;
             }
 
-            if (modelData.SendMsgCount != SendMsgCount)
+          if (modelData.SendMsgCount != SendMsgCount)
             {
                 modelData.SendMsgCount = SendMsgCount;
             }
 
-            if (modelData.Category != Category)
+          if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }
 
-            if (modelData.AllowParam != AllowParam)
+          if (modelData.AllowParam != AllowParam)
             {
                 modelData.AllowParam = AllowParam;
             }
 
-            if (modelData.Usage != Usage)
+          if (modelData.Usage != Usage)
             {
                 modelData.Usage = Usage;
             }
 
-            if (modelData.LookupData != LookupData)
+          if (modelData.LookupData != LookupData)
             {
                 modelData.LookupData = LookupData;
             }
 
-            if (modelData.Table != Table)
+          if (modelData.Table != Table)
             {
                 modelData.Table = Table;
             }
 
-            if (modelData.KeyField != KeyField)
+          if (modelData.KeyField != KeyField)
             {
                 modelData.KeyField = KeyField;
             }
 
-            if (modelData.DataField != DataField)
+          if (modelData.DataField != DataField)
             {
                 modelData.DataField = DataField;
             }
 
-            if (modelData.CurrencyField != CurrencyField)
+          if (modelData.CurrencyField != CurrencyField)
             {
                 modelData.CurrencyField = CurrencyField;
             }
 
-            if (modelData.Unit != Unit)
+          if (modelData.Unit != Unit)
             {
                 modelData.Unit = Unit;
             }
 
-            if (modelData.Action != Action)
+          if (modelData.Action != Action)
             {
                 modelData.Action = Action;
             }
 
-            if (modelData.Top != Top)
+          if (modelData.Top != Top)
             {
                 modelData.Top = Top;
             }
 
-            if (modelData.Sort != Sort)
+          if (modelData.Sort != Sort)
             {
                 modelData.Sort = Sort;
-            }
-
-            if (modelData.Calls != Calls)
-            {
-                modelData.Calls = Calls;
             }
 
         }

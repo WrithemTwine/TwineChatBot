@@ -41,7 +41,7 @@ namespace StreamerBot
                     if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
                     {
                         Controller.TwitchStartUpdateAllFollowers();
-                        TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
+                        TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
                     }
 
                     if (DateTime.Now >= VersionCheckDate)
@@ -81,11 +81,11 @@ namespace StreamerBot
         private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox srchrs = sender as ComboBox;
-            short hrs = (short)srchrs.SelectedValue;
+            int hrs = (int)srchrs.SelectedValue;
 
             // changes the refresh time - which is already set at this point
             TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
-            TwitchFollowerCurrRefreshHrs = hrs;
+            TwitchFollowerCurrRefreshHrs = OptionFlags.TwitchFollowerRefreshHrs;
         }
 
         private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)

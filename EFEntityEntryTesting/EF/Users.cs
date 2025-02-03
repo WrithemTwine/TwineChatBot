@@ -3,7 +3,6 @@
 using Microsoft.EntityFrameworkCore;
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EFEntityEntryTesting.EF
 {
@@ -33,7 +32,7 @@ namespace EFEntityEntryTesting.EF
         public DateTime LastDateSeen { get; set; } = lastDateSeen;
 
         public ICollection<Currency> Currency { get; } = [];
-        public UserStats UserStats { get; set; }
+        public UserStats? UserStats { get; set; }
 
     }
 }

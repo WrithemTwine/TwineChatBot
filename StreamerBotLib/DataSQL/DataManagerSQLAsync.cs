@@ -168,8 +168,6 @@ switches:
         }
 #endif
 
-
-
         internal void DeleteDataRows(IEnumerable<DataRow> dataRows, SQLDBContext Refcontext = null)
         {
             throw new NotImplementedException();

@@ -106,8 +106,10 @@ namespace StreamerBotLib.Overlay.Server
                 ThreadManager.CreateThreadStart("StartServer", () =>
                 {
                     HTTPListenServer.Start();
-                    ProcessPages = new(() => ServerSendAlerts());
-                    ProcessPages.Start();
+                    //ProcessPages = new(() => ServerSendAlerts());
+                    //ProcessPages.Start();
+
+                    ServerSendAlerts();
                     ServerStarted = true;
                 });
                 ServerAlertThreadStarted = true;
@@ -173,6 +175,7 @@ namespace StreamerBotLib.Overlay.Server
 
             Action ResponseListen = new(() =>
             {
+                // call listener and finish for garbage collection; otherwise listener objects don't free up memory and memory usage will max
                 _ = HTTPListenServer.BeginGetContext((result) =>
                 {
                     try

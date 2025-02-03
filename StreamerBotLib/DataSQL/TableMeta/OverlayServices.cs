@@ -1,4 +1,7 @@
+using StreamerBotLib.Enums;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
+using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -51,54 +54,54 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.OverlayServices(
-            isEnabled: IsEnabled,
-            overlayType: OverlayType,
-            overlayAction: OverlayAction,
-            userName: UserName,
-            useChatMsg: UseChatMsg,
-            message: Message,
-            imageFile: ImageFile,
+            isEnabled: IsEnabled, 
+            overlayType: OverlayType, 
+            overlayAction: OverlayAction, 
+            userName: UserName, 
+            useChatMsg: UseChatMsg, 
+            message: Message, 
+            imageFile: ImageFile, 
             mediaFile: MediaFile
         );
         }
         public void CopyUpdates(Models.OverlayServices modelData)
         {
-            if (modelData.IsEnabled != IsEnabled)
+          if (modelData.IsEnabled != IsEnabled)
             {
                 modelData.IsEnabled = IsEnabled;
             }
 
-            if (modelData.OverlayType != OverlayType)
+          if (modelData.OverlayType != OverlayType)
             {
                 modelData.OverlayType = OverlayType;
             }
 
-            if (modelData.OverlayAction != OverlayAction)
+          if (modelData.OverlayAction != OverlayAction)
             {
                 modelData.OverlayAction = OverlayAction;
             }
 
-            if (modelData.UserName != UserName)
+          if (modelData.UserName != UserName)
             {
                 modelData.UserName = UserName;
             }
 
-            if (modelData.UseChatMsg != UseChatMsg)
+          if (modelData.UseChatMsg != UseChatMsg)
             {
                 modelData.UseChatMsg = UseChatMsg;
             }
 
-            if (modelData.Message != Message)
+          if (modelData.Message != Message)
             {
                 modelData.Message = Message;
             }
 
-            if (modelData.ImageFile != ImageFile)
+          if (modelData.ImageFile != ImageFile)
             {
                 modelData.ImageFile = ImageFile;
             }
 
-            if (modelData.MediaFile != MediaFile)
+          if (modelData.MediaFile != MediaFile)
             {
                 modelData.MediaFile = MediaFile;
             }

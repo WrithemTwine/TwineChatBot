@@ -752,7 +752,7 @@ namespace StreamerBotLib.BotIOController
         internal void TwitchMultiStreamOnline(OnStreamOnlineArgs e)
         {
             HandleMultiLiveOnStreamOnline(new(e.Stream.UserName, Platform.Twitch, e.Stream.UserId), e.Stream.Title,
-                e.Stream.StartedAt.ToLocalTime(), e.Stream.GameId);
+                e.Stream.StartedAt.ToLocalTime(), e.Stream.GameName);
         }
 
         internal void TwitchStreamOnline(NewStreamOnlineEventArgs e)
@@ -898,16 +898,16 @@ namespace StreamerBotLib.BotIOController
             List<string> cmdarglist = [];
             bool foundcommand = false;
 
-            foreach (ChatMessageFragment f in e.ChannelChatMessage.Message.Fragments)
+            foreach (string f in e.ChannelChatMessage.Message.Text.Split(' '))
             {
-                if (f.Text.StartsWith('!') && !foundcommand)
+                if (f.StartsWith('!') && !foundcommand)
                 {
                     foundcommand = true;
-                    commandtext = f.Text[1..].ToLower();
+                    commandtext = f[1..].ToLower();
                 }
                 else if (foundcommand)
                 {
-                    cmdarglist.Add(f.Text);
+                    cmdarglist.Add(f);
                 }
             }
 
@@ -1422,6 +1422,11 @@ namespace StreamerBotLib.BotIOController
         }
 
         #region Giveaway
+        /// <summary>
+        /// Begin Giveaway with provided criteria. Registers the criteria for entering a viewer into the giveaway.
+        /// </summary>
+        /// <param name="giveawayTypes">The type of giveaway - e.g. channel point redemption, or command</param>
+        /// <param name="ItemName">The identifier of the giveaway event.</param>
         public void HandleGiveawayBegin(GiveawayTypes giveawayTypes, string ItemName)
         {
             GiveawayItemType = giveawayTypes;
@@ -1431,6 +1436,9 @@ namespace StreamerBotLib.BotIOController
             Systems.BeginGiveaway();
         }
 
+        /// <summary>
+        /// Finish up/end the giveaway. Clears out data for next giveaway to start fresh.
+        /// </summary>
         public void HandleGiveawayEnd()
         {
             Systems.EndGiveaway();
@@ -1440,11 +1448,18 @@ namespace StreamerBotLib.BotIOController
             GiveawayStarted = false;
         }
 
+        /// <summary>
+        /// Post a user to the giveaway.
+        /// </summary>
+        /// <param name="User">The user entering the giveaway.</param>
         public void HandleGiveawayPostName(LiveUser User)
         {
             Systems.ManageGiveaway(User);
         }
 
+        /// <summary>
+        /// Finish up and award the giveaway winners.
+        /// </summary>
         public void HandleGiveawayWinner()
         {
             if (GiveawayStarted)
@@ -1454,12 +1469,16 @@ namespace StreamerBotLib.BotIOController
             Systems.PostGiveawayResult();
         }
 
+
+        #endregion
+
+        /// <summary>
+        /// Initiates repeat timers.
+        /// </summary>
         public void ActivateRepeatTimers()
         {
             Systems.ActivateRepeatTimers();
         }
-
-        #endregion
 
         #endregion
 

@@ -37,7 +37,7 @@ namespace StreamerBotLib.Overlay
             // to match the alert, so the bot crashed.
             // UpdateLinks loads the styles in case alerts are waiting to be processed
 
-            if (OptionFlags.MediaOverlayAutoStart && OptionFlags.MediaOverlayAutoServerStart && OptionFlags.MediaOverlayMediaActionPort != 0)
+            if (OptionFlags.MediaOverlayAutoStart && OptionFlags.MediaOverlayAutoServerStart && OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayMediaTickerPort != 0)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
             }
@@ -82,6 +82,15 @@ namespace StreamerBotLib.Overlay
         }
 
         #endregion
+
+        public void CheckAutoStart()
+        {
+            if (OptionFlags.MediaOverlayAutoServerStart && OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayMediaTickerPort != 0
+                && RadioButton_OverlayServer_Start.IsChecked != true)
+            {
+                RadioButton_OverlayServer_Start.IsChecked = true;
+            }
+        }
 
         private void Click_UpdateLinks(object sender, RoutedEventArgs e)
         {

@@ -131,7 +131,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks(new Models.Webhooks());
             }
-
+            
             return this;
         }
 
@@ -259,15 +259,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks((Models.Webhooks)Entity);
             }
-
+            
             return this;
         }
 
-        /// <summary>
-        /// Provide IDatabaseTableMeta <paramref name="Update"/> object with current values and update the DataEntity property.
-        /// </summary>
-        /// <param name="Update">Contains any updated values to update the managed data entity.</param>
-        /// <returns>The "DataEntity" object containing the newer <paramref name="Update"/> values.</returns>
         public object GetUpdatedEntity(IDatabaseTableMeta Update)
         {
             if (DataEntity.GetType() == typeof(Models.BanReasons))
@@ -420,10 +415,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 ((Webhooks)Update).CopyUpdates((Models.Webhooks)DataEntity);
                 return DataEntity;
             }
-            else
-            {
-                return null;
-            }
+            else return null;
         }
     }
 }

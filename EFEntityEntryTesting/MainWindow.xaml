@@ -29,13 +29,37 @@
         </StatusBar>
         <TabControl>
             <TabItem Header="User">
-                <DataGrid x:Name="DB_Users" ItemsSource="{Binding Users}" AutoGenerateColumns="True" />
+                <DataGrid x:Name="DB_Users" ItemsSource="{Binding Users}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Platform" SortMemberPath="Platform" Binding="{Binding Platform}" />
+                        <DataGridTextColumn Header="User Id" SortMemberPath="UserId" Binding="{Binding UserId}" />
+                        <DataGridTextColumn Header="User Name" SortMemberPath="UserName" Binding="{Binding UserName}" />
+                        <DataGridTextColumn Header="First Date Seen" Binding="{Binding FirstDateSeen}" />
+                        <DataGridTextColumn Header="Last Date Seen" Binding="{Binding LastDateSeen}" />
+                        <DataGridTextColumn Header="Watch Time" Binding="{Binding UserStats.WatchTime}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
             <TabItem Header="Currency">
-                <DataGrid x:Name="Db_Currency" ItemsSource="{Binding Currencies}" AutoGenerateColumns="True" />
+                <DataGrid x:Name="Db_Currency" ItemsSource="{Binding Currency}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="User Id" SortMemberPath="User.UserId" Binding="{Binding User.UserId}" />
+                        <DataGridTextColumn Header="User Name" SortMemberPath="User.UserName" Binding="{Binding User.UserName}" />
+                        <DataGridTextColumn Header="Currency Name" SortMemberPath="CurrencyName" Binding="{Binding CurrencyName}" />
+                        <DataGridTextColumn Header="Value" SortMemberPath="Value" Binding="{Binding Value}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
             <TabItem Header="CurrencyType">
-                <DataGrid x:Name="Db_CurrencyType" ItemsSource="{Binding CurrencyTypes}" AutoGenerateColumns="True" />
+                <DataGrid x:Name="Db_CurrencyType" ItemsSource="{Binding CurrencyTypes}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Currency Name" SortMemberPath="CurrencyName" Binding="{Binding CurrencyName}" />
+                        <DataGridTextColumn Header="Accrue Amount" SortMemberPath="AccrueAmt" Binding="{Binding AccrueAmt}" />
+                        <DataGridTextColumn Header="Seconds" SortMemberPath="Seconds" Binding="{Binding Seconds}" />
+                        <DataGridTextColumn Header="Currency Name" SortMemberPath="CurrencyName" Binding="{Binding CurrencyName}" />
+                        <DataGridTextColumn Header="Max Value" SortMemberPath="MaxValue" Binding="{Binding MaxValue}" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
         </TabControl>
     </DockPanel>

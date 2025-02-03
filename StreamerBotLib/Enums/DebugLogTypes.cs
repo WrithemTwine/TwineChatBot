@@ -38,6 +38,7 @@
         TwitchBotEventSubBot,
         TwitchStreamerEventSubBot,
         TwitchMultiLiveBot,
-        TwitchTokenBot
+        TwitchTokenBot,
+        TwitchStreamerNoScopesEventSubBot
     }
 }

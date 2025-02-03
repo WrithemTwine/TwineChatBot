@@ -27,7 +27,7 @@ namespace StreamerBotLib.DataSQL.Models
 
         public int StreamCount { get; set; } = streamCount;
 
-        public GameDeadCounter GameDeadCounter { get; set; }
+        public GameDeadCounter? GameDeadCounter { get; set; }
 
         public ICollection<Followers> Followers { get; } = [];
 
