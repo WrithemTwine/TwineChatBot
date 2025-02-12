@@ -220,7 +220,123 @@
                             </StackPanel>
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <WrapPanel HorizontalAlignment="Center">
-                                    <GroupBox Header="Bot-EventSub Read Msgs"
+
+                                    <GroupBox Header="EventSub Bot Chat"
+          x:Name="GroupBox_Twitch_StartBots_EventSubBot">
+                                        <WrapPanel>
+                                            <TextBlock>
+            This bot receives chats from Twitch, including commands.
+                                            </TextBlock>
+                                            <StackPanel Height="45">
+                                                <Label x:Name="Label_TwitchBot_EventSubBot_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">
+                    The EventSub bot is started!
+                                                    </TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchBot_EventSubBot_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">
+                    The EventSub bot is stopped!
+                                                    </TextBlock>
+                                                </Label>
+                                            </StackPanel>
+                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                  IsChecked="{Binding TwitchBotEventSubAutoStart}">
+                                                <TextBlock>Auto-start when application starts</TextBlock>
+                                            </CheckBox>
+
+                                            <RadioButton 
+            DataContext="{Binding TwitchEventSubBot, Mode=OneWay, 
+            Source={StaticResource TwitchBot}}" 
+                     x:Name="Radio_Twitch_EventSubBotStart" 
+                     IsEnabled="False" 
+            PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                <TextBlock>Start EventSub Bot</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton 
+            DataContext="{Binding TwitchEventSubBot, Mode=OneWay,
+            Source={StaticResource TwitchBot}}" 
+                     x:Name="Radio_Twitch_EventSubBotStop" IsEnabled="False" IsChecked="True" 
+                     PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
+                                                <TextBlock>Stop EventSub Bot</TextBlock>
+                                            </RadioButton>
+                                            <GroupBox Header="Activate per Online Status" Width="Auto" Visibility="Collapsed">
+                                                <WrapPanel>
+                                                    <CheckBox DataContext="{Binding TwitchBotEventSubConnectOnline, 
+                    Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                                        <TextBlock>
+                        Connect when stream is online
+                                                        </TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox DataContext="{Binding TwitchBotEventSubDisconnectOffline, 
+                    Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                                        <TextBlock>
+                        Disconnect when stream is offline
+                                                        </TextBlock>
+                                                    </CheckBox>
+                                                </WrapPanel>
+                                            </GroupBox>
+                                        </WrapPanel>
+                                    </GroupBox>
+
+                                    <GroupBox Header="EventSub Bot Notifications"
+          x:Name="GroupBox_Twitch_StartBots_EventSubStreamer">
+                                        <WrapPanel>
+                                            <TextBlock>
+            This bot receives from Twitch: channel online/offline, raids, gifts, cheers, follows, and channel point redeems.
+                                            </TextBlock>
+                                            <StackPanel Height="45">
+                                                <Label x:Name="Label_TwitchBot_EventSubStreamer_Start" Visibility="Collapsed">
+                                                    <TextBlock Foreground="{DynamicResource Go}">
+                    The EventSub bot is started!
+                                                    </TextBlock>
+                                                </Label>
+                                                <Label x:Name="Label_TwitchBot_EventSubStreamer_Stop" Visibility="Visible">
+                                                    <TextBlock Foreground="{DynamicResource Stop}">
+                    The EventSub bot is stopped!
+                                                    </TextBlock>
+                                                </Label>
+                                            </StackPanel>
+                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                  IsChecked="{Binding TwitchStreamEventSubAutoStart}">
+                                                <TextBlock>Auto-start when application starts</TextBlock>
+                                            </CheckBox>
+
+                                            <RadioButton 
+            DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, 
+            Source={StaticResource TwitchBot}}" 
+                     x:Name="Radio_Twitch_EventSubStreamerStart" 
+                     IsEnabled="False" 
+            PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                <TextBlock>Start EventSub Bot</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton 
+            DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay,
+            Source={StaticResource TwitchBot}}" 
+                     x:Name="Radio_Twitch_EventSubStreamerStop" IsEnabled="False" IsChecked="True" 
+                     PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
+                                                <TextBlock>Stop EventSub Bot</TextBlock>
+                                            </RadioButton>
+                                            <GroupBox Header="Activate per Online Status" Width="Auto" Visibility="Collapsed">
+                                                <WrapPanel>
+                                                    <CheckBox DataContext="{Binding TwitchBotEventSubConnectOnline, 
+                    Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                                        <TextBlock>
+                        Connect when stream is online
+                                                        </TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox DataContext="{Binding TwitchBotEventSubDisconnectOffline, 
+                    Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                                        <TextBlock>
+                        Disconnect when stream is offline
+                                                        </TextBlock>
+                                                    </CheckBox>
+                                                </WrapPanel>
+                                            </GroupBox>
+                                        </WrapPanel>
+                                    </GroupBox>
+
+
+                                    <!--<GroupBox Header="Bot-EventSub Read Msgs"
                                               x:Name="GroupBox_Twitch_StartBots_BotEventSub">
                                         <WrapPanel>
                                             <TextBlock>
@@ -365,7 +481,7 @@
                                                 <TextBlock>Stop EventSub Bot</TextBlock>
                                             </RadioButton>
                                         </WrapPanel>
-                                    </GroupBox>
+                                    </GroupBox>-->
                                     <GroupBox Header="Streamer-Multi-LiveStream Service">
                                         <StackPanel Orientation="Vertical">
                                             <WrapPanel>
@@ -1643,7 +1759,7 @@
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding TwitchAddFollowersStart, Mode=TwoWay}" 
                                                       ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">
-                                                <TextBlock TextWrapping="Wrap">Enable adding all followers when bot starts.</TextBlock>
+                                                <TextBlock TextWrapping="Wrap">Enable adding all followers when (EventSub) connected to Twitch.</TextBlock>
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding TwitchPruneNonFollowers, Mode=TwoWay}" 
                                                       ToolTip="Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.">

@@ -8,6 +8,11 @@ using TwitchLib.Api.Core.Exceptions;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
+
+    //
+    //  https://www.twitch.tv/writhemtwine?no-reload=true&referrer=raid
+    //
+
     public class TwitchBotLiveMonitorSvc : TwitchBotsBase
     {
         private readonly TwitchTokenBot tokenBot;
@@ -48,6 +53,9 @@ namespace StreamerBotLib.BotClients.Twitch
 
                     if (IsActive is null or false)
                     {
+                        tokenBot.UpdateActiveTokens(BotType.StreamerAccount, true);
+                        tokenBot.CheckToken();
+
                         ConnectLiveMonitorService();
                         if (SetLiveMonitorChannels())
                         {

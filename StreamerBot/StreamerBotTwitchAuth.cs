@@ -260,7 +260,7 @@ namespace StreamerBot
                     SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Collapsed;
                     SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Visible;
 
-                    GroupBox_Twitch_StartBots_BotEventSub.Visibility = Visibility.Visible;
+                    GroupBox_Twitch_StartBots_EventSubStreamer.Visibility = Visibility.Visible;
                 }
                 else
                 {
@@ -279,7 +279,7 @@ namespace StreamerBot
                     SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Visible;
                     SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Collapsed;
 
-                    GroupBox_Twitch_StartBots_BotEventSub.Visibility = Visibility.Collapsed;
+                    GroupBox_Twitch_StartBots_EventSubStreamer.Visibility = Visibility.Collapsed;
                 }
 
                 // set earliest token expiration date

@@ -2491,24 +2491,24 @@ namespace StreamerBotLib.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool TwitchStreamEventSubNoScopesAutoStart {
-            get {
-                return ((bool)(this["TwitchStreamEventSubNoScopesAutoStart"]));
-            }
-            set {
-                this["TwitchStreamEventSubNoScopesAutoStart"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool EnableDebugTwitchStreamerNoScopesEventSubBot {
             get {
                 return ((bool)(this["EnableDebugTwitchStreamerNoScopesEventSubBot"]));
             }
             set {
                 this["EnableDebugTwitchStreamerNoScopesEventSubBot"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugTwitchEventSub {
+            get {
+                return ((bool)(this["EnableDebugTwitchEventSub"]));
+            }
+            set {
+                this["EnableDebugTwitchEventSub"] = value;
             }
         }
     }

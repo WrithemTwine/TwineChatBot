@@ -431,7 +431,7 @@ namespace StreamerBotLib.DataSQL
                     RepeatTimerList = _dataManager.GetTimerCommands().Result;
                 }
 
-                return RepeatTimerList.Find((r)=> r.Item1 == Cmd);
+                return RepeatTimerList.Find((r) => r.Item1 == Cmd);
             }
         }
 
@@ -600,7 +600,7 @@ namespace StreamerBotLib.DataSQL
             {
                 _dataManager.PostDataGridGUIAddRow(tableMeta);
 
-                if (tableMeta.TableName is "Commands" or "CommandsUser") 
+                if (tableMeta.TableName is "Commands" or "CommandsUser")
                 { // some update to Commands or CommandsUser, reset the repeat timer command list - in case the user changed the timer value
                     RepeatTimerList.Clear();
                 }

@@ -840,6 +840,7 @@ namespace StreamerBotLib.Static
         public static bool EnableDebugTwitchBotSendChat => Settings.Default.EnableDebugTwitchBotSendChat;
         public static bool EnableDebugTwitchBotEventSubBot => Settings.Default.EnableDebugTwitchBotEventSubBot;
         public static bool EnableDebugTwitchStreamerEventSubBot => Settings.Default.EnableDebugTwitchStreamerEventSubBot;
+        public static bool EnableDebugTwitchEventSub => Settings.Default.EnableDebugTwitchEventSub;
         public static bool EnableDebugTwitchStreamerNoScopesEventSubBot => Settings.Default.EnableDebugTwitchStreamerNoScopesEventSubBot;
         /// <summary>
         /// Enables debug logging for Twitch bot User Service methods.

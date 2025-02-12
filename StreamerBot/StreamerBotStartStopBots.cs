@@ -36,11 +36,11 @@ namespace StreamerBot
                     ToggleInputEnabled(false);
                     RadioButton radio = e.BotName switch
                     {
-                        Bots.TwitchBotEventSub => Radio_Twitch_BotEventSubStart,
+                        Bots.TwitchEventSubBot => Radio_Twitch_EventSubBotStart,
+                        Bots.TwitchEventSubStreamer => Radio_Twitch_EventSubStreamerStart,
+
                         Bots.TwitchClipBot => Radio_Twitch_ClipBotStart,
                         Bots.TwitchMultiBot => Radio_Twitch_LiveBotStart,
-                        Bots.TwitchStreamerEventSubScopes => Radio_Twitch_StreamerEventSubStart,
-                        Bots.TwitchStreamerEventSubNoScopes => Radio_Twitch_StreamerEventSubNoScopesStart,
                         Bots.MediaOverlayServer => Radio_Services_OverlayBotStart,
                         Bots.TwitchHelixBot => throw new NotImplementedException(),
                         Bots.DiscordWebhooks => throw new NotImplementedException(),
@@ -69,9 +69,10 @@ namespace StreamerBot
                 {
                     Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
                     Bots.TwitchMultiBot => Radio_Twitch_LiveBotStop,
-                    Bots.TwitchBotEventSub => Radio_Twitch_BotEventSubStop,
-                    Bots.TwitchStreamerEventSubScopes => Radio_Twitch_StreamerEventSubStop,
-                    Bots.TwitchStreamerEventSubNoScopes => Radio_Twitch_StreamerEventSubNoScopesStop,
+
+                    Bots.TwitchEventSubBot => Radio_Twitch_EventSubBotStop,
+                    Bots.TwitchEventSubStreamer => Radio_Twitch_EventSubStreamerStop,
+
                     Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
                     Bots.TwitchHelixBot => throw new NotImplementedException(),
                     Bots.DiscordWebhooks => throw new NotImplementedException(),
@@ -93,11 +94,11 @@ namespace StreamerBot
                 {
                     Bots.TwitchClipBot => Radio_Twitch_ClipBotStop,
                     Bots.TwitchMultiBot => Radio_Twitch_LiveBotStop,
-                    Bots.TwitchBotEventSub => Radio_Twitch_BotEventSubStop,
-                    Bots.TwitchStreamerEventSubScopes => Radio_Twitch_StreamerEventSubStop,
-                    Bots.TwitchStreamerEventSubNoScopes => Radio_Twitch_StreamerEventSubNoScopesStop,
+
+                    Bots.TwitchEventSubBot => Radio_Twitch_EventSubBotStop,
+                    Bots.TwitchEventSubStreamer => Radio_Twitch_EventSubStreamerStop,
+
                     Bots.MediaOverlayServer => Radio_Services_OverlayBotStop,
-                    Bots.TwitchBotSendChatClient => Radio_Twitch_BotEventSubStop,
                     Bots.TwitchHelixBot => throw new NotImplementedException(),
                     Bots.DiscordWebhooks => throw new NotImplementedException(),
                     Bots.TwitchTokenBot => throw new NotImplementedException(),

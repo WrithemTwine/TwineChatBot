@@ -137,8 +137,8 @@ namespace StreamerBot
 
         private void CheckGiveawayFocusStatus()
         {
-            if (Radio_Twitch_BotEventSubStart.IsChecked == true &&
-                ((RadioButton_GiveawayCustomRewards.IsChecked == true && (string)ComboBox_Giveaway_ChanPts.SelectedValue != "" && Radio_Twitch_StreamerEventSubStart.IsChecked == true)
+            if (Radio_Twitch_EventSubBotStart.IsChecked == true &&
+                ((RadioButton_GiveawayCustomRewards.IsChecked == true && (string)ComboBox_Giveaway_ChanPts.SelectedValue != "")
                 || (RadioButton_GiveawayCommand.IsChecked == true && (string)ComboBox_Giveaway_Coms.SelectedValue != "")))
             {
                 Button_GiveawayBegin.IsEnabled = true;

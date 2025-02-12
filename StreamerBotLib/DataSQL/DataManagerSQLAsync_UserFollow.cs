@@ -52,9 +52,11 @@ namespace StreamerBotLib.DataSQL
             return Task.Run(() =>
             {
                 SQLDBContext context = Refcontext ?? BuildDataContext();
-                string result = (from F in context.Followers orderby F.FollowedDate descending select F).FirstOrDefault()?.User?.UserName;
+                var newestuser = (from F in context.Followers orderby F.FollowedDate descending select F).FirstOrDefault();
+
+                string result = (from U in context.Users where U.UserId == newestuser.UserId && U.Platform == newestuser.Platform select U).FirstOrDefault()?.UserName;
                 if (Refcontext == null) { ClearDataContext(context); }
-                return result ?? "";
+                return result ?? "Not Found";
             });
         }
 

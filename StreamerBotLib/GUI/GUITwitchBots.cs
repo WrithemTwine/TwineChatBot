@@ -12,18 +12,28 @@ namespace StreamerBotLib.GUI
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
-        public static TwitchBotEventSubChatClient TwitchBotEventSubChatClient { get; private set; } = BotsTwitch.TwitchBotEventSubChatClient;
+        //public static TwitchBotEventSubChatClient TwitchBotEventSubChatClient { get; private set; } = BotsTwitch.TwitchBotEventSubChatClient;
         public static TwitchBotSendChatClient TwitchBotSendChatClient { get; private set; } = BotsTwitch.TwitchBotSendChatClient;
+        public static TwitchEventSub TwitchEventSubBot { get; private set; } = BotsTwitch.TwitchEventSubBot;
+        public static TwitchEventSub TwitchEventSubStreamer { get; private set; } = BotsTwitch.TwitchEventSubStreamer;
         public static TwitchBotLiveMonitorSvc TwitchBotLiveMonitorSvc { get; private set; } = BotsTwitch.TwitchBotLiveMonitorSvc;
         public static TwitchBotClipSvc TwitchClip { get; private set; } = BotsTwitch.TwitchBotClipSvc;
         public static TwitchHelixBot TwitchHelixBot { get; private set; } = BotsTwitch.TwitchHelixBot;
-        public static TwitchStreamerEventSubBotScopes TwitchStreamerEventSubBotScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotScopes;
-        public static TwitchStreamerEventSubBotNoScopes TwitchStreamerEventSubBotNoScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotNoScopes;
+        //public static TwitchStreamerEventSubBotScopes TwitchStreamerEventSubBotScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotScopes;
+        //public static TwitchStreamerEventSubBotNoScopes TwitchStreamerEventSubBotNoScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotNoScopes;
         public GUITwitchBots()
         {
-            TwitchBotEventSubChatClient.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchBotEventSubChatClient.OnBotStopped += TwitchBot_OnBotStopped;
-            TwitchBotEventSubChatClient.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            //TwitchBotEventSubChatClient.OnBotStarted += TwitchBot_OnBotStarted;
+            //TwitchBotEventSubChatClient.OnBotStopped += TwitchBot_OnBotStopped;
+            //TwitchBotEventSubChatClient.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+
+            TwitchEventSubBot.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchEventSubBot.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            TwitchEventSubBot.OnBotStopped += TwitchBot_OnBotStopped;
+
+            TwitchEventSubStreamer.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchEventSubStreamer.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            TwitchEventSubStreamer.OnBotStopped += TwitchBot_OnBotStopped;
 
             TwitchBotLiveMonitorSvc.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchBotLiveMonitorSvc.OnBotStopped += TwitchBot_OnBotStopped;
@@ -33,13 +43,13 @@ namespace StreamerBotLib.GUI
             TwitchClip.OnBotStopped += TwitchBot_OnBotStopped;
             TwitchClip.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
-            TwitchStreamerEventSubBotScopes.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchStreamerEventSubBotScopes.OnBotStopped += TwitchBot_OnBotStopped;
-            TwitchStreamerEventSubBotScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            //TwitchStreamerEventSubBotScopes.OnBotStarted += TwitchBot_OnBotStarted;
+            //TwitchStreamerEventSubBotScopes.OnBotStopped += TwitchBot_OnBotStopped;
+            //TwitchStreamerEventSubBotScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
-            TwitchStreamerEventSubBotNoScopes.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchStreamerEventSubBotNoScopes.OnBotStopped += TwitchBot_OnBotStopped;
-            TwitchStreamerEventSubBotNoScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            //TwitchStreamerEventSubBotNoScopes.OnBotStarted += TwitchBot_OnBotStarted;
+            //TwitchStreamerEventSubBotNoScopes.OnBotStopped += TwitchBot_OnBotStopped;
+            //TwitchStreamerEventSubBotNoScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
         }
 
         public static void Send(string msg)

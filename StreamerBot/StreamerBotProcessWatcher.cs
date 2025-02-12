@@ -154,8 +154,6 @@ namespace StreamerBot
             [
                 Radio_Twitch_ClipBotStop,
                 Radio_Twitch_LiveBotStop,
-                Radio_Twitch_BotEventSubStop,
-                Radio_Twitch_StreamerEventSubStop
             ];
 
             Dispatcher.Invoke(() =>

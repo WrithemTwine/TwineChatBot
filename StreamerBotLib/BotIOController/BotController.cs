@@ -15,8 +15,6 @@ using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
-using TwitchLib.Client.Events;
-using TwitchLib.EventSub.Core.Models.Chat;
 using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
 
 // TODO: add/verify "DataManage.UpdateStats" updates; including commands, chats, clips, channel redeems
@@ -195,12 +193,12 @@ namespace StreamerBotLib.BotIOController
                         case BotEvents.TwitchOnUserLeft:
                             TwitchOnUserLeft((StreamerOnUserLeftArgs)e.e);
                             break;
-                        case BotEvents.TwitchOnUserTimedout:
-                            TwitchOnUserTimedout((OnUserTimedoutArgs)e.e);
-                            break;
-                        case BotEvents.TwitchOnUserBanned:
-                            TwitchOnUserBanned((OnUserBannedArgs)e.e);
-                            break;
+                        //case BotEvents.TwitchOnUserTimedout:
+                        //    TwitchOnUserTimedout((OnUserTimedoutArgs)e.e);
+                        //    break;
+                        //case BotEvents.TwitchOnUserBanned:
+                        //    TwitchOnUserBanned((OnUserBannedArgs)e.e);
+                        //    break;
                         case BotEvents.TwitchRitualNewChatter:
                             break;
                         case BotEvents.TwitchMessageReceived:
@@ -693,17 +691,17 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchBotEventSubStarted(EventArgs args = null)
         {
-            HandleChatBotStarted(Bots.TwitchBotEventSub, args);
+            HandleChatBotStarted(Bots.TwitchEventSubBot, args);
         }
 
         public void TwitchBotEventSubStopping(EventArgs args = null)
         {
-            HandleChatBotStopped(Bots.TwitchBotEventSub, args);
+            HandleChatBotStopped(Bots.TwitchEventSubBot, args);
         }
 
         public void TwitchBotEventSubStopped(EventArgs args = null)
         {
-            HandleChatBotStopped(Bots.TwitchBotEventSub, args);
+            HandleChatBotStopped(Bots.TwitchEventSubBot, args);
         }
 
         public static void TwitchStartBulkFollowers()
@@ -846,15 +844,15 @@ namespace StreamerBotLib.BotIOController
             HandleUserLeft(e.LiveUser);
         }
 
-        public void TwitchOnUserTimedout(OnUserTimedoutArgs e = null)
-        {
-            HandleUserTimedOut(e);
-        }
+        //public void TwitchOnUserTimedout(OnUserTimedoutArgs e = null)
+        //{
+        //    HandleUserTimedOut(e);
+        //}
 
-        public void TwitchOnUserBanned(OnUserBannedArgs e = null)
-        {
-            HandleUserBanned(new(e.UserBan.TargetUserId, Platform.Twitch, e.UserBan.Username));
-        }
+        //public void TwitchOnUserBanned(OnUserBannedArgs e = null)
+        //{
+        //    HandleUserBanned(new(e.UserBan.TargetUserId, Platform.Twitch, e.UserBan.Username));
+        //}
 
         public void TwitchMessageReceived(ChannelChatMessageEventArgs e)
         {
@@ -1134,8 +1132,11 @@ namespace StreamerBotLib.BotIOController
 
                 DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
+
+                LogWriter.DebugLog("HandleOnStreamOffline", DebugLogTypes.BotController, $"A raid occurred to channel: {HostedChannel} or No Raid.");
+
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
-                OptionFlags.TwitchOutRaidStarted = false;
+                //OptionFlags.TwitchOutRaidStarted = false;
             }
         }
 
@@ -1193,7 +1194,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleChatBotStopped(Bots Source, EventArgs args)
         {
-            if (Source == Bots.TwitchBotEventSub && args == null)
+            if (Source == Bots.TwitchEventSubBot && args == null)
             {
                 ChatBotStopping = false;
             }
@@ -1335,11 +1336,11 @@ namespace StreamerBotLib.BotIOController
             Systems.UserLeft(User);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
-        public void HandleUserTimedOut(OnUserTimedoutArgs e)
-        {
-            Systems.UpdatedStat(StreamStatType.UserTimedOut);
-        }
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
+        //public void HandleUserTimedOut(OnUserTimedoutArgs e)
+        //{
+        //    Systems.UpdatedStat(StreamStatType.UserTimedOut);
+        //}
 
         public void HandleUserBanned(LiveUser User)
         {

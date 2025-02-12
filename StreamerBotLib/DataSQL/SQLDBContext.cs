@@ -215,7 +215,6 @@ namespace StreamerBotLib.DataSQL
 
         public SQLDBContext()
         {
-            ChangeTracker.LazyLoadingEnabled = false;
         }
     }
 }

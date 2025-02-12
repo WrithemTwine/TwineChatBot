@@ -7,10 +7,15 @@
         DiscordWebhooks,
         TwitchClipBot,
         TwitchMultiBot,
+        TwitchEventSubBot,
+        TwitchEventSubStreamer,
+
+        // EventSub subscription managers
         TwitchStreamerEventSubScopes,
         TwitchStreamerEventSubNoScopes,
-        TwitchBotEventSub,
         TwitchBotSendChatClient,
+        // end
+
         TwitchTokenBot,
         TwitchHelixBot
     }

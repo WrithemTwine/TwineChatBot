@@ -617,10 +617,10 @@
     <Setting Name="TwitchStreamerNoScopesTokenDate" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">1900-01-01</Value>
     </Setting>
-    <Setting Name="TwitchStreamEventSubNoScopesAutoStart" Type="System.Boolean" Scope="User">
+    <Setting Name="EnableDebugTwitchStreamerNoScopesEventSubBot" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="EnableDebugTwitchStreamerNoScopesEventSubBot" Type="System.Boolean" Scope="User">
+    <Setting Name="EnableDebugTwitchEventSub" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

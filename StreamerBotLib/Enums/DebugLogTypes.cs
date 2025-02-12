@@ -37,6 +37,7 @@
         TwitchBotSendChat,
         TwitchBotEventSubBot,
         TwitchStreamerEventSubBot,
+        TwitchEventSub,
         TwitchMultiLiveBot,
         TwitchTokenBot,
         TwitchStreamerNoScopesEventSubBot

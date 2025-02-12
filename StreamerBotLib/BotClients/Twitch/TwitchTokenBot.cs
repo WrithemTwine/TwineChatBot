@@ -36,6 +36,12 @@ namespace StreamerBotLib.BotClients.Twitch
         internal ApiSettings StreamerNoScopesApiSettings { get; private set; }
         internal TwitchAPI StreamerNoScopesHelixApi { get; private set; }
 
+        /// <summary>
+        /// Manages per bot is active to determine whether to update that token
+        /// </summary>
+        private Dictionary<BotType, bool> ActiveBotTokens { get; set; }
+
+
         private readonly IDataManagerReadOnly DataManager = SystemsController.DataManage;
 
         private bool TokenRenewalStarted; // flag to use a single thread for checking AuthCode access tokens
@@ -88,6 +94,13 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             BotClientName = Bots.TwitchTokenBot;
             InitializeTokens = false;
+
+            ActiveBotTokens = new();
+
+            foreach (BotType b in Enum.GetValues<BotType>())
+            {
+                ActiveBotTokens.Add(b, false);
+            }
         }
 
         /// <summary>
@@ -135,6 +148,11 @@ namespace StreamerBotLib.BotClients.Twitch
                     StreamerNoScopesHelixApi = null;
                 }
             });
+        }
+
+        public void UpdateActiveTokens(BotType botType, bool active)
+        {
+            ActiveBotTokens[botType] = active;
         }
 
         private void SetTwitchApis()
@@ -258,8 +276,9 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Invokes the Changed and Unchanged events for both the Bot token and Streamer token; to help
         /// with notifications and to restart applicable bot activity.
         /// </summary>
+        /// <param name="Override">Set to true to check all tokens</param>
         /// <returns>true if either Token changed, false if either Token is unchanged.</returns>
-        internal void CheckToken()
+        internal void CheckToken(bool Override = false)
         {
             try
             {
@@ -267,7 +286,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     lock (TokenLock)
                     {
-                        if ((DateTime.Now - BotAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
+                        if (Override || (ActiveBotTokens[BotType.BotAccount] && (DateTime.Now - BotAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow))
                         { // only check if we haven't checked in the last 1 second - avoid lots of checks in a single second
                             LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"Now checking Bot token.");
                             // try to refresh Bot token
@@ -297,9 +316,10 @@ namespace StreamerBotLib.BotClients.Twitch
                             {
                                 BotAccessTokenUnChanged?.Invoke(this, EventArgs.Empty);
                             }
+  
                         }
 
-                        if ((DateTime.Now - StreamerNoScopesAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
+                        if (Override || (ActiveBotTokens[BotType.StreamerNoScopes] && (DateTime.Now - StreamerNoScopesAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow))
                         { // only check if we haven't checked in the last 1 second - avoid lots of checks in a single second
                             LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"Now checking NoScopes token.");
                             // try to refresh Bot token
@@ -333,7 +353,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
                         if (OptionFlags.TwitchStreamerUseToken)
                         {
-                            if ((DateTime.Now - StreamerAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow)
+                            if (Override || (ActiveBotTokens[BotType.StreamerAccount] && (DateTime.Now - StreamerAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow))
                             { // only check if we haven't checked in the last 1 second - avoid lots of checks in a single second
                                 LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"Now checking Streamer token.");
                                 // try to refresh streamer token
@@ -388,8 +408,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
                         SetTwitchApis();
                         SetIds();
-                        BotAccessTokenChanged?.Invoke(this, EventArgs.Empty);
-                        StreamerAccessTokenChanged?.Invoke(this, EventArgs.Empty);
+                        //BotAccessTokenChanged?.Invoke(this, EventArgs.Empty);
+                        //StreamerAccessTokenChanged?.Invoke(this, EventArgs.Empty);
                     }
                 }
             }

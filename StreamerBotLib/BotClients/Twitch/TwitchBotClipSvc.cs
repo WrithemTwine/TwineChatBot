@@ -51,6 +51,9 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     if (IsActive == null || IsActive == false)
                     {
+                        tokenBot.UpdateActiveTokens(BotType.StreamerAccount, true);
+                        tokenBot.CheckToken();
+
                         LogWriter.DebugLog("StartBot", DebugLogTypes.TwitchClipBot, "Starting bot.");
 
                         ConnectClipService();

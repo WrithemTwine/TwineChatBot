@@ -32,10 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
-		<PackageReference Include="TwitchLib.Api" Version="3.10.0-preview-796c294" />
-		<PackageReference Include="TwitchLib.Api.Core" Version="3.10.0-preview-796c294" />
-		<PackageReference Include="TwitchLib.Api.Helix" Version="3.10.0-preview-796c294" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
 	</ItemGroup>
 
 	<PropertyGroup Label="Globals">

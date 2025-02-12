@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -45,42 +42,42 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Webhooks(
-            isEnabled: IsEnabled, 
-            webhooksSource: WebhooksSource, 
-            server: Server, 
-            kind: Kind, 
-            addEveryone: AddEveryone, 
+            isEnabled: IsEnabled,
+            webhooksSource: WebhooksSource,
+            server: Server,
+            kind: Kind,
+            addEveryone: AddEveryone,
             webhook: Webhook
         );
         }
         public void CopyUpdates(Models.Webhooks modelData)
         {
-          if (modelData.IsEnabled != IsEnabled)
+            if (modelData.IsEnabled != IsEnabled)
             {
                 modelData.IsEnabled = IsEnabled;
             }
 
-          if (modelData.WebhooksSource != WebhooksSource)
+            if (modelData.WebhooksSource != WebhooksSource)
             {
                 modelData.WebhooksSource = WebhooksSource;
             }
 
-          if (modelData.Server != Server)
+            if (modelData.Server != Server)
             {
                 modelData.Server = Server;
             }
 
-          if (modelData.Kind != Kind)
+            if (modelData.Kind != Kind)
             {
                 modelData.Kind = Kind;
             }
 
-          if (modelData.AddEveryone != AddEveryone)
+            if (modelData.AddEveryone != AddEveryone)
             {
                 modelData.AddEveryone = AddEveryone;
             }
 
-          if (modelData.Webhook != Webhook)
+            if (modelData.Webhook != Webhook)
             {
                 modelData.Webhook = Webhook;
             }

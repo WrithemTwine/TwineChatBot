@@ -104,6 +104,7 @@ namespace StreamerBotLib.BotClients
             {
                 if (IsActive == null || IsActive == false)
                 {
+                    LogWriter.DebugLog("StartBot", DebugLogTypes.OverlayBot, "Starting the bot.");
                     IsActive = true;
 
                     if (OverlayPage == null)
@@ -143,6 +144,7 @@ namespace StreamerBotLib.BotClients
             {
                 if (IsActive == true)
                 {
+                    LogWriter.DebugLog("StopBot", DebugLogTypes.OverlayBot, "Stopping the bot.");
                     IsActive = false;
 
                     SendOverlayToServer -= OverlayPage?.GetOverlayActionReceivedHandler();
@@ -152,6 +154,8 @@ namespace StreamerBotLib.BotClients
                     OverlayPage = null;
 
                     InvokeBotStopped();
+
+                    LogWriter.DebugLog("StopBot", DebugLogTypes.OverlayBot, "Stopped the bot.");
                 }
             });
         }

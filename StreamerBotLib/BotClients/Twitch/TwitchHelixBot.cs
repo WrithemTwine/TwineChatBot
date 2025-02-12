@@ -224,7 +224,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     LogWriter.LogException(ex, MethodName);
                     LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchHelixBot, "Exception found. Attempting to update token.");
                     LogWriter.DebugLog($"PerformAction_{MethodName}", DebugLogTypes.TwitchTokenBot, "Checking tokens.");
-                    tokenBot.CheckToken();
+                    tokenBot.CheckToken(true);
 
                     LogWriter.DebugLog(MethodName, DebugLogTypes.TwitchHelixBot, "Attempting to again perform user-service action.");
 

@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -45,42 +42,42 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Clips(
-            clipId: ClipId, 
-            createdAt: CreatedAt, 
-            title: Title, 
-            categoryId: CategoryId, 
-            language: Language, 
+            clipId: ClipId,
+            createdAt: CreatedAt,
+            title: Title,
+            categoryId: CategoryId,
+            language: Language,
             url: Url
         );
         }
         public void CopyUpdates(Models.Clips modelData)
         {
-          if (modelData.ClipId != ClipId)
+            if (modelData.ClipId != ClipId)
             {
                 modelData.ClipId = ClipId;
             }
 
-          if (modelData.CreatedAt != CreatedAt)
+            if (modelData.CreatedAt != CreatedAt)
             {
                 modelData.CreatedAt = CreatedAt;
             }
 
-          if (modelData.Title != Title)
+            if (modelData.Title != Title)
             {
                 modelData.Title = Title;
             }
 
-          if (modelData.CategoryId != CategoryId)
+            if (modelData.CategoryId != CategoryId)
             {
                 modelData.CategoryId = CategoryId;
             }
 
-          if (modelData.Language != Language)
+            if (modelData.Language != Language)
             {
                 modelData.Language = Language;
             }
 
-          if (modelData.Url != Url)
+            if (modelData.Url != Url)
             {
                 modelData.Url = Url;
             }

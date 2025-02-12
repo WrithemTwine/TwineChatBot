@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -33,18 +30,18 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.LearnMsgs(
-            msgType: MsgType, 
+            msgType: MsgType,
             teachingMsg: TeachingMsg
         );
         }
         public void CopyUpdates(Models.LearnMsgs modelData)
         {
-          if (modelData.MsgType != MsgType)
+            if (modelData.MsgType != MsgType)
             {
                 modelData.MsgType = MsgType;
             }
 
-          if (modelData.TeachingMsg != TeachingMsg)
+            if (modelData.TeachingMsg != TeachingMsg)
             {
                 modelData.TeachingMsg = TeachingMsg;
             }

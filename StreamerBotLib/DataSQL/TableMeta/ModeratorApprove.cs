@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -39,36 +36,36 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.ModeratorApprove(
-            isEnabled: IsEnabled, 
-            modActionType: ModActionType, 
-            modActionName: ModActionName, 
-            modPerformType: ModPerformType, 
+            isEnabled: IsEnabled,
+            modActionType: ModActionType,
+            modActionName: ModActionName,
+            modPerformType: ModPerformType,
             modPerformAction: ModPerformAction
         );
         }
         public void CopyUpdates(Models.ModeratorApprove modelData)
         {
-          if (modelData.IsEnabled != IsEnabled)
+            if (modelData.IsEnabled != IsEnabled)
             {
                 modelData.IsEnabled = IsEnabled;
             }
 
-          if (modelData.ModActionType != ModActionType)
+            if (modelData.ModActionType != ModActionType)
             {
                 modelData.ModActionType = ModActionType;
             }
 
-          if (modelData.ModActionName != ModActionName)
+            if (modelData.ModActionName != ModActionName)
             {
                 modelData.ModActionName = ModActionName;
             }
 
-          if (modelData.ModPerformType != ModPerformType)
+            if (modelData.ModPerformType != ModPerformType)
             {
                 modelData.ModPerformType = ModPerformType;
             }
 
-          if (modelData.ModPerformAction != ModPerformAction)
+            if (modelData.ModPerformAction != ModPerformAction)
             {
                 modelData.ModPerformAction = ModPerformAction;
             }

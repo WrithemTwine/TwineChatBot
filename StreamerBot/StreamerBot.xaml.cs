@@ -71,9 +71,8 @@ namespace StreamerBot
 
             BotOps =
             [
-                new(Settings.Default.TwitchBotEventSubAutoStart, Platform.Twitch, Radio_Twitch_BotEventSubStart),
-                new(Settings.Default.TwitchStreamEventSubAutoStart, Platform.Twitch, Radio_Twitch_StreamerEventSubStart),
-                new(Settings.Default.TwitchStreamEventSubNoScopesAutoStart, Platform.Twitch, Radio_Twitch_StreamerEventSubNoScopesStart),
+                new(Settings.Default.TwitchBotEventSubAutoStart, Platform.Twitch, Radio_Twitch_EventSubBotStart),
+                new(Settings.Default.TwitchStreamEventSubAutoStart, Platform.Twitch, Radio_Twitch_EventSubStreamerStart),
                 new(Settings.Default.TwitchLiveStreamSvcAutoStart, Platform.Twitch, Radio_Twitch_LiveBotStart),
                 new(Settings.Default.TwitchClipAutoStart, Platform.Twitch, Radio_Twitch_ClipBotStart),
                 new(Settings.Default.MediaOverlayAutoStart, Platform.Service, Radio_Services_OverlayBotStart)
@@ -304,28 +303,28 @@ namespace StreamerBot
                 CheckBox_ManageFollowers.IsChecked = false; // requires the Manage Users to be enabled
             }
 
-            if (CheckBox_ManageFollowers.IsChecked == true)
-            {
-                CheckBox_ManageUsers.IsEnabled = false;
-                if (Settings.Default.TwitchStreamEventSubAutoStart && Radio_Twitch_StreamerEventSubStart.IsChecked == true)
-                {
-                    Dispatcher.BeginInvoke(new BotOperation(() =>
-                    {
-                        (Radio_Twitch_StreamerEventSubStart.DataContext as IOModule).StartBot();
-                    }), null);
-                }
-            }
-            else
-            {
-                CheckBox_ManageUsers.IsEnabled = true;
-                if (Radio_Twitch_StreamerEventSubStart.IsChecked == true)
-                {
-                    Dispatcher.BeginInvoke(new BotOperation(() =>
-                    {
-                        (Radio_Twitch_StreamerEventSubStart.DataContext as IOModule).StopBot();
-                    }), null);
-                }
-            }
+            //if (CheckBox_ManageFollowers.IsChecked == true)
+            //{
+            //    CheckBox_ManageUsers.IsEnabled = false;
+            //    if (Settings.Default.TwitchStreamEventSubAutoStart && Radio_Twitch_StreamerEventSubStart.IsChecked == true)
+            //    {
+            //        Dispatcher.BeginInvoke(new BotOperation(() =>
+            //        {
+            //            (Radio_Twitch_StreamerEventSubStart.DataContext as IOModule).StartBot();
+            //        }), null);
+            //    }
+            //}
+            //else
+            //{
+            //    CheckBox_ManageUsers.IsEnabled = true;
+            //    if (Radio_Twitch_StreamerEventSubStart.IsChecked == true)
+            //    {
+            //        Dispatcher.BeginInvoke(new BotOperation(() =>
+            //        {
+            //            (Radio_Twitch_StreamerEventSubStart.DataContext as IOModule).StopBot();
+            //        }), null);
+            //    }
+            //}
 
             BotController.ManageDatabase();
         }

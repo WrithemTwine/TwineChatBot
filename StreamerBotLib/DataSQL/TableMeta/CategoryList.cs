@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -33,24 +30,24 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.CategoryList(
-            categoryId: CategoryId, 
-            category: Category, 
+            categoryId: CategoryId,
+            category: Category,
             streamCount: Convert.ToInt32(StreamCount)
         );
         }
         public void CopyUpdates(Models.CategoryList modelData)
         {
-          if (modelData.CategoryId != CategoryId)
+            if (modelData.CategoryId != CategoryId)
             {
                 modelData.CategoryId = CategoryId;
             }
 
-          if (modelData.Category != Category)
+            if (modelData.Category != Category)
             {
                 modelData.Category = Category;
             }
 
-          if (modelData.StreamCount != StreamCount)
+            if (modelData.StreamCount != StreamCount)
             {
                 modelData.StreamCount = StreamCount;
             }

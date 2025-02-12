@@ -171,6 +171,7 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.TwitchMultiLiveBot => OptionFlags.EnableDebugTwitchMultiBot ? line : "",
                 DebugLogTypes.TwitchHelixBot => OptionFlags.EnableDebugTwitchHelixBot ? line : "",
                 DebugLogTypes.TwitchBotEventSubBot => OptionFlags.EnableDebugTwitchBotEventSubBot ? line : "",
+                DebugLogTypes.TwitchEventSub => OptionFlags.EnableDebugTwitchEventSub ? line : "",
                 DebugLogTypes.TwitchBotSendChat => OptionFlags.EnableDebugTwitchBotSendChat ? line : "",
                 DebugLogTypes.TwitchTokenBot => OptionFlags.EnableDebugTwitchTokenBot ? line : "",
                 DebugLogTypes.DiscordBot => OptionFlags.EnableDebugDiscordBot ? line : "",

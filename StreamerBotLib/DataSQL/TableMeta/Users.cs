@@ -1,7 +1,4 @@
-using StreamerBotLib.Enums;
-using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -42,42 +39,42 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public object GetModelEntity()
         {
             return new Models.Users(
-            userName: UserName, 
-            firstDateSeen: FirstDateSeen, 
-            currLoginDate: CurrLoginDate, 
-            lastDateSeen: LastDateSeen, 
-            userId: UserId, 
+            userName: UserName,
+            firstDateSeen: FirstDateSeen,
+            currLoginDate: CurrLoginDate,
+            lastDateSeen: LastDateSeen,
+            userId: UserId,
             platform: Platform
         );
         }
         public void CopyUpdates(Models.Users modelData)
         {
-          if (modelData.UserName != UserName)
+            if (modelData.UserName != UserName)
             {
                 modelData.UserName = UserName;
             }
 
-          if (modelData.FirstDateSeen != FirstDateSeen)
+            if (modelData.FirstDateSeen != FirstDateSeen)
             {
                 modelData.FirstDateSeen = FirstDateSeen;
             }
 
-          if (modelData.CurrLoginDate != CurrLoginDate)
+            if (modelData.CurrLoginDate != CurrLoginDate)
             {
                 modelData.CurrLoginDate = CurrLoginDate;
             }
 
-          if (modelData.LastDateSeen != LastDateSeen)
+            if (modelData.LastDateSeen != LastDateSeen)
             {
                 modelData.LastDateSeen = LastDateSeen;
             }
 
-          if (modelData.UserId != UserId)
+            if (modelData.UserId != UserId)
             {
                 modelData.UserId = UserId;
             }
 
-          if (modelData.Platform != Platform)
+            if (modelData.Platform != Platform)
             {
                 modelData.Platform = Platform;
             }
