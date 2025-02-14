@@ -63,7 +63,7 @@ namespace StreamerBot
             OptionFlags.EFCDatabaseProviderKNet
 #elif RELEASE_COSMOS
             OptionFlags.EFCDatabaseProviderCosmos
-#elif RELEASE_MYSQL
+#elif RELEASE_MYSQL || RELEASE_POMELOMYSQL
             OptionFlags.EFCDatabaseProviderMySql
 #endif
             )

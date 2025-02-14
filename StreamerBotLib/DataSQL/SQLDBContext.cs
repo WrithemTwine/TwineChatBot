@@ -104,6 +104,8 @@ namespace StreamerBotLib.DataSQL
 #elif RELEASE_SQLSERVER
                         .UseSqlServer(OptionFlags.EFCConnectStringSqlServer)
 #elif RELEASE_MYSQL
+                        .UseMySQL(OptionFlags.EFCConnectStringMySql)
+#elif RELEASE_POMELOMYSQL
                         .UseMySql(
                             OptionFlags.EFCConnectStringMySql, 
                             ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql))

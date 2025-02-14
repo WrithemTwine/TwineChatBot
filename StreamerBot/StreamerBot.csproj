@@ -20,7 +20,7 @@
 		<Authors>WrithemTwine</Authors>
 		<Company>TwineStreamerBot</Company>
 		<ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
-		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML</Configurations>
+		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML;Release_PomeloMySql</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -32,7 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2957.106" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3116-prerelease" />
 	</ItemGroup>
 
 	<PropertyGroup Label="Globals">
@@ -66,6 +66,11 @@
 	</PropertyGroup>
 	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'">
+	  <Optimize>True</Optimize>
+	  <DebugType>none</DebugType>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_PomeloMySql|AnyCPU'">
 	  <Optimize>True</Optimize>
 	  <DebugType>none</DebugType>
 	</PropertyGroup>
