@@ -852,6 +852,7 @@ namespace StreamerBotLib.Static
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
         public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
         public static bool EnableDebugCommandSystem => Settings.Default.EnableDebugCommandSystem;
+        public static bool EnableDebugRepeatCommandSystem => Settings.Default.EnableDebugRepeatCommandSystem;
         public static bool EnableDebugCommonSystem => Settings.Default.EnableDebugCommonSystem;
         public static bool EnableDebugSystemController => Settings.Default.EnableDebugSystemController;
         public static bool EnableDebugStatSystem => Settings.Default.EnableDebugStatSystem;

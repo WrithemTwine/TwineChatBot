@@ -33,6 +33,8 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             return Task.Run(async () =>
             {
+                tokenBot.UpdateActiveTokens(BotType.BotAccount, true);
+
                 LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Sending a message.");
 
                 newSendMsg.Clear();

@@ -299,7 +299,7 @@ namespace StreamerBotLib.BotClients
 
                             InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
                             ActiveUsers();
-                            TwitchEventSubBot.AddStreamOnlineSubscriptions();
+                            TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
                             ManageStreamOnlineOfflineStatus(true);
                             StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
                         }
@@ -440,7 +440,7 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying streamer channel is now online.");
             ManageStreamOnlineOfflineStatus(true);
 
-            TwitchEventSubBot.AddStreamOnlineSubscriptions();
+            TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
 
             StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
 

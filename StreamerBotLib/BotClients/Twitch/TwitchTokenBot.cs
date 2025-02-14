@@ -282,6 +282,12 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             try
             {
+
+                foreach(var a in ActiveBotTokens)
+                {
+                    LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"The {a.Key} token is {a.Value}");
+                }
+
                 if (IsActive == true) // only calculate if bot is started, meaning the User is using this operation mode.
                 {
                     lock (TokenLock)

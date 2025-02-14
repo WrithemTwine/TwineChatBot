@@ -98,11 +98,11 @@ namespace StreamerBotLib.BotClients.Twitch
                     if (IsActive != true)
                     {
                         IsActive = true;
+                        AddConnectedSubscriptions();
+
                         InvokeBotStarted();
                         EventSubMessageIdsLogger.MsgLogging |= IsActive == true;
                         EventSubMessageIdsLogger.MsgLogCleanup();
-
-                        AddConnectedSubscriptions();
                     }
                 }
             });

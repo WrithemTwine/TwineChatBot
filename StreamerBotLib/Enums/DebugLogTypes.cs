@@ -9,6 +9,7 @@
         BlackjackGame,
         BotController,
         CommandSystem,
+        RepeatCommandSystem,
         CommonSystem,
         CurrencySystem,
         DataManager,

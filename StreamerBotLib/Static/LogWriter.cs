@@ -178,6 +178,7 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.SystemController => OptionFlags.EnableDebugSystemController ? line : "",
                 DebugLogTypes.BotController => OptionFlags.EnableDebugBotController ? line : "",
                 DebugLogTypes.CommandSystem => OptionFlags.EnableDebugCommandSystem ? line : "",
+                DebugLogTypes.RepeatCommandSystem => OptionFlags.EnableDebugRepeatCommandSystem ? line : "",
                 DebugLogTypes.StatSystem => OptionFlags.EnableDebugStatSystem ? line : "",
                 DebugLogTypes.CurrencySystem => OptionFlags.EnableDebugCurrencySystem ? line : "",
                 DebugLogTypes.ModerationSystem => OptionFlags.EnableDebugModerationSystem ? line : "",

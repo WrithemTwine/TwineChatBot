@@ -103,7 +103,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                     LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
                     var SubResponse = tokenBot.StreamerNoScopesHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
                     SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
-                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a {SubResponse.Status} status.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
 
                     SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
                 }
