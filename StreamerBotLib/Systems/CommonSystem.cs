@@ -20,7 +20,7 @@ namespace StreamerBotLib.Systems
     /// Each Subsystem class derives from this base class and can access the 
     /// DataManager and static properties here to share data between systems.
     /// </summary>
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
         internal static IDataManager DataManage { get; set; }
         public static FlowDocument ChatData { get; private set; } = new();

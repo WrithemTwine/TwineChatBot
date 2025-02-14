@@ -5,7 +5,7 @@ using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
         private readonly List<Tuple<string, Task, DateTime>> RequestApprovalList = [];
 

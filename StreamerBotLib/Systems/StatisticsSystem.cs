@@ -4,7 +4,7 @@ using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
         private bool UpdateDeathCounter;
 

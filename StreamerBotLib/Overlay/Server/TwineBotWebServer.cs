@@ -18,10 +18,6 @@ namespace StreamerBotLib.Overlay.Server
         /// Server maintained in this class.
         /// </summary>
         private static HttpListener HTTPListenServer { get; set; } = new();
-        /// <summary>
-        /// Holds a Task for all of the async listeners.
-        /// </summary>
-        private static Task ProcessPages;
 
         /// <summary>
         /// The alert pages collection.
@@ -106,8 +102,6 @@ namespace StreamerBotLib.Overlay.Server
                 ThreadManager.CreateThreadStart("StartServer", () =>
                 {
                     HTTPListenServer.Start();
-                    //ProcessPages = new(() => ServerSendAlerts());
-                    //ProcessPages.Start();
 
                     ServerSendAlerts();
                     ServerStarted = true;
@@ -305,7 +299,6 @@ namespace StreamerBotLib.Overlay.Server
                 LogWriter.DebugLog("StopServer", DebugLogTypes.OverlayBot, $"http server - Overlay http server stopping.");
 
                 HTTPListenServer.Stop();
-                ProcessPages.Wait();
                 ServerAlertThreadStarted = false;
                 ServerStarted = false;
             }

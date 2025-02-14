@@ -12,7 +12,7 @@ using System.Globalization;
 
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem : INotifyPropertyChanged
+    public partial class ActionSystem : INotifyPropertyChanged
     {
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;

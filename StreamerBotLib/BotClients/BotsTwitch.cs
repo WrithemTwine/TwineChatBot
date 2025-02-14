@@ -24,7 +24,6 @@ using TwitchLib.EventSub.Core.Models.Chat;
 
 namespace StreamerBotLib.BotClients
 {
-    // TODO: update EventSub Raid for outgoing out of broadcaster channel
     public class BotsTwitch : BotsBase
     {
         #region Properties-Events
@@ -278,7 +277,6 @@ namespace StreamerBotLib.BotClients
                 TwitchEventSubStreamer.AddSubscriptionHandler(m);
             }
         }
-
         private void TwitchEventSubStreamer_OnBotStarted(object sender, EventArgs e)
         {
             _CurrStream = null;
@@ -1102,7 +1100,6 @@ namespace StreamerBotLib.BotClients
         {
             CheckActiveBots();
         }
-
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
         {

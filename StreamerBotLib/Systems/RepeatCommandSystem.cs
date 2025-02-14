@@ -5,7 +5,7 @@ using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
         private static bool ElapsedThread;
         private bool ChatBotStarted;
@@ -71,8 +71,10 @@ namespace StreamerBotLib.Systems
                                              let item = new TimerCommand(Timers, diluteTime)
                                              select item)
                         {
-                            RepeatList.UniqueAdd(item);
-                            Task.Run(() => RepeatCmd(item));
+                            if (RepeatList.UniqueAdd(item))
+                            {
+                                Task.Run(() => RepeatCmd(item));
+                            }
                         }
 
                         RepeatList.RemoveAll((r) => r.RepeatTime == 0);

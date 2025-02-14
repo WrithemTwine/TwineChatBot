@@ -5,7 +5,7 @@ using StreamerBotLib.Systems.CurrencyGames;
 
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
         private bool CurAccrualStarted;
         private bool WatchStarted;

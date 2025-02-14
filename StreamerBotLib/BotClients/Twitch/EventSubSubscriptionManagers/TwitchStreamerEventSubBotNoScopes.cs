@@ -93,19 +93,19 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
             }
         }
 
-        private void CreateEventSubSubscription(string SubscriptionType, string Version, Dictionary<string, string> conditions)
+        private void CreateEventSubSubscription(string SubscriptionType, string Version, Dictionary<string, string> conditions, string KeyOverride = null)
         {
             void CreateSubAction()
             {
                 LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
-                if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
+                if (!SubscriptionIdKeys.ContainsKey(KeyOverride ?? SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
                     LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
                     var SubResponse = tokenBot.StreamerNoScopesHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
                     SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
                     LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
 
-                    SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
+                    SubscriptionIdKeys.Add(KeyOverride ?? SubResponse.Type, SubResponse.Id);
                 }
             }
 

@@ -15,7 +15,7 @@ using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
         /// <summary>
         /// A stream action caused an Overlay Event to occur, and should be displayed via the Media Overlay Server.
