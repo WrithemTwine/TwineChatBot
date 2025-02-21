@@ -118,6 +118,7 @@ namespace StreamerBotLib.Interfaces
         void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta);
         void PostMultiLiveLog(string LogItem);
         void PostCurrencyUpdate(List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> Updates, string CurrencyName);
-        object GetObservableCollection(DataTables dataTable);
+        object GetICollection(DataTables dataTable);
+        void Exit();
     }
 }

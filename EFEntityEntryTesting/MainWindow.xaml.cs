@@ -70,7 +70,7 @@ namespace EFEntityEntryTesting
             Button_EndStream.IsEnabled = false;
 
             OptionFlags.IsStreamOnline = false;
-            await DataManager.PostUsersLeftAsync(UsersJoined, DateTime.Now);
+            DataManager.PostUsersLeftAsync(UsersJoined, DateTime.Now);
             UsersJoined.Clear();
         }
         private void DataManager_OnDataCollectionChanged(object sender, OnDataCollectionUpdatedEventArgs e)
@@ -106,7 +106,7 @@ namespace EFEntityEntryTesting
                 List<string> NewUsers = CurrUsers.Except(UsersJoined).ToList();
                 List<string> OldUsers = UsersJoined.Except(CurrUsers).ToList();
                 await DataManager.PostUsersJoinedAsync(NewUsers, currTime);
-                await DataManager.PostUsersLeftAsync(OldUsers, currTime);
+                DataManager.PostUsersLeftAsync(OldUsers, currTime);
                 UsersJoined.Clear();
                 UsersJoined.AddRange(CurrUsers);
 
@@ -118,7 +118,7 @@ namespace EFEntityEntryTesting
         {
             while (OptionFlags.IsStreamOnline && OptionFlags.ActiveToken)
             {
-                await DataManager.UpdateCurrencyAsync(UsersJoined, DateTime.Now);
+                DataManager.UpdateCurrencyAsync(UsersJoined, DateTime.Now);
                 Thread.Sleep(6000);
             }
         }

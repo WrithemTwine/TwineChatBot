@@ -9,5 +9,9 @@ namespace StreamerBotLib.Models
         public int StreamCount { get; set; }
         public DateTime ThroughDate { get; set; }
 
+        public override string ToString()
+        {
+            return $"UserId: {UserId}, Platform: {Platform}, StreamCount: {StreamCount}, ThroughDate: {ThroughDate}";
+        }
     }
 }

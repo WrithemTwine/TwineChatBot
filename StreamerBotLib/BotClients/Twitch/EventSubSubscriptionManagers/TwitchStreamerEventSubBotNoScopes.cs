@@ -66,14 +66,20 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         public void AddSubscriptions()
         {
+            LogWriter.DebugLog("AddSubscriptions", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Adding subscriptions.");
+
+            CreateEventSubSubscription(new StreamOnlineHandler().SubscriptionType, "1",
+                new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchBotUserId } });
+
             CreateEventSubSubscription(new ChannelUpdateHandler().SubscriptionType, "2", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "to_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "from_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "to_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } }, "ChannelRaidTo");
+            CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "from_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } }, "ChannelRaidFrom");
             CreateEventSubSubscription(new StreamOfflineHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
         }
-
         public void AddConnectionSubscriptions()
         {
+            LogWriter.DebugLog("AddConnectionSubscriptions", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Adding connection subscriptions.");
+
             CreateEventSubSubscription(
                 new StreamOnlineHandler().SubscriptionType,
                 "1",
@@ -84,26 +90,28 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 }
              );
         }
-
         public void RemoveSubscriptions()
         {
+            LogWriter.DebugLog("RemoveSubscriptions", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Removing subscriptions.");
+
             foreach (string Key in SubscriptionIdKeys.Keys)
             {
                 DeleteEventSubSubscription(Key);
             }
         }
-
         private void CreateEventSubSubscription(string SubscriptionType, string Version, Dictionary<string, string> conditions, string KeyOverride = null)
         {
             void CreateSubAction()
             {
-                LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
+                LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
                 if (!SubscriptionIdKeys.ContainsKey(KeyOverride ?? SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
-                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+
                     var SubResponse = tokenBot.StreamerNoScopesHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
                     SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
-                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
+
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
 
                     SubscriptionIdKeys.Add(KeyOverride ?? SubResponse.Type, SubResponse.Id);
                 }
@@ -120,7 +128,6 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 CreateSubAction();
             }
         }
-
         private void DeleteEventSubSubscription(string key)
         {
             try
@@ -132,7 +139,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                         SubscriptionIdKeys.Remove(key);
                     }
                     LogWriter.DebugLog("DeleteEventSubSubscription",
-                       DebugLogTypes.TwitchStreamerEventSubBot,
+                       DebugLogTypes.TwitchStreamerNoScopesEventSubBot,
                        $"Deleted the {key} subscription.");
                 }
             }
@@ -141,7 +148,6 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 LogWriter.LogException(ex, "DeleteEventSubSubscription");
             }
         }
-
 
         #region Subscription Events
 
@@ -159,10 +165,12 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 {
                     if (args.Notification.Payload.Event.FromBroadcasterUserId == OptionFlags.TwitchStreamerUserId)
                     {
+                        LogWriter.DebugLog("ChannelRaid", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Channel raid is outgoing.");
                         OutChannelRaid?.Invoke(this, new(args.Notification.Payload.Event, args.Notification.Metadata.MessageTimestamp.ToLocalTime()));
                     }
                     else
                     {
+                        LogWriter.DebugLog("ChannelRaid", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Channel raid is incoming.");
                         NewChannelRaid?.Invoke(this, new(args.Notification.Payload.Event, args.Notification.Metadata.MessageTimestamp.ToLocalTime()));
                     }
                 }
@@ -180,6 +188,8 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 })
                 )
                 {
+                    LogWriter.DebugLog("StreamOffline", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Stream is offline.");
+
                     NewStreamOffline?.Invoke(this, new(args.Notification.Payload.Event));
 
                     // stop the offline subscriptions that won't happen while stream is offline
@@ -195,7 +205,6 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             });
         }
-
         private Task ChannelUpdate(object sender, ChannelUpdateArgs args)
         {
             return Task.Run(() =>
@@ -207,11 +216,12 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                     m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
                 }))
                 {
+                    LogWriter.DebugLog("ChannelUpdate", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Channel has been updated.");
+
                     NewChannelUpdate?.Invoke(this, new(args.Notification.Payload.Event));
                 }
             });
         }
-
         private Task StreamOnline(object sender, StreamOnlineArgs args)
         {
             return Task.Run(() =>
@@ -224,15 +234,18 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 })
                 )
                 {
+                    LogWriter.DebugLog("StreamOnline", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Stream is online.");
+
                     NewStreamOnline?.Invoke(this, new(args.Notification.Payload.Event));
                     AddSubscriptions();
                     DeleteEventSubSubscription(new StreamOnlineHandler().SubscriptionType);
                 }
             });
         }
-
         public void ClearSubscriptions()
         {
+            LogWriter.DebugLog("ClearSubscriptions", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Clearing subscriptions.");
+
             SubscriptionIdKeys.Clear();
         }
 

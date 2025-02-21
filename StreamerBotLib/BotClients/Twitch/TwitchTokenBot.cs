@@ -282,7 +282,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             try
             {
-                foreach(var a in ActiveBotTokens)
+                foreach (var a in ActiveBotTokens)
                 {
                     LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"The {a.Key} token is active (data connection): {a.Value}");
                 }
@@ -324,7 +324,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             {
                                 BotAccessTokenUnChanged?.Invoke(this, EventArgs.Empty);
                             }
-  
+
                         }
 
                         if (Override || (ActiveBotTokens[BotType.StreamerNoScopes] && (DateTime.Now - StreamerNoScopesAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow))

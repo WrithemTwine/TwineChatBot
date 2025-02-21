@@ -837,7 +837,7 @@ namespace StreamerBotLib.Systems
 
                     UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
 
-                    //CheckForOverlayEvent(OverlayTypes.Clip, OverlayTypes.Clip, ProvidedURL: c.Url);
+                    // CheckForOverlayEvent(OverlayTypes.Clip, OverlayTypes.Clip, ProvidedURL: c.Url);
                 }
             }
         }
@@ -912,9 +912,18 @@ namespace StreamerBotLib.Systems
 
         #region GUI
 
-        public void GUISaveDataGridEdits()
+        /// <summary>
+        /// Save the data grid edits to the database. If the edit involved a command, update the repeat command list.
+        /// </summary>
+        /// <param name="CommandUpdate">Notification if the edit involved a command.</param>
+        public void GUISaveDataGridEdits(bool CommandUpdate)
         {
             DataManage.GUIRowEditSave();
+
+            if(CommandUpdate)
+            {
+                SystemActions.UpdateCommandsChanged();
+            }
         }
 
         #endregion

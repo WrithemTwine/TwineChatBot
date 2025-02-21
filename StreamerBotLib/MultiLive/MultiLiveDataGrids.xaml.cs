@@ -262,6 +262,9 @@ namespace StreamerBotLib.MultiLive
                     case "MultiSummaryLiveStreams":
                         DG_Multi_SummaryLiveStreamStats.Items.Refresh();
                         break;
+                    case "MultiLiveStatusLog":
+
+                        break;
                     case null:
                         break;
                 }

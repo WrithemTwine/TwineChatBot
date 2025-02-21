@@ -13,6 +13,9 @@ namespace StreamerBotLib.DataSQL
     internal partial class DataManagerSQLAsync
     {
         #region Construct default items
+
+        private bool constructingModel_Context;
+
         /// <summary>
         /// Perform table setup procedures
         /// </summary>
@@ -24,16 +27,18 @@ namespace StreamerBotLib.DataSQL
 
                 constructingModel_Context = true;
 
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = Refcontext ?? BuildDataContext();
 
                 SetDefaultChannelEventsTable(context);  // check all default ChannelEvents names
                 SetDefaultCommandsTable(context); // check all default Commands
                 SetLearnedMessages(context);
                 //CleanCategories(context);
 
+
+
                 constructingModel_Context = false;
 
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 OptionFlags.DataLoaded = true;
             });
         }

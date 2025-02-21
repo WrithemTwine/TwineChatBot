@@ -37,9 +37,7 @@ namespace StreamerBotLib.DataSQL.Models
         public string Category { get; set; } = category;
         public DateTime AddDate { get; set; } = addDate;
 
-        public Users? User { get; set; }
+        public Users User { get; set; } = null!;
         public CategoryList CategoryList { get; set; } = null!;
-
-        //public ICollection<OldFollowUsers> OldFollowUsers { get; } = [];
     }
 }

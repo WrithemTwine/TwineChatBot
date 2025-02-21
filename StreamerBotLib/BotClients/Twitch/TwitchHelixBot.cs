@@ -44,7 +44,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void BulkFollowsUpdate(string ChannelName, IEnumerable<ChannelFollower> follows)
         {
-            OnBulkFollowsUpdate?.Invoke(this, new() { Channel = ChannelName, NewFollowers = new(follows) });
+            OnBulkFollowsUpdate?.Invoke(this, new() { Channel = ChannelName, NewFollowers = [.. follows] });
         }
 
         #region external-Twitch-calls Helix calls

@@ -68,8 +68,7 @@
         </StackPanel>
 
         <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.Column="0"
-                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiWebhooks_CVS}}" 
-                  
+                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiWebhooks_CVS}}"
                   RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" 
                   ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
                   ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
@@ -128,7 +127,6 @@
             <TabItem Header="Daily Data" x:Name="TabItem_DailyData">
                 <DataGrid x:Name="DG_Multi_LiveStreamStats"
                           ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}" 
-                        
                           ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
                           CanUserDeleteRows="True">
                     <DataGrid.Columns>
@@ -197,7 +195,7 @@
 
         <DockPanel x:Name="Panel_BotActivity" Grid.Row="2" Grid.Column="0" Visibility="Visible">
             <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
-            <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog}"  />
+            <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiStatusLog, Source={StaticResource DataViews}}" />
         </DockPanel>
     </Grid>
 </Page>

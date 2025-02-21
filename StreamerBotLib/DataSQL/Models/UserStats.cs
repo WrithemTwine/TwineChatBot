@@ -34,7 +34,7 @@ namespace StreamerBotLib.DataSQL.Models
         public int RewardRedeems { get; set; } = rewardRedeems;
         public int ClipsCreated { get; set; } = clipsCreated;
 
-        public Users? User { get; set; }
+        public Users User { get; set; } = null!;
 
         public static UserStats operator +(UserStats userStats, UserStats otherStats)
         {

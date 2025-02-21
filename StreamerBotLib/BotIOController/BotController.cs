@@ -1133,7 +1133,14 @@ namespace StreamerBotLib.BotIOController
                 DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
                 SystemsController.StreamOffline(currTime);
 
-                LogWriter.DebugLog("HandleOnStreamOffline", DebugLogTypes.BotController, $"A raid occurred to channel: {HostedChannel} or No Raid.");
+                if (RaidTime != null)
+                {
+                    LogWriter.DebugLog("HandleOnStreamOffline", DebugLogTypes.BotController, $"A raid occurred to channel: {HostedChannel}.");
+                }
+                else
+                {
+                    LogWriter.DebugLog("HandleOnStreamOffline", DebugLogTypes.BotController, $"No raid occurred, stream offline.");
+                }
 
                 SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
                 //OptionFlags.TwitchOutRaidStarted = false;

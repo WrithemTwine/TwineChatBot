@@ -80,6 +80,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         void ITwitchBotEventSubSubscriptions.AddSubscriptions()
         {
+            LogWriter.DebugLog("AddSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Adding all subscriptions.");
 
             CreateEventSubSubscription(new ChannelPointsCustomRewardRedemptionAddHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
             CreateEventSubSubscription(new ChannelSubscriptionMessageHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
@@ -101,13 +102,19 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         void ITwitchBotEventSubSubscriptions.RemoveSubscriptions()
         {
+            LogWriter.DebugLog("RemoveSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Deleting all subscriptions.");
+
             DeleteEventSubSubscription(new ChannelPointsCustomRewardRedemptionAddHandler().SubscriptionType);
             DeleteEventSubSubscription(new ChannelSubscriptionMessageHandler().SubscriptionType);
             DeleteEventSubSubscription(new ChannelSubscribeHandler().SubscriptionType);
             DeleteEventSubSubscription(new ChannelSubscriptionGiftHandler().SubscriptionType);
             DeleteEventSubSubscription(new ChannelCheerHandler().SubscriptionType);
             DeleteEventSubSubscription(new ChannelFollowHandler().SubscriptionType);
-            DeleteEventSubSubscription(new ChatMessageHandler().SubscriptionType);
+
+            if (!OptionFlags.TwitchStreamerUseToken)
+            {
+                DeleteEventSubSubscription(new ChatMessageHandler().SubscriptionType);
+            }
         }
 
         #region Subscription Events
@@ -290,6 +297,8 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         public void ClearSubscriptions()
         {
+            LogWriter.DebugLog("ClearSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Clearing all subscriptions.");
+
             SubscriptionIdKeys.Clear();
         }
 

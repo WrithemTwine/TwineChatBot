@@ -40,6 +40,8 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                       m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
                   }))
                 {
+                    LogWriter.DebugLog("OnChannelChatMessage", DebugLogTypes.TwitchStreamerEventSubBot, "Received a new chat message event.");
+
                     ChannelChatMessage msg = args.Notification.Payload.Event;
                     OnChannelChatMessageReceived?.Invoke(this, new(msg));
                 }
@@ -67,42 +69,64 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
             return this;
         }
 
+        /// <summary>
+        /// The EventSub subscriptions to add when EventSub is already connected. Especially for stream online versus offline; requiring different subscriptions.
+        /// </summary>
         public void AddSubscriptions()
         {
+            CreateEventSubSubscription(new ChatMessageHandler().SubscriptionType, "1", new Dictionary<string, string>
+            {
+                {"broadcaster_user_id", OptionFlags.TwitchStreamerUserId },
+                {"user_id", OptionFlags.TwitchBotUserId }
+            });
         }
 
+        /// <summary>
+        /// The EventSub subscriptions to add when EventSub establishes a connection.
+        /// </summary>
         public void AddConnectionSubscriptions()
         {
-            void CreateSubAction(string SubscriptionType)
+            CreateEventSubSubscription(new ChatMessageHandler().SubscriptionType, "1", new Dictionary<string, string>
             {
-                LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
+                {"broadcaster_user_id", OptionFlags.TwitchStreamerUserId },
+                {"user_id", OptionFlags.TwitchBotUserId }
+            });
+        }
+
+        /// <summary>
+        /// Creates a new EventSub subscription for the given type, version, and conditions.
+        /// </summary>
+        /// <param name="SubscriptionType">Type of the Subscription, also used as a description key in tracking subscriptions.</param>
+        /// <param name="Version">The Twitch EventSub API version number.</param>
+        /// <param name="conditions">The JSON entry parameters for the subscription, per Twitch EventSub API.</param>
+        /// <param name="KeyOverride">Alternate key for tracking subscriptions, utilized for duplicate subscription types (with different conditions) otherwise prevented.</param>
+        private void CreateEventSubSubscription(string SubscriptionType, string Version, Dictionary<string, string> conditions, string KeyOverride = null)
+        { 
+            void CreateSubAction()
+            {
+                LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
                 if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
-                    var conditions = new Dictionary<string, string>
-                                {
-                                    {"broadcaster_user_id", OptionFlags.TwitchStreamerUserId },
-                                    {"user_id", OptionFlags.TwitchBotUserId }
-                                };
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"Adding new subscription for {SubscriptionType}.");
 
                     var SubResponse = tokenBot.BotHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
-                                SubscriptionType,
-                                "1", conditions,
-                                EventSubTransportMethod.Websocket,
-                                _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
+                    SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
 
-                    SubscriptionIdKeys.Add(SubResponse.Type, SubResponse.Id);
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
+
+                    SubscriptionIdKeys.Add(KeyOverride ?? SubResponse.Type, SubResponse.Id);
                 }
             }
 
             try
             {
-                CreateSubAction(new ChatMessageHandler().SubscriptionType);
+                CreateSubAction();
             }
             catch (BadTokenException ex)
             {
                 LogWriter.LogException(ex, "CreateEventSubSubscription");
                 tokenBot.CheckToken();
-                CreateSubAction(new ChatMessageHandler().SubscriptionType);
+                CreateSubAction();
             }
         }
 
@@ -129,6 +153,8 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         public void ClearSubscriptions()
         {
+            LogWriter.DebugLog("ClearEventSubSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Clearing all subscriptions.");
+
             SubscriptionIdKeys.Clear();
         }
     }

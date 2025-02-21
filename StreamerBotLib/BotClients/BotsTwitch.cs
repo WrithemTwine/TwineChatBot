@@ -471,7 +471,7 @@ namespace StreamerBotLib.BotClients
         }
         private void TwitchStreamerEventSubBot_NewChannelRaid(object sender, NewChannelRaidEventArgs e)
         {
-            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelRaid", DebugLogTypes.TwitchBots, "EventSub bot received a raid notification.");
+            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelRaid", DebugLogTypes.TwitchBots, "EventSub bot received an incoming raid notification.");
 
             var Category = GetUserCategory(UserId: e.ChannelRaid.FromBroadcasterUserId);
 
@@ -484,8 +484,11 @@ namespace StreamerBotLib.BotClients
                     LiveUser = new(e.ChannelRaid.FromBroadcasterUserName, Platform.Twitch, e.ChannelRaid.FromBroadcasterUserId)
                 });
         }
+
         private void TwitchStreamerEventSubBotNoScopes_OutChannelRaid(object sender, NewChannelRaidEventArgs e)
         {
+            LogWriter.DebugLog("TwitchStreamerEventSubBotNoScopes_OutChannelRaid", DebugLogTypes.TwitchBots, $"EventSub bot received an outgoing raid notification to channel {e.ChannelRaid.ToBroadcasterUserName}.");
+
             InvokeBotEvent(this, BotEvents.TwitchOutgoingRaid,
                             new OnStreamRaidResponseEventArgs()
                             {

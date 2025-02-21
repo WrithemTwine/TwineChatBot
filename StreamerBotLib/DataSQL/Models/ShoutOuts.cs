@@ -15,6 +15,6 @@ namespace StreamerBotLib.DataSQL.Models
 #endif
  : UserBase(userId, platform)
     {
-        public Users? User { get; set; }
+        public Users User { get; set; } = null!;
     }
 }

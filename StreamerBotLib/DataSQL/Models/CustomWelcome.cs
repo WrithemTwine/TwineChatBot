@@ -20,6 +20,6 @@ namespace StreamerBotLib.DataSQL.Models
         : UserBase(userId, platform)
     {
         public string Message { get; set; } = message;
-        public Users? User { get; set; }
+        public Users User { get; set; } = null!;
     }
 }

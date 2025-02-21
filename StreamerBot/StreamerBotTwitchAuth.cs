@@ -153,7 +153,7 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void Controller_InvalidAuthorizationToken(object sender, InvalidAccessTokenEventArgs e)
         {
-            Dispatcher.BeginInvoke(() =>
+            Dispatcher.BeginInvoke(async () =>
             {
                 switch (e.Platform)
                 {
@@ -172,7 +172,7 @@ namespace StreamerBot
                         break;
                 }
 
-                TwitchCheckFocusAsync();
+                await TwitchCheckFocusAsync();
             });
         }
 
@@ -332,7 +332,7 @@ namespace StreamerBot
 
         private void Controller_TokensInitializedAsync(object sender, EventArgs e)
         {
-            ThreadManager.AddTaskToGUIDispatcher(new Task(async () =>
+            Dispatcher.BeginInvoke(()=>Task.Run(async () =>
             {
                 SetBotRadioButtons(true, Platform.Twitch); // event handler from Twitch bots, at this point the tokens are authorized
                 await StartAutoBots();

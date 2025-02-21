@@ -28,17 +28,19 @@ namespace StreamerBotLib.Systems
                 {
                     ThreadManager.CreateThreadStart("StartCurrencyClock", () =>
                     {
-                        while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
+                        Task.Run( async ()=>
                         {
-                            lock (StreamViewers)
+                            while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
                             {
-                                DataManage.UpdateCurrency(new(from LiveUser U in StreamViewers.GetCurrentActiveUsers()
-                                                              select U.UserId), DateTime.Now.ToLocalTime());
+                                lock (StreamViewers)
+                                {
+                                    DataManage.UpdateCurrency(new(from LiveUser U in StreamViewers.GetCurrentActiveUsers()
+                                                                  select U.UserId), DateTime.Now.ToLocalTime());
+                                }
+                                await Task.Delay(TaskDelay * (1+(DateTime.Now.Second/60)));
                             }
-                            // randomly extend the time delay up to 2times as long
-                            Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
-                        }
-                        CurAccrualStarted = false;
+                            CurAccrualStarted = false;
+                        });
                     });
                 }
                 catch (ThreadInterruptedException ex)
@@ -57,17 +59,19 @@ namespace StreamerBotLib.Systems
                 {
                     ThreadManager.CreateThreadStart("MonitorWatchTime", () =>
                     {
-                        // watch time accruing only works when stream is online <- i.e. watched!
-                        while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
+                        Task.Run(async () =>
                         {
-                            lock (StreamViewers)
+                            // watch time accruing only works when stream is online <- i.e. watched!
+                            while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
                             {
-                                DataManage.UpdateWatchTime(StreamViewers.GetCurrentActiveUsers(), DateTime.Now.ToLocalTime());
+                                lock (StreamViewers)
+                                {
+                                    DataManage.UpdateWatchTime(StreamViewers.GetCurrentActiveUsers(), DateTime.Now.ToLocalTime());
+                                }
+                                await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
                             }
-                            // randomly extend the time delay up to 2times as long
-                            Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
-                        }
-                        WatchStarted = false;
+                            WatchStarted = false;
+                        });
                     });
                 }
                 catch (ThreadInterruptedException ex)

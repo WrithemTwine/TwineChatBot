@@ -10,6 +10,9 @@ namespace StreamerBotLib.Systems
         private static bool ElapsedThread;
         private bool ChatBotStarted;
 
+        private const string RepeatChange = "RepeatCheck";
+        private Dictionary<string, bool> ChangedCommands = new() { { RepeatChange, false } };
+
         private const int TaskDelay = 5000;
         private DateTime chattime;
         private DateTime viewertime;
@@ -20,6 +23,14 @@ namespace StreamerBotLib.Systems
         private readonly string RepeatLock = "";
 
         private static int LastLiveViewerCount = 0;
+
+        /// <summary>
+        /// Call to register a command edit occurred.
+        /// </summary>
+        public void UpdateCommandsChanged()
+        {
+            ChangedCommands[RepeatChange] = true;
+        }
 
         /// <summary>
         /// Starts up the repeat timer thread.
@@ -51,6 +62,10 @@ namespace StreamerBotLib.Systems
         {
             // TODO: consider some AI bot chat when channel is slower
 
+            // TODO: add checks so only a command edit would affect retrieving the repeat command list
+
+            bool FirstRun = true;
+
             List<TimerCommand> RepeatList = [];
             DateTime now = DateTime.Now;
             chattime = now; // the time to check chats sent
@@ -66,24 +81,41 @@ namespace StreamerBotLib.Systems
                     while (ComputeRerunLoop())
                     {
                         diluteTime = CheckDilute();
-                        foreach (var item in from Tuple<string, int, List<string>> Timers in DataManage.GetTimerCommands()
-                                             where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))
-                                             let item = new TimerCommand(Timers, diluteTime)
-                                             select item)
-                        {
-                            if (RepeatList.UniqueAdd(item))
+
+                        if (FirstRun || ChangedCommands[RepeatChange])
+                        { // only check first run or when commands have changed
+
+                            if (ChangedCommands[RepeatChange])
                             {
-                                Task.Run(() => RepeatCmd(item));
+                                foreach(string Key in ChangedCommands.Keys)
+                                {
+                                    ChangedCommands[Key] = true;
+                                }
                             }
+
+                            foreach (var item in from Tuple<string, int, List<string>> Timers in DataManage.GetTimerCommands()
+                                                 where Timers.Item3.Contains(Category) || Timers.Item3.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))
+                                                 let item = new TimerCommand(Timers, diluteTime)
+                                                 select item)
+                            {
+                                if (RepeatList.UniqueAdd(item))
+                                {
+                                    ChangedCommands[item.Command] = false; // adding command, already set until new command edit status
+                                    Task.Run(() => RepeatCmd(item));
+                                }
+                            }
+
+                            FirstRun = false;
                         }
 
-                        RepeatList.RemoveAll((r) => r.RepeatTime == 0);
+                        RepeatList.RemoveAll((r) => r.RepeatTime == 0); // remove repeaters with 0 time
 
-                        Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
+                        Task.Delay(TaskDelay);
+                        ChangedCommands[RepeatChange] = false;
                     }
                 });
             }
-            catch (ThreadInterruptedException ex)
+            catch (Exception ex)
             {
                 LogWriter.LogException(ex, "ElapsedCommandTimers");
             }
@@ -98,10 +130,10 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.RepeatTimerComSlowdown) // only calculate if user wants diluted/smart-mode repeat commands
             {
-                double factor = 
+                double factor =
                     // check if user wants to use chat count, viewer count, or both
                     // use factor from either selection or weighted (multiply together) for both 
-                    (OptionFlags.RepeatAboveChatCount ? ((OptionFlags.RepeatChatCount == 0) ? 1 : (chats / OptionFlags.RepeatChatCount)) : 1) 
+                    (OptionFlags.RepeatAboveChatCount ? ((OptionFlags.RepeatChatCount == 0) ? 1 : (chats / OptionFlags.RepeatChatCount)) : 1)
                     * (OptionFlags.RepeatAboveUserCount ? ((OptionFlags.RepeatUserCount == 0) ? 1 : (viewers / OptionFlags.RepeatUserCount)) : 1);
 
                 temp = 1.0 + (factor > 1.0 ? 0 : 1.0 - factor);
@@ -134,10 +166,10 @@ namespace StreamerBotLib.Systems
 
         private bool ComputeRerunLoop()
         {
-           // LogWriter.DebugLog("ComputeRerunLoop", DebugLogTypes.RepeatCommandSystem,
-           //     $"Variable values: OptionFlags.ActiveToken {OptionFlags.ActiveToken}, ChatBotStarted {ChatBotStarted}, OptionFlags.RepeatTimerCommands {OptionFlags.RepeatTimerCommands}, OptionFlags.RepeatWhenLive {OptionFlags.RepeatWhenLive}, OptionFlags.IsStreamOnline {OptionFlags.IsStreamOnline}, (OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive {(OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive}");
+            // LogWriter.DebugLog("ComputeRerunLoop", DebugLogTypes.RepeatCommandSystem,
+            //     $"Variable values: OptionFlags.ActiveToken {OptionFlags.ActiveToken}, ChatBotStarted {ChatBotStarted}, OptionFlags.RepeatTimerCommands {OptionFlags.RepeatTimerCommands}, OptionFlags.RepeatWhenLive {OptionFlags.RepeatWhenLive}, OptionFlags.IsStreamOnline {OptionFlags.IsStreamOnline}, (OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive {(OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive}");
 
-            return OptionFlags.ActiveToken 
+            return OptionFlags.ActiveToken
                     && ChatBotStarted
                     && OptionFlags.RepeatTimerCommands
                     && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive);
@@ -171,7 +203,10 @@ namespace StreamerBotLib.Systems
             while (repeat != 0 && ComputeRerunLoop(cmd.CategoryList))
             {
                 LogWriter.DebugLog("RepeatCmd", DebugLogTypes.RepeatCommandSystem, $"Command {cmd.Command}");
-                LogWriter.DebugLog("RepeatCmd", DebugLogTypes.RepeatCommandSystem, $"OptionFlags.ActiveToken {OptionFlags.ActiveToken}, repeat != 0 {repeat != 0}, OptionFlags.IsStreamOnline {OptionFlags.IsStreamOnline}, OptionFlags.RepeatLiveReset {OptionFlags.RepeatLiveReset}, !ResetLive {!ResetLive}");
+                LogWriter.DebugLog("RepeatCmd", DebugLogTypes.RepeatCommandSystem, 
+                    $"OptionFlags.ActiveToken {OptionFlags.ActiveToken}, repeat != 0 {repeat != 0}, " +
+                    $"OptionFlags.IsStreamOnline {OptionFlags.IsStreamOnline}, " +
+                    $"OptionFlags.RepeatLiveReset {OptionFlags.RepeatLiveReset}, !ResetLive {!ResetLive}");
 
                 if (OptionFlags.IsStreamOnline && OptionFlags.RepeatLiveReset && !ResetLive)
                 {
@@ -194,7 +229,16 @@ namespace StreamerBotLib.Systems
                         if (ComputeRepeat())
                         {
                             LogWriter.DebugLog("RepeatCmd", DebugLogTypes.RepeatCommandSystem, $"Performing {cmd.Command}.");
-                            OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs() { Message = ParseCommand(cmd.Command, new(BotUserName, Platform.Default), [], DataManage.GetCommand(cmd.Command), out short multi, true), RepeatMsg = multi });
+                            OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs()
+                            {
+                                Message = ParseCommand(
+                                    cmd.Command,
+                                    new(BotUserName, Platform.Default),
+                                    [],
+                                    DataManage.GetCommand(cmd.Command),
+                                    out short multi, true),
+                                    RepeatMsg = multi
+                            });
                         }
                     }
                     catch (Exception ex)
@@ -206,15 +250,15 @@ namespace StreamerBotLib.Systems
 
                 Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
 
-                if (OptionFlags.ActiveToken)
+                if (OptionFlags.ActiveToken && ChangedCommands[cmd.Command])
                 {
                     repeat = DataManage.GetTimerCommandTime(cmd.Command);
+                    ChangedCommands[cmd.Command] = false; // command changed, after check stop checking next loop
                 }
                 cmd.ModifyTime(repeat, diluteTime);
             }
 
             cmd.ModifyTime(0, diluteTime); // when user changes repeat time for a command to 0, reset the repeat time - outer thread will remove the repeat command
-
         }
 
     }

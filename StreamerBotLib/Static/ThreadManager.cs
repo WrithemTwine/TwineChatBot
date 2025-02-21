@@ -2,6 +2,7 @@
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 
+using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace StreamerBotLib.Static
@@ -68,9 +69,22 @@ namespace StreamerBotLib.Static
         /// and to specify priority for the thread stoping order.
         /// </summary>
         /// <param name="task">The task to add to the GUI dispatcher.</param>
-        public static void AddTaskToGUIDispatcher(Task task)
+        public static async Task AddTaskToGUIDispatcher(Task task)
         {
-            GUIDispatcher.Invoke(() => task.RunSynchronously());
+            try
+            {
+                await GUIDispatcher.BeginInvoke(task.Start);
+            }
+            catch (Exception e)
+            {
+                LogWriter.LogException(e, "AddTaskToGUIDispatcher");
+            }
+        }
+        public static void AddAsyncTaskToGUIDispatcher(string CallMethodName, Action action)
+        {
+            LogWriter.DebugLog(CallMethodName, DebugLogTypes.ThreadManager, $"ThreadManager called the GUI Dispatcher's BeginInvoke, to start soon, on behalf of {CallMethodName}.");
+
+            GUIDispatcher.BeginInvoke(() => action);
         }
 
         /// <summary>

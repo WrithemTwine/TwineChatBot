@@ -116,7 +116,7 @@ namespace StreamerBotLib.Static
             const double yeardays = 365.242;
             const double monthdays = yeardays / 12;
 
-            string output = "";
+            List<string> output = [];
 
             Dictionary<string, int> datakeys = new()
             {
@@ -131,11 +131,13 @@ namespace StreamerBotLib.Static
             {
                 if (datakeys[k] != 0)
                 {
-                    output += Plurality(datakeys[k], (MsgVars)Enum.Parse(typeof(MsgVars), "Plural" + k)) + ", ";
+                    output.Add(Plurality(datakeys[k], (MsgVars)Enum.Parse(typeof(MsgVars), "Plural" + k)));
                 }
             }
 
-            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours, 2), MsgVars.Pluralhour), output.LastIndexOf(',') == -1 ? "no time available" : output.Remove(output.LastIndexOf(',')));
+            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Converted {timeSpan} into: {(output.Count == 0 ? "no time available" : string.Join(", ", output))}");
+
+            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours, 2), MsgVars.Pluralhour), output.Count == 0 ? "no time available" : string.Join(", ", output));
         }
 
         /// <summary>
@@ -145,7 +147,9 @@ namespace StreamerBotLib.Static
         /// <returns>the elapsed time since the historic date to now</returns>
         public static string FormatTimes(DateTime pastdate)
         {
-            return FormatTimes(DateTime.Now.ToLocalTime() - pastdate.ToLocalTime());
+            DateTime Curr = DateTime.Now.ToLocalTime();
+            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Computing the difference between now: {Curr.ToLocalTime()} and past date: {pastdate.ToLocalTime()}.");
+            return FormatTimes(Curr - pastdate.ToLocalTime());
         }
 
         public static string AddEscapeFormat(string SrcText)

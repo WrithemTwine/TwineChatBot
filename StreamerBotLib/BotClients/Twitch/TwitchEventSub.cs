@@ -83,7 +83,15 @@ namespace StreamerBotLib.BotClients.Twitch
                 subscriptions.RemoveSubscriptions();
                 subscriptions.ClearSubscriptions();
 
-                subscriptions.AddSubscriptions();
+
+                if (OptionFlags.IsStreamOnline) // restore subscriptions based on if stream is online
+                {
+                    subscriptions.AddSubscriptions();
+                }
+                else
+                { // restore stream offline, EventSub connected, subscriptions
+                    subscriptions.AddConnectionSubscriptions();
+                }
             }
         }
 

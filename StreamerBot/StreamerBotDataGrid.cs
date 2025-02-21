@@ -36,7 +36,7 @@ namespace StreamerBot
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            _ = Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
                 LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
                    StreamerBotLib.Enums.DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");
@@ -128,9 +128,11 @@ namespace StreamerBot
                         break;
                     case null:
                         break;
+                    default:
+                        break;
                 }
 
-                //OnDataGridUpdated?.Invoke(this, new(e.DatabaseModelName));
+                OnDataGridUpdated?.Invoke(this, new(e.DatabaseModelName));
             }));
         }
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
@@ -291,7 +293,7 @@ namespace StreamerBot
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
-                Controller.Systems.GUISaveDataGridEdits();
+                Controller.Systems.GUISaveDataGridEdits((sender as DataGrid).Name is "DG_BuiltInCommands" or "DG_UserDefinedCommands");
             }
         }
 

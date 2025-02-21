@@ -6,18 +6,23 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 
 using System.Data;
+using System.Linq;
 
 namespace StreamerBotLib.DataSQL
 {
     internal partial class DataManagerSQLAsync
     {
-        internal Task UpdateCurrency(List<string> Users, DateTime dateTime, SQLDBContext Refcontext = null)
+        internal Task UpdateCurrency(List<string> Users, DateTime dateTime)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
-                await context.Users.Join(Users, (u) => u.UserId, (user) => user, (dbusers, curr) => dbusers).ForEachAsync((u) =>
+                await context.Users
+                .Include(curr=>curr.Currency)
+                .ThenInclude(type=>type.CurrencyType)
+                .Join(Users, (u) => u.UserId, (user) => user, (dbusers, curr) => dbusers)
+                .ForEachAsync((u) =>
                 {
                     TimeSpan clock = dateTime - u.LastDateSeen;
                     foreach (Currency currency in u.Currency)
@@ -31,41 +36,37 @@ namespace StreamerBotLib.DataSQL
                     u.LastDateSeen = dateTime;
                 });
 
-                if (Refcontext == null)
-                {
-                    await context.SaveChangesAsync();
-                    RefreshCurrencyObservableCollection();
-                    ClearDataContext(context);
-                }
+                await context.SaveChangesAsync();
+                RefreshCurrencyList();
             });
         }
 
-        internal Task<List<LearnMsgRecord>> UpdateLearnedMsgs(SQLDBContext Refcontext = null)
+        internal Task<List<LearnMsgRecord>> UpdateLearnedMsgs()
         {
             return Task.Run(() =>
             {
                 List<LearnMsgRecord> result;
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 if (LearnMsgChanged)
                 {
                     LearnMsgChanged = false;
-                    result = new(from L in context.LearnMsgs
-                                 select new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg));
+                    result = [.. from L in context.LearnMsgs
+                                 select new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg)];
                 }
                 else
                 {
                     result = null;
                 }
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task UpdateOverlayTicker(OverlayTickerItem item, string name, SQLDBContext Refcontext = null)
+        internal Task UpdateOverlayTicker(OverlayTickerItem item, string name)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 OverlayTicker ticker = (from T in context.OverlayTicker where T.TickerName == item select T).FirstOrDefault();
                 if (ticker == default)
                 {
@@ -76,60 +77,48 @@ namespace StreamerBotLib.DataSQL
                     ticker.UserName = name;
                 }
                 await context.SaveChangesAsync();
-                RefreshOverlayTickerObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshOverlayTickerList();
             });
         }
 
-        internal Task UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime, SQLDBContext Refcontext = null)
+        internal Task UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
-                await context.Users.Join(Users, (u) => u.UserId, (user) => user.UserId, (dbusers, curr) => dbusers).ForEachAsync(async (u) =>
+                foreach (var user in from LiveUser L in Users
+                                     let user = (from U in context.Users
+                                                 where U.UserId == L.UserId && U.Platform == L.Platform
+                                                 select U).FirstOrDefault()
+                                     where user != default
+                                     select user)
                 {
-                    if (u.UserStats == default)
+                    if (user.LastDateSeen < CurrTime)
                     {
-                        await context.UserStats.AddAsync(new(userId: u.UserId, platform: u.Platform));
+                        user.LastDateSeen = CurrTime;
                     }
 
-                    if (u.LastDateSeen < CurrStreamStart)
+                    if (CurrTime > user.LastDateSeen && CurrTime > CurrStreamStart)
                     {
-                        u.LastDateSeen = CurrStreamStart;
+                        user.UserStats.WatchTime = user.UserStats.WatchTime.Add(CurrTime - user.LastDateSeen);
                     }
-
-                    if (CurrTime > u.LastDateSeen && CurrTime > CurrStreamStart)
-                    {
-                        u.UserStats.WatchTime = u.UserStats.WatchTime.Add(CurrTime - u.LastDateSeen);
-                    }
-
-                });
-
-                if (Refcontext == null)
-                {
-                    await context.SaveChangesAsync();
-                    //RefreshUsersObservableCollection();
-                    //RefreshUserStatsObservableCollection();
-
-                    GUIContext.Users.Load();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Users));
-                    GUIContext.UserStats.Load();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats));
-
-
-                    ClearDataContext(context);
                 }
+
+                await context.SaveChangesAsync();
+
+                RefreshUsersList();
+                RefreshUserStatsList();
             });
         }
 
         #region Update User Stats
 
-        internal Task UpdateStats(DBUserStats Stat, string userId, Platform platform, SQLDBContext Refcontext = null)
+        internal Task UpdateStats(DBUserStats Stat, string userId, Platform platform)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 if (userId != null)
                 {
@@ -157,12 +146,8 @@ namespace StreamerBotLib.DataSQL
                     }
 
                 }
-                if (Refcontext == null)
-                {
-                    await context.SaveChangesAsync();
-                    RefreshUserStatsObservableCollection();
-                    ClearDataContext(context);
-                }
+                await context.SaveChangesAsync();
+                RefreshUserStatsList();
             });
         }
 

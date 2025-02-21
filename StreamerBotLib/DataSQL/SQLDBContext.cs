@@ -2,8 +2,6 @@
 #define DEBUG_LOG1 // rename to DEBUG_LOG to enable the debug log
 #endif
 
-#define USE_POOLED_DBCONTEXT4
-
 #if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
 #endif
@@ -19,12 +17,11 @@ using System.IO;
 #endif
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Static;
 
 
 namespace StreamerBotLib.DataSQL
 {
-    public class SQLDBContext : DbContext
+    public class SQLDBContext(DbContextOptions<SQLDBContext> options) : DbContext(options)
     {
         #region User Data
         public DbSet<Followers> Followers { get; set; }
@@ -79,40 +76,6 @@ namespace StreamerBotLib.DataSQL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // these flags build the different connections to specific databases
-            // for splitting code to each release build package
-
-#if !USE_POOLED_DBCONTEXT
-            optionsBuilder
-
-#if DEBUG || DEBUG_VIEWXAML|| RELEASE_SQLITE
-                .UseSqlite(OptionFlags.EFCConnectStringSqlite)
-#if DEBUG_LOG
-                            .LogTo(DebugLog.WriteLine, LogLevel.Information) // This line enables logging to a file
-#endif
-
-#elif RELEASE_POSTGRE
-                        .UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL)
-#elif RELEASE_COSMOS
-                        .UseCosmos(OptionFlags.EFCConnectStringCosmos, OptionFlags.EFCDbNameCosmos)
-#elif RELEASE_KNET
-                        .UseKafkaCluster(
-                            OptionFlags.EFCKNetApplicationId, 
-                            OptionFlags.EFCDbNameKNet, 
-                            OptionFlags.EFCKNetBootstrapServers
-                            )
-#elif RELEASE_SQLSERVER
-                        .UseSqlServer(OptionFlags.EFCConnectStringSqlServer)
-#elif RELEASE_MYSQL
-                        .UseMySQL(OptionFlags.EFCConnectStringMySql)
-#elif RELEASE_POMELOMYSQL
-                        .UseMySql(
-                            OptionFlags.EFCConnectStringMySql, 
-                            ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql))
-#endif
-            ;
-#endif
-
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -213,10 +176,35 @@ namespace StreamerBotLib.DataSQL
                 .HasValue<WebhooksBase>(WebhookDataSource.Base)
                 .HasValue<Webhooks>(WebhookDataSource.Channel)
                 .HasValue<MultiWebhooks>(WebhookDataSource.MultiLive);
-        }
 
-        public SQLDBContext()
-        {
+            // eagerly load all of the navigation properties - is significant load time for a small 'User' database
+            //modelBuilder.Entity<Users>().Navigation(u => u.Currency).AutoInclude();
+            //modelBuilder.Entity<Users>().Navigation(u => u.CustomWelcome).AutoInclude();
+            //modelBuilder.Entity<Users>().Navigation(u => u.ShoutOuts).AutoInclude();
+            //modelBuilder.Entity<Users>().Navigation(u => u.UserStats).AutoInclude();
+            //modelBuilder.Entity<Users>().Navigation(u => u.Follower).AutoInclude();
+            //modelBuilder.Entity<Users>().Navigation(u => u.GiveawayUserData).AutoInclude();
+            //modelBuilder.Entity<Users>().Navigation(u => u.InRaidDataList).AutoInclude();
+
+            //modelBuilder.Entity<Currency>().Navigation(c => c.User);
+            //modelBuilder.Entity<CustomWelcome>().Navigation(c => c.User);
+            //modelBuilder.Entity<ShoutOuts>().Navigation(s => s.User);
+            //modelBuilder.Entity<UserStats>().Navigation(s => s.User);
+            //modelBuilder.Entity<Followers>().Navigation(f => f.User);
+            //modelBuilder.Entity<GiveawayUserData>().Navigation(g => g.Users);
+            //modelBuilder.Entity<InRaidData>().Navigation(r => r.User);
+
+            //modelBuilder.Entity<Currency>().Navigation(c => c.CurrencyType).AutoInclude();
+            //modelBuilder.Entity<CurrencyType>().Navigation(c => c.Currency).AutoInclude();
+
+            //modelBuilder.Entity<CategoryList>().Navigation(c => c.GameDeadCounter).AutoInclude();
+
+            //modelBuilder.Entity<GameDeadCounter>().Navigation(g => g.CategoryList).AutoInclude();
+
+            //modelBuilder.Entity<MultiChannels>().Navigation(m => m.MultiLiveStreams).AutoInclude();
+            //modelBuilder.Entity<MultiChannels>().Navigation(m => m.MultiSummaryLiveStreams).AutoInclude();
+            //modelBuilder.Entity<MultiLiveStreams>().Navigation(m => m.MultiChannels).AutoInclude();
+            //modelBuilder.Entity<MultiSummaryLiveStreams>().Navigation(m => m.MultiChannels).AutoInclude();
         }
     }
 }

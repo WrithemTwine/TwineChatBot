@@ -16,11 +16,11 @@ namespace StreamerBotLib.DataSQL
     {
         #region Get_Methods
 
-        internal async Task<Tuple<ModActions, Enums.BanReasons, int>> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes, SQLDBContext Refcontext = null)
+        internal async Task<Tuple<ModActions, Enums.BanReasons, int>> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
         {
             return await Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 Enums.BanReasons banReasons = (from Br in context.BanReasons
                                                where Br.MsgType == msgTypes
                                                select Br.BanReason).FirstOrDefault();
@@ -28,16 +28,16 @@ namespace StreamerBotLib.DataSQL
                                      where (B.ViewerTypes == ViewerTypes.Viewer && B.MsgType == msgTypes)
                                      select B).FirstOrDefault();
 
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return new Tuple<ModActions, Enums.BanReasons, int>(banRules?.ModAction ?? ModActions.Allow, banReasons, banRules.TimeoutSeconds);
             });
         }
 
-        internal Task<CommandData> GetCommand(string cmd, SQLDBContext Refcontext = null)
+        internal Task<CommandData> GetCommand(string cmd)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 CommandsBase commands = (from C in context.CommandsBase where C.CmdName == cmd select C).FirstOrDefault();
 
@@ -48,68 +48,68 @@ namespace StreamerBotLib.DataSQL
 
                 CommandData result = (commands != null) ? new(commands) : null;// commandsUser != null ? new(commandsUser.First()) : null;
                 await context.SaveChangesAsync();
-                RefreshCommandsObservableCollection();
-                RefreshCommandsUserObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshCommandsList();
+                RefreshCommandsUserList();
+
                 return result;
             });
         }
 
-        internal Task<string> GetCommandString(SQLDBContext Refcontext = null)
+        internal Task<string> GetCommandString()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 string result = string.Join(", ", GetCommandList().Result);
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<string>> GetCommandList(bool prefix = true, SQLDBContext Refcontext = null)
+        internal Task<List<string>> GetCommandList(bool prefix = true)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var result = new List<string>(from Com in (context.CommandsBase)
                                               where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
                                               orderby Com.CmdName
                                               select $"{(prefix ? "!" : "")}{Com.CmdName}");
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<string>> GetCurrencyNames(SQLDBContext Refcontext = null)
+        internal Task<List<string>> GetCurrencyNames()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                List<string> result = (from C in context.CurrencyType
-                                       select C.CurrencyName).ToList();
-                if (Refcontext == null) { ClearDataContext(context); }
+                using var context = BuildDataContext();
+                List<string> result = [.. (from C in context.CurrencyType
+                                       select C.CurrencyName)];
+
                 return result;
             });
         }
 
-        internal Task<int> GetDeathCounter(string currCategory, SQLDBContext Refcontext = null)
+        internal Task<int> GetDeathCounter(string currCategory)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 int result = (from D in context.GameDeadCounter
                               where D.Category == currCategory
                               select D.Counter).FirstOrDefault();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<Tuple<string, bool, short>> GetEventRowData(ChannelEventActions rowcriteria, SQLDBContext Refcontext = null)
+        internal Task<Tuple<string, bool, short>> GetEventRowData(ChannelEventActions rowcriteria)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 ChannelEvents found = (from Event in context.ChannelEvents
                                        where Event.Name == rowcriteria
                                        select Event).FirstOrDefault();
@@ -118,63 +118,63 @@ namespace StreamerBotLib.DataSQL
                     found?.IsEnabled ?? false,
                     found?.RepeatMsg ?? 0);
 
-                if (Refcontext == null) { ClearDataContext(context); }
+
 
                 return output;
             });
         }
 
-        internal Task<int> GetFollowerCount(SQLDBContext Refcontext = null)
+        internal Task<int> GetFollowerCount()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var result = context.Followers.Count();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<CategoryData>> GetGameCategories(SQLDBContext Refcontext = null)
+        internal Task<List<CategoryData>> GetGameCategories()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                List<CategoryData> result = new(from G in context.CategoryList
+                using var context = BuildDataContext();
+                List<CategoryData> result = [.. from G in context.CategoryList
                                                 let game = new CategoryData(G.CategoryId, G.Category)
-                                                select game);
-                if (Refcontext == null) { ClearDataContext(context); }
+                                                select game];
+
                 return result;
             });
         }
 
-        internal Task<string> GetKey(string Table, SQLDBContext Refcontext = null)
+        internal Task<string> GetKey(string Table)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 string result = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<IEnumerable<string>> GetKeys(string Table, SQLDBContext Refcontext = null)
+        internal Task<IEnumerable<string>> GetKeys(string Table)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                IEnumerable<string> result = new List<string>(from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name);
-                if (Refcontext == null) { ClearDataContext(context); }
+                using var context = BuildDataContext();
+                IEnumerable<string> result = [.. from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name];
+
                 return result;
             });
         }
 
-        internal Task<List<OverlayActionType>> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username, SQLDBContext Refcontext = null)
+        internal Task<List<OverlayActionType>> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 List<OverlayActionType> result = [.. (from O in context.OverlayServices
                                                   where (O.IsEnabled
                                                   && O.OverlayType == overlayType
@@ -191,108 +191,108 @@ namespace StreamerBotLib.DataSQL
                                                       UserName = O.UserName,
                                                       UseChatMsg = O.UseChatMsg
                                                   })];
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<string> GetQuote(int QuoteNum, SQLDBContext Refcontext = null)
+        internal Task<string> GetQuote(int QuoteNum)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var result = (from Q in context.Quotes
                               where Q.Number == QuoteNum
                               select $"{Q.Number}: {Q.Quote}").FirstOrDefault();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<int> GetQuoteCount(SQLDBContext Refcontext = null)
+        internal Task<int> GetQuoteCount()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 int result = context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<Dictionary<string, List<string>>> GetOverlayActions(SQLDBContext Refcontext = null)
+        internal Task<Dictionary<string, List<string>>> GetOverlayActions()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 Dictionary<string, List<string>> result = new()
                 {
                     { nameof(Commands), new(from C in context.Commands select C.CmdName) },
                     { nameof(ChannelEvents), new(from E in context.ChannelEvents select E.Name.ToString()) }
                 };
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<string>> GetSocialComs(SQLDBContext Refcontext = null)
+        internal Task<List<string>> GetSocialComs()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                List<string> result = new(from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
-                                          select SC.CmdName);
-                if (Refcontext == null) { ClearDataContext(context); }
+                using var context = BuildDataContext();
+                List<string> result = [.. from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
+                                          select SC.CmdName];
+
                 return result;
             });
         }
 
-        internal Task<string> GetSocials(SQLDBContext Refcontext = null)
+        internal Task<string> GetSocials()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var result = string.Join(" ", (from SC in
                                              context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)),
                                                 (c) => c.CmdName)
                                                where SC.Message != DefaulSocialMsg
                                                select SC));
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<StreamStat> GetStreamData(DateTime dateTime, SQLDBContext Refcontext = null)
+        internal Task<StreamStat> GetStreamData(DateTime dateTime)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 var result = (from SD in context.StreamStats
                               where SD.StreamStart == dateTime
                               select StreamStat.Create(SD)).FirstOrDefault();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<string>> GetTableFields(string TableName, SQLDBContext Refcontext = null)
+        internal Task<List<string>> GetTableFields(string TableName)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 List<string> result = new(from T in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
                                           select T.Name);
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<string>> GetTableNames(SQLDBContext Refcontext = null)
+        internal Task<List<string>> GetTableNames()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var list = new List<string>()
                 {
                     nameof(Currency),
@@ -302,86 +302,86 @@ namespace StreamerBotLib.DataSQL
                     nameof(Followers)
                 };
                 list.Sort();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return list;
             });
         }
 
-        internal Task<List<TickerItem>> GetTickerItems(SQLDBContext Refcontext = null)
+        internal Task<List<TickerItem>> GetTickerItems()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                List<TickerItem> result = new(from F in context.OverlayTicker
-                                              select new TickerItem(F.TickerName, F.UserName));
-                if (Refcontext == null) { ClearDataContext(context); }
+                using var context = BuildDataContext();
+                List<TickerItem> result = [.. from F in context.OverlayTicker
+                                              select new TickerItem(F.TickerName, F.UserName)];
+
                 return result;
             });
         }
 
-        internal Task<Tuple<string, int, List<string>>> GetTimerCommand(string Cmd, SQLDBContext Refcontext = null)
+        internal Task<Tuple<string, int, List<string>>> GetTimerCommand(string Cmd)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 Tuple<string, int, List<string>> result = (from R in context.Commands
                                                            where R.IsEnabled && R.RepeatTimer > 0
                                                            select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))).FirstOrDefault();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<Tuple<string, int, List<string>>>> GetTimerCommands(SQLDBContext Refcontext = null)
+        internal Task<List<Tuple<string, int, List<string>>>> GetTimerCommands()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                List<Tuple<string, int, List<string>>> result = new(from R in context.CommandsBase
+                using var context = BuildDataContext();
+                List<Tuple<string, int, List<string>>> result = [.. from R in context.CommandsBase
                                                                     where R.IsEnabled && R.RepeatTimer > 0
-                                                                    select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category)));
-                if (Refcontext == null) { ClearDataContext(context); }
+                                                                    select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))];
+
                 return result;
             });
         }
 
-        internal Task<int> GetTimerCommandTime(string Cmd, SQLDBContext Refcontext = null)
+        internal Task<int> GetTimerCommandTime(string Cmd)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 int result = (from R in context.Commands
                               where R.CmdName == Cmd
                               select R.RepeatTimer).FirstOrDefault();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<string> GetUsage(string command, SQLDBContext Refcontext = null)
+        internal Task<string> GetUsage(string command)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 string result = (from C in context.Commands
                                  where C.CmdName == command
                                  select C.Usage).FirstOrDefault();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<Tuple<bool, Uri>>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks, SQLDBContext Refcontext = null)
+        internal Task<List<Tuple<bool, Uri>>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                List<Tuple<bool, Uri>> result = new(from W in context.Webhooks
+                using var context = BuildDataContext();
+                List<Tuple<bool, Uri>> result = [.. from W in context.Webhooks
                                                     where (W.WebhooksSource == webhooksSource
                                                     && W.Kind == webhooks && W.DataSource == WebhookDataSource.Channel
                                                     && W.IsEnabled == true)
-                                                    select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook));
-                if (Refcontext == null) { ClearDataContext(context); }
+                                                    select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook)];
+
                 return result;
             });
         }

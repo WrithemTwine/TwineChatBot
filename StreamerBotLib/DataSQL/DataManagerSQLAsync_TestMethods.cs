@@ -15,15 +15,15 @@ namespace StreamerBotLib.DataSQL
         /// <param name="gamename">The category the raiding stream had at the raid time.</param>
         /// <returns><code>true: when record is found.</code>
         /// <code>false: when record is not found.</code></returns>
-        internal Task<bool> TestInRaidData(string userId, DateTime time, int viewers, string gamename, SQLDBContext Refcontext = null)
+        internal Task<bool> TestInRaidData(string userId, DateTime time, int viewers, string gamename)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var result = (from I in context.InRaidData
                               where (I.UserId == userId && I.RaidDate == time && I.ViewerCount == viewers && I.Category == gamename)
                               select I).Any();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
@@ -35,24 +35,24 @@ namespace StreamerBotLib.DataSQL
         /// <param name="dateTime">The date & time of the raid.</param>
         /// <returns><code>true: when record is found.</code>
         /// <code>false: when record is not found.</code></returns>
-        internal Task<bool> TestOutRaidData(string HostedChannel, DateTime dateTime, SQLDBContext Refcontext = null)
+        internal Task<bool> TestOutRaidData(string HostedChannel, DateTime dateTime)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var result = (from O in context.OutRaidData
                               where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
                               select O).Any();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<LiveUser>> TestGetRandomUsers(int count, SQLDBContext Refcontext = null)
+        internal Task<List<LiveUser>> TestGetRandomUsers(int count)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var Users = (from U in context.Users select U).ToList();
 
                 Random random = new();
@@ -63,8 +63,6 @@ namespace StreamerBotLib.DataSQL
                     Models.Users row = Users[random.Next(Users.Count)];
                     result.Add(new(row.UserName, row.Platform, row.UserId));
                 }
-
-                if (Refcontext == null) { ClearDataContext(context); }
 
                 return result;
             });

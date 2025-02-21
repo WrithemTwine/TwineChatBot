@@ -1,6 +1,4 @@
-﻿#define USE_SAME_CONTEXT0
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
@@ -11,29 +9,29 @@ namespace StreamerBotLib.DataSQL
 {
     internal partial class DataManagerSQLAsync
     {
-        internal Task<LiveUser> GetUser(string UserName, SQLDBContext Refcontext = null)
+        internal Task<LiveUser> GetUser(string UserName)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 LiveUser result = (from U in context.Users
                                    where U.UserName == UserName
                                    select new LiveUser(U.UserName, U.Platform, U.UserId)).FirstOrDefault();
 
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<string> GetUserId(LiveUser User, SQLDBContext Refcontext = null)
+        internal Task<string> GetUserId(LiveUser User)
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 string result = null;
-                List<LiveUser> UsersList = new(from U in context.Users
-                                               select new LiveUser(U.UserName, U.Platform, U.UserId));
+                List<LiveUser> UsersList = [.. from U in context.Users
+                                               select new LiveUser(U.UserName, U.Platform, U.UserId)];
 
                 foreach (var s in from LiveUser s in UsersList
                                   where s.UserName.Equals(User.UserName, StringComparison.OrdinalIgnoreCase)
@@ -42,20 +40,20 @@ namespace StreamerBotLib.DataSQL
                     result = s.UserId;
                 }
 
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<string> GetNewestFollower(SQLDBContext Refcontext = null)
+        internal Task<string> GetNewestFollower()
         {
             return Task.Run(() =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                var newestuser = (from F in context.Followers orderby F.FollowedDate descending select F).FirstOrDefault();
+                using var context = BuildDataContext();
+                string result = (from F in context.Followers.Include(user=>user.User)
+                                  orderby F.FollowedDate descending 
+                                  select F).FirstOrDefault().User.UserName;
 
-                string result = (from U in context.Users where U.UserId == newestuser.UserId && U.Platform == newestuser.Platform select U).FirstOrDefault()?.UserName;
-                if (Refcontext == null) { ClearDataContext(context); }
                 return result ?? "Not Found";
             });
         }
@@ -68,37 +66,37 @@ namespace StreamerBotLib.DataSQL
         ///     <code>true</code>: first time follower; 
         ///     <code>false</code>: user previously followed.
         /// </returns>
-        internal Task<bool> PostFollower(Follow follow, SQLDBContext Refcontext = null)
+        internal Task<bool> PostFollower(Follow follow)
         {
             return Task.Run(() =>
             {
                 currtime = DateTime.Now.ToLocalTime();
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 var result = !(from F in context.Followers
                                where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Platform
                                select F).Any();
                 followsQueue.Enqueue([follow]);
                 PostFollowsQueue();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return result;
             });
         }
 
-        internal Task<List<Follow>> PostFollowers(IEnumerable<Follow> follows, SQLDBContext Refcontext = null)
+        internal Task<List<Follow>> PostFollowers(IEnumerable<Follow> follows)
         {
             return Task.Run(() =>
             {
                 currtime = DateTime.Now.ToLocalTime();
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
-                List<Follow> ReturnList = new(from F in follows
+                List<Follow> ReturnList = [.. from F in follows
                                               join DF in context.Followers on F.FromUserId equals DF.UserId
                                               where DF.UserId is null
-                                              select F);
+                                              select F];
 
                 followsQueue.Enqueue(follows);
                 PostFollowsQueue();
-                if (Refcontext == null) { ClearDataContext(context); }
+
 
                 return ReturnList;
             });
@@ -109,27 +107,22 @@ namespace StreamerBotLib.DataSQL
         /// <summary>
         /// Threaded database update to add followers.
         /// </summary>
-        private void PostFollowsQueue(SQLDBContext Refcontext = null)
+        private void PostFollowsQueue()
         {
             if (!ProcessFollowQueuestarted)
             {
                 ProcessFollowQueuestarted = true;
 
-#if USE_SAME_CONTEXT
-                ThreadManager.AddTaskToGUIDispatcher(async () =>
-#else
                 ThreadManager.CreateThreadStart("PostFollowsQueue", async () =>
-#endif
-
                 {
-                    SQLDBContext context = Refcontext ?? BuildDataContext();
+                    using var context = BuildDataContext();
 
                     while (followsQueue.TryDequeue(out IEnumerable<Follow> currUser))
                     {
                         List<Followers> tempfollow = [];
                         foreach (Follow f in currUser)
                         {
-                            var user = await PostNewUser(f.FromUser, f.FollowedAt, context);
+                            var user = await PostNewUser(f.FromUser, f.FollowedAt);
 
                             Followers currFollow = (from UF in context.Followers
                                                     where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
@@ -153,26 +146,25 @@ namespace StreamerBotLib.DataSQL
                         await context.Followers.AddRangeAsync(tempfollow);
                     }
                     await context.SaveChangesAsync();
-                    RefreshFollowersObservableCollection();
-                    RefreshUsersObservableCollection();
-                    NotifyDataCollectionUpdated("CurrFollowers");
+                    RefreshFollowersList();
+                    RefreshUsersList();
 
                     ProcessFollowQueuestarted = false;
 
                     if (!BulkFollowerUpdate)
                     {
-                        await StopBulkFollows(context);
+                        await StopBulkFollows();
                     }
-                    if (Refcontext == null) { ClearDataContext(context); }
+
                 });
             }
         }
 
-        private Task<Users> PostNewUser(LiveUser User, DateTime FirstSeen, SQLDBContext Refcontext = null)
+        private Task<Users> PostNewUser(LiveUser User, DateTime FirstSeen)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).FirstOrDefault();
                 if (newuser == default)
@@ -209,36 +201,36 @@ namespace StreamerBotLib.DataSQL
                 }
 
                 await context.SaveChangesAsync();
-                if (Refcontext == null) { ClearDataContext(context); }
+
                 return newuser;
             });
         }
 
         private DateTime currtime;
-        internal Task StartBulkFollowers(SQLDBContext Refcontext = null)
+        internal Task StartBulkFollowers()
         {
             return Task.Run(async () =>
             {
                 BulkFollowerUpdate = true;
                 currtime = DateTime.Now.ToLocalTime();
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 await context.Followers.ExecuteUpdateAsync((f) => f.SetProperty((u) => u.IsFollower, (c) => false));
                 await context.SaveChangesAsync();
-                if (Refcontext == null) { ClearDataContext(context); }
+
             });
         }
 
-        internal void NotifyStopBulkFollowers(SQLDBContext Refcontext = null)
+        internal void NotifyStopBulkFollowers()
         {
             BulkFollowerUpdate = false;
         }
 
-        private Task StopBulkFollows(SQLDBContext Refcontext = null)
+        private Task StopBulkFollows()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 if (OptionFlags.TwitchPruneNonFollowers)
                 {
@@ -281,10 +273,10 @@ namespace StreamerBotLib.DataSQL
                     await context.SaveChangesAsync();
                 }
                 OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));
-                RefreshUsersObservableCollection();
-                RefreshFollowersObservableCollection();
-                RefreshOldFollowUsersObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshUsersList();
+                RefreshFollowersList();
+                RefreshOldFollowUsersList();
+
             });
         }
 
@@ -293,23 +285,19 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="User">The user to add in database and update.</param>
         /// <param name="NowSeen">The reported date & time of the user.</param>
-        internal Task UserJoined(LiveUser User, DateTime NowSeen, SQLDBContext Refcontext = null)
+        internal Task UserJoined(LiveUser User, DateTime NowSeen)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
-                Users user = await PostNewUser(User, NowSeen, context);
+                Users user = await PostNewUser(User, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
 
-                if (Refcontext == null)
-                {
-                    await context.SaveChangesAsync();
-                    RefreshUsersObservableCollection();
-                    RefreshUserStatsObservableCollection();
-                    ClearDataContext(context);
-                }
+                await context.SaveChangesAsync();
+                RefreshUsersList();
+                RefreshUserStatsList();
             });
         }
 
@@ -318,30 +306,34 @@ namespace StreamerBotLib.DataSQL
         /// </summary>
         /// <param name="Users">The user to add in database and update.</param>
         /// <param name="NowSeen">The reported date & time of the user.</param>
-        internal Task UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen, SQLDBContext Refcontext = null)
+        internal Task UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 foreach (var L in Users)
                 {
                     LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
                                     $"Updating {L.UserName} now joined to the channel.");
-                    await UserJoined(L, NowSeen, context);
+                    await UserJoined(L, NowSeen);
                 }
                 await context.SaveChangesAsync();
-                RefreshUsersObservableCollection();
-                RefreshUserStatsObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshUsersList();
+                RefreshUserStatsList();
+
             });
         }
 
-        internal Task UserLeft(LiveUser User, DateTime LastSeen, SQLDBContext Refcontext = null)
+        internal Task UserLeft(LiveUser User, DateTime LastSeen)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
-                await context.Users.Where((u) => u.UserId == User.UserId).ForEachAsync(async (u) =>
+                using var context = BuildDataContext();
+                await context.Users
+                            .Include(curr=>curr.Currency)
+                            .ThenInclude(type=>type.CurrencyType)
+                            .Where((u) => u.UserId == User.UserId)
+                .ForEachAsync(async (u) =>
                 {
                     if (u.UserStats == default)
                     {
@@ -367,17 +359,13 @@ namespace StreamerBotLib.DataSQL
                         u.LastDateSeen = LastSeen;
                     }
                 });
-                if (Refcontext == null)
-                {
-                    await context.SaveChangesAsync();
-                    RefreshUsersObservableCollection();
-                    RefreshUserStatsObservableCollection();
-                    ClearDataContext(context);
-                }
+                await context.SaveChangesAsync();
+                RefreshUsersList();
+                RefreshUserStatsList();
             });
         }
 
-        internal Task UpdateFollowers(IEnumerable<Follow> follows, SQLDBContext Refcontext = null)
+        internal Task UpdateFollowers(IEnumerable<Follow> follows)
         {
             return Task.Run(() =>
             {

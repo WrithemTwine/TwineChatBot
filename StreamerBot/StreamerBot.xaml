@@ -2202,8 +2202,7 @@
                                                  
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
-                                                  AutoGenerateColumns="True" RowEditEnding="DataGrid_RowEditEnding" >
-
+                                                  AutoGenerateColumns="True" IsReadOnly="True" RowEditEnding="DataGrid_RowEditEnding" >
                                         </DataGrid>
                                     </DockPanel>
                                 </TabItem>

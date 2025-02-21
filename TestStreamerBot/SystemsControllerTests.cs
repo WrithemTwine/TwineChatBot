@@ -1,16 +1,9 @@
 using Moq;
-using StreamerBotLib.DataSQL;
+
 using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Systems;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace TestStreamerBot
 {

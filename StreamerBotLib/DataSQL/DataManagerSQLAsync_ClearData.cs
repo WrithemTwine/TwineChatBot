@@ -7,166 +7,166 @@ namespace StreamerBotLib.DataSQL
     internal partial class DataManagerSQLAsync
     {
         #region Clear DataBase Records 
-        internal Task ClearAllCurrencyValues(SQLDBContext Refcontext = null)
+        internal Task ClearAllCurrencyValues()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.Currency.ExecuteUpdateAsync((c) => c.SetProperty((v) => v.Value, (c) => 0));
                 await context.SaveChangesAsync();
-                RefreshCurrencyObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshCurrencyList();
+
             });
         }
 
         /// <summary>
         /// Clear all User rows for users not included in the Followers table.
         /// </summary>
-        internal Task ClearUsersNotFollowers(SQLDBContext Refcontext = null)
+        internal Task ClearUsersNotFollowers()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 await context.Users.Where((u) => u.Follower == null || !u.Follower.IsFollower).ExecuteDeleteAsync();
                 await context.SaveChangesAsync();
 
-                RefreshUsersObservableCollection();
-                RefreshFollowersObservableCollection();
+                RefreshUsersList();
+                RefreshFollowersList();
 
-                if (Refcontext == null) { ClearDataContext(context); }
+
             });
         }
 
         /// <summary>
         /// Clear all user watchtimes
         /// </summary>
-        internal Task ClearWatchTime(SQLDBContext Refcontext = null)
+        internal Task ClearWatchTime()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
 
                 await context.UserStats.ExecuteUpdateAsync((us) => us.SetProperty((u) => u.WatchTime, (s) => TimeSpan.FromSeconds(0)));
                 await context.SaveChangesAsync();
 
-                RefreshUserStatsObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshUserStatsList();
+
             });
         }
 
         /// <summary>
         /// Clear all 'Followers' table records.
         /// </summary>
-        internal Task RemoveAllFollowers(SQLDBContext Refcontext = null)
+        internal Task RemoveAllFollowers()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.Followers.ExecuteDeleteAsync();
                 await context.SaveChangesAsync();
-                RefreshFollowersObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshFollowersList();
+
             });
         }
 
         /// <summary>
         /// Clear all 'GiveawayUserData' table records.
         /// </summary>
-        internal Task RemoveAllGiveawayData(SQLDBContext Refcontext = null)
+        internal Task RemoveAllGiveawayData()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.GiveawayUserData.ExecuteDeleteAsync();
                 await context.SaveChangesAsync();
-                RefreshGiveawayUserDataObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshGiveawayUserDataList();
+
             });
         }
 
         /// <summary>
         /// Clear all 'InRaidData' table records.
         /// </summary>
-        internal Task RemoveAllInRaidData(SQLDBContext Refcontext = null)
+        internal Task RemoveAllInRaidData()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.InRaidData.ExecuteDeleteAsync();
                 await context.SaveChangesAsync();
-                RefreshInRaidDataObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshInRaidDataList();
+
             });
         }
 
         /// <summary>
         /// Clear all 'OutRaidData' table records.
         /// </summary>
-        internal Task RemoveAllOutRaidData(SQLDBContext Refcontext = null)
+        internal Task RemoveAllOutRaidData()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.OutRaidData.ExecuteDeleteAsync();
                 await context.SaveChangesAsync();
-                RefreshOutRaidDataObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshOutRaidDataList();
+
             });
         }
 
         /// <summary>
         /// Clear all 'OverlayTicker' table records.
         /// </summary>
-        internal Task RemoveAllOverlayTickerData(SQLDBContext Refcontext = null)
+        internal Task RemoveAllOverlayTickerData()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.OverlayTicker.ExecuteUpdateAsync((t) => t.SetProperty((o) => o.UserName, (u) => ""));
                 await context.SaveChangesAsync();
-                RefreshOverlayTickerObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshOverlayTickerList();
+
             });
         }
 
         /// <summary>
         /// Clear all 'StreamStats' table records.
         /// </summary>
-        internal Task RemoveAllStreamStats(SQLDBContext Refcontext = null)
+        internal Task RemoveAllStreamStats()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.StreamStats.ExecuteDeleteAsync();
                 await context.SaveChangesAsync();
-                RefreshStreamStatsObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshStreamStatsList();
+
             });
         }
 
         /// <summary>
         /// Clear all 'Users' table records.
         /// </summary>
-        internal Task RemoveAllUsers(SQLDBContext Refcontext = null)
+        internal Task RemoveAllUsers()
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 await context.Users.ExecuteDeleteAsync();
                 await context.SaveChangesAsync();
-                RefreshUsersObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshUsersList();
+
             });
         }
         #endregion
 
         #region Remove Records
-        internal Task<bool> RemoveCommand(string command, SQLDBContext Refcontext = null)
+        internal Task<bool> RemoveCommand(string command)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 bool found = false;
 
                 CommandsUser cmd = (from C in context.CommandsUser where C.CmdName == command select C).FirstOrDefault();
@@ -176,17 +176,17 @@ namespace StreamerBotLib.DataSQL
                     found = true;
                 }
                 await context.SaveChangesAsync();
-                RefreshCommandsUserObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshCommandsUserList();
+
                 return found;
             });
         }
 
-        internal Task<bool> RemoveQuote(int QuoteNum, SQLDBContext Refcontext = null)
+        internal Task<bool> RemoveQuote(int QuoteNum)
         {
             return Task.Run(async () =>
             {
-                SQLDBContext context = Refcontext ?? BuildDataContext();
+                using var context = BuildDataContext();
                 bool found = false;
 
                 Quotes quotes = (from Q in context.Quotes where Q.Number == QuoteNum select Q).FirstOrDefault();
@@ -196,8 +196,8 @@ namespace StreamerBotLib.DataSQL
                     found = true;
                 }
                 await context.SaveChangesAsync();
-                RefreshQuotesObservableCollection();
-                if (Refcontext == null) { ClearDataContext(context); }
+                RefreshQuotesList();
+
                 return found;
             });
         }

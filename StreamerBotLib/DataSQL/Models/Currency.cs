@@ -26,8 +26,8 @@ namespace StreamerBotLib.DataSQL.Models
         public double Value { get; set; } = value;
         public string CurrencyName { get; set; } = currencyName;
 
-        public Users? User { get; set; }
-        public CurrencyType? CurrencyType { get; set; }
+        public Users User { get; set; } = null!;
+        public CurrencyType CurrencyType { get; set; } = null!;
 
         public static Currency operator +(Currency lhs, Currency rhs)
         {

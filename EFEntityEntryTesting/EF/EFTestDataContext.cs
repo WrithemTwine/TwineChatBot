@@ -29,6 +29,9 @@ namespace EFEntityEntryTesting.EF
                .HasForeignKey(c => new { c.CurrencyName })
                .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Currency>().Navigation(Currency => Currency.CurrencyType).AutoInclude();
+            modelBuilder.Entity<Currency>().Navigation(Currency => Currency.User).AutoInclude();
+
             modelBuilder.Entity<Users>()
                 .HasMany(u => u.Currency)
                 .WithOne(c => c.User)
@@ -42,6 +45,10 @@ namespace EFEntityEntryTesting.EF
                 .HasForeignKey<UserStats>(s => new { s.UserId, s.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
+
+            modelBuilder.Entity<Users>().Navigation(Users => Users.Currency).AutoInclude();
+            modelBuilder.Entity<Users>().Navigation(Users => Users.UserStats).AutoInclude();
+
         }
     }
 }

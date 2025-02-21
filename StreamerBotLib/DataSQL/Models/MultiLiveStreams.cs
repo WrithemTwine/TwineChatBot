@@ -23,7 +23,7 @@ namespace StreamerBotLib.DataSQL.Models
     {
         public DateTime LiveDate { get; set; } = liveDate;
 
-        public MultiChannels? MultiChannels { get; set; }
+        public MultiChannels MultiChannels { get; set; } = null!;
 
         public bool Equals(MultiLiveStreams x, MultiLiveStreams y)
         {

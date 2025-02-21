@@ -1,6 +1,7 @@
 ﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.GUI;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
@@ -48,22 +49,27 @@ namespace StreamerBotLib.DataSQL
 
         private void _dataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
         {
+            LogWriter.DebugLog("_dataManager_UpdatedMonitoringChannels", DebugLogTypes.DataManager, "UpdatedMonitoringChannels event triggered.");
+
             UpdatedMonitoringChannels?.Invoke(this, new());
         }
 
         private void _dataManager_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
         {
+            LogWriter.DebugLog("_dataManager_OnBulkFollowersAddFinished", DebugLogTypes.DataManager, "OnBulkFollowersAddFinished event triggered.");
             OnBulkFollowersAddFinished?.Invoke(this, e);
         }
 
         private void _dataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
+            LogWriter.DebugLog("_dataManager_OnDataCollectionUpdated", DebugLogTypes.DataManager, "OnDataCollectionUpdated event triggered.");
             OnDataCollectionUpdated?.Invoke(this, e);
         }
 
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckCurrency", DebugLogTypes.DataManager, "Checking currency.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckCurrency(User, value, CurrencyName).Result;
             }
@@ -71,7 +77,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckField(string table, string field)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckField", DebugLogTypes.DataManager, "Checking field.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckField(table, field).Result;
             }
@@ -79,7 +86,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckFollower(string User)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckFollower", DebugLogTypes.DataManager, "Checking follower.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckFollower(User).Result;
             }
@@ -87,7 +95,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckFollower(string User, DateTime ToDateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckFollower", DebugLogTypes.DataManager, "Checking follower.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckFollower(User, ToDateTime).Result;
             }
@@ -95,7 +104,8 @@ namespace StreamerBotLib.DataSQL
 
         public Tuple<string, string> CheckModApprovalRule(ModActionType modActionType, string ModAction)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckModApprovalRule", DebugLogTypes.DataManager, "Checking mod approval rule.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckModApprovalRule(modActionType, ModAction).Result;
             }
@@ -103,7 +113,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckMultiChannelName(string UserName, Platform platform)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckMultiChannelName", DebugLogTypes.DataManager, "Checking multi-channel name.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckMultiChannelName(UserName, platform).Result;
             }
@@ -111,7 +122,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.DataManager, "Checking multi-stream date.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckMultiStreamDate(UserId, platform, dateTime).Result;
             }
@@ -119,7 +131,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckMultiStreams(DateTime streamStart)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckMultiStreams", DebugLogTypes.DataManager, "Checking multi-streams.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckMultiStreams(streamStart).Result;
             }
@@ -127,7 +140,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckPermission(string cmd, ViewerTypes permission)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckPermission", DebugLogTypes.DataManager, "Checking permission.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckPermission(cmd, permission).Result;
             }
@@ -135,7 +149,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckShoutName(string UserId)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckShoutName", DebugLogTypes.DataManager, "Checking shout name.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckShoutName(UserId).Result;
             }
@@ -143,7 +158,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckStreamTime(DateTime CurrTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckStreamTime", DebugLogTypes.DataManager, "Checking stream time.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckStreamTime(CurrTime).Result;
             }
@@ -151,7 +167,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckUser(LiveUser User)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckUser", DebugLogTypes.DataManager, "Checking user.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckUser(User).Result;
             }
@@ -159,7 +176,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool CheckUser(LiveUser User, DateTime ToDateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckUser", DebugLogTypes.DataManager, "Checking user.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckUser(User, ToDateTime).Result;
             }
@@ -167,7 +185,8 @@ namespace StreamerBotLib.DataSQL
 
         public string CheckWelcomeUser(string User)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("CheckWelcomeUser", DebugLogTypes.DataManager, "Checking welcome user.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckWelcomeUser(User).Result;
             }
@@ -175,7 +194,8 @@ namespace StreamerBotLib.DataSQL
 
         public void ClearAllCurrencyValues()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("ClearAllCurrencyValues", DebugLogTypes.DataManager, "Clearing all currency values.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.ClearAllCurrencyValues();
             }
@@ -183,7 +203,8 @@ namespace StreamerBotLib.DataSQL
 
         public void ClearUsersNotFollowers()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("ClearUsersNotFollowers", DebugLogTypes.DataManager, "Clearing users not followers.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.ClearUsersNotFollowers();
             }
@@ -191,7 +212,8 @@ namespace StreamerBotLib.DataSQL
 
         public void ClearWatchTime()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("ClearWatchTime", DebugLogTypes.DataManager, "Clearing watch time.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.ClearWatchTime();
             }
@@ -199,12 +221,14 @@ namespace StreamerBotLib.DataSQL
 
         public void DeleteDataRows(IEnumerable<DataRow> dataRows)
         {
-            lock (_dataManager) { }
+            LogWriter.DebugLog("DeleteDataRows", DebugLogTypes.DataManager, "Deleting data rows.");
+            lock (GUIDataManagerLock.Lock) { }
         }
 
         public string EditCommand(string cmd, List<string> Arglist)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("EditCommand", DebugLogTypes.DataManager, "Editing command.");
+            lock (GUIDataManagerLock.Lock)
             {
                 RepeatTimerList.Clear(); // update may contain change to repeat timers, hence, reset the timer listing
 
@@ -214,7 +238,8 @@ namespace StreamerBotLib.DataSQL
 
         public Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("FindRemedy", DebugLogTypes.DataManager, "Finding remedy.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.FindRemedy(viewerTypes, msgTypes).Result;
             }
@@ -222,15 +247,27 @@ namespace StreamerBotLib.DataSQL
 
         public ObservableCollection<ArchiveMultiStream> GetCleanupList()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetCleanupList", DebugLogTypes.DataManager, "Getting cleanup list.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetCleanupList();
             }
         }
 
+
+        public object GetICollection(DataTables dataTable)
+        {
+            LogWriter.DebugLog("GetObservableCollection", DebugLogTypes.DataManager, "Getting observable collection.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.GetICollection(dataTable);
+            }
+        }
+
         public CommandData GetCommand(string cmd)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetCommand", DebugLogTypes.DataManager, "Getting command.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetCommand(cmd).Result;
             }
@@ -238,7 +275,8 @@ namespace StreamerBotLib.DataSQL
 
         public IEnumerable<string> GetCommandList(bool prefix)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetCommandList", DebugLogTypes.DataManager, "Getting command list.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetCommandList(prefix).Result;
             }
@@ -246,7 +284,8 @@ namespace StreamerBotLib.DataSQL
 
         public string GetCommandString()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetCommandString", DebugLogTypes.DataManager, "Getting command string.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetCommandString().Result;
             }
@@ -254,7 +293,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<string> GetCurrencyNames()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetCurrencyNames", DebugLogTypes.DataManager, "Getting currency names.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetCurrencyNames().Result;
             }
@@ -262,7 +302,8 @@ namespace StreamerBotLib.DataSQL
 
         public int GetDeathCounter(string currCategory)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetDeathCounter", DebugLogTypes.DataManager, "Getting death counter.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetDeathCounter(currCategory).Result;
             }
@@ -270,7 +311,8 @@ namespace StreamerBotLib.DataSQL
 
         public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetEventRowData", DebugLogTypes.DataManager, "Getting event row data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 Tuple<string, bool, short> data = _dataManager.GetEventRowData(rowcriteria).Result;
                 Enabled = data.Item2;
@@ -281,7 +323,8 @@ namespace StreamerBotLib.DataSQL
 
         public int GetFollowerCount()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetFollowerCount", DebugLogTypes.DataManager, "Getting follower count.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetFollowerCount().Result;
             }
@@ -289,7 +332,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<CategoryData> GetGameCategories()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetGameCategories", DebugLogTypes.DataManager, "Getting game categories.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetGameCategories().Result;
             }
@@ -297,7 +341,8 @@ namespace StreamerBotLib.DataSQL
 
         public string GetKey(string Table)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetKey", DebugLogTypes.DataManager, "Getting key.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetKey(Table).Result;
             }
@@ -305,7 +350,8 @@ namespace StreamerBotLib.DataSQL
 
         public IEnumerable<string> GetKeys(string Table)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetKeys", DebugLogTypes.DataManager, "Getting keys.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetKeys(Table).Result;
             }
@@ -313,7 +359,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<string> GetMultiChannelIds(Platform platform)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetMultiChannelIds", DebugLogTypes.DataManager, "Getting multi-channel IDs.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetMultiChannelIds(platform).Result;
             }
@@ -321,7 +368,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetMultiWebHooks", DebugLogTypes.DataManager, "Getting multi web hooks.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetMultiWebHooks().Result;
             }
@@ -329,23 +377,16 @@ namespace StreamerBotLib.DataSQL
 
         public string GetNewestFollower()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetNewestFollower", DebugLogTypes.DataManager, "Getting newest follower.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetNewestFollower().Result;
             }
         }
-
-        public object GetObservableCollection(DataTables dataTable)
-        {
-            lock (_dataManager)
-            {
-                return _dataManager.GetObservableCollection(dataTable);
-            }
-        }
-
         public Dictionary<string, List<string>> GetOverlayActions()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.DataManager, "Getting overlay actions.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetOverlayActions().Result;
             }
@@ -353,7 +394,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.DataManager, "Getting overlay actions.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetOverlayActions(overlayType, overlayAction, username).Result;
             }
@@ -361,7 +403,8 @@ namespace StreamerBotLib.DataSQL
 
         public string GetQuote(int QuoteNum)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetQuote", DebugLogTypes.DataManager, "Getting quote.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetQuote(QuoteNum).Result;
             }
@@ -369,7 +412,8 @@ namespace StreamerBotLib.DataSQL
 
         public int GetQuoteCount()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetQuoteCount", DebugLogTypes.DataManager, "Getting quote count.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetQuoteCount().Result;
             }
@@ -377,7 +421,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<string> GetSocialComs()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetSocialComs", DebugLogTypes.DataManager, "Getting social commands.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetSocialComs().Result;
             }
@@ -385,14 +430,16 @@ namespace StreamerBotLib.DataSQL
 
         public string GetSocials()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetSocials", DebugLogTypes.DataManager, "Getting socials.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetSocials().Result;
             }
         }
         public StreamStat GetStreamData(DateTime dateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetStreamData", DebugLogTypes.DataManager, "Getting stream data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetStreamData(dateTime).Result;
             }
@@ -400,7 +447,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<string> GetTableFields(string TableName)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetTableFields", DebugLogTypes.DataManager, "Getting table fields.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetTableFields(TableName).Result;
             }
@@ -408,7 +456,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<string> GetTableNames()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetTableNames", DebugLogTypes.DataManager, "Getting table names.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetTableNames().Result;
             }
@@ -416,7 +465,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<TickerItem> GetTickerItems()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetTickerItems", DebugLogTypes.DataManager, "Getting ticker items.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetTickerItems().Result;
             }
@@ -424,7 +474,8 @@ namespace StreamerBotLib.DataSQL
 
         public Tuple<string, int, List<string>> GetTimerCommand(string Cmd)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetTimerCommand", DebugLogTypes.DataManager, "Getting timer command.");
+            lock (GUIDataManagerLock.Lock)
             {
                 if (RepeatTimerList.Count == 0)
                 {
@@ -437,7 +488,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<Tuple<string, int, List<string>>> GetTimerCommands()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetTimerCommands", DebugLogTypes.DataManager, "Getting timer commands.");
+            lock (GUIDataManagerLock.Lock)
             {
                 if (RepeatTimerList.Count == 0)
                 {
@@ -450,7 +502,8 @@ namespace StreamerBotLib.DataSQL
 
         public int GetTimerCommandTime(string Cmd)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetTimerCommandTime", DebugLogTypes.DataManager, "Getting timer command time.");
+            lock (GUIDataManagerLock.Lock)
             {
                 if (RepeatTimerList.Count == 0)
                 {
@@ -463,7 +516,8 @@ namespace StreamerBotLib.DataSQL
 
         public string GetUsage(string command)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetUsage", DebugLogTypes.DataManager, "Getting usage.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetUsage(command).Result;
             }
@@ -471,7 +525,8 @@ namespace StreamerBotLib.DataSQL
 
         public LiveUser GetUser(string UserName)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetUser", DebugLogTypes.DataManager, "Getting user.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetUser(UserName).Result;
             }
@@ -479,7 +534,8 @@ namespace StreamerBotLib.DataSQL
 
         public string GetUserId(LiveUser User)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetUserId", DebugLogTypes.DataManager, "Getting user ID.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetUserId(User).Result;
             }
@@ -487,7 +543,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GetWebhooks", DebugLogTypes.DataManager, "Getting webhooks.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.GetWebhooks(webhooksSource, webhooks).Result;
             }
@@ -495,7 +552,8 @@ namespace StreamerBotLib.DataSQL
 
         public void GUIRowEditSave()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("GUIRowEditSave", DebugLogTypes.DataManager, "GUI row edit save.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.GUIRowEditSave();
             }
@@ -503,7 +561,8 @@ namespace StreamerBotLib.DataSQL
 
         public void Initialize()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, "Initializing.");
+            lock (GUIDataManagerLock.Lock)
             {
                 Task.Run(async () =>
                 {
@@ -514,7 +573,8 @@ namespace StreamerBotLib.DataSQL
 
         public void NotifyStopBulkFollowers()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("NotifyStopBulkFollowers", DebugLogTypes.DataManager, "Notifying stop bulk followers.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.NotifyStopBulkFollowers();
             }
@@ -522,7 +582,8 @@ namespace StreamerBotLib.DataSQL
 
         public object[] PerformQuery(CommandsBase row, int Top)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PerformQuery", DebugLogTypes.DataManager, "Performing query.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PerformQuery(row, Top).Result;
             }
@@ -530,7 +591,8 @@ namespace StreamerBotLib.DataSQL
 
         public object PerformQuery(CommandsBase row, string ParamValue)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PerformQuery", DebugLogTypes.DataManager, "Performing query.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PerformQuery(row, ParamValue).Result;
             }
@@ -538,7 +600,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool PostCategory(CategoryData categoryData)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostCategory", DebugLogTypes.DataManager, "Posting category.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostCategory(categoryData).Result;
             }
@@ -546,7 +609,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostCategoryStream(CategoryData category, int StreamCount)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.DataManager, "Posting category stream.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostCategoryStream(category, StreamCount);
             }
@@ -554,7 +618,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostClip", DebugLogTypes.DataManager, "Posting clip.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostClip(ClipId, CreatedAt, Duration, GameId, Language, Title, Url, fromUserId, fromUserName).Result;
             }
@@ -562,7 +627,8 @@ namespace StreamerBotLib.DataSQL
 
         public string PostCommand(string cmd, CommandParams Params)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostCommand", DebugLogTypes.DataManager, "Posting command.");
+            lock (GUIDataManagerLock.Lock)
             {
                 RepeatTimerList.Clear(); // new command may have a repeat timer, clear to reset the timer list
 
@@ -572,7 +638,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostCurrencyType(Models.CurrencyType currencyType)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostCurrencyType", DebugLogTypes.DataManager, "Posting currency type.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostCurrencyType(currencyType);
             }
@@ -580,7 +647,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostCurrencyUpdate", DebugLogTypes.DataManager, "Posting currency update.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostCurrencyUpdate(User, value, CurrencyName);
             }
@@ -588,7 +656,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostCurrencyUpdate(List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> Updates, string CurrencyName)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostCurrencyUpdate", DebugLogTypes.DataManager, "Posting currency update.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostCurrencyUpdate(Updates, CurrencyName);
             }
@@ -596,7 +665,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostDataGridGUIAddRow", DebugLogTypes.DataManager, "Posting data grid GUI add row.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostDataGridGUIAddRow(tableMeta);
 
@@ -609,7 +679,8 @@ namespace StreamerBotLib.DataSQL
 
         public int PostDeathCounterUpdate(string currCategory, bool Reset, int updateValue)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostDeathCounterUpdate", DebugLogTypes.DataManager, "Posting death counter update.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostDeathCounterUpdate(currCategory, Reset, updateValue).Result;
             }
@@ -617,7 +688,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool PostFollower(Follow follow)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostFollower", DebugLogTypes.DataManager, "Posting follower.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostFollower(follow).Result;
             }
@@ -625,7 +697,8 @@ namespace StreamerBotLib.DataSQL
 
         public IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostFollowers", DebugLogTypes.DataManager, "Posting followers.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostFollowers(follows).Result;
             }
@@ -633,7 +706,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostGiveawayData(string UserId, DateTime dateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostGiveawayData", DebugLogTypes.DataManager, "Posting giveaway data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostGiveawayData(UserId, dateTime);
             }
@@ -641,7 +715,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostInRaidData", DebugLogTypes.DataManager, "Posting in-raid data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostInRaidData(user, time, viewers, gamename);
             }
@@ -649,7 +724,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostLearnMsgsRow(string Message, MsgTypes MsgType)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostLearnMsgsRow", DebugLogTypes.DataManager, "Posting learn messages row.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostLearnMsgsRow(Message, MsgType);
             }
@@ -657,7 +733,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostMergeUserStats", DebugLogTypes.DataManager, "Posting merge user stats.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostMergeUserStats(CurrUser, SourceUser, platform).Result;
             }
@@ -665,7 +742,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostMonitorChannel(IEnumerable<LiveUser> liveUsers)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostMonitorChannel", DebugLogTypes.DataManager, "Posting monitor channel.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostMonitorChannel(liveUsers);
             }
@@ -673,7 +751,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostMultiLiveLog(string LogItem)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostMultiLiveLog", DebugLogTypes.DataManager, "Posting multi-live log.");
+            lock (GUIDataManagerLock.Lock)
             {
                 MultiLiveStatusList.Insert(0, LogItem);
 
@@ -688,7 +767,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool PostMultiStreamDate(LiveUser liveUser, DateTime onDate)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostMultiStreamDate", DebugLogTypes.DataManager, "Posting multi-stream date.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostMultiStreamDate(liveUser, onDate).Result;
             }
@@ -696,7 +776,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostNewAutoShoutUser(string UserId, Platform platform)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostNewAutoShoutUser", DebugLogTypes.DataManager, "Posting new auto-shout user.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostNewAutoShoutUser(UserId, platform);
             }
@@ -704,7 +785,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostOutgoingRaid", DebugLogTypes.DataManager, "Posting outgoing raid.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostOutgoingRaid(HostedChannel, dateTime);
             }
@@ -712,7 +794,8 @@ namespace StreamerBotLib.DataSQL
 
         public int PostQuote(string Text)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostQuote", DebugLogTypes.DataManager, "Posting quote.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostQuote(Text).Result;
             }
@@ -720,7 +803,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool PostStream(DateTime StreamStart, string Category)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostStream", DebugLogTypes.DataManager, "Posting stream.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostStream(StreamStart, Category).Result;
             }
@@ -728,7 +812,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostStreamStat(StreamStat streamStat)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, "Posting stream stat.");
+            lock (GUIDataManagerLock.Lock)
             {
                 LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, $"Posting stream stats for stream started {streamStat.StreamStart}.");
 
@@ -738,7 +823,8 @@ namespace StreamerBotLib.DataSQL
 
         public void PostUserCustomWelcome(LiveUser User, string WelcomeMsg)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("PostUserCustomWelcome", DebugLogTypes.DataManager, "Posting user custom welcome.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.PostUserCustomWelcome(User, WelcomeMsg);
             }
@@ -746,7 +832,8 @@ namespace StreamerBotLib.DataSQL
 
         public void RemoveAllFollowers()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveAllFollowers", DebugLogTypes.DataManager, "Removing all followers.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.RemoveAllFollowers();
             }
@@ -754,7 +841,8 @@ namespace StreamerBotLib.DataSQL
 
         public void RemoveAllGiveawayData()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveAllGiveawayData", DebugLogTypes.DataManager, "Removing all giveaway data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.RemoveAllGiveawayData();
             }
@@ -762,7 +850,8 @@ namespace StreamerBotLib.DataSQL
 
         public void RemoveAllInRaidData()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveAllInRaidData", DebugLogTypes.DataManager, "Removing all in-raid data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.RemoveAllInRaidData();
             }
@@ -770,7 +859,8 @@ namespace StreamerBotLib.DataSQL
 
         public void RemoveAllOutRaidData()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveAllOutRaidData", DebugLogTypes.DataManager, "Removing all out-raid data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.RemoveAllOutRaidData();
             }
@@ -778,7 +868,8 @@ namespace StreamerBotLib.DataSQL
 
         public void RemoveAllOverlayTickerData()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveAllOverlayTickerData", DebugLogTypes.DataManager, "Removing all overlay ticker data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.RemoveAllOverlayTickerData();
             }
@@ -786,7 +877,8 @@ namespace StreamerBotLib.DataSQL
 
         public void RemoveAllStreamStats()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveAllStreamStats", DebugLogTypes.DataManager, "Removing all stream stats.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.RemoveAllStreamStats();
             }
@@ -794,7 +886,8 @@ namespace StreamerBotLib.DataSQL
 
         public void RemoveAllUsers()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveAllUsers", DebugLogTypes.DataManager, "Removing all users.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.RemoveAllUsers();
             }
@@ -802,7 +895,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool RemoveCommand(string command)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveCommand", DebugLogTypes.DataManager, "Removing command.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.RemoveCommand(command).Result;
             }
@@ -810,7 +904,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool RemoveQuote(int QuoteNum)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("RemoveQuote", DebugLogTypes.DataManager, "Removing quote.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.RemoveQuote(QuoteNum).Result;
             }
@@ -818,7 +913,8 @@ namespace StreamerBotLib.DataSQL
 
         public void SetBuiltInCommandsEnabled(bool Enabled)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("SetBuiltInCommandsEnabled", DebugLogTypes.DataManager, "Setting built-in commands enabled.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.SetBuiltInCommandsEnabled(Enabled);
             }
@@ -827,12 +923,14 @@ namespace StreamerBotLib.DataSQL
         [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
         public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled)
         {
-            lock (_dataManager) { }
+            LogWriter.DebugLog("SetIsEnabled", DebugLogTypes.DataManager, "Setting is enabled.");
+            lock (GUIDataManagerLock.Lock) { }
         }
 
         public void SetSystemEventsEnabled(bool Enabled)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("SetSystemEventsEnabled", DebugLogTypes.DataManager, "Setting system events enabled.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.SetSystemEventsEnabled(Enabled);
             }
@@ -840,7 +938,8 @@ namespace StreamerBotLib.DataSQL
 
         public void SetUserDefinedCommandsEnabled(bool Enabled)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("SetUserDefinedCommandsEnabled", DebugLogTypes.DataManager, "Setting user-defined commands enabled.");
+            lock (GUIDataManagerLock.Lock)
             {
                 RepeatTimerList.Clear(); // clear the list for enabled change - the timers don't respond for disabled commands
 
@@ -850,7 +949,8 @@ namespace StreamerBotLib.DataSQL
 
         public void SetWebhooksEnabled(bool Enabled)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("SetWebhooksEnabled", DebugLogTypes.DataManager, "Setting webhooks enabled.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.SetWebhooksEnabled(Enabled);
             }
@@ -858,7 +958,8 @@ namespace StreamerBotLib.DataSQL
 
         public void StartBulkFollowers()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("StartBulkFollowers", DebugLogTypes.DataManager, "Starting bulk followers.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.StartBulkFollowers();
             }
@@ -866,7 +967,8 @@ namespace StreamerBotLib.DataSQL
 
         public void SummarizeStreamData()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("SummarizeStreamData", DebugLogTypes.DataManager, "Summarizing stream data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.SummarizeStreamData();
             }
@@ -874,7 +976,8 @@ namespace StreamerBotLib.DataSQL
 
         public void SummarizeStreamData(ArchiveMultiStream archiveRecord)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("SummarizeStreamData", DebugLogTypes.DataManager, "Summarizing stream data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.SummarizeStreamData(archiveRecord);
             }
@@ -882,7 +985,8 @@ namespace StreamerBotLib.DataSQL
 
         public IEnumerable<LiveUser> TestGetRandomUsers(int count)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("TestGetRandomUsers", DebugLogTypes.DataManager, "Testing get random users.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.TestGetRandomUsers(count).Result;
             }
@@ -890,7 +994,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool TestInRaidData(string user, DateTime time, int viewers, string gamename)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("TestInRaidData", DebugLogTypes.DataManager, "Testing in-raid data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.TestInRaidData(user, time, viewers, gamename).Result;
             }
@@ -898,7 +1003,8 @@ namespace StreamerBotLib.DataSQL
 
         public bool TestOutRaidData(string HostedChannel, DateTime dateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("TestOutRaidData", DebugLogTypes.DataManager, "Testing out-raid data.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.TestOutRaidData(HostedChannel, dateTime).Result;
             }
@@ -906,7 +1012,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UpdateCurrency(List<string> Users, DateTime dateTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.DataManager, "Updating currency.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.UpdateCurrency(Users, dateTime);
             }
@@ -914,7 +1021,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UpdateFollowers(IEnumerable<Follow> follows)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UpdateFollowers", DebugLogTypes.DataManager, "Updating followers.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.UpdateFollowers(follows);
             }
@@ -922,7 +1030,8 @@ namespace StreamerBotLib.DataSQL
 
         public List<LearnMsgRecord> UpdateLearnedMsgs()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UpdateLearnedMsgs", DebugLogTypes.DataManager, "Updating learned messages.");
+            lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.UpdateLearnedMsgs().Result;
             }
@@ -930,7 +1039,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UpdateOverlayTicker(OverlayTickerItem item, string name)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UpdateOverlayTicker", DebugLogTypes.DataManager, "Updating overlay ticker.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.UpdateOverlayTicker(item, name);
             }
@@ -938,7 +1048,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UpdateStats(DBUserStats Stat, string userId, Platform platform)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UpdateStats", DebugLogTypes.DataManager, "Updating stats.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.UpdateStats(Stat, userId, platform);
             }
@@ -946,7 +1057,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.DataManager, "Updating watch time.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.UpdateWatchTime(Users, CurrTime);
             }
@@ -954,7 +1066,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UpdateWatchTime(LiveUser User, DateTime CurrTime)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.DataManager, "Updating watch time.");
+            lock (GUIDataManagerLock.Lock)
             {
                 UpdateWatchTime([User], CurrTime);
             }
@@ -962,7 +1075,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UserJoined(LiveUser User, DateTime NowSeen)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager, "User joined.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.UserJoined(User, NowSeen);
             }
@@ -970,7 +1084,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager, "User joined.");
+            lock (GUIDataManagerLock.Lock)
             {
                 LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
                     $"Updating {Users.Count()} users now joined to the channel.");
@@ -980,7 +1095,8 @@ namespace StreamerBotLib.DataSQL
 
         public void UserLeft(LiveUser User, DateTime LastSeen)
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("UserLeft", DebugLogTypes.DataManager, "User left.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.UserLeft(User, LastSeen);
             }
@@ -988,7 +1104,8 @@ namespace StreamerBotLib.DataSQL
 
         public void Exit()
         {
-            lock (_dataManager)
+            LogWriter.DebugLog("Exit", DebugLogTypes.DataManager, "Exiting.");
+            lock (GUIDataManagerLock.Lock)
             {
                 _dataManager.Exit();
             }
