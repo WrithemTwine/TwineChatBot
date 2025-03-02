@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
-using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
@@ -46,18 +45,15 @@ namespace StreamerBotLib.DataSQL.Import
 
             void LoadFile(string filename)
             {
-                lock (GUIDataManagerLock.Lock)
+                if (File.Exists(filename))
                 {
-                    if (File.Exists(filename))
-                    {
-                        _ = _DataSource.ReadXml(new XmlTextReader(filename), XmlReadMode.DiffGram);
+                    _ = _DataSource.ReadXml(new XmlTextReader(filename), XmlReadMode.DiffGram);
 
-                        foreach (CommandsRow c in _DataSource.Commands.Select())
+                    foreach (CommandsRow c in _DataSource.Commands.Select())
+                    {
+                        if (DBNull.Value.Equals(c["IsEnabled"]))
                         {
-                            if (DBNull.Value.Equals(c["IsEnabled"]))
-                            {
-                                c["IsEnabled"] = true;
-                            }
+                            c["IsEnabled"] = true;
                         }
                     }
                 }

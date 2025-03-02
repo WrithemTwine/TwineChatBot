@@ -322,15 +322,15 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = BuildDataContext();
 
-                if (!(from CT in context.CurrencyType.Include(curr=>curr.Currency)
-                      where CT.CurrencyName == currencyType.CurrencyName 
+                if (!(from CT in context.CurrencyType.Include(curr => curr.Currency)
+                      where CT.CurrencyName == currencyType.CurrencyName
                       select CT).Any())
                 {
                     var newCurrType = await context.CurrencyType.AddAsync(currencyType);
 
-                    foreach (Users U in context.Users.Include(curr=>curr.Currency))
+                    foreach (Users U in context.Users.Include(curr => curr.Currency))
                     {
-                        U.Currency.Add(new(U.UserId,U.Platform,0,newCurrType.Entity.CurrencyName));
+                        U.Currency.Add(new(U.UserId, U.Platform, 0, newCurrType.Entity.CurrencyName));
                     }
                 }
 
@@ -346,7 +346,7 @@ namespace StreamerBotLib.DataSQL
             return Task.Run(async () =>
             {
                 using var context = BuildDataContext();
-                Currency currency = (from C in context.Currency.Include(type=>type.CurrencyType)
+                Currency currency = (from C in context.Currency.Include(type => type.CurrencyType)
                                      where (C.CurrencyName == CurrencyName && C.UserId == User.UserId)
                                      select C).FirstOrDefault();
                 if (currency != default)
@@ -367,7 +367,7 @@ namespace StreamerBotLib.DataSQL
 
                 foreach (var Player in Updates)
                 {
-                    foreach (Currency CurrUser in (from C in context.Currency.Include(type=>type.CurrencyType)
+                    foreach (Currency CurrUser in (from C in context.Currency.Include(type => type.CurrencyType)
                                                    where C.CurrencyName == CurrencyName && C.UserId == Player.Player.UserId
                                                    select C))
                     {
@@ -386,8 +386,9 @@ namespace StreamerBotLib.DataSQL
             return Task.Run(async () =>
             {
                 using var context = BuildDataContext();
-                GameDeadCounter update = (from G in context.GameDeadCounter.Include(category=>category.CategoryList)
-                                          where G.Category == currCategory select G).FirstOrDefault();
+                GameDeadCounter update = (from G in context.GameDeadCounter.Include(category => category.CategoryList)
+                                          where G.Category == currCategory
+                                          select G).FirstOrDefault();
                 if (update != default)
                 {
                     if (Reset)
@@ -462,11 +463,11 @@ namespace StreamerBotLib.DataSQL
             return Task.Run(async () =>
             {
                 using var context = BuildDataContext();
-                IEnumerable<Currency> userCurrency = from uCu in context.Currency.Include(user=>user.User) 
-                                                     where uCu.User.UserName == CurrUser 
+                IEnumerable<Currency> userCurrency = from uCu in context.Currency.Include(user => user.User)
+                                                     where uCu.User.UserName == CurrUser
                                                      select uCu;
-                IEnumerable<Currency> srcCurrency = from sCu in context.Currency.Include(user => user.User) 
-                                                    where sCu.User.UserName == SourceUser 
+                IEnumerable<Currency> srcCurrency = from sCu in context.Currency.Include(user => user.User)
+                                                    where sCu.User.UserName == SourceUser
                                                     select sCu;
 
                 foreach ((Currency UC, Currency SC) in (from U in userCurrency
@@ -478,11 +479,11 @@ namespace StreamerBotLib.DataSQL
                 }
                 context.Currency.RemoveRange(srcCurrency);
 
-                UserStats currUserstat = (from Cu in context.UserStats.Include(stat=>stat.User) 
-                                          where (Cu.User.UserName == CurrUser && Cu.Platform == platform) 
+                UserStats currUserstat = (from Cu in context.UserStats.Include(stat => stat.User)
+                                          where (Cu.User.UserName == CurrUser && Cu.Platform == platform)
                                           select Cu).FirstOrDefault();
-                UserStats sourceUser = (from Su in context.UserStats.Include(stat => stat.User) 
-                                        where (Su.User.UserName == SourceUser && Su.Platform == platform) 
+                UserStats sourceUser = (from Su in context.UserStats.Include(stat => stat.User)
+                                        where (Su.User.UserName == SourceUser && Su.Platform == platform)
                                         select Su).FirstOrDefault();
 
                 bool result;

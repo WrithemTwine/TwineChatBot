@@ -1,7 +1,9 @@
 ﻿
 using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
+using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Static;
 
 namespace StreamerBotLib.GUI
 {
@@ -23,6 +25,8 @@ namespace StreamerBotLib.GUI
         //public static TwitchStreamerEventSubBotNoScopes TwitchStreamerEventSubBotNoScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotNoScopes;
         public GUITwitchBots()
         {
+            LogWriter.DebugLog(".ctor_GUITwitchBots", DebugLogTypes.GUIBotComs, "Building the GUITwitchBots.");
+
             //TwitchBotEventSubChatClient.OnBotStarted += TwitchBot_OnBotStarted;
             //TwitchBotEventSubChatClient.OnBotStopped += TwitchBot_OnBotStopped;
             //TwitchBotEventSubChatClient.OnBotFailedStart += TwitchBot_OnBotFailedStart;
@@ -54,35 +58,41 @@ namespace StreamerBotLib.GUI
 
         public static void Send(string msg)
         {
+            LogWriter.DebugLog("Send", DebugLogTypes.GUIBotComs, $"Sending a message, {msg}, to the chat.");
             TwitchBotSendChatClient.Send(msg);
         }
 
         private void TwitchBot_OnBotStarted(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
+            LogWriter.DebugLog("TwitchBot_OnBotStarted", DebugLogTypes.GUIBotComs, $"Bot started, {currBot.BotClientName}.");
             BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsActive == true });
         }
 
         private void TwitchBot_OnBotStopped(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
+            LogWriter.DebugLog("TwitchBot_OnBotStopped", DebugLogTypes.GUIBotComs, $"Bot stopped, {currBot.BotClientName}.");
             BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsActive == true });
         }
 
         private void TwitchBot_OnBotFailedStart(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
+            LogWriter.DebugLog("TwitchBot_OnBotFailedStart", DebugLogTypes.GUIBotComs, $"Bot failed to start, {currBot.BotClientName}.");
             BotFailedStart(new() { BotName = currBot.BotClientName, Started = currBot.IsActive == true });
         }
 
         #region Events
         public static void RegisterChannelPoints(EventHandler<OnGetChannelPointsEventArgs> GetPointsEvent)
         {
+            LogWriter.DebugLog("RegisterChannelPoints", DebugLogTypes.GUIBotComs, "Registering the channel points event.");
             TwitchHelixBot.GetChannelPoints += GetPointsEvent;
         }
 
         public static void GetChannelPoints(string UserName)
         {
+            LogWriter.DebugLog("GetChannelPoints", DebugLogTypes.GUIBotComs, $"Getting channel points for {UserName}.");
             _ = TwitchHelixBot.GetUserCustomRewards(UserName: UserName);
         }
 

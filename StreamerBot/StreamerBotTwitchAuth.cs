@@ -320,22 +320,25 @@ namespace StreamerBot
 
         private void SetBotRadioButtons(bool value, Platform platform)
         {
-            foreach (RadioButton rb in
-                                        from A in BotOps
-                                        where A.Item2 == Platform.Service || A.Item2 == platform
-                                        select A.Item3
-                                        )
+            Dispatcher.Invoke(() =>
             {
-                rb.IsEnabled = value;
-            }
+                foreach (RadioButton rb in
+                                            from A in BotOps
+                                            where A.Item2 == Platform.Service || A.Item2 == platform
+                                            select A.Item3
+                                            )
+                {
+                    rb.IsEnabled = value;
+                }
+            });
         }
 
         private void Controller_TokensInitializedAsync(object sender, EventArgs e)
         {
-            Dispatcher.BeginInvoke(()=>Task.Run(async () =>
+            Dispatcher.Invoke(() => Task.Run(() =>
             {
                 SetBotRadioButtons(true, Platform.Twitch); // event handler from Twitch bots, at this point the tokens are authorized
-                await StartAutoBots();
+                StartAutoBots();
             }));
         }
     }

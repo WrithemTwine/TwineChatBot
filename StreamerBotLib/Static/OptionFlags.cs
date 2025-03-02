@@ -858,6 +858,7 @@ namespace StreamerBotLib.Static
         public static bool EnableDebugStatSystem => Settings.Default.EnableDebugStatSystem;
         public static bool EnableDebugBotController => Settings.Default.EnableDebugBotController;
         public static bool EnableDebugCurrencySystem => Settings.Default.EnableDebugCurrencySystem;
+        public static bool EnableDebugManageStreamViewers => Settings.Default.EnableDebugManageStreamViewers;
         public static bool EnableDebugModerationSystem => Settings.Default.EnableDebugModerationSystem;
         public static bool EnableDebugOverlaySystem => Settings.Default.EnableDebugOverlaySystem;
         public static bool EnableDebugBlackjackGame => Settings.Default.EnableDebugBlackjackGame;

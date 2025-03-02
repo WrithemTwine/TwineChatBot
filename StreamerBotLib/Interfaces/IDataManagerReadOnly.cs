@@ -8,7 +8,9 @@ namespace StreamerBotLib.Interfaces
     public interface IDataManagerReadOnly
     {
         event EventHandler UpdatedMonitoringChannels;
-        ObservableCollection<ArchiveMultiStream> CleanupList { get; }
+        List<ArchiveMultiStream> CleanupList { get; }
+        List<ArchiveMultiStream> GetCleanupList();
+
         string MultiLiveStatusLog { get; }
         bool CheckField(string table, string field);
         bool CheckPermission(string cmd, ViewerTypes permission);
@@ -40,6 +42,5 @@ namespace StreamerBotLib.Interfaces
         LiveUser GetUser(string UserName);
         string GetCommandString();
         IEnumerable<string> GetCommandList(bool prefix = true);
-        ObservableCollection<ArchiveMultiStream> GetCleanupList();
     }
 }

@@ -14,33 +14,29 @@ namespace StreamerBotLib.Systems
         #region Auto-Mod Messages
         public static void ManageLearnedMsgList()
         {
-            lock (GUI.GUIDataManagerLock.Lock)
+            LogWriter.DebugLog("ManageLearnedMsgList", DebugLogTypes.ModerationSystem, "Checking for learned messages.");
+            List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
+            if (learnMsgsRows != null)
             {
-                List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
-                if (learnMsgsRows != null)
-                {
-                    MessageAnalysis.UpdateLearningList((from LearnMsgRecord M in learnMsgsRows
-                                                        select new BotModAction()
-                                                        {
-                                                            LearnMsg = M.TeachingMsg,
-                                                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
-                                                        }).ToList());
-                }
+                MessageAnalysis.UpdateLearningList((from LearnMsgRecord M in learnMsgsRows
+                                                    select new BotModAction()
+                                                    {
+                                                        LearnMsg = M.TeachingMsg,
+                                                        ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
+                                                    }).ToList());
             }
         }
 
         public Tuple<ModActions, int, MsgTypes, BanReasons> ModerateMessage(CmdMessage MsgReceived)
         {
+            LogWriter.DebugLog("ModerateMessage", DebugLogTypes.ModerationSystem, $"Moderating message from {MsgReceived.DisplayName}.");
             ManageLearnedMsgList();
 
-            lock (GUI.GUIDataManagerLock.Lock)
-            {
-                MsgTypes Found = MessageAnalysis.Predict(MsgReceived.Message);
+            MsgTypes Found = MessageAnalysis.Predict(MsgReceived.Message);
 
-                Tuple<ModActions, BanReasons, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
+            Tuple<ModActions, BanReasons, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
 
-                return new(remedy.Item1, remedy.Item3, Found, remedy.Item2);
-            }
+            return new(remedy.Item1, remedy.Item3, Found, remedy.Item2);
         }
         #endregion
 

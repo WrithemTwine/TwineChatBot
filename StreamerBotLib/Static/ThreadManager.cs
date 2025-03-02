@@ -2,7 +2,6 @@
 using StreamerBotLib.Events;
 using StreamerBotLib.Models;
 
-using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace StreamerBotLib.Static
@@ -73,7 +72,7 @@ namespace StreamerBotLib.Static
         {
             try
             {
-                await GUIDispatcher.BeginInvoke(task.Start);
+                await GUIDispatcher.BeginInvoke(task.RunSynchronously);
             }
             catch (Exception e)
             {
@@ -84,7 +83,7 @@ namespace StreamerBotLib.Static
         {
             LogWriter.DebugLog(CallMethodName, DebugLogTypes.ThreadManager, $"ThreadManager called the GUI Dispatcher's BeginInvoke, to start soon, on behalf of {CallMethodName}.");
 
-            GUIDispatcher.BeginInvoke(() => action);
+            GUIDispatcher.Invoke(() => action);
         }
 
         /// <summary>

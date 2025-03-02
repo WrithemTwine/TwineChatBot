@@ -87,7 +87,7 @@ namespace StreamerBotLib.Systems
 
                             if (ChangedCommands[RepeatChange])
                             {
-                                foreach(string Key in ChangedCommands.Keys)
+                                foreach (string Key in ChangedCommands.Keys)
                                 {
                                     ChangedCommands[Key] = true;
                                 }
@@ -175,12 +175,16 @@ namespace StreamerBotLib.Systems
                     && ((OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline) || !OptionFlags.RepeatWhenLive);
         }
 
+        private string AllCat = null;
+
         private bool ComputeRerunLoop(List<string> CategoryList)
         {
             //LogWriter.DebugLog("ComputeRerunLoop", DebugLogTypes.RepeatCommandSystem, $"CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory)) {CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory))}");
 
+            AllCat ??= LocalizedMsgSystem.GetVar(Msg.MsgAllCategory);
+
             return ComputeRerunLoop()
-                    && (CategoryList.Contains(Category) || CategoryList.Contains(LocalizedMsgSystem.GetVar(Msg.MsgAllCategory)));
+                    && (CategoryList.Contains(Category) || CategoryList.Contains(AllCat));
         }
 
         private bool ComputeRepeat()
@@ -203,7 +207,7 @@ namespace StreamerBotLib.Systems
             while (repeat != 0 && ComputeRerunLoop(cmd.CategoryList))
             {
                 LogWriter.DebugLog("RepeatCmd", DebugLogTypes.RepeatCommandSystem, $"Command {cmd.Command}");
-                LogWriter.DebugLog("RepeatCmd", DebugLogTypes.RepeatCommandSystem, 
+                LogWriter.DebugLog("RepeatCmd", DebugLogTypes.RepeatCommandSystem,
                     $"OptionFlags.ActiveToken {OptionFlags.ActiveToken}, repeat != 0 {repeat != 0}, " +
                     $"OptionFlags.IsStreamOnline {OptionFlags.IsStreamOnline}, " +
                     $"OptionFlags.RepeatLiveReset {OptionFlags.RepeatLiveReset}, !ResetLive {!ResetLive}");
@@ -237,7 +241,7 @@ namespace StreamerBotLib.Systems
                                     [],
                                     DataManage.GetCommand(cmd.Command),
                                     out short multi, true),
-                                    RepeatMsg = multi
+                                RepeatMsg = multi
                             });
                         }
                     }

@@ -6,7 +6,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -14,10 +13,10 @@ namespace StreamerBotLib.DataSQL
     {
         #region MultiLive data
         internal event EventHandler UpdatedMonitoringChannels;
-        private ObservableCollection<ArchiveMultiStream> CleanupList { get; } = [];
+        private List<ArchiveMultiStream> CleanupList { get; } = [];
         private bool IsLiveStreamUpdated = false;
 
-        internal ObservableCollection<ArchiveMultiStream> GetCleanupList()
+        internal List<ArchiveMultiStream> GetCleanupList()
         {
             return CleanupList;
         }
@@ -100,7 +99,7 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = BuildDataContext();
 
-                MultiChannels currUser = (from MC in context.MultiChannels.Include(multi=>multi.MultiLiveStreams) where MC.UserId == liveUser.UserId select MC).FirstOrDefault();
+                MultiChannels currUser = (from MC in context.MultiChannels.Include(multi => multi.MultiLiveStreams) where MC.UserId == liveUser.UserId select MC).FirstOrDefault();
 
                 if (currUser.UserName != liveUser.UserName) // update username if it's changed
                 {
@@ -119,36 +118,35 @@ namespace StreamerBotLib.DataSQL
             });
         }
 
-        internal async Task SummarizeStreamData()
+        internal Task SummarizeStreamData()
         {
-            if (IsLiveStreamUpdated || CleanupList.Count == 0) // only perform if flag for update occurs
+            return Task.Run(async () =>
             {
-                await ThreadManager.AddTaskToGUIDispatcher(
-                    new Task(() =>
-                    {
-                        using var context = BuildDataContext();
-                        CleanupList.Clear();
-
-                        List<DateTime> AllDates = new(from ML in context.MultiLiveStreams select ML.LiveDate.Date);
-                        List<DateTime> UniqueDates = new(AllDates.Intersect(AllDates));
-
-                        foreach (var A in (from M in UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
+                if (IsLiveStreamUpdated || CleanupList.Count == 0) // only perform if flag for update occurs
+                {
+                    await ThreadManager.AddTaskToGUIDispatcher(
+                        new Task(() =>
                         {
-                            ThroughDate = uniqueDate,
-                            StreamCount = (from DateTime dates in AllDates
-                                           where dates.Date <= uniqueDate
-                                           select dates).Count()
+                            using var context = BuildDataContext();
+                            CleanupList.Clear();
+
+                            List<DateTime> AllDates = [.. from ML in context.MultiLiveStreams select ML.LiveDate.Date];
+                            List<DateTime> UniqueDates = [.. AllDates.Intersect(AllDates)];
+
+                            CleanupList.AddRange(from M in UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
+                                                            {
+                                                                ThroughDate = uniqueDate,
+                                                                StreamCount = (from DateTime dates in AllDates
+                                                                               where dates.Date <= uniqueDate
+                                                                               select dates).Count()
+                                                            })
+                                                 select M);
+
+                            IsLiveStreamUpdated = false; // reset update flag indicator
                         })
-                                           select M))
-                        {
-                            CleanupList.Add(A);
-                        }
-
-                        IsLiveStreamUpdated = false; // reset update flag indicator
-
-                    })
-                );
-            }
+                    );
+                }
+            });
         }
 
         internal Task SummarizeStreamData(ArchiveMultiStream archiveRecord)

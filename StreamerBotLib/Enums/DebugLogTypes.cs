@@ -25,6 +25,7 @@
         GUIThemes,
         GUITwitchTokenAuth,
         LocalizedMessages,
+        ManageStreamViewers,
         ModerationSystem,
         OutputMsgParsing,
         OverlayBot,// specific to processing an overlay out to broadcast software URLs

@@ -38,14 +38,17 @@ namespace StreamerBotLib.Systems
         /// <param name="RewardList">The list of rewards. Internal list updates for any new data.</param>
         public void SetChannelRewardList(List<string> RewardList)
         {
+            LogWriter.DebugLog("SetChannelRewardList", DebugLogTypes.OverlayBot, $"Setting the Channel Reward List with {RewardList.Count} rewards.");
             ChannelPointRewards.UniqueAddRange(RewardList);
         }
 
         public Dictionary<string, List<string>> GetOverlayActions()
         {
+            LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.OverlayBot, "Getting the Overlay Actions for the Overlay Server.");
             Dictionary<string, List<string>> OverlayActionPairs = new()
             {
-                // if there are no channel point rewards, the streamers credentials may need to be loaded or there aren't any channel points
+                // if there are no channel point rewards, the streamers credentials
+                // may need to be loaded or there aren't any channel points
                 { OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : ["None or Not Loaded!"] },
                 { OverlayTypes.Giveaway.ToString(), [OverlayTypes.Giveaway.ToString()] },
                 { OverlayTypes.Commands.ToString(), new(DataManage.GetCommandList(false)) },
@@ -64,6 +67,7 @@ namespace StreamerBotLib.Systems
 
         private static void CheckURL(string ProvidedURL, float UrlDuration, ref OverlayActionType data)
         {
+            LogWriter.DebugLog("CheckURL", DebugLogTypes.OverlayBot, $"Checking the provided URL {ProvidedURL} and Duration {UrlDuration}.");
             if (ProvidedURL != null && UrlDuration != 0)
             {
                 data.MediaFile = ProvidedURL;
@@ -83,6 +87,7 @@ namespace StreamerBotLib.Systems
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
+            LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"Checking for an Overlay Event with action data, {overlayType} and {Action}.");
             List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType, Action, User?.UserName);
             OverlayActionType FoundAction = null;
 
@@ -143,6 +148,7 @@ namespace StreamerBotLib.Systems
 
         private void OnGetChannelClipsEvent(GetChannelClipsEventArgs e)
         {
+            LogWriter.DebugLog("OnGetChannelClipsEvent", DebugLogTypes.OverlayBot, $"Requesting Channel Clips for {e.ChannelName}.");
             GetChannelClipsEvent?.Invoke(this, e);
         }
 
@@ -155,6 +161,7 @@ namespace StreamerBotLib.Systems
 
             public void FoundChannelClips(List<Clip> clips)
             {
+                LogWriter.DebugLog("FoundChannelClips", DebugLogTypes.OverlayBot, $"Found {clips.Count} clips for the shoutout.");
                 if (clips.Count > 0)
                 {
                     Random random = new();
@@ -178,6 +185,7 @@ namespace StreamerBotLib.Systems
         /// <param name="UserName">The Username specific to the ticker item.</param>
         public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
+            LogWriter.DebugLog("AddNewOverlayTickerItem", DebugLogTypes.OverlayBot, $"Adding a new Overlay Ticker Item for {UserName}.");
             if (OptionFlags.ManageOverlayTicker)
             {
                 DataManage.UpdateOverlayTicker(item, UserName);
@@ -191,6 +199,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public void SendInitialTickerItems()
         {
+            LogWriter.DebugLog("SendInitialTickerItems", DebugLogTypes.OverlayBot, "Sending the initial Ticker Items to the Overlay Server.");
             UpdatedTickerItems?.Invoke(this, new() { TickerItems = DataManage.GetTickerItems() });
         }
     }

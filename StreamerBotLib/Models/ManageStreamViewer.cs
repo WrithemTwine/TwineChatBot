@@ -9,7 +9,7 @@
     /// <param name="firstChatMessage">True/False - user first chat in the channel, per new stream</param>
     /// <param name="inStreamNow">True/False - user is currently in the channel for 'current active' 
     /// purposes in calculating user stats</param>
-    internal class ManageStreamViewer(
+    public class ManageStreamViewer(
         LiveUser liveUser,
         bool evaluateCurrentCheck = false,
         bool firstjoinedChannel = false,

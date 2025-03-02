@@ -43,7 +43,7 @@ namespace StreamerBotLib.Interfaces
         new List<CategoryData> GetGameCategories();
         new string GetKey(string Table);
         new IEnumerable<string> GetKeys(string Table);
-        new ObservableCollection<ArchiveMultiStream> GetCleanupList();
+        new List<ArchiveMultiStream> GetCleanupList();
         string GetNewestFollower();
         Dictionary<string, List<string>> GetOverlayActions();
         List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username);

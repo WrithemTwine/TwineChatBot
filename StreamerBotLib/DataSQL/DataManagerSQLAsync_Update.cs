@@ -6,7 +6,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 
 using System.Data;
-using System.Linq;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -19,8 +18,8 @@ namespace StreamerBotLib.DataSQL
                 using var context = BuildDataContext();
 
                 await context.Users
-                .Include(curr=>curr.Currency)
-                .ThenInclude(type=>type.CurrencyType)
+                .Include(curr => curr.Currency)
+                .ThenInclude(type => type.CurrencyType)
                 .Join(Users, (u) => u.UserId, (user) => user, (dbusers, curr) => dbusers)
                 .ForEachAsync((u) =>
                 {

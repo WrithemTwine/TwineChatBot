@@ -44,6 +44,8 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public SystemsController()
         {
+            LogWriter.DebugLog(".ctor_SystemsController", DebugLogTypes.SystemController, "Initializing Systems Controller.");
+
             DataManage = new DataManagerSQL();
             ActionSystem.DataManage = DataManage;
             LocalizedMsgSystem.SetDataManager(DataManage);
@@ -59,23 +61,25 @@ namespace StreamerBotLib.Systems
 #if DEBUG
         public void TestAddUsers()
         {
+            LogWriter.DebugLog("TestAddUsers", DebugLogTypes.SystemController, "Adding test users to the system.");
             int getUsers = 20;
             Random random = new();
 
             UserJoined(((IDataManagerTestMethods)DataManage).TestGetRandomUsers(random.Next(getUsers)).ToList());
 
         }
-
 #endif
 
         private void ActionProcessCmds()
         {
+            LogWriter.DebugLog("ActionProcessCmds", DebugLogTypes.SystemController, "Starting the command processing thread.");
             while (OptionFlags.ActiveToken && ChatBotStarted)
             {
                 lock (ProcMsgQueue)
                 {
                     while (ProcMsgQueue.Count > 0)
                     {
+                        LogWriter.DebugLog("ActionProcessCmds", DebugLogTypes.SystemController, "Processing command from queue.");
                         ProcMsgQueue.Dequeue().Start();
                     }
                     Thread.Sleep(300);
@@ -90,7 +94,9 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public void Exit()
         {
+            LogWriter.DebugLog("Exit", DebugLogTypes.SystemController, "Conclude processing any commands.");
             ProcessMsgs?.Join();
+            LogWriter.DebugLog("Exit", DebugLogTypes.SystemController, "Closing the database connection.");
             ((DataManagerSQL)DataManage).Exit();
         }
 
@@ -102,44 +108,55 @@ namespace StreamerBotLib.Systems
         /// <param name="e"></param>
         private void Command_ProcessedCommand(object sender, PostChannelMessageEventArgs e)
         {
+            LogWriter.DebugLog("Command_ProcessedCommand", DebugLogTypes.SystemController, "Processing command message.");
             SendMessage(e.Msg, e.RepeatMsg);
         }
 
         private void SendMessage(string message, int Repeat = 0)
         {
+            LogWriter.DebugLog("SendMessage", DebugLogTypes.SystemController, "Sending message.");
             if (message is not "" and not "/me ")
             {
+                LogWriter.DebugLog("SendMessage", DebugLogTypes.SystemController, $"Sending message: {message}");
                 PostChannelMessage?.Invoke(this, new() { Msg = message, RepeatMsg = Repeat });
             }
         }
 
         public void ActivateRepeatTimers()
         {
+            LogWriter.DebugLog("ActivateRepeatTimers", DebugLogTypes.SystemController, "Activating repeat timers.");
             SystemActions.StartElapsedTimerThread();
         }
 
         public void NotifyBotStart()
         {
+            LogWriter.DebugLog("NotifyBotStart", DebugLogTypes.SystemController, "Starting the bot.");
             ActionSystem.ClearUserList(DateTime.Now.ToLocalTime());
 
             ChatBotStarted = true;
 
+            LogWriter.DebugLog("NotifyBotStart", DebugLogTypes.SystemController, "Checking the command processing thread.");
             // prevent starting another thread
             if (ProcessMsgs == null || !ProcessMsgs.IsAlive)
             {
+                LogWriter.DebugLog("NotifyBotStart", DebugLogTypes.SystemController, "Starting the command processing thread.");
                 ProcessMsgs = ThreadManager.CreateThread("NotifyBotStart", ActionProcessCmds, ThreadWaitStates.Wait, ThreadExitPriority.VeryHigh);
                 ProcessMsgs.Start();
             }
 
+            LogWriter.DebugLog("NotifyBotStart", DebugLogTypes.SystemController, "Starting the elapsed timer thread.");
             SystemActions.StartElapsedTimerThread();
             ActionSystem.ManageLearnedMsgList();
         }
 
         public void NotifyBotStop()
         {
+            LogWriter.DebugLog("NotifyBotStop", DebugLogTypes.SystemController, "Stopping the bot.");
             ChatBotStarted = false;
 
+            LogWriter.DebugLog("NotifyBotStop", DebugLogTypes.SystemController, "Stopping the elapsed timer thread.");
             SystemActions.StopElapsedTimerThread();
+            LogWriter.DebugLog("NotifyBotStop", DebugLogTypes.SystemController, "Stopping the command processing thread.");
             ProcessMsgs?.Join();
         }
 
@@ -153,22 +170,26 @@ namespace StreamerBotLib.Systems
 
         public static void StartBulkFollowers()
         {
+            LogWriter.DebugLog("StartBulkFollowers", DebugLogTypes.SystemController, "Starting bulk followers procedure.");
             DataManage.StartBulkFollowers();
         }
 
         public static void UpdateFollowers(List<Follow> Follows)
         {
+            LogWriter.DebugLog("UpdateFollowers", DebugLogTypes.SystemController, "Updating followers.");
             Follows.ForEach((f) => { f.Category = CurrCategory.CategoryName; });
             DataManage.UpdateFollowers(Follows);
         }
 
         private void DataManage_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
         {
+            LogWriter.DebugLog("DataManage_OnBulkFollowersAddFinished", DebugLogTypes.SystemController, "Notifying bulk followers.");
             AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, e.LastFollowerUserName);
         }
 
         public static void StopBulkFollowers()
         {
+            LogWriter.DebugLog("StopBulkFollowers", DebugLogTypes.SystemController, "Stopping bulk followers procedure.");
             DataManage.NotifyStopBulkFollowers();
         }
 
@@ -176,6 +197,7 @@ namespace StreamerBotLib.Systems
 
         public void AddNewFollowers(List<Follow> FollowList)
         {
+            LogWriter.DebugLog("AddNewFollowers", DebugLogTypes.SystemController, "Adding new followers.");
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled, out _);
             FollowList.ForEach((f) => { f.Category = CurrCategory.CategoryName; }); // add category into follow object(s)
             ProcessFollow(FollowList, msg, FollowEnabled);
@@ -183,6 +205,7 @@ namespace StreamerBotLib.Systems
 
         private void ProcessFollow(IEnumerable<Follow> FollowList, string msg, bool FollowEnabled)
         {
+            LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Processing new followers.");
             if (OptionFlags.TwitchFollowerAutoBanBots && FollowList.Count() >= OptionFlags.TwitchFollowerAutoBanCount)
             {
                 foreach (Follow F in FollowList)
@@ -196,18 +219,22 @@ namespace StreamerBotLib.Systems
             {
                 List<string> UserList = [];
 
+                LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Evaluating new followers.");
                 foreach (Follow f in DataManage.PostFollowers(FollowList))
                 {
                     if (OptionFlags.ManageFollowers)
                     {
+                        LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Managing new followers.");
                         if (FollowEnabled)
                         {
                             if (OptionFlags.TwitchFollowerEnableMsgLimit && FollowList.Count() >= OptionFlags.TwitchFollowerMsgLimit)
                             {
+                                LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Adding user to group follower list.");
                                 UserList.Add(f.FromUserName);
                             }
                             else
                             {
+                                LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Sending message about user.");
                                 string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
                                 SendMessage(message);
 
@@ -215,17 +242,22 @@ namespace StreamerBotLib.Systems
                             }
                         }
 
+                        LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Updating statistics.");
                         UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
                     }
                 }
 
+                LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Checking for overlay follower event.");
                 AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, FollowList.Last().FromUserName);
+
 
                 if (UserList.Count > 0)
                 {
+                    LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Processing group follower list.");
                     int Pick = 5;
                     int i = 0;
 
+                    LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Sending to channel a group multi-follower message, i.e. 1 message with n-followers.");
                     while (i * Pick < UserList.Count)
                     {
                         string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) }));
@@ -244,76 +276,91 @@ namespace StreamerBotLib.Systems
 
         public static void ManageDatabase()
         {
+            LogWriter.DebugLog("ManageDatabase", DebugLogTypes.SystemController, "Managing database.");
             ActionSystem.ManageDatabase();
         }
 
         public static void ClearWatchTime()
         {
+            LogWriter.DebugLog("ClearWatchTime", DebugLogTypes.SystemController, "Clearing watch time.");
             ActionSystem.ClearWatchTime();
         }
 
         public static void ClearAllCurrenciesValues()
         {
+            LogWriter.DebugLog("ClearAllCurrenciesValues", DebugLogTypes.SystemController, "Clearing all currency values.");
             ActionSystem.ClearAllCurrenciesValues();
         }
 
         internal static void ClearUsersNonFollowers()
         {
+            LogWriter.DebugLog("ClearUsersNonFollowers", DebugLogTypes.SystemController, "Clearing non-followers.");
             ActionSystem.ClearUsersNonFollowers();
         }
 
         public static void SetSystemEventsEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetSystemEventsEnabled", DebugLogTypes.SystemController, $"Setting system events enabled: {Enabled}.");
             ActionSystem.SetSystemEventsEnabled(Enabled);
         }
 
         public static void SetBuiltInCommandsEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetBuiltInCommandsEnabled", DebugLogTypes.SystemController, $"Setting built-in commands enabled: {Enabled}.");
             ActionSystem.SetBuiltInCommandsEnabled(Enabled);
         }
 
         public static void SetUserDefinedCommandsEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetUserDefinedCommandsEnabled", DebugLogTypes.SystemController, $"Setting user-defined commands enabled: {Enabled}.");
             ActionSystem.SetUserDefinedCommandsEnabled(Enabled);
         }
 
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetDiscordWebhooksEnabled", DebugLogTypes.SystemController, $"Setting Discord webhooks enabled: {Enabled}.");
             ActionSystem.SetDiscordWebhooksEnabled(Enabled);
         }
 
         public static void PostUpdatedDataRow(bool RowChanged)
         {
+            LogWriter.DebugLog("PostUpdatedDataRow", DebugLogTypes.SystemController, $"Posting updated data row: {RowChanged}.");
             ActionSystem.PostUpdatedDataRow(RowChanged);
         }
 
         public static void DeleteRows(IEnumerable<DataRow> dataRows)
         {
+            LogWriter.DebugLog("DeleteRows", DebugLogTypes.SystemController, $"Deleting {dataRows.Count()} rows.");
             ActionSystem.DeleteRows(dataRows);
         }
 
         public static void AddNewAutoShoutUser(string UserId, Platform platform)
         {
+            LogWriter.DebugLog("AddNewAutoShoutUser", DebugLogTypes.SystemController, $"Adding new auto shout user: {UserId}.");
             ActionSystem.AddNewAutoShoutUser(UserId, platform);
         }
 
         public static void UpdateIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
         {
+            LogWriter.DebugLog("UpdateIsEnabledRows", DebugLogTypes.SystemController, $"Updating {dataRows.Count()} rows to enabled: {IsEnabled}.");
             ActionSystem.UpdatedIsEnabledRows(dataRows, IsEnabled);
         }
 
         public static bool CheckField(string dataTable, string FieldName)
         {
+            LogWriter.DebugLog("CheckField", DebugLogTypes.SystemController, $"Checking field: {FieldName}.");
             return ActionSystem.CheckField(dataTable, FieldName);
         }
 
         public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksSource source, WebhooksKind webhooksKind)
         {
+            LogWriter.DebugLog("GetDiscordWebhooks", DebugLogTypes.SystemController, $"Getting Discord webhooks for source: {source} and kind: {webhooksKind}.");
             return DataManage.GetWebhooks(source, webhooksKind);
         }
 
         internal static void DataGridUpdatedRow(object sender, AddNewRowEventArgs e)
         {
+            LogWriter.DebugLog("DataGridUpdatedRow", DebugLogTypes.SystemController, "Updating data grid row.");
             DataManage.PostDataGridGUIAddRow(e.NewRow);
         }
 
@@ -322,11 +369,13 @@ namespace StreamerBotLib.Systems
         #region Mod Approval
         public static Tuple<string, string> GetApprovalRule(ModActionType actionType, string ActionName)
         {
+            LogWriter.DebugLog("GetApprovalRule", DebugLogTypes.SystemController, $"Getting approval rule for {ActionName}.");
             return ActionSystem.GetApprovalRule(actionType, ActionName);
         }
 
         public void PostApproval(string Description, Task Action)
         {
+            LogWriter.DebugLog("PostApproval", DebugLogTypes.SystemController, $"Posting approval for {Description}.");
             SystemActions.AddApprovalRequest(Description, Action);
         }
 
@@ -336,10 +385,12 @@ namespace StreamerBotLib.Systems
 
         public bool StreamOnline(DateTime CurrTime)
         {
+            LogWriter.DebugLog("StreamOnline", DebugLogTypes.SystemController, "Starting stream.");
             bool streamstart = SystemActions.StreamOnline(CurrTime);
 
             SystemActions.StartElapsedTimerThread();
 
+            LogWriter.DebugLog("StreamOnline", DebugLogTypes.SystemController, "Checking for overlay event.");
             SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Live.ToString(), null);
 
             return streamstart;
@@ -363,6 +414,7 @@ namespace StreamerBotLib.Systems
 
         public static void StreamOffline(DateTime CurrTime)
         {
+            LogWriter.DebugLog("StreamOffline", DebugLogTypes.SystemController, "Ending stream.");
             ActionSystem.StreamOffline(CurrTime);
 
             // reset category to empty, so next time stream starts, the "streamed category" counter
@@ -373,33 +425,85 @@ namespace StreamerBotLib.Systems
 
         public static void SetCategory(CategoryData categoryData)
         {
+            LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, $"Setting category to {categoryData.CategoryName}.");
             if (CurrCategory != categoryData)
             {
+                LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, "Updating category.");
                 ActionSystem.SetCategory(categoryData);
                 CurrCategory = categoryData;
             }
+            LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, $"Current category is {CurrCategory.CategoryName}.");
         }
 
         public void UpdatedStat(params StreamStatType[] streamStatTypes)
         {
+            LogWriter.DebugLog("UpdatedStat", DebugLogTypes.SystemController, "Updating statistics.");
             foreach (StreamStatType s in streamStatTypes)
             {
                 UpdatedStat(s);
             }
         }
 
-        public void UpdatedStat(StreamStatType streamStat)
+        public void UpdatedStat(StreamStatType streamStat, int Value = 0)
         {
-            SystemActions.GetType()?.InvokeMember("Add" + streamStat.ToString(), BindingFlags.InvokeMethod, null, SystemActions, null);
-        }
+            LogWriter.DebugLog("UpdatedStat", DebugLogTypes.SystemController, $"Updating statistic: {streamStat}{(Value == 0 ? "" : $", with value: {Value}")}.");
 
-        public void UpdatedStat(StreamStatType streamStat, int value)
-        {
-            SystemActions.GetType()?.InvokeMember("Add" + streamStat.ToString(), BindingFlags.InvokeMethod, null, SystemActions, new object[] { value });
+            switch (streamStat)
+            {
+                case StreamStatType.Follow:
+                    SystemActions.AddFollow();
+                    break;
+                case StreamStatType.Sub:
+                    SystemActions.AddSub();
+                    break;
+                case StreamStatType.GiftSubs:
+                    SystemActions.AddGiftSubs(Value);
+                    break;
+                case StreamStatType.Bits:
+                    SystemActions.AddBits(Value);
+                    break;
+                case StreamStatType.Raids:
+                    SystemActions.AddRaids();
+                    break;
+                case StreamStatType.Hosted:
+                    SystemActions.AddHosted();
+                    break;
+                case StreamStatType.UserBanned:
+                    SystemActions.AddUserBanned();
+                    break;
+                case StreamStatType.UserTimedOut:
+                    SystemActions.AddUserTimedOut();
+                    break;
+                case StreamStatType.TotalChats:
+                    SystemActions.AddTotalChats();
+                    break;
+                case StreamStatType.Commands:
+                    SystemActions.AddCommands();
+                    break;
+                case StreamStatType.AutoEvents:
+                    SystemActions.AddAutoEvents();
+                    break;
+                case StreamStatType.AutoCommands:
+                    SystemActions.AddAutoCommands();
+                    break;
+                case StreamStatType.Discord:
+                    SystemActions.AddDiscord();
+                    break;
+                case StreamStatType.Clips:
+                    SystemActions.AddClips();
+                    break;
+                case StreamStatType.ChannelPtsCount:
+                    SystemActions.AddChannelPtsCount();
+                    break;
+                case StreamStatType.ChannelChallenge:
+                    SystemActions.AddChannelChallenge();
+                    break;
+            }
         }
 
         public void UserJoined(List<LiveUser> UserNames)
         {
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, "User joined.");
             DateTime Curr = DateTime.Now.ToLocalTime();
 
             var FirstUsers = StreamViewers.AddUsersFirstJoinedChannel(UserNames);
@@ -408,8 +512,10 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.FirstUserJoinedMsg)
             {
+                LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, "Checking for first user joined message.");
                 foreach (LiveUser user in FirstUsers)
                 {
+                    LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, "Sending first user joined message.");
                     UserWelcomeMessage(user);
                 }
             }
@@ -418,6 +524,7 @@ namespace StreamerBotLib.Systems
 
             foreach (LiveUser L in StreamViewers.GetUsersLeft(UserNames))
             {
+                LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, $"User left, {L.UserName}.");
                 ActionSystem.UserLeft(L, Curr);
             }
         }
@@ -426,12 +533,14 @@ namespace StreamerBotLib.Systems
         {
             try
             {
+                LogWriter.DebugLog("UpdateUserJoinedList", DebugLogTypes.SystemController, "Updating user joined list.");
                 ThreadManager.CreateThreadStart("UpdateUserJoinedList", () =>
                 {
                     ThreadManager.AddTaskToGUIDispatcher(() =>
                     {
                         _ = new BotOperation(() =>
                         {
+                            LogWriter.DebugLog("UpdateUserJoinedList", DebugLogTypes.SystemController, "Updating GUI current users.");
                             ActionSystem.UpdateGUICurrUsers();
                         });
                     }
@@ -446,6 +555,7 @@ namespace StreamerBotLib.Systems
 
         public void UserLeft(LiveUser User)
         {
+            LogWriter.DebugLog("UserLeft", DebugLogTypes.SystemController, "User left.");
             ActionSystem.UserLeft(User, DateTime.Now.ToLocalTime());
             UpdateUserJoinedList();
         }
@@ -456,6 +566,8 @@ namespace StreamerBotLib.Systems
 
         private void UserWelcomeMessage(LiveUser User)
         {
+            LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Checking user welcome message.");
+
             if ((!User.UserName.Equals(ActionSystem.ChannelName, StringComparison.CurrentCultureIgnoreCase)
                && (!User.UserName.Equals(ActionSystem.BotUserName, StringComparison.CurrentCultureIgnoreCase)))
                || OptionFlags.MsgWelcomeStreamer)
@@ -466,6 +578,7 @@ namespace StreamerBotLib.Systems
 
                 if (OptionFlags.WelcomeCustomMsg)
                 {
+                    LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Using custom welcome message.");
                     selected =
                         ActionSystem.IsFollower(User.UserName) ?
                         ChannelEventActions.SupporterJoined :
@@ -477,8 +590,12 @@ namespace StreamerBotLib.Systems
 
                 msg = msg == "" ? TempWelcomeMsg : msg;
 
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, $"Welcome message: {msg}");
+
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, $"Checking if sending welcome message is enabled, {Enabled}.");
                 if (Enabled)
                 {
+                    LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Sending welcome message.");
                     SendMessage(
                         VariableParser.ParseReplace(
                             msg,
@@ -492,11 +609,13 @@ namespace StreamerBotLib.Systems
                     , Repeat: Multi);
                 }
 
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Checking for overlay event.");
                 SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, selected.ToString(), User);
             }
 
             if (OptionFlags.AutoShout)
             {
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Checking for auto shout.");
                 lock (ProcMsgQueue)
                 {
                     ProcMsgQueue.Enqueue(new(() =>
@@ -509,12 +628,14 @@ namespace StreamerBotLib.Systems
 
         public void MessageReceived(CmdMessage MsgReceived, LiveUser User)
         {
+            LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Message received.");
             UpdateUserStats(DBUserStats.Chats, User.UserId, User.Platform);
 
             MsgReceived.UserType = ActionSystem.ParsePermission(MsgReceived);
 
             if ((OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn) && MsgReceived.DisplayName != OptionFlags.TwitchBotUserName)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Moderating message.");
                 Tuple<ModActions, int, MsgTypes, BanReasons> action = SystemActions.ModerateMessage(MsgReceived);
 
                 if (OptionFlags.ModerateUsersWarn)
@@ -530,6 +651,7 @@ namespace StreamerBotLib.Systems
                 }
                 else if (OptionFlags.ModerateUsersAction)
                 {
+                    LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Requesting ban or timeout.");
                     // don't fix it yet
                     if (action.Item1 == ModActions.Ban)
                     {
@@ -544,11 +666,13 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.ModerateUserLearnMsgs)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Posting a new message to learned.");
                 DataManage.PostLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
             }
 
             ActionSystem.AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
 
+            LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Updating statistics.");
             if (User.UserName != OptionFlags.TwitchBotUserName)
             {
                 UpdatedStat(StreamStatType.TotalChats);
@@ -569,6 +693,7 @@ namespace StreamerBotLib.Systems
 
             if (OptionFlags.FirstUserChatMsg)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Checking for first user chat message.");
                 foreach (LiveUser user in StreamViewers.AddUsersFirstChatMessage([User]))
                 {
                     UserWelcomeMessage(user);
@@ -579,6 +704,7 @@ namespace StreamerBotLib.Systems
 
             if (SystemActions.BlackJackActive)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Evaluating user message for blackjack game.");
                 SystemActions.GameCheckBlackJackResponse(User, MsgReceived.Message);
             }
 
@@ -590,6 +716,7 @@ namespace StreamerBotLib.Systems
             // handle bit cheers
             if (Bits > 0)
             {
+                LogWriter.DebugLog("UserCheered", DebugLogTypes.SystemController, "User cheered.");
                 lock (ProcMsgQueue)
                 {
                     ProcMsgQueue.Enqueue(new(() =>
@@ -597,6 +724,7 @@ namespace StreamerBotLib.Systems
                         string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out bool Enabled, out short Multi);
                         if (Enabled)
                         {
+                            LogWriter.DebugLog("UserCheered", DebugLogTypes.SystemController, "Sending message about user cheering.");
                             Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                             {
                                 new(MsgVars.user, User.UserName ?? "anonymous"),
@@ -609,6 +737,7 @@ namespace StreamerBotLib.Systems
                             UpdatedStat(StreamStatType.AutoEvents);
                         }
 
+                        LogWriter.DebugLog("UserCheered", DebugLogTypes.SystemController, "Checking for overlay event.");
                         SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits.ToString(), User, User.UserName ?? "anonymous");
                     }));
                 }
@@ -619,6 +748,7 @@ namespace StreamerBotLib.Systems
 
         private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)
         {
+            LogWriter.DebugLog("RequestBanUser", DebugLogTypes.SystemController, "Requesting to ban user.");
             BanUserRequest?.Invoke(this, new() { User = User, BanReason = Reason, Duration = Duration });
         }
 
@@ -628,9 +758,11 @@ namespace StreamerBotLib.Systems
             {
                 ProcMsgQueue.Enqueue(new(() =>
                 {
+                    LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Processing incoming raid.");
                     string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled, out short Multi);
                     if (Enabled)
                     {
+                        LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Sending message about incoming raid.");
                         Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                             new(MsgVars.user, User.UserName ),
                             new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers))
@@ -645,16 +777,19 @@ namespace StreamerBotLib.Systems
 
                     if (OptionFlags.TwitchRaidShoutOut)
                     {
+                        LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Posting raid shout out of incoming raider.");
                         SystemActions.CheckShout(User, out string response, false);
                     }
                 }));
             }
             if (OptionFlags.ManageRaidData)
             {
+                LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Posting incoming raid data.");
                 ActionSystem.PostIncomingRaid(User, RaidTime, Viewers, GameName);
             }
             if (OptionFlags.ManageOverlayTicker)
             {
+                LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Adding new overlay ticker item.");
                 AddNewOverlayTickerItem(OverlayTickerItem.LastInRaid, User.UserName);
             }
         }
@@ -663,6 +798,7 @@ namespace StreamerBotLib.Systems
         {
             if (OptionFlags.ManageOutRaidData)
             {
+                LogWriter.DebugLog("PostOutgoingRaid", DebugLogTypes.SystemController, "Posting outgoing raid data.");
                 DataManage.PostOutgoingRaid(HostedChannel, dateTime);
             }
         }
@@ -671,10 +807,12 @@ namespace StreamerBotLib.Systems
         {
             try
             {
+                LogWriter.DebugLog("ProcessCommand", DebugLogTypes.SystemController, "Processing command.");
                 lock (ProcMsgQueue)
                 {
                     ProcMsgQueue.Enqueue(new Task(() =>
                     {
+                        LogWriter.DebugLog("ProcessCommand", DebugLogTypes.SystemController, "Evaluating command.");
                         SystemActions.EvalCommand(cmdMessage, Source);
                     }));
                 }
@@ -699,6 +837,7 @@ namespace StreamerBotLib.Systems
         {
             if (OptionFlags.RepeatTimerCommands && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
+                LogWriter.DebugLog("ProcessCommands_OnRepeatEventOccured", DebugLogTypes.SystemController, "Processing repeat event.");
                 short x = 0;
 
                 do
@@ -712,6 +851,7 @@ namespace StreamerBotLib.Systems
 
         public void UpdateUserStats(DBUserStats dBUserStats, string userId, Platform platform)
         {
+            LogWriter.DebugLog("UpdateUserStats", DebugLogTypes.SystemController, "Updating user statistics in database.");
             DataManage.UpdateStats(dBUserStats, userId, platform);
         }
 
@@ -723,6 +863,8 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public void BeginGiveaway()
         {
+            LogWriter.DebugLog("BeginGiveaway", DebugLogTypes.SystemController, "Starting giveaway.");
+
             GiveawayStarted = true;
             GiveawayCollectionList.Clear();
             ActionSystem.GiveawayCollection.Clear();
@@ -736,13 +878,18 @@ namespace StreamerBotLib.Systems
         /// <param name="DisplayName"></param>
         public void ManageGiveaway(LiveUser User)
         {
+            LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.SystemController, "Managing giveaway.");
+
             if (GiveawayStarted && ((OptionFlags.GiveawayMultiUser && GiveawayCollectionList.FindAll((e) => e == User).Count < OptionFlags.GiveawayMaxEntries) || GiveawayCollectionList.UniqueAdd(User)))
             {
+                LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.SystemController, "Adding user to giveaway list.");
                 ActionSystem.GiveawayCollection.Add(User);
             }
 
+            LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.SystemController, "Checking for max entries for user.");
             while (GiveawayCollectionList.FindAll((e) => e == User).Count > OptionFlags.GiveawayMaxEntries)
             {
+                LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.SystemController, "Removing extra user entries from giveaway list.");
                 GiveawayCollectionList.RemoveAt(GiveawayCollectionList.FindLastIndex((s) => s == User));
             }
         }
@@ -752,6 +899,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public void EndGiveaway()
         {
+            LogWriter.DebugLog("EndGiveaway", DebugLogTypes.SystemController, "Ending giveaway.");
             GiveawayStarted = false;
             SendMessage(OptionFlags.GiveawayEndMsg);
         }
@@ -761,6 +909,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public void PostGiveawayResult()
         {
+            LogWriter.DebugLog("PostGiveawayResult", DebugLogTypes.SystemController, "Posting giveaway result.");
             Random random = new();
 
             string DisplayName = "";
@@ -771,12 +920,14 @@ namespace StreamerBotLib.Systems
                 int x = 0;
                 while (x < OptionFlags.GiveawayCount)
                 {
+                    LogWriter.DebugLog("PostGiveawayResult", DebugLogTypes.SystemController, "Picking winner.");
                     LiveUser winner = GiveawayCollectionList[random.Next(GiveawayCollectionList.Count)];
                     GiveawayCollectionList.RemoveAll((w) => w == winner);
                     WinnerList.Add(winner);
                     // DisplayName += (OptionFlags.GiveawayCount > 1 && x > 0 ? ", " : "") + winner;
                     if (OptionFlags.ManageGiveawayUsers)
                     {
+                        LogWriter.DebugLog("PostGiveawayResult", DebugLogTypes.SystemController, "Posting giveaway data to database.");
                         DataManage.PostGiveawayData(winner.UserId, DateTime.Now.ToLocalTime());
                     }
                     x++;
@@ -786,6 +937,7 @@ namespace StreamerBotLib.Systems
 
                 if (DisplayName != "")
                 {
+                    LogWriter.DebugLog("PostGiveawayResult", DebugLogTypes.SystemController, "Sending winner message.");
                     SendMessage(
                         VariableParser.ParseReplace(
                             OptionFlags.GiveawayWinMsg ?? "",
@@ -798,6 +950,7 @@ namespace StreamerBotLib.Systems
 
                     foreach (LiveUser W in WinnerList)
                     {
+                        LogWriter.DebugLog("PostGiveawayResult", DebugLogTypes.SystemController, "Checking for overlay event.");
                         SystemActions.CheckForOverlayEvent(OverlayTypes.Giveaway, OverlayTypes.Giveaway.ToString(), W);
                     }
 
@@ -810,12 +963,14 @@ namespace StreamerBotLib.Systems
         #region Clips
         public void ClipHelper(IEnumerable<Clip> Clips)
         {
+            LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Processing clips.");
             foreach (Clip c in Clips)
             {
                 if (ActionSystem.AddClip(c))
                 {
                     if (OptionFlags.TwitchClipPostChat)
                     {
+                        LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Posting clip to chat.");
                         lock (ProcMsgQueue)
                         {
                             ProcMsgQueue.Enqueue(new Task(() =>
@@ -827,6 +982,7 @@ namespace StreamerBotLib.Systems
 
                     if (OptionFlags.TwitchClipPostDiscord)
                     {
+                        LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Posting clip to Discord.");
                         foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksSource.Discord, WebhooksKind.Clips))
                         {
                             // TODO: add into database->enable adding data
@@ -835,6 +991,7 @@ namespace StreamerBotLib.Systems
                         }
                     }
 
+                    LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Updating statistics.");
                     UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
 
                     // CheckForOverlayEvent(OverlayTypes.Clip, OverlayTypes.Clip, ProvidedURL: c.Url);
@@ -848,6 +1005,7 @@ namespace StreamerBotLib.Systems
 
         public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> NewOverlayeventHandler, EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerEventHandler)
         {
+            LogWriter.DebugLog("SetNewOverlayEventHandler", DebugLogTypes.SystemController, "Setting new overlay event handlers."); 
             SystemActions.NewOverlayEvent += NewOverlayeventHandler;
             ActionSystem.UpdatedTickerItems += UpdatedTickerEventHandler;
         }
@@ -857,31 +1015,37 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public void SendInitialTickerItems()
         {
+            LogWriter.DebugLog("SendInitialTickerItems", DebugLogTypes.SystemController, "Sending initial ticker items.");
             SystemActions.SendInitialTickerItems();
         }
 
         public Dictionary<string, List<string>> GetOverlayActions()
         {
+            LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.SystemController, "Getting overlay actions.");
             return SystemActions.GetOverlayActions();
         }
 
         public void SetChannelRewardList(List<string> RewardList)
         {
+            LogWriter.DebugLog("SetChannelRewardList", DebugLogTypes.SystemController, "Setting channel reward list.");
             SystemActions.SetChannelRewardList(RewardList);
         }
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
+            LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.SystemController, "Checking for overlay event.");
             CheckForOverlayEvent(overlayType, enumvalue.ToString(), User, UserMsg, ProvidedURL, UrlDuration);
         }
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
+            LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.SystemController, "Checking for overlay event.");
             SystemActions.CheckForOverlayEvent(overlayType, Action, User, UserMsg, ProvidedURL, UrlDuration);
         }
 
         public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
+            LogWriter.DebugLog("AddNewOverlayTickerItem", DebugLogTypes.SystemController, "Adding new overlay ticker item.");
             ActionSystem.AddNewOverlayTickerItem(item, UserName);
         }
 
@@ -891,11 +1055,19 @@ namespace StreamerBotLib.Systems
 
         public void AddNewMonitorChannel(IEnumerable<LiveUser> liveUsers)
         {
+            LogWriter.DebugLog("AddNewMonitorChannel", DebugLogTypes.SystemController, "Adding new monitor channel.");
             DataManage.PostMonitorChannel(liveUsers);
         }
 
+        /// <summary>
+        /// Summarize the multi-live data.
+        /// </summary>
+        /// <param name="multiLiveSummarizeEventArgs">Defines data, if null then all date records are summarized, and 
+        /// a callback action to invoke after querying the database. 
+        /// See also: <seealso cref="MultiLiveSummarizeEventArgs"/></param>
         public static void MultiSummarize(MultiLiveSummarizeEventArgs multiLiveSummarizeEventArgs)
         {
+            LogWriter.DebugLog("MultiSummarize", DebugLogTypes.SystemController, "Summarizing multi-live data.");
             if (multiLiveSummarizeEventArgs.Data == null)
             {
                 DataManage.SummarizeStreamData();
@@ -918,9 +1090,10 @@ namespace StreamerBotLib.Systems
         /// <param name="CommandUpdate">Notification if the edit involved a command.</param>
         public void GUISaveDataGridEdits(bool CommandUpdate)
         {
+            LogWriter.DebugLog("GUISaveDataGridEdits", DebugLogTypes.SystemController, "Saving data grid edits.");
             DataManage.GUIRowEditSave();
 
-            if(CommandUpdate)
+            if (CommandUpdate)
             {
                 SystemActions.UpdateCommandsChanged();
             }

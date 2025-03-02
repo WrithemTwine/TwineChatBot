@@ -40,7 +40,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                       m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
                   }))
                 {
-                    LogWriter.DebugLog("OnChannelChatMessage", DebugLogTypes.TwitchStreamerEventSubBot, "Received a new chat message event.");
+                    LogWriter.DebugLog("OnChannelChatMessage", DebugLogTypes.TwitchBotEventSubBot, "Received a new chat message event.");
 
                     ChannelChatMessage msg = args.Notification.Payload.Event;
                     OnChannelChatMessageReceived?.Invoke(this, new(msg));
@@ -101,7 +101,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         /// <param name="conditions">The JSON entry parameters for the subscription, per Twitch EventSub API.</param>
         /// <param name="KeyOverride">Alternate key for tracking subscriptions, utilized for duplicate subscription types (with different conditions) otherwise prevented.</param>
         private void CreateEventSubSubscription(string SubscriptionType, string Version, Dictionary<string, string> conditions, string KeyOverride = null)
-        { 
+        {
             void CreateSubAction()
             {
                 LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"Requesting new subscription for {SubscriptionType}.");

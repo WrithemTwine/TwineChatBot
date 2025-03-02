@@ -10,12 +10,14 @@ namespace StreamerBotLib.Systems
 
         public void ManageUsers()
         {
+            LogWriter.DebugLog("ManageUsers", DebugLogTypes.StatSystem, "Starting the user management process.");
             ManageUsers(DateTime.Now.ToLocalTime());
             MonitorWatchTime();
         }
 
         public static void ManageUsers(DateTime SpecifyTime)
         {
+            LogWriter.DebugLog("ManageUsers", DebugLogTypes.StatSystem, "Managing users at a specific time.");
             lock (StreamViewers)
             {
                 if (OptionFlags.ManageUsers)
@@ -27,11 +29,13 @@ namespace StreamerBotLib.Systems
 
         public static bool CheckStreamTime(DateTime TimeStream)
         {
+            LogWriter.DebugLog("CheckStreamTime", DebugLogTypes.StatSystem, "Checking if the stream time is already in the database.");
             return DataManage.CheckMultiStreams(TimeStream);
         }
 
         public static void SetCategory(CategoryData categoryData)
         {
+            LogWriter.DebugLog("SetCategory", DebugLogTypes.StatSystem, "Setting the current category for the stream.");
             Category = categoryData.CategoryName;
 
             if (OptionFlags.ManageStreamStats)
@@ -48,6 +52,7 @@ namespace StreamerBotLib.Systems
         /// <returns></returns>
         public static void UserJoined(LiveUser User, DateTime CurrTime)
         {
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.StatSystem, "Adding to database a user now joined to the channel.");
             if (OptionFlags.IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, StreamViewers.Count);
@@ -66,6 +71,7 @@ namespace StreamerBotLib.Systems
         /// <returns></returns>
         public static void UserJoined(IEnumerable<LiveUser> User, DateTime CurrTime)
         {
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.StatSystem, $"Adding to database {User.Count()} users now joined to the channel.");
             if (OptionFlags.IsStreamOnline)
             {
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, StreamViewers.Count);
@@ -80,6 +86,7 @@ namespace StreamerBotLib.Systems
 
         public static void ModJoined(string User)
         {
+            LogWriter.DebugLog("ModJoined", DebugLogTypes.StatSystem, "Adding a moderator to the list of moderators.");
             if (OptionFlags.IsStreamOnline)
             {
                 ModUsers.UniqueAdd(User);
@@ -88,6 +95,7 @@ namespace StreamerBotLib.Systems
 
         public static void SubJoined(string User)
         {
+            LogWriter.DebugLog("SubJoined", DebugLogTypes.StatSystem, "Adding a subscriber to the list of subscribers.");
             if (OptionFlags.IsStreamOnline)
             {
                 SubUsers.UniqueAdd(User);
@@ -96,6 +104,7 @@ namespace StreamerBotLib.Systems
 
         public static void VIPJoined(string User)
         {
+            LogWriter.DebugLog("VIPJoined", DebugLogTypes.StatSystem, "Adding a VIP to the list of VIPs.");
             if (OptionFlags.IsStreamOnline)
             {
                 VIPUsers.UniqueAdd(User);
@@ -104,6 +113,7 @@ namespace StreamerBotLib.Systems
 
         public static void UserLeft(LiveUser User, DateTime CurrTime)
         {
+            LogWriter.DebugLog("UserLeft", DebugLogTypes.StatSystem, "Posting to the database a user that left the channel.");
             lock (StreamViewers)
             {
                 PostDataUserLeft(User, CurrTime);
@@ -112,17 +122,21 @@ namespace StreamerBotLib.Systems
 
         public static void ClearUserList(DateTime Stopped)
         {
+            LogWriter.DebugLog("ClearUserList", DebugLogTypes.StatSystem, "Register current viewers as leaving the stream.");
             lock (StreamViewers)
             {
                 foreach (LiveUser U in StreamViewers.GetCurrentActiveUsers())
                 {
                     PostDataUserLeft(U, Stopped);
                 }
+
+                StreamViewers.GetUsersLeft([]);
             }
         }
 
         private static void PostDataUserLeft(LiveUser User, DateTime CurrTime)
         {
+            LogWriter.DebugLog("PostDataUserLeft", DebugLogTypes.StatSystem, "Posting to the database a user that left the channel.");
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
             {
                 DataManage.UserLeft(User, CurrTime);
@@ -131,11 +145,13 @@ namespace StreamerBotLib.Systems
 
         public static bool IsFollower(string User)
         {
+            LogWriter.DebugLog("IsFollower", DebugLogTypes.StatSystem, "Checking if the user is a follower of the channel.");
             return DataManage.CheckFollower(User, CurrStream.StreamStart);
         }
 
         public static bool IsReturningUser(LiveUser User)
         {
+            LogWriter.DebugLog("IsReturningUser", DebugLogTypes.StatSystem, "Checking if the user is a returning user to the channel.");
             return DataManage.CheckUser(User, CurrStream.StreamStart);
         }
 
@@ -143,6 +159,7 @@ namespace StreamerBotLib.Systems
 
         public static void PostIncomingRaid(LiveUser liveUser, DateTime RaidTime, int Viewers, CategoryData GameName)
         {
+            LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.StatSystem, "Posting the incoming raid data to the database.");
             DataManage.PostInRaidData(liveUser, RaidTime, Viewers, GameName);
         }
 
@@ -150,6 +167,7 @@ namespace StreamerBotLib.Systems
 
         public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
+            LogWriter.DebugLog("GetDiscordWebhooks", DebugLogTypes.StatSystem, "Retrieving the Discord webhooks for posting the current stream.");
             return DataManage.GetWebhooks(WebhooksSource.Discord, webhooksKind);
         }
 
@@ -169,15 +187,18 @@ namespace StreamerBotLib.Systems
             bool found = false;
             if (OptionFlags.ManageStreamStats)
             {
+                LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Checking if the stream time is already in the database.");
                 // retrieve existing stream or start a new stream entry
                 if (DataManage.CheckStreamTime(Started))
                 {
+                    LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Retrieving the stream data from the database.");
                     CurrStream = DataManage.GetStreamData(Started);
 
                     found = true;
                 }
                 else
                 {
+                    LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Posting the stream data to the database.");
                     DataManage.PostStream(CurrStream.StreamStart, Category);
 
                     found = false;
@@ -245,7 +266,7 @@ namespace StreamerBotLib.Systems
         }
 
         #region Stream Stat Methods
-        public static void AddFollow()
+        public  void AddFollow()
         {
             lock (CurrStream)
             {
@@ -254,7 +275,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddSub()
+        public  void AddSub()
         {
             lock (CurrStream)
             {
@@ -263,7 +284,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddGiftSubs(int Gifted = 1)
+        public  void AddGiftSubs(int Gifted = 1)
         {
             lock (CurrStream)
             {
@@ -272,7 +293,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddBits(int BitCount)
+        public  void AddBits(int BitCount)
         {
             lock (CurrStream)
             {
@@ -281,7 +302,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddRaids()
+        public  void AddRaids()
         {
             lock (CurrStream)
             {
@@ -290,7 +311,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddHosted()
+        public  void AddHosted()
         {
             lock (CurrStream)
             {
@@ -299,7 +320,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddUserBanned()
+        public  void AddUserBanned()
         {
             lock (CurrStream)
             {
@@ -308,7 +329,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddUserTimedOut()
+        public  void AddUserTimedOut()
         {
             lock (CurrStream)
             {
@@ -317,7 +338,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddTotalChats()
+        public  void AddTotalChats()
         {
             lock (CurrStream)
             {
@@ -325,7 +346,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddCommands()
+        public  void AddCommands()
         {
             lock (CurrStream)
             {
@@ -333,7 +354,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddAutoEvents()
+        public  void AddAutoEvents()
         {
             lock (CurrStream)
             {
@@ -342,7 +363,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddAutoCommands()
+        public  void AddAutoCommands()
         {
             lock (CurrStream)
             {
@@ -351,7 +372,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddDiscord()
+        public  void AddDiscord()
         {
             lock (CurrStream)
             {
@@ -359,7 +380,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddClips()
+        public  void AddClips()
         {
             lock (CurrStream)
             {
@@ -368,7 +389,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddChannelPtsCount()
+        public  void AddChannelPtsCount()
         {
             lock (CurrStream)
             {
@@ -376,7 +397,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void AddChannelChallenge()
+        public  void AddChannelChallenge()
         {
             lock (CurrStream)
             {

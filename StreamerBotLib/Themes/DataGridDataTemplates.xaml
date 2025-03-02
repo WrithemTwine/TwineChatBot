@@ -168,7 +168,7 @@
     <DataTemplate x:Key="DateLiveTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding LiveDate, StringFormat={}{0:d}}" />
+                <TextBlock Text="{Binding LiveDate}" />
             </Border>
         </StackPanel>
     </DataTemplate>
@@ -183,7 +183,7 @@
     <DataTemplate x:Key="DateThroughTemplate">
         <StackPanel>
             <Border BorderThickness="1">
-                <TextBlock Text="{Binding ThroughDate, StringFormat={}{0:d}}" />
+                <TextBlock Text="{Binding ThroughDate}" />
             </Border>
         </StackPanel>
     </DataTemplate>

@@ -856,6 +856,8 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchMessageReceived(ChannelChatMessageEventArgs e)
         {
+            LogWriter.DebugLog("TwitchMessageReceived", DebugLogTypes.BotController, $"Received message {e.ChannelChatMessage.Message.Text} from {e.ChannelChatMessage.ChatterUserName} in {e.ChannelChatMessage.BroadcasterUserName} channel.");
+
             HandleMessageReceived(
                 new()
                 {
@@ -908,6 +910,8 @@ namespace StreamerBotLib.BotIOController
                     cmdarglist.Add(f);
                 }
             }
+
+            LogWriter.DebugLog("TwitchMessageReceived", DebugLogTypes.BotController, $"Received message {e.ChannelChatMessage.Message.Text} from {e.ChannelChatMessage.ChatterUserName} in {e.ChannelChatMessage.BroadcasterUserName} channel.");
 
             HandleChatCommandReceived(new()
             {

@@ -5,6 +5,7 @@ using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
+using StreamerBotLib.MultiLive;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -22,21 +23,14 @@ namespace StreamerBot
 
         private event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataGridUpdated;
 
-        private void DataManagerLoaded()
+        private void DataManagerViewLoaded()
         {
-            GUIDataManagerViews.DataViewsLoaded += GUIDataManagerViews_DataViewsLoaded;
-            SystemsController.DataManage.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
-        }
-
-        private void GUIDataManagerViews_DataViewsLoaded(object sender, EventArgs e)
-        {
-            GUIDataManagerViews gUIDataManagerViews = Resources["DataViews"] as GUIDataManagerViews;
-            OnDataGridUpdated += gUIDataManagerViews.DataManager_OnDataCollectionUpdated;
+            GUIDataManagerViews.DataViewsUpdated += DataManager_OnDataCollectionUpdated;
         }
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() =>
+            Dispatcher.Invoke(() =>
             {
                 LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
                    StreamerBotLib.Enums.DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");
@@ -132,8 +126,8 @@ namespace StreamerBot
                         break;
                 }
 
-                OnDataGridUpdated?.Invoke(this, new(e.DatabaseModelName));
-            }));
+                //OnDataGridUpdated?.Invoke(this, new(e.DatabaseModelName, null));
+            });
         }
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
         {

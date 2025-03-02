@@ -13,7 +13,6 @@ namespace StreamerBotLib.BotClients.Twitch
         private readonly TwitchTokenBot tokenBot;
 
         private const int SingleChatLength = 500;
-        //private readonly Queue<Task> TaskSend = new();
         private readonly List<string> newSendMsg = [];
 
         internal TwitchBotSendChatClient(TwitchTokenBot TokenBot)
@@ -74,6 +73,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         }
                         catch (TokenExpiredException ex)
                         {
+                            LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Found exception. Checking the access token.");
                             LogWriter.LogException(ex, "Send");
                             tokenBot.CheckToken();
                             Task.Delay(500 * (x + 1));

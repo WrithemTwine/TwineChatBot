@@ -25,28 +25,25 @@ namespace StreamerBotLib.Models
 
         public CommandData(CommandsBase row)
         {
-            lock (GUI.GUIDataManagerLock.Lock)
+            if (row != null)
             {
-                if (row != null)
-                {
-                    Usage = row.Usage;
-                    IsEnabled = row.IsEnabled;
-                    SendMsgCount = row.SendMsgCount;
-                    Permission = row.Permission;
-                    Announce = row.Announce;
-                    AddMe = row.AddMe;
-                    Message = row.Message;
-                    AllowParam = row.AllowParam;
-                    Lookupdata = row.LookupData;
-                    Top = row.Top;
-                    Action = row.Action;
-                    CmdName = row.CmdName;
-                    Table = row.Table;
-                    Key_field = row.KeyField;
-                    Data_field = row.DataField;
-                    Currency_field = row.CurrencyField;
-                    Sort = row.Sort;
-                }
+                Usage = row.Usage;
+                IsEnabled = row.IsEnabled;
+                SendMsgCount = row.SendMsgCount;
+                Permission = row.Permission;
+                Announce = row.Announce;
+                AddMe = row.AddMe;
+                Message = row.Message;
+                AllowParam = row.AllowParam;
+                Lookupdata = row.LookupData;
+                Top = row.Top;
+                Action = row.Action;
+                CmdName = row.CmdName;
+                Table = row.Table;
+                Key_field = row.KeyField;
+                Data_field = row.DataField;
+                Currency_field = row.CurrencyField;
+                Sort = row.Sort;
             }
         }
     }

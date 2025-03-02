@@ -1,4 +1,5 @@
-﻿<Window x:Class="StreamerBot.StreamerBotWindow"
+﻿<Window 
+        x:Class="StreamerBot.StreamerBotWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -2974,7 +2975,6 @@
                                         </Label>
                                         <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" 
                                                   ItemsSource="{Binding IsAsync=True, Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" 
-                                                  
                                                   IsReadOnly="True" 
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening">

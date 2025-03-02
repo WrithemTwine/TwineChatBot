@@ -11,7 +11,6 @@ using StreamerBotLib.Systems;
 using System.Collections.Concurrent;
 using System.Data;
 using System.Globalization;
-using System.Threading.Tasks;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -80,44 +79,45 @@ switches:
 
         #region Process Queue
 
-        private readonly ConcurrentDictionary<string, Task> queueDictionary = new();
+        private Thread processQueueTaskThread;
+        private readonly ConcurrentQueue<ManagedTask> queueTasks = new();
         private bool StartedProcessingQueue = false;
 
         private void PostActionQueue(Task action, string key)
         {
-            if (!queueDictionary.ContainsKey(key))
+            ManagedTask task = new(key, action);
+
+            if (!queueTasks.Contains(task))
             {
-                queueDictionary.Append(new(key, action));
+                queueTasks.Enqueue(task);
             }
 
             if (!StartedProcessingQueue)
             {
                 StartedProcessingQueue = true;
-                ThreadManager.CreateThreadStart("PostActionQueue", () => ProcessQueuedActionsAsync() );
+                processQueueTaskThread = ThreadManager.CreateThread("PostActionQueue", async () => await ProcessQueuedActionsAsync());
+                processQueueTaskThread.Start();
             }
         }
 
         private async Task ProcessQueuedActionsAsync()
         {
-            try
+            while (OptionFlags.ActiveToken)
             {
-                await Task.Delay(5000); // wait 2.5 seconds before processing queue
-                while(queueDictionary.Keys.Any())
+                await Task.Delay(5000); // wait 5 seconds before processing queue
+                try
                 {
-                    string key = queueDictionary.Keys.FirstOrDefault();
-                    if (key != null)
+                    while (queueTasks.TryDequeue(out ManagedTask result))
                     {
-                        queueDictionary.Remove(key, out var task);
-                        task.RunSynchronously();
+                        result.Task.Start();
+                        await Task.Delay(800);
                     }
-                    await Task.Delay(800);
-                }
 
-                StartedProcessingQueue = false;
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex,"ProcessQueuedActionsAsync");
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, "ProcessQueuedActionsAsync");
+                }
             }
         }
 
@@ -125,6 +125,7 @@ switches:
 
         internal void Exit()
         {
+            processQueueTaskThread?.Join();
             GUIContext.SaveChanges(true);
             GUIContext.Dispose();
         }
@@ -195,7 +196,7 @@ switches:
                 output = row.Table switch
                 {
                     nameof(Currency) => (from C in context.Currency.Include(user => user.User) where C.CurrencyName == row.CurrencyField orderby C.User.UserName select new Tuple<object, object>(C[row.KeyField], C[row.DataField])),
-                    nameof(Followers) => (from F in context.Followers.Include(user=>user.User) orderby F.User.UserName select F),
+                    nameof(Followers) => (from F in context.Followers.Include(user => user.User) orderby F.User.UserName select F),
                     nameof(UserStats) => (from US in context.UserStats.Include(user => user.User) orderby US.User.UserName select new Tuple<object, object>(US[row.KeyField], US[row.DataField])),
                     _ => [""]
                 };

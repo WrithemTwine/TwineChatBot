@@ -168,7 +168,6 @@ namespace StreamerBot
         {
             LogWriter.DebugLog("Window_Loaded", DebugLogTypes.GUIEvents, "Begin Window Loaded events.");
 
-
             ThreadManager.CreateThreadStart("Window_Loaded", () =>
             {
                 _ = Dispatcher.BeginInvoke(() =>

@@ -8,6 +8,7 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Data;
 
@@ -25,7 +26,7 @@ namespace StreamerBotLib.DataSQL
         private readonly List<string> MultiLiveStatusList = [];
         private const int MaxList = 50;
 
-        public ObservableCollection<ArchiveMultiStream> CleanupList { get; } = [];
+        public List<ArchiveMultiStream> CleanupList { get; } = [];
 
         public event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
 
@@ -69,6 +70,7 @@ namespace StreamerBotLib.DataSQL
         public bool CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
             LogWriter.DebugLog("CheckCurrency", DebugLogTypes.DataManager, "Checking currency.");
+
             lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.CheckCurrency(User, value, CurrencyName).Result;
@@ -245,7 +247,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public ObservableCollection<ArchiveMultiStream> GetCleanupList()
+        public List<ArchiveMultiStream> GetCleanupList()
         {
             LogWriter.DebugLog("GetCleanupList", DebugLogTypes.DataManager, "Getting cleanup list.");
             lock (GUIDataManagerLock.Lock)
@@ -761,7 +763,7 @@ namespace StreamerBotLib.DataSQL
                     MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
                 }
                 MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
-                _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
+                _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog), MultiLiveStatusLog);
             }
         }
 

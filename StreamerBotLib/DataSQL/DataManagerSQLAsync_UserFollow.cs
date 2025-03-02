@@ -50,9 +50,9 @@ namespace StreamerBotLib.DataSQL
             return Task.Run(() =>
             {
                 using var context = BuildDataContext();
-                string result = (from F in context.Followers.Include(user=>user.User)
-                                  orderby F.FollowedDate descending 
-                                  select F).FirstOrDefault().User.UserName;
+                string result = (from F in context.Followers.Include(user => user.User)
+                                 orderby F.FollowedDate descending
+                                 select F).FirstOrDefault().User.UserName;
 
                 return result ?? "Not Found";
             });
@@ -295,6 +295,9 @@ namespace StreamerBotLib.DataSQL
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
 
+                LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
+                                    $"Updating {User.UserName} now joined to the channel, Current Login: {user.CurrLoginDate}, Last Date Seen: {user.LastDateSeen}.");
+
                 await context.SaveChangesAsync();
                 RefreshUsersList();
                 RefreshUserStatsList();
@@ -330,8 +333,8 @@ namespace StreamerBotLib.DataSQL
             {
                 using var context = BuildDataContext();
                 await context.Users
-                            .Include(curr=>curr.Currency)
-                            .ThenInclude(type=>type.CurrencyType)
+                            .Include(curr => curr.Currency)
+                            .ThenInclude(type => type.CurrencyType)
                             .Where((u) => u.UserId == User.UserId)
                 .ForEachAsync(async (u) =>
                 {

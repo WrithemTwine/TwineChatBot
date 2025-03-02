@@ -1,8 +1,10 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.Enums;
+using StreamerBotLib.Models;
+using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems
 {
-    internal class ManageStreamViewers
+    public class ManageStreamViewers
     {
         private readonly List<ManageStreamViewer> ManageViewers = [];
         public int Count => (from V in ManageViewers where V.InStreamNow select V).Count();
@@ -12,6 +14,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public void EndStreamResetList()
         {
+            LogWriter.DebugLog("EndStreamResetList", DebugLogTypes.ManageStreamViewers, "Ending the stream, resetting the user list.");
             // remove the viewers that didn't join the channel - primarily stream to stream list management
             ManageViewers.RemoveAll((v) => v.FirstJoinedChannel == false);
 
@@ -31,7 +34,11 @@ namespace StreamerBotLib.Systems
         /// <param name="users"></param>
         private void AddNewUsers(List<LiveUser> users)
         {
-            ManageViewers.ForEach(v => v.InStreamNow = false); // set all users in stream to false, set true with source users
+            LogWriter.DebugLog("AddNewUsers", DebugLogTypes.ManageStreamViewers, "Adding new users to the list.");
+            ManageViewers.ForEach(v => {
+                v.InStreamNow = false;
+                v.EvaluateCurrentCheck = false;
+            }); // set all users in stream to false, set true with source users
 
             foreach (var (user, Curr) in from user in users
                                          let Curr = (from V in ManageViewers where V.LiveUser == user select V).FirstOrDefault()
@@ -57,6 +64,7 @@ namespace StreamerBotLib.Systems
         /// <returns>A list of the LiveUsers who have first joined the channel in the current stream.</returns>
         public List<LiveUser> AddUsersFirstJoinedChannel(List<LiveUser> users)
         {
+            LogWriter.DebugLog("AddUsersFirstJoinedChannel", DebugLogTypes.ManageStreamViewers, "Adding users to the first joined channel list.");
             AddNewUsers(users);
 
             var result = (from V in ManageViewers
@@ -82,6 +90,7 @@ namespace StreamerBotLib.Systems
         /// <returns>A LiveUser list of active users who have not yet chatted.</returns>
         public List<LiveUser> AddUsersFirstChatMessage(List<LiveUser> users)
         {
+            LogWriter.DebugLog("AddUsersFirstChatMessage", DebugLogTypes.ManageStreamViewers, "Adding users to the first chat message list.");
             AddNewUsers(users);
 
             var result = (from V in ManageViewers
@@ -106,26 +115,35 @@ namespace StreamerBotLib.Systems
         /// <returns>List of users no longer in the stream.</returns>
         public List<LiveUser> GetUsersLeft(List<LiveUser> users)
         {
-            AddNewUsers(users);
+            LogWriter.DebugLog("GetUsersLeft", DebugLogTypes.ManageStreamViewers, "Checking for users who have left the stream.");
 
             // find the users marked in stream, but not in the supplied user list to check
             List<LiveUser> result = [];
 
-            foreach (var U in (from V in ManageViewers
-                               where V.InStreamNow
-                               select V))
+            foreach (var user in users)
             {
-                if (!U.EvaluateCurrentCheck)
-                { // set the users not in the evaluation to not in stream
-                    U.InStreamNow = false;
-                    result.Add(U.LiveUser);
-                }
-                else
-                { // mark the evaluated users to false to end current evaluation
-                    U.EvaluateCurrentCheck = false;
+                if (!(from V in ManageViewers  // add any missing users
+                      where V.LiveUser == user
+                      select V).Any())
+                {
+                    ManageViewers.Add(new(user, evaluateCurrentCheck: false, inStreamNow: true));
                 }
             }
 
+            foreach (var MV in (from V in ManageViewers
+                                where users.Contains(V.LiveUser)
+                                select V))
+            {
+                MV.InStreamNow = true;
+            }
+
+            foreach (var MV in (from V in ManageViewers
+                                where !users.Contains(V.LiveUser)
+                                select V))
+            {
+                MV.InStreamNow = false;
+                result.Add(MV.LiveUser);
+            }
 
             return result;
         }
@@ -136,9 +154,10 @@ namespace StreamerBotLib.Systems
         /// <returns>List of users found in the current stream.</returns>
         public List<LiveUser> GetCurrentActiveUsers()
         {
-            return (from V in ManageViewers
+            LogWriter.DebugLog("GetCurrentActiveUsers", DebugLogTypes.ManageStreamViewers, "Retrieving the current active users.");
+            return [.. (from V in ManageViewers
                     where V.InStreamNow
-                    select V.LiveUser).ToList();
+                    select V.LiveUser)];
         }
 
     }

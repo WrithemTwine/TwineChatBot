@@ -17,8 +17,9 @@ namespace StreamerBotLib.DataSQL.Models
                           ViewerTypes viewerTypes = default,
                           MsgTypes msgType = default,
                           ModActions modAction = default,
-                          int timeoutSeconds = 0)
+                          int timeoutSeconds = 0) 
 #endif
+: EntityBase
     {
         public int Id { get; set; } = id;
         public ViewerTypes ViewerTypes { get; set; } = viewerTypes;

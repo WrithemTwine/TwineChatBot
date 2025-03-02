@@ -11,6 +11,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="MultiLiveDataGrids" SnapsToDevicePixels="True" UseLayoutRounding="True" 
+      DataContext="{DynamicResource DataViews}"
       Background="{DynamicResource FullBackground}"
       >
     <Page.Resources>
@@ -168,7 +169,7 @@
                             </TextBlock>
                             <ComboBox x:Name="ComboBox_SummarizeLive_List" Height="32"
                                       MaxDropDownHeight="400" VerticalAlignment="Top" VerticalContentAlignment="Center" 
-                                      ItemsSource="{Binding CleanupList, Mode=OneWay, Source={StaticResource DataViews}}" DropDownOpened="ComboBox_DropDownOpened" 
+                                      ItemsSource="{Binding CleanupList, Mode=OneWay}" DropDownOpened="ComboBox_DropDownOpened" 
                                       IsReadOnly="True" IsSynchronizedWithCurrentItem="True" 
                                       SelectionChanged="ComboBox_SelectionChanged">
                                 <ComboBox.ItemTemplate>
@@ -195,7 +196,7 @@
 
         <DockPanel x:Name="Panel_BotActivity" Grid.Row="2" Grid.Column="0" Visibility="Visible">
             <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
-            <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiStatusLog, Source={StaticResource DataViews}}" />
+            <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog, Mode=OneWay, Source={StaticResource DataViews}}" />
         </DockPanel>
     </Grid>
 </Page>

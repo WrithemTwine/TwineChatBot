@@ -17,6 +17,7 @@ namespace StreamerBotLib.DataSQL.Models
                             MsgTypes msgType = default,
                             Enums.BanReasons banReason = default)
 #endif
+ : EntityBase
     {
         public int Id { get; set; } = id;
         public MsgTypes MsgType { get; set; } = msgType;

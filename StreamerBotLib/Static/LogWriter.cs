@@ -181,6 +181,7 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.RepeatCommandSystem => OptionFlags.EnableDebugRepeatCommandSystem ? line : "",
                 DebugLogTypes.StatSystem => OptionFlags.EnableDebugStatSystem ? line : "",
                 DebugLogTypes.CurrencySystem => OptionFlags.EnableDebugCurrencySystem ? line : "",
+                DebugLogTypes.ManageStreamViewers => OptionFlags.EnableDebugManageStreamViewers ? line : "",
                 DebugLogTypes.ModerationSystem => OptionFlags.EnableDebugModerationSystem ? line : "",
                 DebugLogTypes.OverlaySystem => OptionFlags.EnableDebugOverlaySystem ? line : "",
                 DebugLogTypes.CommonSystem => OptionFlags.EnableDebugCommonSystem ? line : "",

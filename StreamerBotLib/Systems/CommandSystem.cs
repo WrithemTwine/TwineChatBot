@@ -25,6 +25,7 @@ namespace StreamerBotLib.Systems
         /// <param name="ParamName"></param>
         public void NotifyPropertyChanged(string ParamName = "")
         {
+            LogWriter.DebugLog("NotifyPropertyChanged", DebugLogTypes.CommandSystem, $"Notifying GUI of updated info: {ParamName}");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
 
@@ -35,6 +36,7 @@ namespace StreamerBotLib.Systems
         /// <returns>The ViewerType corresponding to the user's highest permission.</returns>
         public static ViewerTypes ParsePermission(CmdMessage chatMessage)
         {
+            LogWriter.DebugLog("ParsePermission", DebugLogTypes.CommandSystem, $"Parsing user permissions for {chatMessage.DisplayName}.");
             if (chatMessage.IsBroadcaster)
             {
                 return ViewerTypes.Broadcaster;
@@ -68,6 +70,7 @@ namespace StreamerBotLib.Systems
         /// <param name="source">The platform of the call, for performing any API calls to that platform.</param>
         public void EvalCommand(CmdMessage cmdMessage, Platform source)
         {
+            LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Evaluating command: {cmdMessage.CommandText} from {cmdMessage.DisplayName}.");
             string result;
             cmdMessage.UserType = ParsePermission(cmdMessage);
             short multi = 0;
@@ -76,21 +79,28 @@ namespace StreamerBotLib.Systems
 
             if (cmdrow == null)
             {
+                LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command not found: {cmdMessage.CommandText}.");
                 result = OptionFlags.MsgCommandNotFound ? LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionKeyNotFound) : "";
             }
             else if (!cmdrow.IsEnabled)
             {
+                LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command disabled: {cmdMessage.CommandText}.");
                 result = "";
             }
             else if (cmdrow.Permission < cmdMessage.UserType)
             {
+                LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"User does not have permission to run command: {cmdMessage.CommandText}.");
                 Tuple<string, string> ApproveAction = GetApprovalRule(ModActionType.Commands, cmdMessage.CommandText);
                 if (ApproveAction == null)
                 {
+                    LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command is not eligible for approval: {cmdMessage.CommandText}.");
+
                     result = LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidCommand);
                 }
                 else
                 {
+                    LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command requires approval: {cmdMessage.CommandText}.");
+
                     AddApprovalRequest($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
                         new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
                     result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotController.GetBotName(source), source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
@@ -98,6 +108,8 @@ namespace StreamerBotLib.Systems
             }
             else
             {
+                LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command is valid: {cmdMessage.CommandText}.");
+
                 // parse commands, either built-in or custom
                 result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi);
                 DataManage.UpdateStats(DBUserStats.Commands, cmdMessage.UserId, source);
@@ -108,8 +120,10 @@ namespace StreamerBotLib.Systems
 
         private void FormatResult(string result, short multi, CommandData cmdrow)
         {
+            LogWriter.DebugLog("FormatResult", DebugLogTypes.CommandSystem, $"Formatting result: {result}.");
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
+            LogWriter.DebugLog("FormatResult", DebugLogTypes.CommandSystem, $"Sending formatted result: {result}.");
             OnProcessCommand(result, multi);
         }
 
@@ -144,10 +158,13 @@ namespace StreamerBotLib.Systems
             response = "";
             if (DataManage.CheckShoutName(User.UserId) || !AutoShout)
             {
+                LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, $"User {User.UserName} is on the shout list.");
                 if (OptionFlags.MsgSendSOToChat)
                 {
                     OnProcessCommand($"!{LocalizedMsgSystem.GetVar(DefaultCommand.so)} {User.UserName}");
                 }
+
+                LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, $"Send shout message to chat for {User.UserName}.");
                 response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), User, [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi);
 
                 // handle when returned without #category in the message
@@ -166,22 +183,30 @@ namespace StreamerBotLib.Systems
         /// <returns>The user's welcome message, or empty string if it's not found.</returns>
         public static string CheckWelcomeUser(string UserId)
         {
+            LogWriter.DebugLog("CheckWelcomeUser", DebugLogTypes.CommandSystem, $"Checking for welcome message for user {UserId}.");
+
             return DataManage.CheckWelcomeUser(UserId);
         }
 
         private string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
         {
+            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parsing command: {command} from {User.UserName}.");
+
             string result = "";
             string tempHTMLResponse = "";
             Dictionary<string, string> datavalues = null;
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addcommand))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Adding a command.");
+
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
                 result = DataManage.PostCommand(newcom[1..], CommandParams.Parse(arglist));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.settitle))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Setting the title.");
+
                 if (arglist.Count > 0)
                 {
                     bool success = BotController.ModifyChannelInformation(User.Platform, Title: string.Join(' ', arglist));
@@ -189,30 +214,38 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No title provided.");
+
                     result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.raid))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Raiding a channel.");
                 if (arglist.Count > 0)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Channel provided, {arglist[0]}.");
                     BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Platform);
                     result = cmdrow.Message;
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No channel provided.");
                     result = DataManage.GetUsage(command);
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.cancelraid))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Cancelling a raid.");
                 BotController.CancelRaidChannel(User.Platform);
                 result = cmdrow.Message;
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.approve))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Approving a command.");
                 if (arglist.Count == 0)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No command provided.");
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.list, string.Join(", ",GetDescriptions()) ),
@@ -223,41 +256,51 @@ namespace StreamerBotLib.Systems
                 }
                 else if (arglist.Count == 1)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Approving command: {arglist[0]}.");
                     string AppLabel = GetLabel(arglist[0]);
                     if (AppLabel != null)
                     {
+                        LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Command found: {AppLabel}.");
                         RunApprovedRequest(AppLabel);
                         result = LocalizedMsgSystem.GetVar(Msg.MsgModApproved);
                     }
                     else
                     {
+                        LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Mod Approval not found.");
                         result = LocalizedMsgSystem.GetVar(Msg.MsgModApproveNotFound);
                     }
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setintro))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Setting the intro message.");
                 if (arglist.Count > 2)
                 {
                     string adduser = arglist[0].Replace("@", "");
                     string message = string.Join(' ', arglist.Skip(1));
 
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Intro message provided, {message}.");
                     DataManage.PostUserCustomWelcome(DataManage.GetUser(adduser), message);
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No intro message provided.");
                     result = cmdrow.Usage;
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.mergeaccounts))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Merging accounts.");
+
                 bool? output = null;
                 if (arglist.Count == 0)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No accounts provided.");
                     result = cmdrow.Usage;
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Merging accounts: {User.UserName} {arglist[0]}.");
                     /* -p:Mod 
                      * -use:(Mod level) !mergeaccounts <currname> <previousname> 'or' (user level) !mergeaccounts <previousname>
                      */
@@ -278,12 +321,16 @@ namespace StreamerBotLib.Systems
 
                     output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Platform);
                 }
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Merge result: {output}.");
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.setcategory))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Setting the category.");
+
                 if (arglist.Count > 0)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Category provided, {arglist[0]}.");
                     if (int.TryParse(arglist[0], out int GameId))
                     {
                         BotController.ModifyChannelInformation(User.Platform, CategoryId: GameId.ToString());
@@ -310,6 +357,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No category provided.");
                     result = LocalizedMsgSystem.GetVar("MsgNoTitleCategory");
                 }
             }
@@ -317,27 +365,35 @@ namespace StreamerBotLib.Systems
             {
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Editing command: {newcom}.");
                 result = DataManage.EditCommand(newcom[1..], arglist);
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removecommand))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Removing a command.");
                 if (!LocalizedMsgSystem.CheckDefaultCommand(arglist[0]))
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Command found: {arglist[0]}.");
                     result = DataManage.RemoveCommand(arglist[0])
                         ? LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.removecommand)
                         : LocalizedMsgSystem.GetVar("Msgcommandnotfound");
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Command not found.");
                     result = LocalizedMsgSystem.GetVar("Msgdefaultcommand");
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.accountage))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking account age.");
+
                 string ParamUser = arglist.Count == 1 ? arglist[0].Replace("@", "") : User.UserName;
 
                 ThreadManager.CreateThreadStart("ParseCommand", () =>
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Checking account age for {ParamUser}.");
+
                     DateTime created = BotController.GetUserAccountAge(ParamUser, User.Platform);
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
@@ -346,14 +402,16 @@ namespace StreamerBotLib.Systems
                     });
 
                     OnProcessCommand(VariableParser.ParseReplace(cmdrow.Message, datavalues));
-
                 });
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.socials))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking socials.");
                 // User chose to send separate messages for the socials
                 if (OptionFlags.MsgSocialSeparate)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Sending separate social messages.");
+
                     string Socialresult = "";
                     foreach (string Social in DataManage.GetSocialComs())
                     {
@@ -364,18 +422,22 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Sending combined social message.");
                     result = cmdrow.Message + " " + DataManage.GetSocials();
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.uptime))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking uptime.");
                 if (arglist.Count == 0 && cmdrow.Message.Contains(MsgVars.viewers.ToString()))
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No uptime provided.");
                     BotController.GetViewerCount(User.Platform);
                     result = "";
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Uptime provided.");
                     int DeltaViewers = Convert.ToInt32(arglist[0]) - LastLiveViewerCount;
 
                     result = VariableParser.ParseReplace(OptionFlags.IsStreamOnline ?
@@ -395,10 +457,12 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.clip))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Creating a clip.");
                 BotController.CreateClip();
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.commands))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking commands.");
                 result = DataManage.GetCommandString();
             }
             // capture all of the join queue commands
@@ -409,6 +473,8 @@ namespace StreamerBotLib.Systems
                 || command == LocalizedMsgSystem.GetVar(DefaultCommand.queue)
                 || command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking queue commands.");
+
                 result = OptionFlags.UserPartyStart
                     ? PartyCommand(command, User.UserName, arglist.Count > 0 ? arglist[0] : "", cmdrow)
                     : ElapsedTimer ? "" : LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.qstop);
@@ -416,6 +482,8 @@ namespace StreamerBotLib.Systems
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart)
                 || command == LocalizedMsgSystem.GetVar(DefaultCommand.qstop))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Starting or stopping the queue.");
+
                 result = cmdrow.Message;
                 OptionFlags.SetParty(command == LocalizedMsgSystem.GetVar(DefaultCommand.qstart));
                 NotifyPropertyChanged("UserPartyStart");
@@ -423,28 +491,34 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.soactive))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking active shout-outs.");
                 AutoShoutUsers();
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.blackjack))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Playing blackjack.");
                 // in repeat command case, the arglist may be empty and needs capacity check
                 bool TryConvertInt = int.TryParse((arglist != null && arglist.Count > 0) ? arglist[0] : "0", out int Wager);
 
                 if (arglist.Count == 1 && TryConvertInt)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Playing blackjack with wager: {Wager}.");
                     GamePlayBlackJack(cmdrow, User, Wager);
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No wager provided.");
                     result = cmdrow.Usage;
                 }
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.death))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Adding a gamecounter death.");
                 int counter = AddDeathCounter();
 
                 if (counter != -1)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Death counter added: {counter}.");
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
                         new(MsgVars.user, ChannelName),
                         new(MsgVars.value, FormatData.Plurality(counter,MsgVars.Pluraltime)),
@@ -454,6 +528,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.resetdeath))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Resetting the game death counter.");
                 int counter = ResetDeathCounter(arglist.Count != 0 ? Convert.ToInt32(arglist[0]) : 0);
 
                 result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
@@ -463,6 +538,8 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.viewdeath))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Viewing the game death counter.");
+
                 int counter = DataManage.GetDeathCounter(FormatData.AddEscapeFormat(Category));
 
                 result = VariableParser.ParseReplace(counter != -1 ? cmdrow.Message : LocalizedMsgSystem.GetVar(Msg.MsgNoDeathCounter), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]{
@@ -473,12 +550,16 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.addquote))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Adding a quote.");
+
                 if (arglist.Count == 0)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No quote provided.");
                     result = cmdrow.Usage;
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Adding quote: {string.Join(' ', arglist)}.");
                     int quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
 
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -489,12 +570,15 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.quote))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Getting a quote count.");
                 if (arglist.Count > 1)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Too many arguments provided.");
                     result = cmdrow.Usage;
                 }
                 else if (arglist.Count == 0)
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No quote provided.");
                     int QuoteCount = DataManage.GetQuoteCount();
 
                     result = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(Msg.MsgQuoteNumber), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -505,6 +589,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Getting quote: {arglist[0]}.");
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
                             new(MsgVars.quote,
@@ -514,6 +599,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removequote))
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Removing a quote.");
                 result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                        {
                             new(MsgVars.quotenum, DataManage.RemoveQuote(Convert.ToInt32(arglist[0])) ? arglist[0] : LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote))
@@ -526,6 +612,9 @@ namespace StreamerBotLib.Systems
                         ? User.UserName
                         : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
                     : User.UserName;
+
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parameter value: {paramvalue}.");
+
                 datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                     new(MsgVars.username, paramvalue),
@@ -538,10 +627,12 @@ namespace StreamerBotLib.Systems
 
                 if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, User.Platform))
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No user found for shout-out.");
                     result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
                 }
                 else
                 {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Custom command found: {command}.");
                     if (cmdrow.Lookupdata)
                     {
                         LookupQuery(cmdrow, paramvalue, ref datavalues);
@@ -551,24 +642,20 @@ namespace StreamerBotLib.Systems
                     {
                         ThreadManager.CreateThreadStart("ParseCommand", () =>
                         {
-                            lock (GUI.GUIDataManagerLock.Lock)
-                            {
-                                VariableParser.AddData(ref datavalues,
-                                new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                            VariableParser.AddData(ref datavalues,
+                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
-                                string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                                tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
-                                resultcat = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !resultcat.StartsWith("/me ") ? "/me " : "") + resultcat;
+                            string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
+                            tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
+                            resultcat = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !resultcat.StartsWith("/me ") ? "/me " : "") + resultcat;
 
-                                OnProcessCommand(resultcat, cmdrow.SendMsgCount);
+                            OnProcessCommand(resultcat, cmdrow.SendMsgCount);
 
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
 
-                                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
-
-                                CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
-                                    Action: DefaultCommand.so.ToString(),
-                                    User, UserMsg: tempHTMLResponse);
-                            }
+                            CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
+                                Action: DefaultCommand.so.ToString(),
+                                User, UserMsg: tempHTMLResponse);
                         });
 
                         result = "";
@@ -588,6 +675,7 @@ namespace StreamerBotLib.Systems
 
             if (result != "")
             {
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Command performed, resulting message: {result}. Checking for Overlay Event.");
                 CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, User, UserMsg: tempHTMLResponse);
             }
 
@@ -602,20 +690,26 @@ namespace StreamerBotLib.Systems
 
         private void OnProcessCommand(string Message, int repeatMsg = 0)
         {
+            LogWriter.DebugLog("OnProcessCommand", DebugLogTypes.CommandSystem, $"Processing command output: {Message}.");
             ProcessedCommand?.Invoke(this, new() { Msg = Message, RepeatMsg = repeatMsg });
         }
 
         private static string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)
         {
+            LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, $"Processing party command: {command}.");
+
             UserJoin newuser = new() { ChatUser = DisplayName };
             if (argument != "")
             {
+                LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, $"Argument provided: {argument}.");
                 newuser.GameUserName = argument;
             }
 
             string response;
             if (command == LocalizedMsgSystem.GetVar(DefaultCommand.queue))
             {
+                LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, "Checking the queue.");
+
                 List<string> JoinChatUsers = [];
                 JoinChatUsers.AddRange(from UserJoin u in JoinCollection
                                        select u.ChatUser);
@@ -623,10 +717,12 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.qinfo))
             {
+                LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, "Retrieving the queue info.");
                 response = cmdrow.Message;
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.enqueue) || command == LocalizedMsgSystem.GetVar(DefaultCommand.join))
             {
+                LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, "Joining the queue.");
                 if (JoinCollection.Contains(newuser))
                 {
                     response = $"You have already joined. You are currently number {JoinCollection.IndexOf(newuser) + 1}.";
@@ -639,6 +735,7 @@ namespace StreamerBotLib.Systems
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.leave) || command == LocalizedMsgSystem.GetVar(DefaultCommand.dequeue))
             {
+                LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, "Leaving the queue.");
                 response = JoinCollection.Remove(newuser) ? "You are no longer in the queue." : "You are not in the queue.";
             }
             else
@@ -652,34 +749,33 @@ namespace StreamerBotLib.Systems
         private static void LookupQuery(CommandData CommData, string paramvalue, ref Dictionary<string, string> datavalues)
         {
             //TODO: the query commands with data lookup needs a lot of work!
+            LogWriter.DebugLog("LookupQuery", DebugLogTypes.CommandSystem, $"Performing query: {CommData.CmdName}.");
 
             switch (CommData.Top)
             {
                 case > 0:
                 case -1:
                     {
+                        LogWriter.DebugLog("LookupQuery", DebugLogTypes.CommandSystem, "Query requests a single result.");
                         if (CommData.Action != CommandAction.Get)
                         {
                             throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar(ChatBotExceptions.ExceptionInvalidComUsage), CommData.CmdName, CommData.Action, CommandAction.Get.ToString()));
                         }
 
                         // convert multi-row output to a string
-                        string queryoutput = "";
-                        foreach (Tuple<object, object> bundle in from object r in DataManage.PerformQuery(Commands.GetCommands(CommData), CommData.Top)
-                                                                 let bundle = r as Tuple<object, object>
-                                                                 where bundle.Item1 == bundle.Item2
-                                                                 select bundle)
-                        {
-                            queryoutput += bundle.Item1 + ", ";
-                        }
+                        string queryoutput = string.Join(", ", from object r in DataManage.PerformQuery(Commands.GetCommands(CommData), CommData.Top)
+                                                               let bundle = r as Tuple<object, object>
+                                                               where bundle.Item1 == bundle.Item2
+                                                               select bundle.Item1);
 
-                        queryoutput = queryoutput.Remove(queryoutput.LastIndexOf(','));
                         VariableParser.AddData(ref datavalues, new Tuple<MsgVars, string>[] { new(MsgVars.query, queryoutput) });
                         break;
                     }
 
                 default:
                     {
+                        LogWriter.DebugLog("LookupQuery", DebugLogTypes.CommandSystem, "Query requests a multiple result.");
+
                         object querydata = DataManage.PerformQuery(CommandsBase.GetCommands(CommData), paramvalue) ?? "";
 
                         string output = "";

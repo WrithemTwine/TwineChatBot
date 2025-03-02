@@ -404,7 +404,7 @@ namespace StreamerBotLib.BotClients
 
         private void TwitchBotEventSubChatClient_OnChannelChatMessageReceived(object sender, ChannelChatMessageEventArgs e)
         {
-            LogWriter.DebugLog("TwitchBotEventSubChatClient_OnChannelChatMessageReceived", DebugLogTypes.TwitchBots, "Bot EventSub bot received a new chat messages. Determining if command.");
+            LogWriter.DebugLog("TwitchBotEventSubChatClient_OnChannelChatMessageReceived", DebugLogTypes.TwitchBots, "Bot EventSub bot received a new chat message. Determining if command.");
 
             if (e.ChannelChatMessage.ChatterUserId != OptionFlags.TwitchBotUserId)
             {

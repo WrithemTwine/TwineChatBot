@@ -97,7 +97,7 @@ namespace StreamerBot
 
             ConstructEvents();
 
-            DataManagerLoaded();
+            DataManagerViewLoaded();
         }
 
         #region Bot_Ops

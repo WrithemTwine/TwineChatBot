@@ -7,7 +7,6 @@ using StreamerBotLib.Static;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Documents;
 
 namespace StreamerBotLib.Systems
@@ -64,6 +63,7 @@ namespace StreamerBotLib.Systems
 
         public static void ManageDatabase()
         {
+            LogWriter.DebugLog("ManageDatabase", Enums.DebugLogTypes.CommonSystem, "Managing Database.");
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
             if (!OptionFlags.ManageUsers)
@@ -113,69 +113,79 @@ namespace StreamerBotLib.Systems
 
         public static void ClearWatchTime()
         {
+            LogWriter.DebugLog("ClearWatchTime", Enums.DebugLogTypes.CommonSystem, "Clearing Watch Time.");
             DataManage.ClearWatchTime();
         }
 
         public static void ClearAllCurrenciesValues()
         {
+            LogWriter.DebugLog("ClearAllCurrenciesValues", Enums.DebugLogTypes.CommonSystem, "Clearing All Currency Values.");
             DataManage.ClearAllCurrencyValues();
         }
 
         public static void ClearUsersNonFollowers()
         {
+            LogWriter.DebugLog("ClearUsersNonFollowers", Enums.DebugLogTypes.CommonSystem, "Clearing Users Non-Followers.");
             DataManage.ClearUsersNotFollowers();
         }
 
         public static void SetSystemEventsEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetSystemEventsEnabled", Enums.DebugLogTypes.CommonSystem, $"Setting System Events Enabled: {Enabled}");
             DataManage.SetSystemEventsEnabled(Enabled);
         }
 
         public static void SetBuiltInCommandsEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetBuiltInCommandsEnabled", Enums.DebugLogTypes.CommonSystem, $"Setting Built-In Commands Enabled: {Enabled}");
             DataManage.SetBuiltInCommandsEnabled(Enabled);
         }
 
         public static void SetUserDefinedCommandsEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetUserDefinedCommandsEnabled", Enums.DebugLogTypes.CommonSystem, $"Setting User Defined Commands Enabled: {Enabled}");
             DataManage.SetUserDefinedCommandsEnabled(Enabled);
         }
 
         public static void SetDiscordWebhooksEnabled(bool Enabled)
         {
+            LogWriter.DebugLog("SetDiscordWebhooksEnabled", Enums.DebugLogTypes.CommonSystem, $"Setting Discord Webhooks Enabled: {Enabled}");
             DataManage.SetWebhooksEnabled(Enabled);
         }
 
         public static void PostUpdatedDataRow(bool RowChanged)
         {
+            LogWriter.DebugLog("PostUpdatedDataRow", Enums.DebugLogTypes.CommonSystem, $"Posting Updated DataRow: {RowChanged}");
             //DataManage.PostUpdatedDataRow(RowChanged);
         }
 
         public static void DeleteRows(IEnumerable<DataRow> dataRows)
         {
+            LogWriter.DebugLog("DeleteRows", Enums.DebugLogTypes.CommonSystem, $"Deleting Rows: {dataRows.Count()}");
             DataManage.DeleteDataRows(dataRows);
         }
 
         public static void AddNewAutoShoutUser(string UserId, Enums.Platform platform)
         {
+            LogWriter.DebugLog("AddNewAutoShoutUser", Enums.DebugLogTypes.CommonSystem, $"Adding New AutoShout User: {UserId}");
             DataManage.PostNewAutoShoutUser(UserId, platform);
         }
 
         internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
         {
-            lock (GUI.GUIDataManagerLock.Lock)
-            {
-                DataManage.SetIsEnabled(dataRows, IsEnabled);
-            }
+            LogWriter.DebugLog("UpdatedIsEnabledRows", Enums.DebugLogTypes.CommonSystem, $"Updating IsEnabled Rows: {dataRows.Count()}");
+            DataManage.SetIsEnabled(dataRows, IsEnabled);
         }
 
         internal static bool CheckField(string dataTable, string fieldName)
         {
+            LogWriter.DebugLog("CheckField", Enums.DebugLogTypes.CommonSystem, $"Checking Field: {fieldName}");
             return DataManage.CheckField(dataTable, fieldName);
         }
 
         public static bool AddClip(Clip c)
         {
+            LogWriter.DebugLog("AddClip", Enums.DebugLogTypes.CommonSystem, $"Adding Clip: {c.Title}");
             return DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName);
         }
 
@@ -187,6 +197,7 @@ namespace StreamerBotLib.Systems
         {
             get
             {
+                LogWriter.DebugLog("GetUserCount", Enums.DebugLogTypes.CommonSystem, "Getting User Count.");
                 lock (StreamViewers)
                 {
                     return StreamViewers.GetCurrentActiveUsers().Count;
@@ -202,6 +213,7 @@ namespace StreamerBotLib.Systems
         {
             get
             {
+                LogWriter.DebugLog("GetCurrentChatCount", Enums.DebugLogTypes.CommonSystem, "Getting Current Chat Count.");
                 lock (CurrStream)
                 {
                     return CurrStream.TotalChats;
@@ -211,6 +223,7 @@ namespace StreamerBotLib.Systems
 
         public static void UpdateGUICurrUsers()
         {
+            LogWriter.DebugLog("UpdateGUICurrUsers", Enums.DebugLogTypes.CommonSystem, "Updating GUI Current Users.");
             CurrUserJoin.Clear();
             var curr = StreamViewers.GetCurrentActiveUsers();
             curr.Sort();
@@ -223,11 +236,14 @@ namespace StreamerBotLib.Systems
 
         internal static void AddChatString(string UserName, string Message)
         {
-            Application.Current?.Dispatcher.BeginInvoke(new ProcMessage(UpdateGUIChatMessages), UserName, Message);
+            LogWriter.DebugLog("AddChatString", Enums.DebugLogTypes.CommonSystem, $"Adding Chat String: {UserName}: {Message}");
+            ThreadManager.AddTaskToGUIDispatcher(() => UpdateGUIChatMessages(UserName, Message));
         }
 
         private static void UpdateGUIChatMessages(string UserName, string Message)
         {
+            LogWriter.DebugLog("UpdateGUIChatMessages", Enums.DebugLogTypes.CommonSystem, $"Updating GUI Chat Messages: {UserName}: {Message}");
+
             Paragraph p = new();
             string time = DateTime.Now.ToLocalTime().ToString("h:mm", CultureInfo.CurrentCulture) + " ";
             p.Inlines.Add(new Run(time));
@@ -242,6 +258,7 @@ namespace StreamerBotLib.Systems
 
         internal static void OutputSentToBotsHandler(object sender, PostChannelMessageEventArgs e)
         {
+            LogWriter.DebugLog("OutputSentToBotsHandler", Enums.DebugLogTypes.CommonSystem, $"Output Sent To Bots Handler: {e.Msg}");
             AddChatString(Settings.Default.TwitchBotUserName, e.Msg);
         }
 
