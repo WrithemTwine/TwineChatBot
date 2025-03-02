@@ -84,16 +84,12 @@
 
 	<ItemGroup>
 		
-				<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.2" />
 
 		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.5.1" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="9.0.2" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU'" />
@@ -101,9 +97,9 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.2" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU'" />
 
 		
-						<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU'" />
 
-<PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'" />
+		<PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.0" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU'" />
 		<PackageReference Include="MySqlConnector" Version="2.4.0" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU' &#xD;&#xA;									  Or '$(Configuration)|$(Platform)'=='Release_PomeloMySql|AnyCPU'" />
 
 		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Condition="'$(Configuration)|$(Platform)'=='Release_PomeloMySql|AnyCPU'">

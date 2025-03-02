@@ -2,6 +2,10 @@
 
 #if !USE_POOLED_DBCONTEXT
 
+#if RELEASE_KNET
+using MASES.EntityFrameworkCore.KNet;
+#endif
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
