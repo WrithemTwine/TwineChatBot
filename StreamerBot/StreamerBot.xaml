@@ -1823,6 +1823,17 @@
                                                 <TextBlock>Send !so command to chat-other bots can use for messages. Also applies when 'Auto 
                                                     ShoutOut Incoming Channel Raid' is active.</TextBlock>
                                             </CheckBox>
+                                            <CheckBox IsChecked="{Binding TwitchChannelUserShoutAPI}">
+                                                <TextBlock>
+                                                    <TextBlock.ToolTip>
+                                                        <TextBlock>
+                                                            Every 2 minutes per different viewer, every 60 minutes for repeating same 
+                                                            viewer. This stream must be live with 1 or more viewers.
+                                                        </TextBlock>
+                                                    </TextBlock.ToolTip>
+                                                    Perform Twitch API ShoutOut, activated alongside shoutout messages.
+                                                </TextBlock>
+                                            </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Twitch - Stream Clips">
@@ -1833,6 +1844,19 @@
                                             <CheckBox IsChecked="{Binding TwitchClipPostDiscord}">
                                                 <TextBlock>Post new clips to Discord. Must have "Clips" Webhook(s) defined.</TextBlock>
                                             </CheckBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Twitch - MultiLive Options">
+                                        <StackPanel>
+                                            <TextBlock>Interact with Multi-Live channels - open a browser window. Tab
+                                            may not always be muted.</TextBlock>
+                                            <CheckBox IsChecked="{Binding TwitchMultiLiveBrowseChannel, Mode=TwoWay}">
+                                                <TextBlock>Open a browser window when any followed channel is online.</TextBlock>
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding TwitchMultiLiveBrowseFollowRaids}">
+                                                <TextBlock>Specify the browser window URL to follow raids.</TextBlock>
+                                            </CheckBox>
+                                            <TextBlock>If 'follow raids' mode is enabled, a new window will open when stream is online. Otherwise, only one window will open (per multilive channel) until the whole bot is restarted (if that channel browser is closed, another won't open until whole bot restarts).</TextBlock>
                                         </StackPanel>
                                     </GroupBox>
 

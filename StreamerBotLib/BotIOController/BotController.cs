@@ -6,10 +6,12 @@ using StreamerBotLib.Events;
 using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
@@ -53,11 +55,14 @@ namespace StreamerBotLib.BotIOController
         private Queue<Task> Operations { get; set; } = [];   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored channels
 
+        private static List<LiveUser> MultiLiveBrowserOpen = [];
+
         public BotController()
         {
             Systems = new();
             Systems.PostChannelMessage += Systems_PostChannelMessage;
             Systems.BanUserRequest += Systems_BanUserRequest;
+            Systems.TwitchShoutOutUser += Systems_TwitchShoutOutUser;
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
@@ -543,6 +548,15 @@ namespace StreamerBotLib.BotIOController
             //    Bots.TwitchPubSub => throw new NotImplementedException(),
             //    _ => throw new NotImplementedException()
             //};
+        }
+
+
+        private void Systems_TwitchShoutOutUser(object sender, TwitchShoutOutUsersEventArgs e)
+        {
+            if(e.User.Platform == Platform.Twitch)
+            {
+                TwitchBots.SendShoutOut(e.User);
+            }
         }
 
         public static bool ModifyChannelInformation(Platform bots, string Title = null, string CategoryName = null, string CategoryId = null)
@@ -1041,6 +1055,27 @@ namespace StreamerBotLib.BotIOController
                 }
             }
 
+            if(User.Platform == Platform.Twitch)
+            {
+                if (OptionFlags.TwitchMultiLiveBrowseChannel)
+                {
+                    if (!MultiLiveBrowserOpen.Contains(User))
+                    {
+                        string URL = Resources.TwitchHomepage + User.UserName;
+
+                        if (!OptionFlags.TwitchMultiLiveBrowseFollowRaids)
+                        {
+                            URL += "?no-reload=true"; // prevent following raids
+                            MultiLiveBrowserOpen.Add(User);  // add user to not evaluate again
+                        }
+
+                        Process startBrowser = new();
+                        startBrowser.StartInfo.UseShellExecute = true;
+                        startBrowser.StartInfo.FileName = $"\"{URL}\"";
+                        _ = startBrowser.Start();
+                    }
+                }
+            }
         }
 
         private void ManageOnlineStream(Platform platform)

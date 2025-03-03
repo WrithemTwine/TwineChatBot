@@ -80,16 +80,16 @@ switches:
         #region Process Queue
 
         private Thread processQueueTaskThread;
-        private readonly ConcurrentQueue<ManagedTask> queueTasks = new();
+        private readonly ConcurrentQueue<ManagedAction> queueTasks = new();
         private bool StartedProcessingQueue = false;
 
-        private void PostActionQueue(Task action, string key)
+        private void PostActionQueue(Action action, string key)
         {
-            ManagedTask task = new(key, action);
+            ManagedAction Action = new(key, action);
 
-            if (!queueTasks.Contains(task))
+            if (!queueTasks.Contains(Action))
             {
-                queueTasks.Enqueue(task);
+                queueTasks.Enqueue(Action);
             }
 
             if (!StartedProcessingQueue)
@@ -107,9 +107,9 @@ switches:
                 await Task.Delay(5000); // wait 5 seconds before processing queue
                 try
                 {
-                    while (queueTasks.TryDequeue(out ManagedTask result))
+                    while (queueTasks.TryDequeue(out ManagedAction result))
                     {
-                        result.Task.Start();
+                        result.Action.Invoke();
                         await Task.Delay(800);
                     }
 

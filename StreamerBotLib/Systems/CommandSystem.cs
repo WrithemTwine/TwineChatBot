@@ -18,6 +18,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
+        public event EventHandler<TwitchShoutOutUsersEventArgs> TwitchShoutOutUser;
 
         /// <summary>
         /// Informs the GUI of updated info.
@@ -625,7 +626,8 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.com, paramvalue )
                 });
 
-                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) && !BotController.VerifyUserExist(paramvalue, User.Platform))
+                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) 
+                    && !(DataManage.GetUserId(new(paramvalue, User.Platform)) != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No user found for shout-out.");
                     result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
@@ -636,6 +638,16 @@ namespace StreamerBotLib.Systems
                     if (cmdrow.Lookupdata)
                     {
                         LookupQuery(cmdrow, paramvalue, ref datavalues);
+                    }
+
+                    if (User.Platform == Platform.Twitch)
+                    {
+                        if (OptionFlags.TwitchChannelUserShoutAPI)
+                        {
+                            LiveUser shoutoutUser = new(userName: paramvalue, Platform.Twitch);
+                            shoutoutUser.UserId = DataManage.GetUserId(shoutoutUser);
+                            TwitchShoutOutUser?.Invoke(this, new(shoutoutUser));
+                        }
                     }
 
                     if (cmdrow.Message.Contains(MsgVars.category.ToString()))

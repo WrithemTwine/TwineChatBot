@@ -10,6 +10,7 @@ namespace StreamerBotLib.BotClients.Twitch
 {
 
     //
+    // example URL for viewing a channel with not following a raid
     //  https://www.twitch.tv/writhemtwine?no-reload=true&referrer=raid
     //
 

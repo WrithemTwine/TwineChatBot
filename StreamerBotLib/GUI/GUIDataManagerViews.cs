@@ -536,7 +536,7 @@ namespace StreamerBotLib.GUI
                                      select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Category), IsChecked = false }));
             }
             else
-            {   // TODO: fix - the GUI is showing "All" and "Category" for a single selection - doesn't include rest of list
+            {
                 checkBoxes.Add(new() { Content = "All", IsChecked = false }); // add "All" selection first
 
                 checkBoxes.AddRange((from (string, bool) C in

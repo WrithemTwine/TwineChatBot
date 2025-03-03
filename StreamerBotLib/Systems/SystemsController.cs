@@ -19,6 +19,7 @@ namespace StreamerBotLib.Systems
     {
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
+        public event EventHandler<TwitchShoutOutUsersEventArgs> TwitchShoutOutUser;
 
         public static IDataManager DataManage { get; private set; }
 
@@ -54,8 +55,14 @@ namespace StreamerBotLib.Systems
 
             SystemActions.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             SystemActions.ProcessedCommand += Command_ProcessedCommand;
+            SystemActions.TwitchShoutOutUser += SystemActions_TwitchShoutOutUser;
 
             DataManage.OnBulkFollowersAddFinished += DataManage_OnBulkFollowersAddFinished;
+        }
+
+        private void SystemActions_TwitchShoutOutUser(object sender, TwitchShoutOutUsersEventArgs e)
+        {
+            TwitchShoutOutUser?.Invoke(sender, e);
         }
 
 #if DEBUG

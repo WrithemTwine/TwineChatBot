@@ -182,6 +182,12 @@ namespace StreamerBotLib.Static
         /// Auto shout specific users, per the welcome user setting (when they first join or when they first chat).
         /// </summary>
         public static bool AutoShout => Settings.Default.MsgAutoShout;
+
+        /// <summary>
+        /// Specifies whether to use Twitch API to shout out users when they interact with the channel - connected to the AutoShout methodology.
+        /// </summary>
+        public static bool TwitchChannelUserShoutAPI => Settings.Default.TwitchChannelUserShoutAPI;
+
         /// <summary>
         /// Setting for the bot to emit the "!so Username" to the given channel chat, such that other bots can pick-up a shout-out for additional notifications.
         /// </summary>
@@ -257,6 +263,16 @@ namespace StreamerBotLib.Static
         /// Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
         /// </summary>
         public static bool PostMultiLive => Settings.Default.PostMultiLive;
+
+        /// <summary>
+        /// Enables or disables automatically popping up a browser window for a new channel online.
+        /// </summary>
+        public static bool TwitchMultiLiveBrowseChannel => Settings.Default.TwitchMultiLiveBrowseChannel;
+        
+        /// <summary>
+        /// Specifies whether to open the browser with a URL to follow the channel on any raids - specifically, it's the URL shape.
+        /// </summary>
+        public static bool TwitchMultiLiveBrowseFollowRaids => Settings.Default.TwitchMultiLiveBrowseFollowRaids;
 
         /// <summary>
         /// Whether to display the bot welcome message when connecting to the channel.

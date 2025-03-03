@@ -2535,5 +2535,41 @@ namespace StreamerBotLib.Properties {
                 this["EnableDebugManageStreamViewers"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchMultiLiveBrowseChannel {
+            get {
+                return ((bool)(this["TwitchMultiLiveBrowseChannel"]));
+            }
+            set {
+                this["TwitchMultiLiveBrowseChannel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchMultiLiveBrowseFollowRaids {
+            get {
+                return ((bool)(this["TwitchMultiLiveBrowseFollowRaids"]));
+            }
+            set {
+                this["TwitchMultiLiveBrowseFollowRaids"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchChannelUserShoutAPI {
+            get {
+                return ((bool)(this["TwitchChannelUserShoutAPI"]));
+            }
+            set {
+                this["TwitchChannelUserShoutAPI"] = value;
+            }
+        }
     }
 }

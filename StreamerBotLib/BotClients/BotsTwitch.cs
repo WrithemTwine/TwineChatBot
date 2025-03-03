@@ -399,7 +399,6 @@ namespace StreamerBotLib.BotClients
 
         #endregion
 
-
         #region Bot EventSub Bot - listen to chat messages
 
         private void TwitchBotEventSubChatClient_OnChannelChatMessageReceived(object sender, ChannelChatMessageEventArgs e)
@@ -648,6 +647,28 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog("VerifyUserExist", DebugLogTypes.TwitchBots, "Performing a user verification request.");
 
             return TwitchHelixBot.GetUserId(UserName) != null;
+        }
+
+        public void SendShoutOut(LiveUser user)
+        {
+            if (!ShoutOutTaskActive)
+            {
+                ShoutOutTaskActive = true;
+                ThreadManager.CreateThreadStart("SendShoutOut", ()=>EvaluateShoutOutUsers());
+            }
+
+            lock (ShoutOutUsers)
+            {
+                ShoutOutLiveUser shoutOutLiveUser = new(user);
+                if (!ShoutOutUsers.UniqueAdd(shoutOutLiveUser))
+                {
+                    var shoutuser = ShoutOutUsers.Find(s => s.Equals(shoutOutLiveUser) && (s.LastShoutOut != null && s.LastShoutOut.Value.AddMinutes(15) < DateTime.Now));
+                    if (shoutuser != null)
+                    {
+                        shoutuser.NextShoutOut = shoutuser.LastShoutOut.Value.AddHours(1);
+                    }
+                }
+            }
         }
 
         public static void BanUserRequest(string UserName, BanReasons Reason, int Duration = 0)
@@ -1253,6 +1274,81 @@ namespace StreamerBotLib.BotClients
 
             ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
         }
+
+        private bool ShoutOutTaskActive = false;
+        private List<ShoutOutLiveUser> ShoutOutUsers = [];
+
+        private Task EvaluateShoutOutUsers()
+        {
+            // NewUserEntry: Different users can only be shoutout once every 2 minutes
+            // -LastShoutOut = null, NextShoutOut = null => first shoutout occurs asap
+            // 
+            // ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
+            // -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
+            // -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
+
+            return Task.Run(async () =>
+            {
+                try
+                {
+                    DateTime lastShoutOut = DateTime.MinValue;
+
+                    while (OptionFlags.ActiveToken)
+                    {
+                        ShoutOutLiveUser nextShoutOut = null;
+                        lock (ShoutOutUsers)
+                        {
+                            foreach (var S in ShoutOutUsers)
+                            {
+                                if (S.LastShoutOut == null && S.NextShoutOut == null)
+                                {
+                                    nextShoutOut ??= S;
+                                    break;
+                                }
+                                else if (S.NextShoutOut != null)
+                                {
+                                    nextShoutOut ??= S;
+                                    break;
+                                }
+                            }
+                        }
+
+                        DateTime Curr = DateTime.Now;
+
+                        if (nextShoutOut.NextShoutOut == null && lastShoutOut.AddMinutes(2) <= Curr)
+                        { // new shoutout user, allowed per Twitch API every 2 minutes
+                            TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
+
+                            lock (ShoutOutUsers)
+                            {
+                                nextShoutOut.LastShoutOut = Curr;
+                            }
+
+                            lastShoutOut = Curr;
+                        }
+                        else if (lastShoutOut.AddHours(1) <= Curr && nextShoutOut.NextShoutOut < Curr)
+                        { // existing shoutout user, allowed per Twitch API every 60 minutes
+                            TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
+
+                            lock (ShoutOutUsers)
+                            {
+                                nextShoutOut.LastShoutOut = Curr;
+                                nextShoutOut.NextShoutOut = null;
+                            }
+
+                            lastShoutOut = Curr;
+                        }
+                        await Task.Delay(5000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, "EvaluateShoutOutUsers");
+                    ShoutOutTaskActive = false;
+                }
+            });
+        }
+
 
         //private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
         //private DateTime OutRaidStarted;

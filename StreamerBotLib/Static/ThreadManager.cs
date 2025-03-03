@@ -81,7 +81,7 @@ namespace StreamerBotLib.Static
         }
         public static void AddAsyncTaskToGUIDispatcher(string CallMethodName, Action action)
         {
-            LogWriter.DebugLog(CallMethodName, DebugLogTypes.ThreadManager, $"ThreadManager called the GUI Dispatcher's BeginInvoke, to start soon, on behalf of {CallMethodName}.");
+            LogWriter.DebugLog(CallMethodName, DebugLogTypes.ThreadManager, $"ThreadManager called the GUI Dispatcher's Invoke, to start soon, on behalf of {CallMethodName}.");
 
             GUIDispatcher.Invoke(() => action);
         }

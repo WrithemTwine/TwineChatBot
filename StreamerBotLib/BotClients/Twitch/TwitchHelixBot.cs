@@ -198,6 +198,28 @@ namespace StreamerBotLib.BotClients.Twitch
             return await tokenBot.StreamerHelixApi.Helix.Channels.GetChannelFollowersAsync(broadcasterId: broadcasterId, userId: UserId, first: first, after: after);
         }
 
+        /// <summary>
+        /// Send a TwitchAPI shoutout for a specific broadcaster. Must check the following limitations or endpoint provides an error message.
+        ///
+        /// NewUserEntry: Different users can only be shoutout once every 2 minutes
+        /// -LastShoutOut = null, NextShoutOut = null => first shoutout occurs asap
+        /// 
+        /// ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
+        /// -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
+        /// -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
+        /// </summary>
+        /// <param name="fromBroadcasterId">The broadcaster userId sending the shoutout.</param>
+        /// <param name="toBroadcasterId">The broadcaster userId receiving the shoutout.</param>
+        /// <param name="ModeratorId">The moderator userId sending the shoutout, much match the access token associated user Id.</param>
+        /// <returns></returns>
+        private async Task ChatSendShoutOut(string fromBroadcasterId, string toBroadcasterId, string ModeratorId)
+        {
+            if ((GetStreams(UserId: OptionFlags.TwitchStreamerUserId).Result?.Streams[0]?.ViewerCount ?? 0) > 0)
+            { // a TwitchAPI shoutout is valid for an online stream and for >=1 current stream viewers
+                await tokenBot.StreamerHelixApi.Helix.Chat.SendShoutoutAsync(fromBroadcasterId, toBroadcasterId, ModeratorId);
+            }
+        }
+
         #endregion
 
         #region Data Methods - Interface to Helix calls
@@ -285,6 +307,18 @@ namespace StreamerBotLib.BotClients.Twitch
             return PerformAction("GetUserInfo", () =>
             {
                 return GetChannelInformationAsync(UserId: UserId, UserName: UserName)?.Result;
+            });
+        }
+
+        public void SendShoutOut(string toBroadcasterId = null, string toBroadcasterUserName = null)
+        {
+            _ = PerformAction("SendShoutOut", () =>
+            {
+                return ChatSendShoutOut(
+                    OptionFlags.TwitchStreamerUserId, 
+                    toBroadcasterId ?? GetUserId(toBroadcasterUserName), 
+                    OptionFlags.TwitchStreamerUserId
+                    );
             });
         }
 
