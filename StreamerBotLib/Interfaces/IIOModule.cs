@@ -16,7 +16,7 @@ namespace StreamerBotLib.Interfaces
         Task<bool> Connect();
 
         // Send data to the provider
-        Task Send(string s);
+        Task Send(string s, bool Announcement = false);
 
         // Send whisper to the provider
         bool SendWhisper(string user, string s);

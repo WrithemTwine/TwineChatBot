@@ -70,7 +70,7 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to user:read:chat user:write:chat.
+        ///   Looks up a localized string similar to user:read:chat user:write:chat moderator:manage:announcements.
         /// </summary>
         public static string CredentialsTwitchScopesDiffOauthBot {
             get {
@@ -88,7 +88,7 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to user:read:chat user:write:chat bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts.
+        ///   Looks up a localized string similar to user:read:chat user:write:chat bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts moderator:manage:announcements.
         /// </summary>
         public static string CredentialsTwitchScopesOauthSame {
             get {

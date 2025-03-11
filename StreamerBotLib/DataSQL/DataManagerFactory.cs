@@ -7,17 +7,18 @@ using MASES.EntityFrameworkCore.KNet;
 #endif
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 using StreamerBotLib.Static;
 
 namespace StreamerBotLib.DataSQL
 {
-    internal class DataManagerFactory : IDbContextFactory<SQLDBContext>
+    public class DataManagerFactory : IDbContextFactory<SQLDBContext>, IDesignTimeDbContextFactory<SQLDBContext>
     {
-        PooledDbContextFactory<SQLDBContext> _pooledDbContextFactory;
+        private PooledDbContextFactory<SQLDBContext> _pooledDbContextFactory;
 
-        internal DataManagerFactory()
+        private void SetupDataManagerFactory()
         {
             var options = new DbContextOptionsBuilder<SQLDBContext>()
 
@@ -57,10 +58,13 @@ namespace StreamerBotLib.DataSQL
 
         public SQLDBContext CreateDbContext()
         {
-            //SQLDBContext dbContext = new();
-            //dbContext.Database.EnsureCreated();
-            //return dbContext;
+            SetupDataManagerFactory();
+            return _pooledDbContextFactory.CreateDbContext();
+        }
 
+        public SQLDBContext CreateDbContext(string[] args)
+        { // necessary for EFC migration tools
+            SetupDataManagerFactory();
             return _pooledDbContextFactory.CreateDbContext();
         }
     }

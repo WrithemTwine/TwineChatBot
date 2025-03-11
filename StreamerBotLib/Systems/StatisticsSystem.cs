@@ -266,7 +266,7 @@ namespace StreamerBotLib.Systems
         }
 
         #region Stream Stat Methods
-        public  void AddFollow()
+        public void AddFollow()
         {
             lock (CurrStream)
             {
@@ -275,7 +275,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddSub()
+        public void AddSub()
         {
             lock (CurrStream)
             {
@@ -284,7 +284,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddGiftSubs(int Gifted = 1)
+        public void AddGiftSubs(int Gifted = 1)
         {
             lock (CurrStream)
             {
@@ -293,7 +293,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddBits(int BitCount)
+        public void AddBits(int BitCount)
         {
             lock (CurrStream)
             {
@@ -302,7 +302,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddRaids()
+        public void AddRaids()
         {
             lock (CurrStream)
             {
@@ -311,7 +311,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddHosted()
+        public void AddHosted()
         {
             lock (CurrStream)
             {
@@ -320,7 +320,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddUserBanned()
+        public void AddUserBanned()
         {
             lock (CurrStream)
             {
@@ -329,7 +329,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddUserTimedOut()
+        public void AddUserTimedOut()
         {
             lock (CurrStream)
             {
@@ -338,7 +338,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddTotalChats()
+        public void AddTotalChats()
         {
             lock (CurrStream)
             {
@@ -346,7 +346,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddCommands()
+        public void AddCommands()
         {
             lock (CurrStream)
             {
@@ -354,7 +354,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddAutoEvents()
+        public void AddAutoEvents()
         {
             lock (CurrStream)
             {
@@ -363,7 +363,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddAutoCommands()
+        public void AddAutoCommands()
         {
             lock (CurrStream)
             {
@@ -372,7 +372,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddDiscord()
+        public void AddDiscord()
         {
             lock (CurrStream)
             {
@@ -380,7 +380,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddClips()
+        public void AddClips()
         {
             lock (CurrStream)
             {
@@ -389,7 +389,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddChannelPtsCount()
+        public void AddChannelPtsCount()
         {
             lock (CurrStream)
             {
@@ -397,7 +397,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public  void AddChannelChallenge()
+        public void AddChannelChallenge()
         {
             lock (CurrStream)
             {

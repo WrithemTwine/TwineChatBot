@@ -72,7 +72,7 @@ namespace StreamerBotLib.BotClients
             throw new NotImplementedException();
         }
 
-        public virtual async Task Send(string s)
+        public virtual async Task Send(string s, bool Announcement = false)
         {
             await Task.Run(() => { });
         }

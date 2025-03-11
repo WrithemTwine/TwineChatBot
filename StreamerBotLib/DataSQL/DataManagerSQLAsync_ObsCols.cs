@@ -1,4 +1,4 @@
-﻿#define USE_OBSERVABLECOLLECTION
+﻿#define USE_OBSERVABLECOLLECTION1
 
 using Microsoft.EntityFrameworkCore;
 
@@ -1111,304 +1111,304 @@ namespace StreamerBotLib.DataSQL
         {
             LogWriter.DebugLog("RefreshBanReasonsList", DebugLogTypes.DataManager,
                 $"Reloading BanReasons data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.BanReasons.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), GUIContext.BanReasons.Local.ToList());
-            }), "RefreshBanReasonsList");
+            }, "RefreshBanReasonsList");
         }
 
         private void RefreshBanRulesList()
         {
             LogWriter.DebugLog("RefreshBanRulesList", DebugLogTypes.DataManager,
                 $"Reloading BanRules data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.BanRules.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), GUIContext.BanRules.Local.ToList());
-            }), "RefreshBanRulesList");
+            }, "RefreshBanRulesList");
         }
 
         private void RefreshCategoryListList()
         {
             LogWriter.DebugLog("RefreshCategoryListList", DebugLogTypes.DataManager,
                 $"Reloading CategoryList data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.CategoryList.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), GUIContext.CategoryList.Local.ToList());
-            }), "RefreshCategoryList");
+            }, "RefreshCategoryList");
         }
 
         private void RefreshChannelEventsList()
         {
             LogWriter.DebugLog("RefreshChannelEventsList", DebugLogTypes.DataManager,
                 $"Reloading ChannelEvents data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.ChannelEvents.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), GUIContext.ChannelEvents.Local.ToList());
-            }), "RefreshChannelEventsList");
+            }, "RefreshChannelEventsList");
         }
 
         private void RefreshClipsList()
         {
             LogWriter.DebugLog("RefreshClipsList", DebugLogTypes.DataManager,
                 $"Reloading Clips data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.Clips.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Clips),GUIContext.Clips.Local.ToList());
-            }), "RefreshClipsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.Clips), GUIContext.Clips.Local.ToList());
+            }, "RefreshClipsList");
         }
 
         private void RefreshCommandsList()
         {
             LogWriter.DebugLog("RefreshCommandsList", DebugLogTypes.DataManager,
                 $"Reloading Commands data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.Commands.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Commands),GUIContext.Commands.Local.ToList());
-            }), "RefreshCommandsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.Commands), GUIContext.Commands.Local.ToList());
+            }, "RefreshCommandsList");
         }
 
         private void RefreshCommandsUserList()
         {
             LogWriter.DebugLog("RefreshCommandsUserList", DebugLogTypes.DataManager,
                 $"Reloading CommandsUser data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.CommandsUser.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser),GUIContext.CommandsUser.Local.ToList());
-            }), "RefreshCommandsUserList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), GUIContext.CommandsUser.Local.ToList());
+            }, "RefreshCommandsUserList");
         }
 
         private void RefreshCurrencyList()
         {
             LogWriter.DebugLog("RefreshCurrencyList", DebugLogTypes.DataManager,
                 $"Reloading Currency data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.Currency.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Currency),GUIContext.Currency.Local.ToList());
-            }), "RefreshCurrencyList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.Currency), GUIContext.Currency.Local.ToList());
+            }, "RefreshCurrencyList");
         }
 
         private void RefreshCurrencyTypeList()
         {
             LogWriter.DebugLog("RefreshCurrencyTypeList", DebugLogTypes.DataManager,
                 $"Reloading CurrencyType data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.CurrencyType.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType),GUIContext.CurrencyType.Local.ToList());
-            }), "RefreshCurrencyTypeList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), GUIContext.CurrencyType.Local.ToList());
+            }, "RefreshCurrencyTypeList");
         }
 
         private void RefreshCustomWelcomeList()
         {
             LogWriter.DebugLog("RefreshCustomWelcomeList", DebugLogTypes.DataManager,
                 $"Reloading CustomWelcome data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.CustomWelcome.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome),GUIContext.CustomWelcome.Local.ToList());
-            }), "RefreshCustomWelcomeList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), GUIContext.CustomWelcome.Local.ToList());
+            }, "RefreshCustomWelcomeList");
         }
 
         private void RefreshFollowersList()
         {
             LogWriter.DebugLog("RefreshFollowersList", DebugLogTypes.DataManager,
                 $"Reloading Followers data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.Followers.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Followers),GUIContext.Followers.Local.ToList());
-            }), "RefreshFollowersList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.Followers), GUIContext.Followers.Local.ToList());
+            }, "RefreshFollowersList");
         }
 
         private void RefreshGameDeadCounterList()
         {
             LogWriter.DebugLog("RefreshGameDeadCounterList", DebugLogTypes.DataManager,
                 $"Reloading GameDeadCounter data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.GameDeadCounter.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter),GUIContext.GameDeadCounter.Local.ToList());
-            }), "RefreshGameDeadCounterList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), GUIContext.GameDeadCounter.Local.ToList());
+            }, "RefreshGameDeadCounterList");
         }
 
         private void RefreshGiveawayUserDataList()
         {
             LogWriter.DebugLog("RefreshGiveawayUserDataList", DebugLogTypes.DataManager,
                 $"Reloading GiveawayUserData data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.GiveawayUserData.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), GUIContext.GiveawayUserData.Local.ToList());
-            }), "RefreshGiveawayUserDataList");
+            }, "RefreshGiveawayUserDataList");
         }
 
         private void RefreshInRaidDataList()
         {
             LogWriter.DebugLog("RefreshInRaidDataList", DebugLogTypes.DataManager,
                 $"Reloading InRaidData data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.InRaidData.LoadAsync();
                 NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), GUIContext.InRaidData.Local.ToList());
-            }), "RefreshInRaidDataList");
+            }, "RefreshInRaidDataList");
         }
 
         private void RefreshLearnMsgsList()
         {
             LogWriter.DebugLog("RefreshLearnMsgsList", DebugLogTypes.DataManager,
                 $"Reloading LearnMsgs data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.LearnMsgs.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs),GUIContext.LearnMsgs.Local.ToList());
-            }), "RefreshLearnMsgsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), GUIContext.LearnMsgs.Local.ToList());
+            }, "RefreshLearnMsgsList");
         }
 
         private void RefreshModeratorApproveList()
         {
             LogWriter.DebugLog("RefreshModeratorApproveList", DebugLogTypes.DataManager,
                 $"Reloading ModeratorApprove data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.ModeratorApprove.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove),GUIContext.ModeratorApprove.Local.ToList());
-            }), "RefreshModeratorApproveList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), GUIContext.ModeratorApprove.Local.ToList());
+            }, "RefreshModeratorApproveList");
         }
 
         private void RefreshMultiChannelsList()
         {
             LogWriter.DebugLog("RefreshMultiChannelsList", DebugLogTypes.DataManager,
                 $"Reloading MultiChannels data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.MultiChannels.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels),GUIContext.MultiChannels.Local.ToList());
-            }), "RefreshMultiChannelsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), GUIContext.MultiChannels.Local.ToList());
+            }, "RefreshMultiChannelsList");
         }
 
         private void RefreshMultiLiveStreamsList()
         {
             LogWriter.DebugLog("RefreshMultiLiveStreamsList", DebugLogTypes.DataManager,
                 $"Reloading MultiLiveStreams data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.MultiLiveStreams.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams),GUIContext.MultiLiveStreams.Local.ToList());
-            }), "RefreshMultiLiveStreamsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), GUIContext.MultiLiveStreams.Local.ToList());
+            }, "RefreshMultiLiveStreamsList");
         }
 
         private void RefreshMultiSummaryLiveStreamsList()
         {
             LogWriter.DebugLog("RefreshMultiSummaryLiveStreamsList", DebugLogTypes.DataManager,
                 $"Reloading MultiSummaryLiveStreams data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.MultiSummaryLiveStreams.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams),GUIContext.MultiSummaryLiveStreams.Local.ToList());
-            }), "RefreshMultiSummaryLiveStreamsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), GUIContext.MultiSummaryLiveStreams.Local.ToList());
+            }, "RefreshMultiSummaryLiveStreamsList");
         }
 
         private void RefreshMultiWebhooksList()
         {
             LogWriter.DebugLog("RefreshMultiWebhooksList", DebugLogTypes.DataManager,
                 $"Reloading MultiWebhooks data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.MultiWebhooks.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks),GUIContext.MultiWebhooks.Local.ToList());
-            }), "RefreshMultiWebhooksList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), GUIContext.MultiWebhooks.Local.ToList());
+            }, "RefreshMultiWebhooksList");
         }
 
         private void RefreshOldFollowUsersList()
         {
             LogWriter.DebugLog("RefreshOldFollowUsersList", DebugLogTypes.DataManager,
                 $"Reloading OldFollowUsers data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.OldFollowUsers.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers),GUIContext.OldFollowUsers.Local.ToList());
-            }), "RefreshOldFollowUsersList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), GUIContext.OldFollowUsers.Local.ToList());
+            }, "RefreshOldFollowUsersList");
         }
 
         private void RefreshOutRaidDataList()
         {
             LogWriter.DebugLog("RefreshOutRaidDataList", DebugLogTypes.DataManager,
                 $"Reloading OutRaidData data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.OutRaidData.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData),GUIContext.OutRaidData.Local.ToList());
-            }), "RefreshOutRaidDataList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), GUIContext.OutRaidData.Local.ToList());
+            }, "RefreshOutRaidDataList");
         }
 
         private void RefreshOverlayServicesList()
         {
             LogWriter.DebugLog("RefreshOverlayServicesList", DebugLogTypes.DataManager,
                 $"Reloading OverlayServices data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.OverlayServices.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices),GUIContext.OverlayServices.Local.ToList());
-            }), "RefreshOverlayServicesList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), GUIContext.OverlayServices.Local.ToList());
+            }, "RefreshOverlayServicesList");
         }
 
         private void RefreshOverlayTickerList()
         {
             LogWriter.DebugLog("RefreshOverlayTickerList", DebugLogTypes.DataManager,
                 $"Reloading OverlayTicker data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.OverlayTicker.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker),GUIContext.OverlayTicker.Local.ToList());
-            }), "RefreshOverlayTickerList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), GUIContext.OverlayTicker.Local.ToList());
+            }, "RefreshOverlayTickerList");
         }
 
         private void RefreshQuotesList()
         {
             LogWriter.DebugLog("RefreshQuotesList", DebugLogTypes.DataManager,
                 $"Reloading Quotes data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.Quotes.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Quotes),GUIContext.Quotes.Local.ToList());
-            }), "RefreshQuotesList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), GUIContext.Quotes.Local.ToList());
+            }, "RefreshQuotesList");
         }
 
         private void RefreshShoutOutsList()
         {
             LogWriter.DebugLog("RefreshShoutOutsList", DebugLogTypes.DataManager,
                 $"Reloading ShoutOuts data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.ShoutOuts.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts),GUIContext.ShoutOuts.Local.ToList());
-            }), "RefreshShoutOutsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), GUIContext.ShoutOuts.Local.ToList());
+            }, "RefreshShoutOutsList");
         }
 
         private void RefreshStreamStatsList()
         {
             LogWriter.DebugLog("RefreshStreamStatsList", DebugLogTypes.DataManager,
                 $"Reloading StreamStats data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.StreamStats.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats),GUIContext.StreamStats.Local.ToList());
-            }), "RefreshStreamStatsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), GUIContext.StreamStats.Local.ToList());
+            }, "RefreshStreamStatsList");
         }
 
         private void RefreshUsersList()
         {
             LogWriter.DebugLog("RefreshUsersList", DebugLogTypes.DataManager,
                 $"Reloading Users data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 LogWriter.DebugLog("RefreshUsersList",
                     DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
@@ -1416,33 +1416,33 @@ namespace StreamerBotLib.DataSQL
                 LogWriter.DebugLog("RefreshUsersList",
                     DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
                 NotifyDataCollectionUpdated(nameof(GUIContext.Users), GUIContext.Users.Local.ToList());
-            }), "RefreshUsersList");
+            }, "RefreshUsersList");
         }
 
         private void RefreshUserStatsList()
         {
             LogWriter.DebugLog("RefreshUserStatsList", DebugLogTypes.DataManager,
                 $"Reloading UserStats data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 LogWriter.DebugLog("RefreshUserStatsList",
                   DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
                 await GUIContext.UserStats.LoadAsync();
                 LogWriter.DebugLog("RefreshUserStatsList",
                     DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
-                NotifyDataCollectionUpdated(nameof(GUIContext.UserStats),GUIContext.UserStats.Local.ToList());
-            }), "RefreshUserStatsList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), GUIContext.UserStats.Local.ToList());
+            }, "RefreshUserStatsList");
         }
 
         private void RefreshWebhooksList()
         {
             LogWriter.DebugLog("RefreshWebhooksList", DebugLogTypes.DataManager,
                 $"Reloading Webhooks data into the database context.");
-            PostActionQueue(new Task(async () =>
+            PostActionQueue(async () =>
             {
                 await GUIContext.Webhooks.LoadAsync();
-                NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks),GUIContext.Webhooks.Local.ToList());
-            }), "RefreshWebhooksList");
+                NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), GUIContext.Webhooks.Local.ToList());
+            }, "RefreshWebhooksList");
 
         }
 

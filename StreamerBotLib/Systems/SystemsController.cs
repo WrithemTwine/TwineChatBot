@@ -8,7 +8,6 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Static;
 
 using System.Data;
-using System.Reflection;
 
 namespace StreamerBotLib.Systems
 {
@@ -116,16 +115,16 @@ namespace StreamerBotLib.Systems
         private void Command_ProcessedCommand(object sender, PostChannelMessageEventArgs e)
         {
             LogWriter.DebugLog("Command_ProcessedCommand", DebugLogTypes.SystemController, "Processing command message.");
-            SendMessage(e.Msg, e.RepeatMsg);
+            SendMessage(e.Msg, e.Announcement, e.RepeatMsg);
         }
 
-        private void SendMessage(string message, int Repeat = 0)
+        private void SendMessage(string message, bool Announcement = false, int Repeat = 0)
         {
             LogWriter.DebugLog("SendMessage", DebugLogTypes.SystemController, "Sending message.");
             if (message is not "" and not "/me ")
             {
                 LogWriter.DebugLog("SendMessage", DebugLogTypes.SystemController, $"Sending message: {message}");
-                PostChannelMessage?.Invoke(this, new() { Msg = message, RepeatMsg = Repeat });
+                PostChannelMessage?.Invoke(this, new() { Msg = message, Announcement = Announcement, RepeatMsg = Repeat });
             }
         }
 
@@ -738,7 +737,7 @@ namespace StreamerBotLib.Systems
                                 new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
                             });
 
-                            SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
+                            SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Bits), Multi);
 
                             UpdatedStat(StreamStatType.Bits, Bits);
                             UpdatedStat(StreamStatType.AutoEvents);
@@ -775,7 +774,7 @@ namespace StreamerBotLib.Systems
                             new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers))
                             });
 
-                        SendMessage(VariableParser.ParseReplace(msg, dictionary), Multi);
+                        SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Raid), Multi);
                     }
 
                     SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid.ToString(), User);
@@ -1012,7 +1011,7 @@ namespace StreamerBotLib.Systems
 
         public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> NewOverlayeventHandler, EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerEventHandler)
         {
-            LogWriter.DebugLog("SetNewOverlayEventHandler", DebugLogTypes.SystemController, "Setting new overlay event handlers."); 
+            LogWriter.DebugLog("SetNewOverlayEventHandler", DebugLogTypes.SystemController, "Setting new overlay event handlers.");
             SystemActions.NewOverlayEvent += NewOverlayeventHandler;
             ActionSystem.UpdatedTickerItems += UpdatedTickerEventHandler;
         }

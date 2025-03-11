@@ -24,11 +24,11 @@ namespace StreamerBotLib.BotClients
             BotsList.Add(bot);
         }
 
-        public void Send(string s)
+        public void Send(string s, bool Announcement = false)
         {
             foreach (IIOModule a in BotsList)
             {
-                a.Send(s);
+                a.Send(s, Announcement);
             }
         }
 

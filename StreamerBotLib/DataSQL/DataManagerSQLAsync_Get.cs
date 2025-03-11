@@ -33,6 +33,33 @@ namespace StreamerBotLib.DataSQL
             });
         }
 
+        internal Task<bool> GetCmdAnnounce(string CmdName)
+        {
+            return Task.Run(() =>
+            {
+                using var context = BuildDataContext();
+
+                bool commandAnnounce = (from C in context.Commands
+                                        where C.CmdName == CmdName
+                                        select C.Announce).FirstOrDefault();
+
+                return commandAnnounce;
+            });
+
+        }
+
+        internal Task<bool> GetEventAnnounce(ChannelEventActions EventName)
+        {
+            return Task.Run(() =>
+            {
+                using var context = BuildDataContext();
+                bool currannounce = (from E in context.ChannelEvents
+                                     where E.Name == EventName
+                                     select E.Announce).FirstOrDefault();
+                return currannounce;
+            });
+        }
+
         internal Task<CommandData> GetCommand(string cmd)
         {
             return Task.Run(async () =>

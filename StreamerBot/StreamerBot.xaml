@@ -1848,18 +1848,13 @@
                                     </GroupBox>
                                     <GroupBox Header="Twitch - MultiLive Options">
                                         <StackPanel>
-                                            <TextBlock>Interact with Multi-Live channels - open a browser window. Tab
-                                            may not always be muted.</TextBlock>
+                                            <TextBlock>Interact with Multi-Live channels - open a browser window. Tabs may be unmuted and videos may be muted.</TextBlock>
                                             <CheckBox IsChecked="{Binding TwitchMultiLiveBrowseChannel, Mode=TwoWay}">
-                                                <TextBlock>Open a browser window when any followed channel is online.</TextBlock>
+                                                <TextBlock>Open a browser window when any monitored channel is online.</TextBlock>
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding TwitchMultiLiveBrowseFollowRaids}">
-                                                <TextBlock>Specify the browser window URL to follow raids.</TextBlock>
-                                            </CheckBox>
-                                            <TextBlock>If 'follow raids' mode is enabled, a new window will open when stream is online. Otherwise, only one window will open (per multilive channel) until the whole bot is restarted (if that channel browser is closed, another won't open until whole bot restarts).</TextBlock>
+                                            <TextBlock>This will open a browser window each time a streamer starts their stream.</TextBlock>
                                         </StackPanel>
                                     </GroupBox>
-
                                 </WrapPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -2592,6 +2587,7 @@
                                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" />
                                         <DataGridCheckBoxColumn Header="Is Enabled" Binding="{Binding IsEnabled}" />
                                         <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
+                                        <DataGridCheckBoxColumn Header="Announce" Binding="{Binding Announce}" />
                                         <DataGridTextColumn Header="Send Msg" Binding="{Binding RepeatMsg}" />
                                         <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="250" />
                                         <DataGridTextColumn Header="Variables" Binding="{Binding Commands}" IsReadOnly="True" />
@@ -2684,6 +2680,7 @@
                                                     <DataGridTextColumn Header="Times Called" Binding="{Binding Calls, StringFormat={}{0:N0}}" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                                                     <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
+                                                    <DataGridCheckBoxColumn Header="Announce" Binding="{Binding Announce}" />
                                                     <DataGridComboBoxColumn Header="Permission" ItemsSource="{Binding Source={StaticResource EnumViewerTypes}}" SelectedItemBinding="{Binding Permission}" />
                                                     <DataGridTextColumn Header="# Msgs" Binding="{Binding SendMsgCount, Converter={StaticResource IntConverter}}" />
                                                     <DataGridTextColumn Header="Usage" Binding="{Binding Usage}" Width="250" />
@@ -2820,13 +2817,13 @@
                                                   CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                                                <DataGridComboBoxColumn Header="Type" ItemsSource="{Binding Source={StaticResource EnumOverlayServiceTypes}}" SelectedItemBinding="{Binding OverlayType}" />
+                                                <DataGridTextColumn Header="Action" Binding="{Binding OverlayAction}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration, Converter={StaticResource IntConverter}}" />
                                                 <DataGridTextColumn Header="Image File" Binding="{Binding ImageFile}" />
                                                 <DataGridCheckBoxColumn Header="Is Enabled" Binding="{Binding IsEnabled}" />
                                                 <DataGridTextColumn Header="Media File" Binding="{Binding MediaFile}" />
                                                 <DataGridTextColumn Header="Message" Width="350" Binding="{Binding Message}" />
-                                                <DataGridComboBoxColumn Header="Type" ItemsSource="{Binding Source={StaticResource EnumOverlayServiceTypes}}" SelectedItemBinding="{Binding OverlayType}" />
-                                                <DataGridTextColumn Header="Action" Binding="{Binding OverlayAction}" />
                                                 <DataGridCheckBoxColumn Header="Use Chat Msg" Binding="{Binding UseChatMsg}" />
                                                 <DataGridTextColumn Header="UserName" Binding="{Binding UserName}" />
                                             </DataGrid.Columns>

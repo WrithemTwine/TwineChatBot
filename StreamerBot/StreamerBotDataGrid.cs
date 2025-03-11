@@ -5,7 +5,6 @@ using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
-using StreamerBotLib.MultiLive;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 

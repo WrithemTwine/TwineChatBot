@@ -180,7 +180,7 @@ namespace StreamerBotLib.Systems
                     {
                         new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                         new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
-                    })), 0);
+                    })), false, 0);
 
                 int WaitTime = 30000; // 30 seconds in milliseconds
 
@@ -209,7 +209,7 @@ namespace StreamerBotLib.Systems
                                     new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                                     new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
                                     }
-                                )), 0);
+                                )), false, 0);
                             int ThreadWait = 0;
                             while (ThreadWait < WaitTime && GameCurrBlackJackAnswer.Count == 0)
                             {
@@ -243,12 +243,12 @@ namespace StreamerBotLib.Systems
                             if (CurrCardCount == BlackJack.BlackJackWin)
                             {
                                 LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player has 21, skipping turn");
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}", 0);
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}", false, 0);
                             }
                             else if (CurrCardCount > BlackJack.BlackJackWin)
                             {
                                 LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player has busted, skipping turn");
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}", 0);
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}", false, 0);
                             }
                         }
                     }
@@ -256,7 +256,7 @@ namespace StreamerBotLib.Systems
             }
 
             LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "House turn");
-            OnProcessCommand(GameCurrBlackJack.HousePlay(), 0);
+            OnProcessCommand(GameCurrBlackJack.HousePlay(), false, 0);
 
             foreach (var U in GameCurrBlackJack.PayoutPlayers())
             {

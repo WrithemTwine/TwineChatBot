@@ -1,4 +1,4 @@
-﻿#define USE_OBSERVABLECOLLECTION
+﻿#define USE_OBSERVABLECOLLECTION1
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Events;
@@ -115,7 +115,7 @@ namespace StreamerBotLib.GUI
         public List<MultiLiveStreams> MultiLiveStreams { get; private set; }
         public List<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; private set; }
 
-        public ObservableCollection<ArchiveMultiStream> CleanupList { get; private set; }
+        public List<ArchiveMultiStream> CleanupList { get; private set; }
         public string MultiLiveStatusLog { get => DataManager.MultiLiveStatusLog; }
         #endregion
 #endif
@@ -317,7 +317,7 @@ namespace StreamerBotLib.GUI
 
         public void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-#if !USE_OBSERVABLECOLLECTION
+#if !USE_OBSERVABLECOLLECTION1
             switch (e.DatabaseModelName)
             {
                 case "Users":

@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using StreamerBotLib.DataSQL;
 using StreamerBotLib.Enums;
 
-namespace StreamerBotLib.DataSQL.Models
+namespace Migration1AdjustChannelEvents.finish
 {
     [PrimaryKey(nameof(Name))]
     [Index(nameof(Name), IsUnique = true)]

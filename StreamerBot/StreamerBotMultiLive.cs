@@ -17,7 +17,7 @@ namespace StreamerBot
             GUIDataManagerViews.DataViewsUpdated += (MultiLive_Data.Content as MultiLiveDataGrids).DataManager_OnDataCollectionUpdated;
 
 
-          // allow edits while bot is active
+            // allow edits while bot is active
             (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
             (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
             (MultiLive_Data.Content as MultiLiveDataGrids).SummarizeChannels += StreamerBotWindow_SummarizeChannels;
@@ -45,7 +45,7 @@ namespace StreamerBot
 
         private void StreamerBotWindow_SummarizeChannels(object sender, MultiLiveSummarizeEventArgs e)
         {
-            if(!SummarizeChannels) // some reason, this event is being called three times, prevent extra calls
+            if (!SummarizeChannels) // some reason, this event is being called three times, prevent extra calls
             {
                 SummarizeChannels = true;
                 SystemsController.MultiSummarize(e);

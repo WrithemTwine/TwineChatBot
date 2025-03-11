@@ -1,6 +1,4 @@
-﻿using StreamerBotLib.DataSQL;
-
-namespace StreamerBotLib.Events
+﻿namespace StreamerBotLib.Events
 {
     public class OnDataCollectionUpdatedEventArgs(string TableName, object TableData = null) : EventArgs
     {

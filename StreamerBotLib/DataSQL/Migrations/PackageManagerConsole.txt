@@ -1,0 +1,3 @@
+﻿rem use this command line style to add a new migration; change the EFC database model(s), update the [MigrationName] to identify the migration, and run. 
+
+dotnet ef migrations add [MigrationName] --output-dir DataSQL\Migrations --project StreamerBotLib\StreamerBotLib.csproj

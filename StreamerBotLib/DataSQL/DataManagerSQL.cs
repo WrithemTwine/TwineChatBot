@@ -8,8 +8,6 @@ using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 using StreamerBotLib.Static;
 
-using System.Collections.Concurrent;
-using System.Collections.ObjectModel;
 using System.Data;
 
 namespace StreamerBotLib.DataSQL
@@ -256,6 +254,23 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        public bool GetCmdAnnounce(string CmdName)
+        {
+            LogWriter.DebugLog("GetCmdAnnounce", DebugLogTypes.DataManager, $"Getting announcement check for command {CmdName}.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.GetCmdAnnounce(CmdName).Result;
+            }
+        }
+
+        public bool GetEventAnnounce(ChannelEventActions EventName)
+        {
+            LogWriter.DebugLog("GetEventAnnounce", DebugLogTypes.DataManager, $"Getting announcement check for event {EventName}.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.GetEventAnnounce(EventName).Result;
+            }
+        }
 
         public object GetICollection(DataTables dataTable)
         {

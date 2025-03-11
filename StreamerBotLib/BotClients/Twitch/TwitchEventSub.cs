@@ -161,11 +161,20 @@ namespace StreamerBotLib.BotClients.Twitch
                     LogWriter.LogException(ex, "StartBot");
                     tokenBot.CheckToken();
 
-                    await StartAsync(new());
+                    if (IsActive == true && !ErrorFound)
+                    {
+                        Thread.Sleep(1000);
+                        await StartAsync(new());
+                        InvokeBotStarted();
+                    }
+                    else
+                    {
+                        IsActive = false;
+                        ErrorFound = false; // stopping bot, clear the error-found
+                        await StopBot();
+                    }
 
-                    IsActive = true;
                     EventSubMessageIdsLogger.MsgLogging |= IsActive == true;
-                    InvokeBotStarted();
                 }
             });
         }

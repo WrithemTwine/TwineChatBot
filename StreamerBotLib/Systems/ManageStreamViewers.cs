@@ -35,7 +35,8 @@ namespace StreamerBotLib.Systems
         private void AddNewUsers(List<LiveUser> users)
         {
             LogWriter.DebugLog("AddNewUsers", DebugLogTypes.ManageStreamViewers, "Adding new users to the list.");
-            ManageViewers.ForEach(v => {
+            ManageViewers.ForEach(v =>
+            {
                 v.InStreamNow = false;
                 v.EvaluateCurrentCheck = false;
             }); // set all users in stream to false, set true with source users

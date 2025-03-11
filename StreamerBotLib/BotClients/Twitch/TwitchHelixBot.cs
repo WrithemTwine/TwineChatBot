@@ -315,8 +315,8 @@ namespace StreamerBotLib.BotClients.Twitch
             _ = PerformAction("SendShoutOut", () =>
             {
                 return ChatSendShoutOut(
-                    OptionFlags.TwitchStreamerUserId, 
-                    toBroadcasterId ?? GetUserId(toBroadcasterUserName), 
+                    OptionFlags.TwitchStreamerUserId,
+                    toBroadcasterId ?? GetUserId(toBroadcasterUserName),
                     OptionFlags.TwitchStreamerUserId
                     );
             });

@@ -58,8 +58,6 @@ switches:
 
         internal DataManagerSQLAsync()
         {
-            GUIContext = dbContextFactory.CreateDbContext();
-
             if (!OptionFlags.EFCDataImportedDataGram)
             {
                 bool LogStatus = OptionFlags.LogBotStatus;  // save current logging status
@@ -75,6 +73,13 @@ switches:
                 OptionFlags.LogBotStatus = LogStatus; // restore preferred log status after import
                 OptionFlags.EFCDataImportedDataGram = true;
             }
+
+            using var context1 = BuildDataContext();
+
+            context1.Database.Migrate();
+            context1.SaveChanges();
+
+            GUIContext = BuildDataContext();
         }
 
         #region Process Queue

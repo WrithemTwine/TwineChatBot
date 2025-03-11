@@ -279,7 +279,7 @@ namespace StreamerBotLib.BotClients
         #endregion
 
         #region unused interface
-        public override Task Send(string s)
+        public override Task Send(string s, bool Announcement = false)
         {
             return Task.Run(() => { });
         }
@@ -292,7 +292,7 @@ namespace StreamerBotLib.BotClients
         {
         }
 
-        void IBotTypes.Send(string s)
+        void IBotTypes.Send(string s, bool Announcement = false)
         {
 
         }

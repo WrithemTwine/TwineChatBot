@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 
-using System.Collections.ObjectModel;
-
 namespace StreamerBotLib.Interfaces
 {
     public interface IDataManagerReadOnly
@@ -10,7 +8,8 @@ namespace StreamerBotLib.Interfaces
         event EventHandler UpdatedMonitoringChannels;
         List<ArchiveMultiStream> CleanupList { get; }
         List<ArchiveMultiStream> GetCleanupList();
-
+        bool GetCmdAnnounce(string CmdName);
+        bool GetEventAnnounce(ChannelEventActions EventName);
         string MultiLiveStatusLog { get; }
         bool CheckField(string table, string field);
         bool CheckPermission(string cmd, ViewerTypes permission);

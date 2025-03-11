@@ -5,8 +5,6 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-using System.Collections.ObjectModel;
-
 namespace StreamerBotLib.DataSQL
 {
     internal partial class DataManagerSQLAsync
@@ -134,12 +132,12 @@ namespace StreamerBotLib.DataSQL
                             List<DateTime> UniqueDates = [.. AllDates.Intersect(AllDates)];
 
                             CleanupList.AddRange(from M in UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
-                                                            {
-                                                                ThroughDate = uniqueDate,
-                                                                StreamCount = (from DateTime dates in AllDates
-                                                                               where dates.Date <= uniqueDate
-                                                                               select dates).Count()
-                                                            })
+                            {
+                                ThroughDate = uniqueDate,
+                                StreamCount = (from DateTime dates in AllDates
+                                               where dates.Date <= uniqueDate
+                                               select dates).Count()
+                            })
                                                  select M);
 
                             IsLiveStreamUpdated = false; // reset update flag indicator

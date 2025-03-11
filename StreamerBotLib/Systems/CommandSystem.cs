@@ -125,7 +125,7 @@ namespace StreamerBotLib.Systems
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
             LogWriter.DebugLog("FormatResult", DebugLogTypes.CommandSystem, $"Sending formatted result: {result}.");
-            OnProcessCommand(result, multi);
+            OnProcessCommand(result, cmdrow.Announce, multi);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace StreamerBotLib.Systems
                 // handle when returned without #category in the message
                 if (response != "" && response != "/me ")
                 {
-                    OnProcessCommand(response, multi);
+                    OnProcessCommand(response, DataManage.GetCmdAnnounce(LocalizedMsgSystem.GetVar(DefaultCommand.so)), multi);
                     LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
                 }
             }
@@ -626,7 +626,7 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.com, paramvalue )
                 });
 
-                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so) 
+                if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so)
                     && !(DataManage.GetUserId(new(paramvalue, User.Platform)) != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No user found for shout-out.");
@@ -640,7 +640,8 @@ namespace StreamerBotLib.Systems
                         LookupQuery(cmdrow, paramvalue, ref datavalues);
                     }
 
-                    if (User.Platform == Platform.Twitch)
+                    if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so)
+                        && User.Platform == Platform.Twitch)
                     {
                         if (OptionFlags.TwitchChannelUserShoutAPI)
                         {
@@ -661,7 +662,7 @@ namespace StreamerBotLib.Systems
                             tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
                             resultcat = (((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !resultcat.StartsWith("/me ") ? "/me " : "") + resultcat;
 
-                            OnProcessCommand(resultcat, cmdrow.SendMsgCount);
+                            OnProcessCommand(resultcat, cmdrow.Announce, cmdrow.SendMsgCount);
 
                             LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
 
@@ -700,10 +701,10 @@ namespace StreamerBotLib.Systems
             return result;
         }
 
-        private void OnProcessCommand(string Message, int repeatMsg = 0)
+        private void OnProcessCommand(string Message, bool announcement = false, int repeatMsg = 0)
         {
             LogWriter.DebugLog("OnProcessCommand", DebugLogTypes.CommandSystem, $"Processing command output: {Message}.");
-            ProcessedCommand?.Invoke(this, new() { Msg = Message, RepeatMsg = repeatMsg });
+            ProcessedCommand?.Invoke(this, new() { Msg = Message, Announcement = announcement, RepeatMsg = repeatMsg });
         }
 
         private static string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)

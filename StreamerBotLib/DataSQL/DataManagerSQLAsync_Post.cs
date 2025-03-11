@@ -238,8 +238,6 @@ namespace StreamerBotLib.DataSQL
                         found = true;
                     }
                     await context.SaveChangesAsync();
-                    RefreshCategoryListList();
-
                 }
                 return found;
             });

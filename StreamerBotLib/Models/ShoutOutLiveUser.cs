@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StreamerBotLib.Models
 {
@@ -18,15 +14,26 @@ namespace StreamerBotLib.Models
     /// -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
     /// </summary>
     /// <param name="user">The user to shoutout.</param>
-    public class ShoutOutLiveUser(LiveUser user) : IEqualityComparer<ShoutOutLiveUser>
+    [DebuggerDisplay("User = {User}")]
+    public class ShoutOutLiveUser(LiveUser user) : IEquatable<ShoutOutLiveUser>, IComparable<ShoutOutLiveUser>
     {
         public DateTime? LastShoutOut { get; set; } = null;
         public DateTime? NextShoutOut { get; set; } = null;
         public LiveUser User { get; set; } = user;
 
+        public int CompareTo(ShoutOutLiveUser other)
+        {
+            return User.CompareTo(other.User);
+        }
+
         public bool Equals(ShoutOutLiveUser x, ShoutOutLiveUser y)
         {
-            return x.Equals(y);
+            return x.User.Equals(y.User);
+        }
+
+        public bool Equals(ShoutOutLiveUser other)
+        {
+            return User.Equals(other.User);
         }
 
         public int GetHashCode([DisallowNull] ShoutOutLiveUser obj)

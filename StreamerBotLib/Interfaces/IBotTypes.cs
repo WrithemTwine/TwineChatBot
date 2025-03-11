@@ -13,7 +13,7 @@ namespace StreamerBotLib.Interfaces
         /// Send output string through bot.
         /// </summary>
         /// <param name="s">The string to send.</param>
-        public void Send(string s);
+        public void Send(string s, bool Announcement = false);
 
         /// <summary>
         /// Stops all bots.

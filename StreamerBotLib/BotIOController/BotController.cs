@@ -55,8 +55,6 @@ namespace StreamerBotLib.BotIOController
         private Queue<Task> Operations { get; set; } = [];   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored channels
 
-        private static List<LiveUser> MultiLiveBrowserOpen = [];
-
         public BotController()
         {
             Systems = new();
@@ -248,14 +246,14 @@ namespace StreamerBotLib.BotIOController
         {
             LogWriter.DebugLog("Systems_PostChannelMessage", DebugLogTypes.BotController, $"Received message to post to chat: {e.Msg}");
 
-            Send(e.Msg, e.RepeatMsg);
+            Send(e.Msg, e.Announcement, e.RepeatMsg);
         }
 
         /// <summary>
         /// Send a response message to all bots incorporated into this app. The messages send through a thread managing a message delay to not flood the channel with immediate messages, channels often have limited received messages per minute.
         /// </summary>
         /// <param name="s">The string to send.</param>
-        public void Send(string s, int Repeat = 0)
+        public void Send(string s, bool Announcement = false, int Repeat = 0)
         {
             OutputSentToBots?.Invoke(this, new() { Msg = s });
 
@@ -267,7 +265,7 @@ namespace StreamerBotLib.BotIOController
                     {
                         Operations.Enqueue(new Task(() =>
                         {
-                            bot.Send(s);
+                            bot.Send(s, Announcement);
                         }));
                     }
                 }
@@ -553,7 +551,7 @@ namespace StreamerBotLib.BotIOController
 
         private void Systems_TwitchShoutOutUser(object sender, TwitchShoutOutUsersEventArgs e)
         {
-            if(e.User.Platform == Platform.Twitch)
+            if (e.User.Platform == Platform.Twitch)
             {
                 TwitchBots.SendShoutOut(e.User);
             }
@@ -1055,25 +1053,16 @@ namespace StreamerBotLib.BotIOController
                 }
             }
 
-            if(User.Platform == Platform.Twitch)
+            if (User.Platform == Platform.Twitch)
             {
                 if (OptionFlags.TwitchMultiLiveBrowseChannel)
                 {
-                    if (!MultiLiveBrowserOpen.Contains(User))
-                    {
-                        string URL = Resources.TwitchHomepage + User.UserName;
+                    string URL = Resources.TwitchHomepage + User.UserName;
 
-                        if (!OptionFlags.TwitchMultiLiveBrowseFollowRaids)
-                        {
-                            URL += "?no-reload=true"; // prevent following raids
-                            MultiLiveBrowserOpen.Add(User);  // add user to not evaluate again
-                        }
-
-                        Process startBrowser = new();
-                        startBrowser.StartInfo.UseShellExecute = true;
-                        startBrowser.StartInfo.FileName = $"\"{URL}\"";
-                        _ = startBrowser.Start();
-                    }
+                    Process startBrowser = new();
+                    startBrowser.StartInfo.UseShellExecute = true;
+                    startBrowser.StartInfo.FileName = $"\"{URL}\"";
+                    _ = startBrowser.Start();
                 }
             }
         }
@@ -1261,7 +1250,7 @@ namespace StreamerBotLib.BotIOController
 
             if (Enabled)
             {
-                Send(ParsedMsg, Multi);
+                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.Subscribe), Multi);
 
             }
 
@@ -1292,7 +1281,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, Multi);
+                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.Resubscribe), Multi);
             }
             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, User, UserMsg: HTMLParsedMsg);
 
@@ -1315,7 +1304,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, Multi);
+                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.GiftSub), Multi);
             }
             Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
             Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, User, UserMsg: HTMLParsedMsg);
@@ -1336,7 +1325,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, Multi);
+                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.CommunitySubs), Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
@@ -1365,7 +1354,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, Multi);
+                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.BeingHosted), Multi);
             }
 
             Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);

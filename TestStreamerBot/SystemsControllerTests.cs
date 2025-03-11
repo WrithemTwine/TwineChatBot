@@ -1,10 +1,3 @@
-using Moq;
-
-using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
-using StreamerBotLib.Models;
-using StreamerBotLib.Systems;
-
 namespace TestStreamerBot
 {
     //public class SystemsControllerTests

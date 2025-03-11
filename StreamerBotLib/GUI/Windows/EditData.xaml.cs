@@ -12,6 +12,7 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Static;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
 
 using System.ComponentModel;
 using System.IO;
@@ -51,7 +52,7 @@ namespace StreamerBotLib.GUI.Windows
 
         private const string OverlayTypeName = "ComboBox_OverlayType";
 
-        private const string FilePathInfo = "Paste full path to file, double-click to browse to file.";
+        private readonly string FilePathInfo = LocalizedMsgSystem.GetVar("HelpPath");
 
         private IDatabaseTableMeta CurrData;
 
@@ -153,7 +154,7 @@ namespace StreamerBotLib.GUI.Windows
                             MinWidth = 200
                         };
 
-                        Binding filepath = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        Binding filepath = new() { Path = new(Data), Mode = BindingMode.OneWayToSource, FallbackValue=FilePathInfo };
                         ((TextBox)valueElement).SetBinding(TextBox.TextProperty, filepath);
 
                         ((TextBox)valueElement).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
@@ -394,7 +395,7 @@ namespace StreamerBotLib.GUI.Windows
                 }
                 else
                 {
-                    return FileCopy((string)CurrData.Values[Key], CurrData.Values["OverlayType"].ToString());
+                    return (string)CurrData.Values[Key] == null ? FilePathInfo : FileCopy((string)CurrData.Values[Key], CurrData.Values["OverlayType"].ToString());
                 }
             }
         }

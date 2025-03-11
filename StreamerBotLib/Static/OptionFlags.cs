@@ -268,11 +268,6 @@ namespace StreamerBotLib.Static
         /// Enables or disables automatically popping up a browser window for a new channel online.
         /// </summary>
         public static bool TwitchMultiLiveBrowseChannel => Settings.Default.TwitchMultiLiveBrowseChannel;
-        
-        /// <summary>
-        /// Specifies whether to open the browser with a URL to follow the channel on any raids - specifically, it's the URL shape.
-        /// </summary>
-        public static bool TwitchMultiLiveBrowseFollowRaids => Settings.Default.TwitchMultiLiveBrowseFollowRaids;
 
         /// <summary>
         /// Whether to display the bot welcome message when connecting to the channel.

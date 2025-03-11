@@ -34,6 +34,7 @@
         addquote,
         quote,
         removequote,
-        clip
+        clip,
+        time
     }
 }

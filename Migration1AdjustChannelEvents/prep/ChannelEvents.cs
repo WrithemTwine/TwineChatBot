@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using StreamerBotLib.DataSQL;
 using StreamerBotLib.Enums;
 
-namespace StreamerBotLib.DataSQL.Models
+namespace Migration1AdjustChannelEvents.prep
 {
     [PrimaryKey(nameof(Name))]
     [Index(nameof(Name), IsUnique = true)]
@@ -17,7 +18,6 @@ namespace StreamerBotLib.DataSQL.Models
     public class ChannelEvents(ChannelEventActions name = default,
                                short repeatMsg = 0,
                                bool addMe = false,
-                               bool announce = false,
                                bool isEnabled = false,
                                string message = null,
                                string commands = null)
@@ -27,7 +27,6 @@ namespace StreamerBotLib.DataSQL.Models
         public ChannelEventActions Name { get; set; } = name;
         public short RepeatMsg { get; set; } = repeatMsg;
         public bool AddMe { get; set; } = addMe;
-        public bool Announce { get; set; } = announce;
         public bool IsEnabled { get; set; } = isEnabled;
         public string Message { get; set; } = message;
         public string Commands { get; set; } = commands;

@@ -5,7 +5,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
 using StreamerBotLib.Overlay.Models;
 
-using System.Collections.ObjectModel;
 using System.Data;
 
 namespace StreamerBotLib.Interfaces

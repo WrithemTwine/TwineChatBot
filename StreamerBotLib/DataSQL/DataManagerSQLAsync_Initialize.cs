@@ -134,7 +134,7 @@ namespace StreamerBotLib.DataSQL
 
             if (Refcontext.CommandsBase.Any())
             {
-                foreach (Commands C in from C in Refcontext.Commands select C)
+                foreach (var C in from C in Refcontext.CommandsBase select C)
                 {
                     DefCommandsDictionary.Remove(C.CmdName);
                 }

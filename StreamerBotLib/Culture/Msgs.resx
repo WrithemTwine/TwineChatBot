@@ -330,6 +330,10 @@
   <data name="Helpmonths" xml:space="preserve">
     <value>how many months subscribed this time</value>
   </data>
+  <data name="HelpPath" xml:space="preserve">
+    <value>Paste full path to file, double-click to browse to file.</value>
+    <comment>Message used in new data popup to discuss file path</comment>
+  </data>
   <data name="Helppayout" xml:space="preserve">
     <value>Blackjack message to show how much currency the player won</value>
   </data>
@@ -673,6 +677,10 @@
     <value>Thanks #user for supporting the channel and welcome back to stream!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
+  <data name="Msgtime" xml:space="preserve">
+    <value>The current time at my location is: #time, on #date.</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
   <data name="MsgTwitchAuthFailedAuthentication" xml:space="preserve">
     <value>Failed to refresh the access token. This can result from any of the following: the application access scopes changed; the application isn't yet approved; the account password changed; or the account's Twitch website setting disconnected the application. Please authorize the application to (re)gain access to Twitch.</value>
   </data>
@@ -834,6 +842,10 @@
     <value>-use:!socials</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramtime" xml:space="preserve">
+    <value>-use:!time</value>
+    <comment>parameter for command</comment>
+  </data>
   <data name="Paramunlurk" xml:space="preserve">
     <value>-use:!unlurk</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -935,6 +947,7 @@
   </data>
   <data name="Respond" xml:space="preserve">
     <value>Currently not used.</value>
+    <comment>currently not used</comment>
   </data>
   <data name="setcategory" xml:space="preserve">
     <value>setcategory</value>
@@ -967,6 +980,10 @@
   <data name="streamer" xml:space="preserve">
     <value>streamer</value>
     <comment>MsgVar variable value</comment>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>time</value>
+    <comment>default command, can be translated</comment>
   </data>
   <data name="Total" xml:space="preserve">
     <value>total</value>
