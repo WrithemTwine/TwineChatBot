@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
@@ -7,15 +8,16 @@ using StreamerBotLib.Overlay.Enums;
 
 using System.Data;
 
-namespace StreamerBotLib.DataSQL
+namespace StreamerBotLib.DataSQL.SingleContext
 {
     internal partial class DataManagerSQLAsync
     {
-        internal Task UpdateCurrency(List<string> Users, DateTime dateTime)
+        internal Task UpdateCurrency(List<string> Users, DateTime dateTime, IDbContextTransaction contextTransaction = null)
         {
             return Task.Run(async () =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
+                //using var transaction = await context.Database.BeginTransactionAsync();
 
                 await context.Users
                 .Include(curr => curr.Currency)
@@ -34,7 +36,7 @@ namespace StreamerBotLib.DataSQL
                     }
                     u.LastDateSeen = dateTime;
                 });
-
+                //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshCurrencyList();
             });
@@ -45,7 +47,8 @@ namespace StreamerBotLib.DataSQL
             return Task.Run(() =>
             {
                 List<LearnMsgRecord> result;
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
+
                 if (LearnMsgChanged)
                 {
                     LearnMsgChanged = false;
@@ -61,11 +64,13 @@ namespace StreamerBotLib.DataSQL
             });
         }
 
-        internal Task UpdateOverlayTicker(OverlayTickerItem item, string name)
+        internal Task UpdateOverlayTicker(OverlayTickerItem item, string name, IDbContextTransaction contextTransaction = null)
         {
             return Task.Run(async () =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
+                //using var transaction = await context.Database.BeginTransactionAsync();
+
                 OverlayTicker ticker = (from T in context.OverlayTicker where T.TickerName == item select T).FirstOrDefault();
                 if (ticker == default)
                 {
@@ -75,16 +80,18 @@ namespace StreamerBotLib.DataSQL
                 {
                     ticker.UserName = name;
                 }
+                //await transaction.CommitAsync();    
                 await context.SaveChangesAsync();
                 RefreshOverlayTickerList();
             });
         }
 
-        internal Task UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime)
+        internal Task UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime, IDbContextTransaction contextTransaction = null)
         {
             return Task.Run(async () =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
+                //using var transaction = await context.Database.BeginTransactionAsync();
 
                 foreach (var user in from LiveUser L in Users
                                      let user = (from U in context.Users
@@ -103,7 +110,7 @@ namespace StreamerBotLib.DataSQL
                         user.UserStats.WatchTime = user.UserStats.WatchTime.Add(CurrTime - user.LastDateSeen);
                     }
                 }
-
+                //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
 
                 RefreshUsersList();
@@ -113,11 +120,12 @@ namespace StreamerBotLib.DataSQL
 
         #region Update User Stats
 
-        internal Task UpdateStats(DBUserStats Stat, string userId, Platform platform)
+        internal Task UpdateStats(DBUserStats Stat, string userId, Platform platform, IDbContextTransaction contextTransaction = null)
         {
             return Task.Run(async () =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
+                //using var transaction = await context.Database.BeginTransactionAsync();
 
                 if (userId != null)
                 {
@@ -145,6 +153,7 @@ namespace StreamerBotLib.DataSQL
                     }
 
                 }
+                //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshUserStatsList();
             });

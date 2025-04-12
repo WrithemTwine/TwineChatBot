@@ -9,12 +9,12 @@ using System.Data;
 using System.IO;
 using System.Xml;
 
-using static StreamerBotLib.DataSQL.Import.DataSource;
-using static StreamerBotLib.DataSQL.Import.Multi.DataSource;
+using static StreamerBotLib.DataSQL.SingleContext.Import.DataSource;
+using static StreamerBotLib.DataSQL.SingleContext.Import.Multi.DataSource;
 
-using MultiDataSource = StreamerBotLib.DataSQL.Import.Multi.DataSource;
+using MultiDataSource = StreamerBotLib.DataSQL.SingleContext.Import.Multi.DataSource;
 
-namespace StreamerBotLib.DataSQL.Import
+namespace StreamerBotLib.DataSQL.SingleContext.Import
 {
     internal class ImportDataSources : BaseDataManager
     {
@@ -462,9 +462,9 @@ namespace StreamerBotLib.DataSQL.Import
 #endif
 
             LogWriter.WriteLog("Adding Default Commands data.");
-            foreach (CommandsRow C in (from C in _DataSource.Commands
+            foreach (CommandsRow C in from C in _DataSource.Commands
                                        where Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName)
-                                       select C))
+                                       select C)
             {
                 if (!(from DC in context.Commands where C.CmdName == DC.CmdName select DC).Any())
                 {
@@ -502,9 +502,9 @@ namespace StreamerBotLib.DataSQL.Import
             DebugCom.WriteLine("Now adding User-Defined Commands to database.");
 #endif
 
-            foreach (CommandsRow C in (from C in _DataSource.Commands
+            foreach (CommandsRow C in from C in _DataSource.Commands
                                        where !(Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName))
-                                       select C))
+                                       select C)
             {
 
                 if (!(from CR in context.CommandsUser where C.CmdName == CR.CmdName select CR).Any())
@@ -558,7 +558,7 @@ namespace StreamerBotLib.DataSQL.Import
 
                     MultiChannels currUser = (from MC in context.MultiChannels where MC.UserId == U.UserId select MC).FirstOrDefault();
 
-                    if (!(DBNull.Value.Equals(U["UserId"])) && (U.UserId != null) && currUser == null)
+                    if (!DBNull.Value.Equals(U["UserId"]) && U.UserId != null && currUser == null)
                     {
                         context.MultiChannels.Add(new(userId: U.UserId,
                                                    userName: U.ChannelName,
@@ -585,9 +585,9 @@ namespace StreamerBotLib.DataSQL.Import
                           where S.ChannelsRow.UserId == MS.UserId
                           select MS).Any())
                     {
-                        var founddata = (from C in _MultiDataSource.LiveStream
+                        var founddata = from C in _MultiDataSource.LiveStream
                                          where C.ChannelName == S.ChannelName
-                                         select C);
+                                         select C;
 
                         if (founddata.Any())
                         {
@@ -619,9 +619,9 @@ namespace StreamerBotLib.DataSQL.Import
                           select LS
                          ).Any())
                     {
-                        var founddata = (from C in context.MultiChannels
+                        var founddata = from C in context.MultiChannels
                                          where C.UserId == L.UserId
-                                         select C);
+                                         select C;
 
                         UsersRow usersRow = (from U in _DataSource.Users
                                              where string.Equals(U.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase)
@@ -691,7 +691,7 @@ namespace StreamerBotLib.DataSQL.Import
             {
                 foreach (UsersRow U in _DataSource.Users)
                 {
-                    if (!(DBNull.Value.Equals(U["UserId"])) && (U.UserId != null))
+                    if (!DBNull.Value.Equals(U["UserId"]) && U.UserId != null)
                     {
                         Users CurrUser = (from CU in context.Users where U.UserId == CU.UserId select CU).FirstOrDefault();
 
@@ -766,7 +766,7 @@ namespace StreamerBotLib.DataSQL.Import
             {
                 foreach (CustomWelcomeRow CW in _DataSource.CustomWelcome)
                 {
-                    UsersRow usersRow = ((UsersRow)_DataSource.Users.Select($"[UserName]='{CW.UserName}'").FirstOrDefault());
+                    UsersRow usersRow = (UsersRow)_DataSource.Users.Select($"[UserName]='{CW.UserName}'").FirstOrDefault();
                     if (usersRow != null && !string.IsNullOrEmpty(usersRow.UserId) &&
                         !(from C in context.CustomWelcome where C.UserId == usersRow.UserId select C).Any())
                     {
@@ -820,7 +820,7 @@ namespace StreamerBotLib.DataSQL.Import
 
                         if (CurrCurrency == null)
                         {
-                            context.Currency.Add(new Currency(CurrUser.UserId, Platform.Twitch, (!DBNull.Value.Equals(C["Value"]) && !string.IsNullOrEmpty(C.Value.ToString())) ? C.Value : 0, C.CurrencyName));
+                            context.Currency.Add(new Currency(CurrUser.UserId, Platform.Twitch, !DBNull.Value.Equals(C["Value"]) && !string.IsNullOrEmpty(C.Value.ToString()) ? C.Value : 0, C.CurrencyName));
                         }
                         else if (CurrCurrency.Value != C.Value)
                         {
@@ -850,8 +850,8 @@ namespace StreamerBotLib.DataSQL.Import
                 {
                     if (!(from C in context.CategoryList
                           where
-                         (!DBNull.Value.Equals(CL["CategoryId"]) && C.CategoryId == CL.CategoryId)
-                         || (!DBNull.Value.Equals(CL["Category"]) && C.Category == CL.Category)
+                         !DBNull.Value.Equals(CL["CategoryId"]) && C.CategoryId == CL.CategoryId
+                         || !DBNull.Value.Equals(CL["Category"]) && C.Category == CL.Category
                           select C).Any())
                     {
                         context.CategoryList.Add(new CategoryList(
@@ -872,8 +872,8 @@ namespace StreamerBotLib.DataSQL.Import
             {
                 foreach (GameDeadCounterRow GDC in _DataSource.GameDeadCounter)
                 {
-                    string CI = ((CategoryListRow)(_DataSource.CategoryList.Select($"[Category] = '{GDC.Category}'")).First()).CategoryId;
-                    var GameDC = (from G in context.GameDeadCounter where G.CategoryId == CI select G);
+                    string CI = ((CategoryListRow)_DataSource.CategoryList.Select($"[Category] = '{GDC.Category}'").First()).CategoryId;
+                    var GameDC = from G in context.GameDeadCounter where G.CategoryId == CI select G;
                     if (!GameDC.Any())
                     {
                         context.GameDeadCounter.Add(new GameDeadCounter(
@@ -937,9 +937,9 @@ namespace StreamerBotLib.DataSQL.Import
 
             if (_DataSource.Followers.Count > 0)
             {
-                foreach (FollowersRow F in (from FR in _DataSource.Followers
+                foreach (FollowersRow F in from FR in _DataSource.Followers
                                             orderby FR.StatusChangeDate descending
-                                            select FR)
+                                            select FR
                                             )
                 {
                     if (F.IsFollower)
@@ -950,7 +950,7 @@ namespace StreamerBotLib.DataSQL.Import
                             currUser.UserName = F.UserName;
                         }
                     }
-                    if (!(DBNull.Value.Equals(F["UserId"])) && !DBNull.Value.Equals(F["Platform"]) && !string.IsNullOrEmpty(F.UserId))
+                    if (!DBNull.Value.Equals(F["UserId"]) && !DBNull.Value.Equals(F["Platform"]) && !string.IsNullOrEmpty(F.UserId))
                     {
                         if (F.IsFollower && !(from CF in context.Followers where F.UserId == CF.UserId && CF.User.UserName == F.UserName select CF).Any())
                         {
@@ -958,7 +958,7 @@ namespace StreamerBotLib.DataSQL.Import
                                                     isFollower: F.IsFollower,
                                                     followedDate: F.FollowedDate,
                                                     statusChangeDate: F.StatusChangeDate,
-                                                    category: (DBNull.Value.Equals(F["Category"]) || F.Category == "N/A" || F.Category == "") ? "All" : F.Category,
+                                                    category: DBNull.Value.Equals(F["Category"]) || F.Category == "N/A" || F.Category == "" ? "All" : F.Category,
                                                     addDate: F.FollowedDate,
                                                     userId: F.UserId,
                                                     platform: Enum.Parse<Platform>(F.Platform)
@@ -973,7 +973,7 @@ namespace StreamerBotLib.DataSQL.Import
                                                         isFollower: F.IsFollower,
                                                         followedDate: F.FollowedDate,
                                                         statusChangeDate: F.StatusChangeDate,
-                                                        category: (DBNull.Value.Equals(F["Category"]) || F.Category == "N/A" || F.Category == "") ? "All" : F.Category,
+                                                        category: DBNull.Value.Equals(F["Category"]) || F.Category == "N/A" || F.Category == "" ? "All" : F.Category,
                                                         addDate: F.FollowedDate,
                                                         userId: F.UserId,
                                                         userName: F.UserName,

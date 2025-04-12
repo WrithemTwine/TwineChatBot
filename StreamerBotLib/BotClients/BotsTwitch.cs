@@ -313,8 +313,6 @@ namespace StreamerBotLib.BotClients
                     GetAllFollowers();
                 });
             }
-
-
         }
 
         private void TwitchEventSubStreamer_OnBotStopped(object sender, EventArgs e)
@@ -322,6 +320,13 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog("TwitchEventSubStreamer_OnBotStopped", DebugLogTypes.TwitchBots, "EventSub bot is now stopped.");
 
             CheckActiveBots();
+
+            if (OptionFlags.IsStreamOnline)
+            {
+                // stop the stream if the EventSub stops, won't detect stream offline with EventSub disconnected
+                // if same stream is still active, starting the bot again to grab the stream, the stop time will overwrite the stop time from earlier stopping the EventSub bot
+                InvokeBotEvent(this, BotEvents.TwitchStreamOffline, null);
+            }
         }
 
         private void TwitchEventSubBot_OnBotStarted(object sender, EventArgs e)

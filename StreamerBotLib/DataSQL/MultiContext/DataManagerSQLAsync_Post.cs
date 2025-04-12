@@ -11,7 +11,7 @@ using StreamerBotLib.Systems;
 using System.Data;
 using System.Globalization;
 
-namespace StreamerBotLib.DataSQL
+namespace StreamerBotLib.DataSQL.MultiContext
 {
     internal partial class DataManagerSQLAsync
     {
@@ -685,6 +685,7 @@ namespace StreamerBotLib.DataSQL
                     RefreshStreamStatsList();
                 }
 
+                CurrStreamStart = StreamStart;
 
                 return addstream;
             });

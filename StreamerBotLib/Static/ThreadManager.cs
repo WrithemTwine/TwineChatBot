@@ -58,7 +58,7 @@ namespace StreamerBotLib.Static
         /// <param name="task">The task to add to the GUI dispatcher.</param>
         public static void AddTaskToGUIDispatcher(Action action)
         {
-            GUIDispatcher.Invoke(() => action);
+            GUIDispatcher.Invoke(() => action.Invoke());
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace StreamerBotLib.Static
         {
             LogWriter.DebugLog(CallMethodName, DebugLogTypes.ThreadManager, $"ThreadManager called the GUI Dispatcher's Invoke, to start soon, on behalf of {CallMethodName}.");
 
-            GUIDispatcher.Invoke(() => action);
+            GUIDispatcher.Invoke(() => action.Invoke());
         }
 
         /// <summary>

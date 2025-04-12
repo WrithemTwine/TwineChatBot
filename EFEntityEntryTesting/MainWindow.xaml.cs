@@ -2,6 +2,7 @@
 using EFEntityEntryTesting.GUI;
 using EFEntityEntryTesting.Static;
 
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace EFEntityEntryTesting
@@ -28,6 +29,8 @@ namespace EFEntityEntryTesting
             GUIDataManager = (GUIDataManager)Resources["GUIDataManager"];
 
             SetStatusUpdate("Loaded");
+
+            ThreadManager.SetGUIDispatcher(Dispatcher);
         }
 
         private void SetStatusUpdate(string text)
@@ -70,12 +73,12 @@ namespace EFEntityEntryTesting
             Button_EndStream.IsEnabled = false;
 
             OptionFlags.IsStreamOnline = false;
-            DataManager.PostUsersLeftAsync(UsersJoined, DateTime.Now);
+            await DataManager.PostUsersLeftAsync(UsersJoined, DateTime.Now);
             UsersJoined.Clear();
         }
         private void DataManager_OnDataCollectionChanged(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() =>
+            _ = Dispatcher.BeginInvoke(() =>
             {
                 switch (e.DatabaseModelName)
                 {
@@ -90,7 +93,7 @@ namespace EFEntityEntryTesting
                 }
                 GUIDataManager.NotifyChange(e.DatabaseModelName);
                 SetStatusUpdate($"Updated {DateTime.Now} - {e.DatabaseModelName} table");
-            }));
+            });
         }
 
         private const int maxusers = 30;
@@ -114,12 +117,12 @@ namespace EFEntityEntryTesting
             });
         }
 
-        private async void StartCurrency()
+        private async Task StartCurrency()
         {
             while (OptionFlags.IsStreamOnline && OptionFlags.ActiveToken)
             {
-                DataManager.UpdateCurrencyAsync(UsersJoined, DateTime.Now);
-                Thread.Sleep(6000);
+                await DataManager.UpdateCurrencyAsync(UsersJoined, DateTime.Now);
+                await Task.Delay(6000);
             }
         }
     }

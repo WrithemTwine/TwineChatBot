@@ -5,7 +5,7 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-namespace StreamerBotLib.DataSQL
+namespace StreamerBotLib.DataSQL.MultiContext
 {
     internal partial class DataManagerSQLAsync
     {

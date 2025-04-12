@@ -41,6 +41,8 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static string ProcessPage(string OverlayStyle, string OverlayBody, int Duration, bool IsMedia = false, string script = "", string bodyevent = "")
         {
+            // LogWriter.DebugLog("ProcessPage", DebugLogTypes.OverlaySystem, $"Preparing text for Overlay, style {OverlayStyle}, body {OverlayBody}, duration {Duration}, IsMedia {IsMedia}, script {script}, bodyevent {bodyevent}");
+
             return $"<html>\n" +
                 $"<head>{(IsMedia ? "" : RefreshToken(Duration))}\n{(script == "" ? "" : script)}\n" +
                 $"<style>\n{OverlayStyle}\n</style>\n</head>\n" +
@@ -51,6 +53,8 @@ namespace StreamerBotLib.Overlay.Communication
 
         public static string ProcessOverlay(OverlayActionType overlayActionType, OverlayStyle overlayStyle)
         {
+            // LogWriter.DebugLog("ProcessOverlay", DebugLogTypes.OverlaySystem, $"Overlay type {overlayActionType}, Overlay style {overlayStyle}.");
+
             string Img = "";
 
             if (overlayActionType.ImageFile != "" && File.Exists(overlayActionType.ImageFile))

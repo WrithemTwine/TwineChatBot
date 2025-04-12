@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
 
 using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Models;
@@ -10,7 +11,7 @@ using StreamerBotLib.Overlay.Models;
 
 using System.Data;
 
-namespace StreamerBotLib.DataSQL
+namespace StreamerBotLib.DataSQL.SingleContext
 {
     internal partial class DataManagerSQLAsync
     {
@@ -20,7 +21,7 @@ namespace StreamerBotLib.DataSQL
         {
             return await Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 Enums.BanReasons banReasons = (from Br in context.BanReasons
                                                where Br.MsgType == msgTypes
                                                select Br.BanReason).FirstOrDefault();
@@ -37,7 +38,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
 
                 bool commandAnnounce = (from C in context.Commands
                                         where C.CmdName == CmdName
@@ -52,7 +53,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 bool currannounce = (from E in context.ChannelEvents
                                      where E.Name == EventName
                                      select E.Announce).FirstOrDefault();
@@ -60,11 +61,13 @@ namespace StreamerBotLib.DataSQL
             });
         }
 
-        internal Task<CommandData> GetCommand(string cmd)
+        internal Task<CommandData> GetCommand(string cmd, IDbContextTransaction contextTransaction = null)
         {
             return Task.Run(async () =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
+
+                //using var transaction = await context.Database.BeginTransactionAsync();
 
                 CommandsBase commands = (from C in context.CommandsBase where C.CmdName == cmd select C).FirstOrDefault();
 
@@ -74,6 +77,7 @@ namespace StreamerBotLib.DataSQL
                 }
 
                 CommandData result = (commands != null) ? new(commands) : null;// commandsUser != null ? new(commandsUser.First()) : null;
+                //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshCommandsList();
                 RefreshCommandsUserList();
@@ -86,7 +90,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 string result = string.Join(", ", GetCommandList().Result);
 
                 return result;
@@ -97,7 +101,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 var result = new List<string>(from Com in (context.CommandsBase)
                                               where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
                                               orderby Com.CmdName
@@ -111,7 +115,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<string> result = [.. (from C in context.CurrencyType
                                        select C.CurrencyName)];
 
@@ -123,7 +127,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 int result = (from D in context.GameDeadCounter
                               where D.Category == currCategory
                               select D.Counter).FirstOrDefault();
@@ -136,7 +140,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 ChannelEvents found = (from Event in context.ChannelEvents
                                        where Event.Name == rowcriteria
                                        select Event).FirstOrDefault();
@@ -144,8 +148,6 @@ namespace StreamerBotLib.DataSQL
                     found?.Message,
                     found?.IsEnabled ?? false,
                     found?.RepeatMsg ?? 0);
-
-
 
                 return output;
             });
@@ -155,7 +157,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 var result = context.Followers.Count();
 
                 return result;
@@ -166,7 +168,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<CategoryData> result = [.. from G in context.CategoryList
                                                 let game = new CategoryData(G.CategoryId, G.Category)
                                                 select game];
@@ -179,7 +181,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 string result = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
 
                 return result;
@@ -190,7 +192,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 IEnumerable<string> result = [.. from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name];
 
                 return result;
@@ -201,7 +203,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<OverlayActionType> result = [.. (from O in context.OverlayServices
                                                   where (O.IsEnabled
                                                   && O.OverlayType == overlayType
@@ -227,7 +229,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 var result = (from Q in context.Quotes
                               where Q.Number == QuoteNum
                               select $"{Q.Number}: {Q.Quote}").FirstOrDefault();
@@ -240,7 +242,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 int result = context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
 
                 return result;
@@ -251,7 +253,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 Dictionary<string, List<string>> result = new()
                 {
                     { nameof(Commands), new(from C in context.Commands select C.CmdName) },
@@ -266,7 +268,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<string> result = [.. from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
                                           select SC.CmdName];
 
@@ -278,7 +280,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 var result = string.Join(" ", (from SC in
                                              context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)),
                                                 (c) => c.CmdName)
@@ -293,7 +295,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
 
                 var result = (from SD in context.StreamStats
                               where SD.StreamStart == dateTime
@@ -307,7 +309,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<string> result = new(from T in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
                                           select T.Name);
 
@@ -319,7 +321,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 var list = new List<string>()
                 {
                     nameof(Currency),
@@ -338,7 +340,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<TickerItem> result = [.. from F in context.OverlayTicker
                                               select new TickerItem(F.TickerName, F.UserName)];
 
@@ -350,7 +352,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 Tuple<string, int, List<string>> result = (from R in context.Commands
                                                            where R.IsEnabled && R.RepeatTimer > 0
                                                            select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))).FirstOrDefault();
@@ -363,7 +365,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<Tuple<string, int, List<string>>> result = [.. from R in context.CommandsBase
                                                                     where R.IsEnabled && R.RepeatTimer > 0
                                                                     select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))];
@@ -376,7 +378,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 int result = (from R in context.Commands
                               where R.CmdName == Cmd
                               select R.RepeatTimer).FirstOrDefault();
@@ -389,7 +391,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 string result = (from C in context.Commands
                                  where C.CmdName == command
                                  select C.Usage).FirstOrDefault();
@@ -402,7 +404,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 List<Tuple<bool, Uri>> result = [.. from W in context.Webhooks
                                                     where (W.WebhooksSource == webhooksSource
                                                     && W.Kind == webhooks && W.DataSource == WebhookDataSource.Channel

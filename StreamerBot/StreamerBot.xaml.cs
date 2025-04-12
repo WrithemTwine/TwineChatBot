@@ -70,6 +70,8 @@ namespace StreamerBot
 
             Controller = new();
 
+            DataManagerViewLoaded();
+
             InitializeComponent();
 
             BotOps =
@@ -97,7 +99,6 @@ namespace StreamerBot
 
             ConstructEvents();
 
-            DataManagerViewLoaded();
         }
 
         #region Bot_Ops

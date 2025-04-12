@@ -37,7 +37,8 @@ namespace StreamerBotLib.Overlay
             // to match the alert, so the bot crashed.
             // UpdateLinks loads the styles in case alerts are waiting to be processed
 
-            if (OptionFlags.MediaOverlayAutoStart && OptionFlags.MediaOverlayAutoServerStart && OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayMediaTickerPort != 0)
+            if (OptionFlags.MediaOverlayAutoStart && OptionFlags.MediaOverlayAutoServerStart 
+                && OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayMediaTickerPort != 0)
             {
                 RadioButton_OverlayServer_Start.IsChecked = true;
             }
@@ -58,6 +59,7 @@ namespace StreamerBotLib.Overlay
 
         public void ReceivedOverlayEvent(object sender, OverlayActionType e)
         {
+            // LogWriter.DebugLog("ReceivedOverlayEvent", StreamerBotLib.Enums.DebugLogTypes.OverlaySystem, $"Processing Overlay event {e}.");
             OverlayController.SendAlert(new OverlayPage()
             {
                 OverlayType = e.OverlayType.ToString(),

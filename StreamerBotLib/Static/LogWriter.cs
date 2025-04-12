@@ -163,6 +163,9 @@ namespace StreamerBotLib.Static
             #region DebugLogTypes Switch
             string Output = debugLogTypes switch
             {
+#if DEBUG
+                DebugLogTypes.SpecialPurpose => OptionFlags.EnableDebugSpecialPurpose ? line : "",
+#endif
                 DebugLogTypes.OverlayBot => OptionFlags.EnableDebugLogOverlays ? line : "",
                 DebugLogTypes.DataManager => OptionFlags.EnableDebugDataManager ? line : "",
                 DebugLogTypes.TwitchBots => OptionFlags.EnableDebugTwitchBots ? line : "",

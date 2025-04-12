@@ -4,7 +4,7 @@ using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 
-namespace StreamerBotLib.DataSQL
+namespace StreamerBotLib.DataSQL.SingleContext
 {
     internal partial class DataManagerSQLAsync
     {
@@ -14,7 +14,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
                 var result = (from C in context.Currency
                               where (C.UserId == User.UserId && C.CurrencyName == CurrencyName)
                               select C.Value).FirstOrDefault() >= value;
@@ -29,7 +29,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+               // using var context = BuildDataContext();
                 var result = (context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}").FindProperty(field) != null);
 
                 return result;
@@ -50,7 +50,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
                 var result = (from f in context.Followers.Include(user => user.User)
                               where f.User.UserName == User && (f.IsFollower && (ToDateTime == default || f.FollowedDate < ToDateTime))
                               select f).Any();
@@ -65,7 +65,7 @@ namespace StreamerBotLib.DataSQL
             {
                 LogWriter.DebugLog("CheckModApprovalRule", DebugLogTypes.DataManager, $"Now checking for mod approval rule for {ModAction}.");
 
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
                 var result = (from M in context.ModeratorApprove
                               where (M.ModActionType == modActionType && M.ModActionName == ModAction)
                               select new Tuple<string, string>(
@@ -87,7 +87,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
 
                 bool result = (from s in context.StreamStats
                                    // check for the Year/Month/Day are the same, ignoring the time
@@ -110,7 +110,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
 
                 bool result = (from c in context.Commands
                                where c.CmdName == cmd
@@ -129,7 +129,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
 
                 bool result = (from s in context.ShoutOuts
                                where s.UserId == UserId
@@ -148,7 +148,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
 
                 bool result = (from s in context.StreamStats
                                where s.StreamStart == CurrTime
@@ -181,7 +181,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
 
                 bool result = (from s in context.Users
                                where (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Platform
@@ -200,7 +200,7 @@ namespace StreamerBotLib.DataSQL
         {
             return Task.Run(() =>
             {
-                using var context = BuildDataContext();
+                //using var context = BuildDataContext();
 
                 string result = (from s in context.CustomWelcome
                                  where s.UserId == UserId

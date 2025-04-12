@@ -2,11 +2,13 @@
 
 using Microsoft.EntityFrameworkCore;
 
+using System.Diagnostics;
+
 namespace EFEntityEntryTesting.EF
 {
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(CurrencyName))]
     [Index(nameof(UserId), nameof(CurrencyName), IsUnique = true)]
-
+    [DebuggerDisplay("User={User}, CurrencyName={CurrencyName}, Value={Value}")]
     public class Currency(
         string userId = null,
         Platform platform = default,

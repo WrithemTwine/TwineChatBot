@@ -1,4 +1,4 @@
-﻿#define USE_OBSERVABLECOLLECTION1
+﻿#define USE_OBSERVABLECOLLECTION
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Events;
@@ -38,8 +38,6 @@ namespace StreamerBotLib.GUI
 
 #if USE_OBSERVABLECOLLECTION
         public static ObservableCollection<CategoryList> CurrCategoryList { get; private set; }
-
-
         public ObservableCollection<Users> Users { get; private set; }
         public ObservableCollection<Followers> Followers { get; private set; }
         public ObservableCollection<CommandsUser> CommandsUser { get; private set; }
@@ -122,11 +120,12 @@ namespace StreamerBotLib.GUI
         #endregion
 
         public static event EventHandler<OnDataCollectionUpdatedEventArgs> DataViewsUpdated;
+        public static event EventHandler<EventArgs> OnInstanceCreated;
 
         public GUIDataManagerViews()
         {
             DataManager = SystemsController.DataManage;
-            DataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
+            //DataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
 
             ChatData = ActionSystem.ChatData;
             JoinCollection = ActionSystem.JoinCollection;
@@ -138,6 +137,7 @@ namespace StreamerBotLib.GUI
 #if !DEBUG_VIEWXAML
             SetObservables();
 #endif
+            OnInstanceCreated?.Invoke(this, EventArgs.Empty);
         }
 
         private void SetObservables()
@@ -149,71 +149,75 @@ namespace StreamerBotLib.GUI
 
                 // set specific collection changed events for StatusBar data
                 Users = (ObservableCollection<Users>)DataManager.GetICollection(Enums.DataTables.Users);
-                //Users.CollectionChanged += DataGrid_CollectionChanged;
-                NotifyPropertyChanged(nameof(Users));
+                Users.CollectionChanged += DataGrid_CollectionChanged;
                 Followers = (ObservableCollection<Followers>)DataManager.GetICollection(Enums.DataTables.Followers);
-                //Followers.CollectionChanged += DataGrid_CollectionChanged;
-                NotifyPropertyChanged(nameof(Followers));
+                Followers.CollectionChanged += DataGrid_CollectionChanged;
                 CommandsUser = (ObservableCollection<CommandsUser>)DataManager.GetICollection(Enums.DataTables.CommandsUser);
-                //CommandsUser.CollectionChanged += DataGrid_CollectionChanged;
-                NotifyPropertyChanged(nameof(CommandsUser));
+                CommandsUser.CollectionChanged += DataGrid_CollectionChanged;
                 Commands = (ObservableCollection<Commands>)DataManager.GetICollection(Enums.DataTables.Commands);
-                //Commands.CollectionChanged += DataGrid_CollectionChanged;
-                NotifyPropertyChanged(nameof(Commands));
+                Commands.CollectionChanged += DataGrid_CollectionChanged;
 
                 // continue setting collections for remaining tables
                 BanReasons = (ObservableCollection<BanReasons>)DataManager.GetICollection(Enums.DataTables.BanReasons);
-                NotifyPropertyChanged(nameof(BanReasons));
                 BanRules = (ObservableCollection<BanRules>)DataManager.GetICollection(Enums.DataTables.BanRules);
-                NotifyPropertyChanged(nameof(BanRules));
                 CategoryList = (ObservableCollection<CategoryList>)DataManager.GetICollection(Enums.DataTables.CategoryList);
-                NotifyPropertyChanged(nameof(CategoryList));
                 ChannelEvents = (ObservableCollection<ChannelEvents>)DataManager.GetICollection(Enums.DataTables.ChannelEvents);
-                NotifyPropertyChanged(nameof(ChannelEvents));
                 Clips = (ObservableCollection<Clips>)DataManager.GetICollection(Enums.DataTables.Clips);
-                NotifyPropertyChanged(nameof(Clips));
                 Currency = (ObservableCollection<Currency>)DataManager.GetICollection(Enums.DataTables.Currency);
-                NotifyPropertyChanged(nameof(Currency));
                 CurrencyType = (ObservableCollection<CurrencyType>)DataManager.GetICollection(Enums.DataTables.CurrencyType);
-                NotifyPropertyChanged(nameof(CurrencyType));
                 CustomWelcome = (ObservableCollection<CustomWelcome>)DataManager.GetICollection(Enums.DataTables.CustomWelcome);
-                NotifyPropertyChanged(nameof(CustomWelcome));
                 GameDeadCounter = (ObservableCollection<GameDeadCounter>)DataManager.GetICollection(Enums.DataTables.GameDeadCounter);
-                NotifyPropertyChanged(nameof(GameDeadCounter));
                 GiveawayUserData = (ObservableCollection<GiveawayUserData>)DataManager.GetICollection(Enums.DataTables.GiveawayUserData);
-                NotifyPropertyChanged(nameof(GiveawayUserData));
                 InRaidData = (ObservableCollection<InRaidData>)DataManager.GetICollection(Enums.DataTables.InRaidData);
-                NotifyPropertyChanged(nameof(InRaidData));
                 LearnMsgs = (ObservableCollection<LearnMsgs>)DataManager.GetICollection(Enums.DataTables.LearnMsgs);
-                NotifyPropertyChanged(nameof(LearnMsgs));
                 ModeratorApprove = (ObservableCollection<ModeratorApprove>)DataManager.GetICollection(Enums.DataTables.ModeratorApprove);
-                NotifyPropertyChanged(nameof(ModeratorApprove));
                 MultiChannels = (ObservableCollection<MultiChannels>)DataManager.GetICollection(Enums.DataTables.MultiChannels);
-                NotifyPropertyChanged(nameof(MultiChannels));
                 MultiLiveStreams = (ObservableCollection<MultiLiveStreams>)DataManager.GetICollection(Enums.DataTables.MultiLiveStreams);
-                NotifyPropertyChanged(nameof(MultiLiveStreams));
                 MultiSummaryLiveStreams = (ObservableCollection<MultiSummaryLiveStreams>)DataManager.GetICollection(Enums.DataTables.MultiSummaryLiveStreams);
-                NotifyPropertyChanged(nameof(MultiSummaryLiveStreams));
                 MultiWebhooks = (ObservableCollection<MultiWebhooks>)DataManager.GetICollection(Enums.DataTables.MultiWebhooks);
-                NotifyPropertyChanged(nameof(MultiWebhooks));
                 OldFollowUsers = (ObservableCollection<OldFollowUsers>)DataManager.GetICollection(Enums.DataTables.OldFollowUsers);
-                NotifyPropertyChanged(nameof(OldFollowUsers));
                 OutRaidData = (ObservableCollection<OutRaidData>)DataManager.GetICollection(Enums.DataTables.OutRaidData);
-                NotifyPropertyChanged(nameof(OutRaidData));
                 OverlayServices = (ObservableCollection<OverlayServices>)DataManager.GetICollection(Enums.DataTables.OverlayServices);
-                NotifyPropertyChanged(nameof(OverlayServices));
                 OverlayTicker = (ObservableCollection<OverlayTicker>)DataManager.GetICollection(Enums.DataTables.OverlayTicker);
-                NotifyPropertyChanged(nameof(OverlayTicker));
                 Quotes = (ObservableCollection<Quotes>)DataManager.GetICollection(Enums.DataTables.Quotes);
-                NotifyPropertyChanged(nameof(Quotes));
                 ShoutOuts = (ObservableCollection<ShoutOuts>)DataManager.GetICollection(Enums.DataTables.ShoutOuts);
-                NotifyPropertyChanged(nameof(ShoutOuts));
                 StreamStats = (ObservableCollection<StreamStats>)DataManager.GetICollection(Enums.DataTables.StreamStats);
-                NotifyPropertyChanged(nameof(StreamStats));
                 UserStats = (ObservableCollection<UserStats>)DataManager.GetICollection(Enums.DataTables.UserStats);
-                NotifyPropertyChanged(nameof(UserStats));
                 Webhooks = (ObservableCollection<Webhooks>)DataManager.GetICollection(Enums.DataTables.Webhooks);
+
+                CleanupList = DataManager.GetCleanupList();
+
+                NotifyPropertyChanged(nameof(Users));
+                NotifyPropertyChanged(nameof(Followers));
+                NotifyPropertyChanged(nameof(CommandsUser));
+                NotifyPropertyChanged(nameof(Commands));
+                NotifyPropertyChanged(nameof(BanReasons));
+                NotifyPropertyChanged(nameof(BanRules));
+                NotifyPropertyChanged(nameof(CategoryList));
+                NotifyPropertyChanged(nameof(ChannelEvents));
+                NotifyPropertyChanged(nameof(Clips));
+                NotifyPropertyChanged(nameof(Currency));
+                NotifyPropertyChanged(nameof(CurrencyType));
+                NotifyPropertyChanged(nameof(CustomWelcome));
+                NotifyPropertyChanged(nameof(GameDeadCounter));
+                NotifyPropertyChanged(nameof(GiveawayUserData));
+                NotifyPropertyChanged(nameof(InRaidData));
+                NotifyPropertyChanged(nameof(LearnMsgs));
+                NotifyPropertyChanged(nameof(ModeratorApprove));
+                NotifyPropertyChanged(nameof(MultiChannels));
+                NotifyPropertyChanged(nameof(MultiLiveStreams));
+                NotifyPropertyChanged(nameof(MultiSummaryLiveStreams));
+                NotifyPropertyChanged(nameof(MultiWebhooks));
+                NotifyPropertyChanged(nameof(OldFollowUsers));
+                NotifyPropertyChanged(nameof(OutRaidData));
+                NotifyPropertyChanged(nameof(OverlayServices));
+                NotifyPropertyChanged(nameof(OverlayTicker));
+                NotifyPropertyChanged(nameof(Quotes));
+                NotifyPropertyChanged(nameof(ShoutOuts));
+                NotifyPropertyChanged(nameof(StreamStats));
+                NotifyPropertyChanged(nameof(UserStats));
                 NotifyPropertyChanged(nameof(Webhooks));
+
 
 #else
                 // set specific collection changed events for StatusBar data
@@ -286,7 +290,6 @@ namespace StreamerBotLib.GUI
 
 #endif
 
-                CleanupList = DataManager.GetCleanupList();
 
                 // refresh the 'status bar' count items
                 NotifyPropertyChanged(nameof(CurrUserCount));
@@ -306,7 +309,7 @@ namespace StreamerBotLib.GUI
         /// <param name="propertyName">Name of the property which updated values.</param>
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new(propertyName));
             LogWriter.DebugLog("NotifyPropertyChanged", Enums.DebugLogTypes.GUIDataViews, $"Notifying GUI for updated {propertyName} property data.");
 
             if (propertyName is "CategoryList")
@@ -317,137 +320,138 @@ namespace StreamerBotLib.GUI
 
         public void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-#if !USE_OBSERVABLECOLLECTION1
-            switch (e.DatabaseModelName)
-            {
-                case "Users":
-                    Users.Clear();
-                    Users.AddRange((List<Users>)e.TableData);
-                    break;
-                case "Followers":
-                    Followers.Clear();
-                    Followers.AddRange((List<Followers>)e.TableData);
-                    break;
-                case "CommandsUser":
-                    CommandsUser.Clear();
-                    CommandsUser.AddRange((List<CommandsUser>)e.TableData);
-                    break;
-                case "Commands":
-                    Commands.Clear();
-                    Commands.AddRange((List<Commands>)e.TableData);
-                    break;
-                case "BanReasons":
-                    BanReasons.Clear();
-                    BanReasons.AddRange((List<BanReasons>)e.TableData);
-                    break;
-                case "BanRules":
-                    BanRules.Clear();
-                    BanRules.AddRange((List<BanRules>)e.TableData);
-                    break;
-                case "CategoryList":
-                    CategoryList.Clear();
-                    CategoryList.AddRange((List<CategoryList>)e.TableData);
-                    break;
-                case "ChannelEvents":
-                    ChannelEvents.Clear();
-                    ChannelEvents.AddRange((List<ChannelEvents>)e.TableData);
-                    break;
-                case "Clips":
-                    Clips.Clear();
-                    Clips.AddRange((List<Clips>)e.TableData);
-                    break;
-                case "Currency":
-                    Currency.Clear();
-                    Currency.AddRange((List<Currency>)e.TableData);
-                    break;
-                case "CurrencyType":
-                    CurrencyType.Clear();
-                    CurrencyType.AddRange((List<CurrencyType>)e.TableData);
-                    break;
-                case "CustomWelcome":
-                    CustomWelcome.Clear();
-                    CustomWelcome.AddRange((List<CustomWelcome>)e.TableData);
-                    break;
-                case "GameDeadCounter":
-                    GameDeadCounter.Clear();
-                    GameDeadCounter.AddRange((List<GameDeadCounter>)e.TableData);
-                    break;
-                case "GiveawayUserData":
-                    GiveawayUserData.Clear();
-                    GiveawayUserData.AddRange((List<GiveawayUserData>)e.TableData);
-                    break;
-                case "InRaidData":
-                    InRaidData.Clear();
-                    InRaidData.AddRange((List<InRaidData>)e.TableData);
-                    break;
-                case "LearnMsgs":
-                    LearnMsgs.Clear();
-                    LearnMsgs.AddRange((List<LearnMsgs>)e.TableData);
-                    break;
-                case "ModeratorApprove":
-                    ModeratorApprove.Clear();
-                    ModeratorApprove.AddRange((List<ModeratorApprove>)e.TableData);
-                    break;
-                case "MultiChannels":
-                    MultiChannels.Clear();
-                    MultiChannels.AddRange((List<MultiChannels>)e.TableData);
-                    break;
-                case "MultiLiveStreams":
-                    MultiLiveStreams.Clear();
-                    MultiLiveStreams.AddRange((List<MultiLiveStreams>)e.TableData);
-                    break;
-                case "MultiSummaryLiveStreams":
-                    MultiSummaryLiveStreams.Clear();
-                    MultiSummaryLiveStreams.AddRange((List<MultiSummaryLiveStreams>)e.TableData);
-                    break;
-                case "MultiWebhooks":
-                    MultiWebhooks.Clear();
-                    MultiWebhooks.AddRange((List<MultiWebhooks>)e.TableData);
-                    break;
-                case "OldFollowUsers":
-                    OldFollowUsers.Clear();
-                    OldFollowUsers.AddRange((List<OldFollowUsers>)e.TableData);
-                    break;
-                case "OutRaidData":
-                    OutRaidData.Clear();
-                    OutRaidData.AddRange((List<OutRaidData>)e.TableData);
-                    break;
-                case "OverlayServices":
-                    OverlayServices.Clear();
-                    OverlayServices.AddRange((List<OverlayServices>)e.TableData);
-                    break;
-                case "OverlayTicker":
-                    OverlayTicker.Clear();
-                    OverlayTicker.AddRange((List<OverlayTicker>)e.TableData);
-                    break;
-                case "Quotes":
-                    Quotes.Clear();
-                    Quotes.AddRange((List<Quotes>)e.TableData);
-                    break;
-                case "ShoutOuts":
-                    ShoutOuts.Clear();
-                    ShoutOuts.AddRange((List<ShoutOuts>)e.TableData);
-                    break;
-                case "StreamStats":
-                    StreamStats.Clear();
-                    StreamStats.AddRange((List<StreamStats>)e.TableData);
-                    break;
-                case "UserStats":
-                    UserStats.Clear();
-                    UserStats.AddRange((List<UserStats>)e.TableData);
-                    break;
-                case "Webhooks":
-                    Webhooks.Clear();
-                    Webhooks.AddRange((List<Webhooks>)e.TableData);
-                    break;
-                case "MultiLiveStatusLog":
-                    break;
-                default:
-                    break;
-            }
 
-#endif
-            DataViewsUpdated?.Invoke(this, e);
+//#if !USE_OBSERVABLECOLLECTION1
+//            switch (e.DatabaseModelName)
+//            {
+//                case "Users":
+//                    Users.Clear();
+//                    Users.AddRange((List<Users>)e.TableData);
+//                    break;
+//                case "Followers":
+//                    Followers.Clear();
+//                    Followers.AddRange((List<Followers>)e.TableData);
+//                    break;
+//                case "CommandsUser":
+//                    CommandsUser.Clear();
+//                    CommandsUser.AddRange((List<CommandsUser>)e.TableData);
+//                    break;
+//                case "Commands":
+//                    Commands.Clear();
+//                    Commands.AddRange((List<Commands>)e.TableData);
+//                    break;
+//                case "BanReasons":
+//                    BanReasons.Clear();
+//                    BanReasons.AddRange((List<BanReasons>)e.TableData);
+//                    break;
+//                case "BanRules":
+//                    BanRules.Clear();
+//                    BanRules.AddRange((List<BanRules>)e.TableData);
+//                    break;
+//                case "CategoryList":
+//                    CategoryList.Clear();
+//                    CategoryList.AddRange((List<CategoryList>)e.TableData);
+//                    break;
+//                case "ChannelEvents":
+//                    ChannelEvents.Clear();
+//                    ChannelEvents.AddRange((List<ChannelEvents>)e.TableData);
+//                    break;
+//                case "Clips":
+//                    Clips.Clear();
+//                    Clips.AddRange((List<Clips>)e.TableData);
+//                    break;
+//                case "Currency":
+//                    Currency.Clear();
+//                    Currency.AddRange((List<Currency>)e.TableData);
+//                    break;
+//                case "CurrencyType":
+//                    CurrencyType.Clear();
+//                    CurrencyType.AddRange((List<CurrencyType>)e.TableData);
+//                    break;
+//                case "CustomWelcome":
+//                    CustomWelcome.Clear();
+//                    CustomWelcome.AddRange((List<CustomWelcome>)e.TableData);
+//                    break;
+//                case "GameDeadCounter":
+//                    GameDeadCounter.Clear();
+//                    GameDeadCounter.AddRange((List<GameDeadCounter>)e.TableData);
+//                    break;
+//                case "GiveawayUserData":
+//                    GiveawayUserData.Clear();
+//                    GiveawayUserData.AddRange((List<GiveawayUserData>)e.TableData);
+//                    break;
+//                case "InRaidData":
+//                    InRaidData.Clear();
+//                    InRaidData.AddRange((List<InRaidData>)e.TableData);
+//                    break;
+//                case "LearnMsgs":
+//                    LearnMsgs.Clear();
+//                    LearnMsgs.AddRange((List<LearnMsgs>)e.TableData);
+//                    break;
+//                case "ModeratorApprove":
+//                    ModeratorApprove.Clear();
+//                    ModeratorApprove.AddRange((List<ModeratorApprove>)e.TableData);
+//                    break;
+//                case "MultiChannels":
+//                    MultiChannels.Clear();
+//                    MultiChannels.AddRange((List<MultiChannels>)e.TableData);
+//                    break;
+//                case "MultiLiveStreams":
+//                    MultiLiveStreams.Clear();
+//                    MultiLiveStreams.AddRange((List<MultiLiveStreams>)e.TableData);
+//                    break;
+//                case "MultiSummaryLiveStreams":
+//                    MultiSummaryLiveStreams.Clear();
+//                    MultiSummaryLiveStreams.AddRange((List<MultiSummaryLiveStreams>)e.TableData);
+//                    break;
+//                case "MultiWebhooks":
+//                    MultiWebhooks.Clear();
+//                    MultiWebhooks.AddRange((List<MultiWebhooks>)e.TableData);
+//                    break;
+//                case "OldFollowUsers":
+//                    OldFollowUsers.Clear();
+//                    OldFollowUsers.AddRange((List<OldFollowUsers>)e.TableData);
+//                    break;
+//                case "OutRaidData":
+//                    OutRaidData.Clear();
+//                    OutRaidData.AddRange((List<OutRaidData>)e.TableData);
+//                    break;
+//                case "OverlayServices":
+//                    OverlayServices.Clear();
+//                    OverlayServices.AddRange((List<OverlayServices>)e.TableData);
+//                    break;
+//                case "OverlayTicker":
+//                    OverlayTicker.Clear();
+//                    OverlayTicker.AddRange((List<OverlayTicker>)e.TableData);
+//                    break;
+//                case "Quotes":
+//                    Quotes.Clear();
+//                    Quotes.AddRange((List<Quotes>)e.TableData);
+//                    break;
+//                case "ShoutOuts":
+//                    ShoutOuts.Clear();
+//                    ShoutOuts.AddRange((List<ShoutOuts>)e.TableData);
+//                    break;
+//                case "StreamStats":
+//                    StreamStats.Clear();
+//                    StreamStats.AddRange((List<StreamStats>)e.TableData);
+//                    break;
+//                case "UserStats":
+//                    UserStats.Clear();
+//                    UserStats.AddRange((List<UserStats>)e.TableData);
+//                    break;
+//                case "Webhooks":
+//                    Webhooks.Clear();
+//                    Webhooks.AddRange((List<Webhooks>)e.TableData);
+//                    break;
+//                case "MultiLiveStatusLog":
+//                    break;
+//                default:
+//                    break;
+//            }
+
+//#endif
+            //DataViewsUpdated?.Invoke(this, e);
 
             NotifyPropertyChanged(e.DatabaseModelName);
 

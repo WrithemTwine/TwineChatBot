@@ -29,6 +29,10 @@ namespace EFEntityEntryTesting.GUI
                 Users = MainWindow.DataManager.GetUsersObsCol();
                 Currency = MainWindow.DataManager.GetCurrObsCol();
                 CurrencyTypes = MainWindow.DataManager.GetCurrTypeObsCol();
+
+                PropertyChanged?.Invoke(this, new(nameof(Users)));
+                PropertyChanged?.Invoke(this, new(nameof(Currency)));
+                PropertyChanged?.Invoke(this, new(nameof(CurrencyTypes)));
             });
         }
 

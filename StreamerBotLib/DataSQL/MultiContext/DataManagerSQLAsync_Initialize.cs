@@ -7,7 +7,7 @@ using StreamerBotLib.Systems;
 
 using System.Data;
 
-namespace StreamerBotLib.DataSQL
+namespace StreamerBotLib.DataSQL.MultiContext
 {
     internal partial class DataManagerSQLAsync
     {

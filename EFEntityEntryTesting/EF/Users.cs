@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace EFEntityEntryTesting.EF
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
-    [DebuggerDisplay("UserId={UserId}, UserName={UserName}")]
+    [DebuggerDisplay("UserId={UserId}, UserName={UserName}, LastSeen={LastDateSeen}")]
     public class Users(DateTime firstDateSeen = default,
     DateTime currLoginDate = default,
                        DateTime lastDateSeen = default,

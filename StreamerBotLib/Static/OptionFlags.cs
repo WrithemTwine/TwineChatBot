@@ -825,6 +825,13 @@ namespace StreamerBotLib.Static
 
         #region DebugLogFlags
 
+#if DEBUG
+        /// <summary>
+        /// Quick flag to enable specific special purpose logging during test.
+        /// </summary>
+        public static bool EnableDebugSpecialPurpose => true;
+#endif
+
         /// <summary>
         /// Enables the Overlay actions to save to the debug log.
         /// </summary>

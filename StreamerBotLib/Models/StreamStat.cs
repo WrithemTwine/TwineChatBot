@@ -2,6 +2,8 @@ using StreamerBotLib.DataSQL.Models;
 
 using System.Diagnostics;
 
+using DataImport = StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
+
 namespace StreamerBotLib.Models
 {
     /// <summary>
@@ -113,7 +115,7 @@ namespace StreamerBotLib.Models
         /// </summary>
         public string Category { get; set; } = currentCategory;
 
-        public void Update(DataSQL.Import.DataSource.StreamStatsRow streamStatsRow)
+        public void Update(DataImport.StreamStatsRow streamStatsRow)
         {
             StreamStart = streamStatsRow.StreamStart;
             StreamEnd = streamStatsRow.StreamEnd;

@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.DataSQL.MultiContext;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
@@ -778,7 +779,7 @@ namespace StreamerBotLib.DataSQL
                     MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
                 }
                 MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
-                _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog), MultiLiveStatusLog);
+                _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
             }
         }
 

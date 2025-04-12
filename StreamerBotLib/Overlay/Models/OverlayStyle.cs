@@ -116,5 +116,10 @@ namespace StreamerBotLib.Overlay.Models
         {
             return (OverlayType + OverlayStyleText).GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return $"Overlay Type {OverlayType}, OverlayStyleText {OverlayStyleText}.";
+        }
     }
 }

@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace StreamerBotLib.DataSQL.Import.Multi {
+namespace StreamerBotLib.DataSQL.SingleContext.Import.Multi {
     
     
     /// <summary>

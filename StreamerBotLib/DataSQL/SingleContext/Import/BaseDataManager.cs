@@ -3,7 +3,7 @@
 using System.Data;
 using System.IO;
 
-namespace StreamerBotLib.DataSQL.Import
+namespace StreamerBotLib.DataSQL.SingleContext.Import
 {
     internal class BaseDataManager
     {
