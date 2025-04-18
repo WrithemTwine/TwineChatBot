@@ -99,7 +99,7 @@ namespace StreamerBotLib.Interfaces
         void StartBulkFollowers();
         void SummarizeStreamData();
         void SummarizeStreamData(ArchiveMultiStream archiveRecord);
-        void UpdateCurrency(List<string> Users, DateTime dateTime);
+        void UpdateCurrency(List<LiveUser> Users, DateTime dateTime);
         void UpdateFollowers(IEnumerable<Follow> follows);
         new List<LearnMsgRecord> UpdateLearnedMsgs();
         void UpdateOverlayTicker(OverlayTickerItem item, string name);

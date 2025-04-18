@@ -248,6 +248,7 @@ namespace StreamerBot
 
             LogWriter.DebugLog("OnWindowClosing", DebugLogTypes.GUIEvents, "Sending an exit to the bot controller.");
             Controller.ExitBots();
+            GUIDataGridUpdates?.Join();
 
             LogWriter.DebugLog("OnWindowClosing", DebugLogTypes.BotController, "Closing/Exiting all of the output logs, including me!");
             LogWriter.DebugLog("OnWindowClosing", DebugLogTypes.GUIEvents, "Exiting the log writers. No more logging available.");

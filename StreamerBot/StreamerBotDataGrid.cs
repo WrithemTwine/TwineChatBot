@@ -8,8 +8,8 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
+using System.Collections.Concurrent;
 using System.Data;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -23,28 +23,65 @@ namespace StreamerBot
 
         private event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataGridUpdated;
 
+        private Thread GUIDataGridUpdates { get; set; }
+        private ConcurrentQueue<Task> GUIDataGridUpdateQueue { get; set; } = new();
+
+        private GUIDataManagerViews GUIDataManagerViews { get; set; }
+
+        #region GUI DataManager View Update Queue
+
+        private void GUIDataGridUpdateThread()
+        {
+            while (!GUIDataGridUpdateQueue.IsEmpty || OptionFlags.ActiveToken)
+            {
+                while (GUIDataGridUpdateQueue.TryDequeue(out Task task))
+                {
+                    task.Start();
+                }
+            }
+        }
+
+        #endregion
+
         private void DataManagerViewLoaded()
         {
             //GUIDataManagerViews.DataViewsUpdated += DataManager_OnDataCollectionUpdated;
             GUIDataManagerViews.OnInstanceCreated += DataManager_OnInstanceCreated;
 
             SystemsController.DataManage.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
+
+            //GUIDataGridUpdates = ThreadManager.CreateThread("GUIDataGridUpdate", GUIDataGridUpdateThread);
+            //GUIDataGridUpdates.Start();
         }
 
         private void DataManager_OnInstanceCreated(object sender, EventArgs e)
         {
-            OnDataGridUpdated += (sender as GUIDataManagerViews).DataManager_OnDataCollectionUpdated;
+            GUIDataManagerViews = sender as GUIDataManagerViews;
+            //OnDataGridUpdated += (sender as GUIDataManagerViews).DataManager_OnDataCollectionUpdated;
         }
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            Dispatcher.InvokeAsync(() =>
+            //GUIDataGridUpdateQueue.Enqueue(new Task(() =>
+            //{
+            Dispatcher.BeginInvoke(() =>
             {
                 LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
                    StreamerBotLib.Enums.DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");
 
-                if (e.RecordCountChange || true)
+#if DEBUG
+                //LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
+                //    StreamerBotLib.Enums.DebugLogTypes.SpecialPurpose, $"Refreshing data for the {e.DatabaseModelName} data table.");
+#endif
+
+
+                if (e.RecordCountChange)
                 {
+#if DEBUG
+                    //LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
+                    //   StreamerBotLib.Enums.DebugLogTypes.SpecialPurpose, $"RecordChanges detected for the {e.DatabaseModelName} data table. Refreshing Items.");
+#endif
+
                     switch (e.DatabaseModelName)
                     {
                         case "BanReasons":
@@ -138,8 +175,15 @@ namespace StreamerBot
                     }
                 }
 
-                OnDataGridUpdated?.Invoke(this, e);
+#if DEBUG
+                //LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
+                //   StreamerBotLib.Enums.DebugLogTypes.SpecialPurpose, $"Calling GUIDataManagerViews for the {e.DatabaseModelName} data table.");
+#endif
+
+                GUIDataManagerViews.UpdatedGUIData(e);
+                //OnDataGridUpdated?.Invoke(this, e);
             });
+            //}));
         }
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
         {
@@ -294,7 +338,6 @@ namespace StreamerBot
         #endregion
 
         #region DataGrid Item editing
-
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit)

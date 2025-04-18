@@ -22,7 +22,7 @@ namespace StreamerBotLib.Systems
             {
                 if (OptionFlags.ManageUsers)
                 {
-                    DataManage.UserJoined(StreamViewers.GetCurrentActiveUsers(), SpecifyTime.ToLocalTime());
+                    DataManage.UserJoined(StreamViewers.GetCurrentActiveUsers(true), SpecifyTime.ToLocalTime());
                 }
             }
         }
@@ -125,7 +125,7 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("ClearUserList", DebugLogTypes.StatSystem, "Register current viewers as leaving the stream.");
             lock (StreamViewers)
             {
-                foreach (LiveUser U in StreamViewers.GetCurrentActiveUsers())
+                foreach (LiveUser U in StreamViewers.GetCurrentActiveUsers(true))
                 {
                     PostDataUserLeft(U, Stopped);
                 }

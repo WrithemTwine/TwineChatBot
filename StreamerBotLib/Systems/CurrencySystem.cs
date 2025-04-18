@@ -18,69 +18,61 @@ namespace StreamerBotLib.Systems
         private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = [];
         private string GameBlackJackCurrency;
 
-        public void StartCurrencyClock()
+        private void AccrualClocks()
         {
-            LogWriter.DebugLog("StartCurrencyClock", DebugLogTypes.CurrencySystem, "Starting currency clock");
-            if (!CurAccrualStarted)
+            if (!CurAccrualStarted && !WatchStarted)
             {
                 CurAccrualStarted = true;
+                WatchStarted = true;
 
                 try
                 {
-                    ThreadManager.CreateThreadStart("StartCurrencyClock", () =>
+                    ThreadManager.CreateThreadStart("AccrualClocks", async () =>
                     {
-                        Task.Run(async () =>
+                        // watch time and currency accruing only works when stream is online <- i.e. watched!
+                        while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
                         {
-                            while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
+                            DateTime CurrTime = DateTime.Now.ToLocalTime();
+
+                            lock (StreamViewers)
                             {
-                                lock (StreamViewers)
+                                var CurrViewers = StreamViewers.GetCurrentActiveUsers(isRegistered: true);
+
+                                if (OptionFlags.CurrencyStart)
                                 {
-                                    DataManage.UpdateCurrency(new(from LiveUser U in StreamViewers.GetCurrentActiveUsers()
-                                                                  select U.UserId), DateTime.Now.ToLocalTime());
+                                    DataManage.UpdateCurrency(CurrViewers, CurrTime);
                                 }
-                                await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
+                                else
+                                {
+                                    DataManage.UpdateWatchTime(CurrViewers, CurrTime);
+                                }
                             }
-                            CurAccrualStarted = false;
-                        });
+                            await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
+                        }
+
+                        CurAccrualStarted = false;
+                        WatchStarted = false;
                     });
                 }
                 catch (ThreadInterruptedException ex)
                 {
-                    LogWriter.LogException(ex, "StartCurrencyClock");
+                    LogWriter.LogException(ex, "AccrualClocks");
                 }
             }
+        }
+
+        public void StartCurrencyClock()
+        {
+            LogWriter.DebugLog("StartCurrencyClock", DebugLogTypes.CurrencySystem, "Starting currency clock");
+
+            AccrualClocks();
         }
 
         public void MonitorWatchTime()
         {
             LogWriter.DebugLog("MonitorWatchTime", DebugLogTypes.CurrencySystem, "Starting watch time monitor");
-            if (!WatchStarted)
-            {
-                WatchStarted = true;
-                try
-                {
-                    ThreadManager.CreateThreadStart("MonitorWatchTime", () =>
-                    {
-                        Task.Run(async () =>
-                        {
-                            // watch time accruing only works when stream is online <- i.e. watched!
-                            while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
-                            {
-                                lock (StreamViewers)
-                                {
-                                    DataManage.UpdateWatchTime(StreamViewers.GetCurrentActiveUsers(), DateTime.Now.ToLocalTime());
-                                }
-                                await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
-                            }
-                            WatchStarted = false;
-                        });
-                    });
-                }
-                catch (ThreadInterruptedException ex)
-                {
-                    LogWriter.LogException(ex, "MonitorWatchTime");
-                }
-            }
+
+            AccrualClocks();
         }
 
         #region Blackjack

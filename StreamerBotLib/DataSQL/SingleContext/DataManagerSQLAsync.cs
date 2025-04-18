@@ -285,7 +285,7 @@ switches:
                 using var transaction = context.Database.BeginTransaction();
 
                 await context.Webhooks.ExecuteUpdateAsync((w) => w.SetProperty((u) => u.IsEnabled, (h) => Enabled));
-              //await transaction.CommitAsync();
+                //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshWebhooksList();
             });

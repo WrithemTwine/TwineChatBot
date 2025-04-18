@@ -63,7 +63,7 @@ namespace StreamerBotLib.Overlay.Communication
                 Img = new XElement("img", new XAttribute("class", "image"), new XAttribute("src", overlayActionType.ImageFile), new XAttribute("width", sz.Width), new XAttribute("height", sz.Height)).ToString();
             }
 
-            if(overlayActionType.ActionValue == LocalizedMsgSystem.GetVar(DefaultCommand.time))
+            if (overlayActionType.ActionValue == LocalizedMsgSystem.GetVar(DefaultCommand.time))
             {
                 Img = SVGClock();
             }

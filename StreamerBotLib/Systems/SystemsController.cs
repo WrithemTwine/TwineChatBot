@@ -50,6 +50,7 @@ namespace StreamerBotLib.Systems
             ActionSystem.DataManage = DataManage;
             LocalizedMsgSystem.SetDataManager(DataManage);
             DataManage.Initialize();
+
             SystemActions = new();
 
             SystemActions.OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
@@ -71,7 +72,7 @@ namespace StreamerBotLib.Systems
             int getUsers = 20;
             Random random = new();
 
-            UserJoined(((IDataManagerTestMethods)DataManage).TestGetRandomUsers(random.Next(getUsers)).ToList());
+            UserJoined([.. ((IDataManagerTestMethods)DataManage).TestGetRandomUsers(random.Next(getUsers))]);
 
         }
 #endif
@@ -515,6 +516,7 @@ namespace StreamerBotLib.Systems
             var FirstUsers = StreamViewers.AddUsersFirstJoinedChannel(UserNames);
 
             ActionSystem.UserJoined(UserNames, Curr);
+            StreamViewers.RegisterUsers(FirstUsers);
 
             if (OptionFlags.FirstUserJoinedMsg)
             {

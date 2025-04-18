@@ -9,53 +9,66 @@ namespace StreamerBotLib.DataSQL.MultiContext
 {
     internal partial class DataManagerSQLAsync
     {
-        internal Task<LiveUser> GetUser(string UserName)
+#if DEBUG
+        private List<LiveUser> DebugUsersList = new();
+#endif
+
+        internal async Task<LiveUser> GetUser(string UserName)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-
-                LiveUser result = (from U in context.Users
-                                   where U.UserName == UserName
-                                   select new LiveUser(U.UserName, U.Platform, U.UserId)).FirstOrDefault();
-
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            return await context.Users
+                .Where(U => U.UserName == UserName)
+                .Select(U => new LiveUser(U.UserName, U.Platform, U.UserId))
+                .FirstOrDefaultAsync();
         }
 
-        internal Task<string> GetUserId(LiveUser User)
+        internal async Task<string> GetUserId(LiveUser User)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                string result = null;
-                List<LiveUser> UsersList = [.. from U in context.Users
-                                               select new LiveUser(U.UserName, U.Platform, U.UserId)];
+            //return Task.Run(() =>
+            //{
+            //    using var context = BuildDataContext();
+            //    string result = null;
+            //    List<LiveUser> UsersList = [.. from U in context.Users
+            //                                   select new LiveUser(U.UserName, U.Platform, U.UserId)];
 
-                foreach (var s in from LiveUser s in UsersList
-                                  where s.UserName.Equals(User.UserName, StringComparison.OrdinalIgnoreCase)
-                                  select s)
-                {
-                    result = s.UserId;
-                }
+            //    foreach (var s in from LiveUser s in UsersList
+            //                      where s.UserName.Equals(User.UserName, StringComparison.OrdinalIgnoreCase)
+            //                      select s)
+            //    {
+            //        result = s.UserId;
+            //    }
 
 
-                return result;
-            });
+            //    return result;
+            //});
+
+            using var context = BuildDataContext();
+            return await context.Users
+                .Where(U => U.UserName.Equals(User.UserName, StringComparison.OrdinalIgnoreCase))
+                .Select(U => U.UserId)
+                .FirstOrDefaultAsync();
         }
 
-        internal Task<string> GetNewestFollower()
+        internal async Task<string> GetNewestFollower()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                string result = (from F in context.Followers.Include(user => user.User)
-                                 orderby F.FollowedDate descending
-                                 select F).FirstOrDefault().User.UserName;
+            //return Task.Run(() =>
+            //{
+            //    using var context = BuildDataContext();
+            //    string result = (from F in context.Followers.Include(user => user.User)
+            //                     orderby F.FollowedDate descending
+            //                     select F).FirstOrDefault().User.UserName;
 
-                return result ?? "Not Found";
-            });
+            //    return result ?? "Not Found";
+            //});
+
+            using var context = BuildDataContext();
+            var newestFollower = await context.Followers
+                .Include(F => F.User)
+                .OrderByDescending(F => F.FollowedDate)
+                .Select(F => F.User.UserName)
+                .FirstOrDefaultAsync();
+
+            return newestFollower ?? "Not Found";
         }
 
         /// <summary>
@@ -66,40 +79,30 @@ namespace StreamerBotLib.DataSQL.MultiContext
         ///     <code>true</code>: first time follower; 
         ///     <code>false</code>: user previously followed.
         /// </returns>
-        internal Task<bool> PostFollower(Follow follow)
+        internal async Task<bool> PostFollower(Follow follow)
         {
-            return Task.Run(() =>
-            {
-                currtime = DateTime.Now.ToLocalTime();
-                using var context = BuildDataContext();
-                var result = !(from F in context.Followers
-                               where F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Platform
-                               select F).Any();
-                followsQueue.Enqueue([follow]);
-                PostFollowsQueue();
+            currtime = DateTime.Now.ToLocalTime();
+            using var context = BuildDataContext();
+            var result = !await context.Followers
+                .AnyAsync(F => F.UserId == follow.FromUser.UserId && F.Platform == follow.FromUser.Platform);
 
-                return result;
-            });
+            followsQueue.Enqueue(new[] { follow });
+            PostFollowsQueue();
+
+            return result;
         }
 
         internal Task<List<Follow>> PostFollowers(IEnumerable<Follow> follows)
         {
-            return Task.Run(() =>
-            {
-                currtime = DateTime.Now.ToLocalTime();
-                using var context = BuildDataContext();
+            currtime = DateTime.Now.ToLocalTime();
+            using var context = BuildDataContext();
+            followsQueue.Enqueue(follows);
 
-                List<Follow> ReturnList = [.. from F in follows
-                                              join DF in context.Followers on F.FromUserId equals DF.UserId
-                                              where DF.UserId is null
-                                              select F];
+            List<Follow> ReturnList = [.. follows.Where(F => !context.Followers.Any(DF => DF.UserId == F.FromUserId))];
 
-                followsQueue.Enqueue(follows);
-                PostFollowsQueue();
+            PostFollowsQueue();
 
-
-                return ReturnList;
-            });
+            return Task.FromResult(ReturnList);
         }
 
         private static bool ProcessFollowQueuestarted = false;
@@ -115,7 +118,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
 
                 ThreadManager.CreateThreadStart("PostFollowsQueue", async () =>
                 {
-                using var context = BuildDataContext();
+                    using var context = BuildDataContext();
 
                     while (followsQueue.TryDequeue(out IEnumerable<Follow> currUser))
                     {
@@ -152,8 +155,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
                         });
                     }
                     await context.SaveChangesAsync();
-                    RefreshFollowersList();
-                    RefreshUsersList();
+                    RefreshFollowersList(true);
+                    RefreshUsersList(true);
 
                     ProcessFollowQueuestarted = false;
 
@@ -166,65 +169,58 @@ namespace StreamerBotLib.DataSQL.MultiContext
             }
         }
 
-        private Task<Users> PostNewUser(LiveUser User, DateTime FirstSeen)
+        private async Task<Users> PostNewUser(LiveUser User, DateTime FirstSeen)
         {
-            return Task.Run(async () =>
+            using var context = BuildDataContext();
+
+            Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).FirstOrDefault();
+            if (newuser == default)
             {
-                using var context = BuildDataContext();
+                newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,
+                                                platform: User.Platform, firstDateSeen: FirstSeen,
+                                                currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
+            }
+            else
+            {
+                if (newuser.Platform == default) { newuser.Platform = User.Platform; }
+                if (newuser.UserName != User.UserName && newuser.UserId == User.UserId) { newuser.UserName = User.UserName; }
+            }
 
-                Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).FirstOrDefault();
-                if (newuser == default)
+            if (!(from US in context.UserStats
+                  where (US.UserId == User.UserId && US.Platform == User.Platform)
+                  select US).Any())
+            {
+                await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
+            }
+
+            await context.SaveChangesAsync();
+
+            foreach (Models.CurrencyType t in context.CurrencyType)
+            {
+                Currency curr = (from UC in context.Currency
+                                 where (UC.UserId == newuser.UserId && UC.CurrencyName == t.CurrencyName)
+                                 select UC).FirstOrDefault();
+
+                if (curr == null)
                 {
-                    newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,
-                                                    platform: User.Platform, firstDateSeen: FirstSeen,
-                                                    currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
+                    await context.Currency.AddAsync(new(userId: newuser.UserId, platform: newuser.Platform, value: 0, currencyName: t.CurrencyName));
                 }
-                else
-                {
-                    if (newuser.Platform == default) { newuser.Platform = User.Platform; }
-                    if (newuser.UserName != User.UserName && newuser.UserId == User.UserId) { newuser.UserName = User.UserName; }
-                }
+            }
 
-                if (!(from US in context.UserStats
-                      where (US.UserId == User.UserId && US.Platform == User.Platform)
-                      select US).Any())
-                {
-                    await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
-                }
+            await context.SaveChangesAsync();
 
-                await context.SaveChangesAsync();
-
-                foreach (Models.CurrencyType t in context.CurrencyType)
-                {
-                    Currency curr = (from UC in context.Currency
-                                     where (UC.UserId == newuser.UserId && UC.CurrencyName == t.CurrencyName)
-                                     select UC).FirstOrDefault();
-
-                    if (curr == null)
-                    {
-                        await context.Currency.AddAsync(new(userId: newuser.UserId, platform: newuser.Platform, value: 0, currencyName: t.CurrencyName));
-                    }
-                }
-
-                await context.SaveChangesAsync();
-
-                return newuser;
-            });
+            return newuser;
         }
 
         private DateTime currtime;
-        internal Task StartBulkFollowers()
+        internal async Task StartBulkFollowers()
         {
-            return Task.Run(async () =>
-            {
-                BulkFollowerUpdate = true;
-                currtime = DateTime.Now.ToLocalTime();
-                using var context = BuildDataContext();
+            BulkFollowerUpdate = true;
+            currtime = DateTime.Now.ToLocalTime();
+            using var context = BuildDataContext();
 
-                await context.Followers.ExecuteUpdateAsync((f) => f.SetProperty((u) => u.IsFollower, (c) => false));
-                await context.SaveChangesAsync();
-
-            });
+            await context.Followers.ExecuteUpdateAsync((f) => f.SetProperty((u) => u.IsFollower, (c) => false));
+            await context.SaveChangesAsync();
         }
 
         internal void NotifyStopBulkFollowers()
@@ -232,58 +228,56 @@ namespace StreamerBotLib.DataSQL.MultiContext
             BulkFollowerUpdate = false;
         }
 
-        private Task StopBulkFollows()
+        private async Task StopBulkFollows()
         {
-            return Task.Run(async () =>
+            using var context = BuildDataContext();
+
+            if (OptionFlags.TwitchPruneNonFollowers)
             {
-                using var context = BuildDataContext();
+                await context.Followers.Where(f => !f.IsFollower).ExecuteDeleteAsync();
+            }
+            else
+            {
+                var nonFollowers = await context.Followers
+                    .Where(f => !f.IsFollower)
+                    .Include(f => f.User)
+                    .ToListAsync();
 
-                if (OptionFlags.TwitchPruneNonFollowers)
-                {
-                    await context.Followers.Where((f) => !f.IsFollower).ExecuteDeleteAsync();
-                }
-                else // if pruning followers, there won't be multiple 'UserId' records
-                {
-                    foreach (Followers F in (from f in context.Followers
-                                             where !f.IsFollower
-                                             select f))
+                var oldFollowUsersToAdd = nonFollowers
+                    .Where(f => f.User != null)
+                    .Where(f => !context.OldFollowUsers.Any(of => of.UserId == f.UserId && of.UserName == f.User.UserName && of.Platform == f.Platform))
+                    .Select(f => new OldFollowUsers(f, f.User.UserName, currtime))
+                    .ToList();
+
+                var usersWithoutFollowers = nonFollowers
+                    .Where(f => f.User == null)
+                    .Select(f => new
                     {
-                        if (F.User != null)
-                        {
-                            if (!(from f in context.OldFollowUsers
-                                  where f.UserId == F.UserId && f.UserName == F.User.UserName && f.Platform == F.Platform
-                                  select f).Any())
-                            {
-                                LogWriter.DebugLog("StopBulkFollows", DebugLogTypes.DataManager, $"Moving follower {F.User.UserName} to OldFollowUsers table.");
-                                context.OldFollowUsers.Add(new OldFollowUsers(F, F.User.UserName, currtime));
-                            }
-                        }
-                        else
-                        {
-                            Users currUser = (from U in context.Users
-                                              where U.UserId == F.UserId
-                                              select U).FirstOrDefault();
-                            if (!(from f in context.OldFollowUsers
-                                  where f.UserId == F.UserId && f.UserName == currUser.UserName && f.Platform == F.Platform
-                                  select f).Any())
-                            {
-                                LogWriter.DebugLog("StopBulkFollows", DebugLogTypes.DataManager, $"Moving user {F.User.UserName} to OldFollowUsers table.");
+                        Follower = f,
+                        User = context.Users.FirstOrDefault(u => u.UserId == f.UserId)
+                    })
+                    .Where(x => x.User != null)
+                    .Where(x => !context.OldFollowUsers.Any(of => of.UserId == x.Follower.UserId && of.UserName == x.User.UserName && of.Platform == x.Follower.Platform))
+                    .Select(x => new OldFollowUsers(x.Follower, x.User.UserName, currtime))
+                    .ToList();
 
-                                context.OldFollowUsers.Add(new OldFollowUsers(F, currUser.UserName, currtime));
-                            }
-                        }
-                    }
+                oldFollowUsersToAdd.AddRange(usersWithoutFollowers);
 
-                    context.Followers.RemoveRange(from F in context.Followers where !F.IsFollower select F);
-                    context.OldFollowUsers.RemoveRange(from F in context.OldFollowUsers where F.IsFollower select F); // clean accidental current followers included
-                    await context.SaveChangesAsync();
+                if (oldFollowUsersToAdd.Any())
+                {
+                    await context.OldFollowUsers.AddRangeAsync(oldFollowUsersToAdd);
                 }
-                OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));
-                RefreshUsersList();
-                RefreshFollowersList();
-                RefreshOldFollowUsersList();
 
-            });
+                context.Followers.RemoveRange(nonFollowers);
+                context.OldFollowUsers.RemoveRange(context.OldFollowUsers.Where(of => of.IsFollower));
+
+                await context.SaveChangesAsync();
+            }
+
+            OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));
+            RefreshUsersList(true);
+            RefreshFollowersList(true);
+            RefreshOldFollowUsersList(true);
         }
 
         /// <summary>
@@ -291,23 +285,40 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// </summary>
         /// <param name="User">The user to add in database and update.</param>
         /// <param name="NowSeen">The reported date & time of the user.</param>
-        internal Task UserJoined(LiveUser User, DateTime NowSeen)
+        internal async Task UserJoined(LiveUser User, DateTime NowSeen)
         {
-            return Task.Run(async () =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                Users user = await PostNewUser(User, NowSeen);
-                user.CurrLoginDate = NowSeen;
-                user.LastDateSeen = NowSeen;
+            Users user = await PostNewUser(User, NowSeen);
+#if DEBUG
+            DebugUsersList.Add(User);
 
-                LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
-                                    $"Updating {User.UserName} now joined to the channel, Current Login: {user.CurrLoginDate}, Last Date Seen: {user.LastDateSeen}.");
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"Update Time: {NowSeen}");
 
-                await context.SaveChangesAsync();
-                RefreshUsersList();
-                RefreshUserStatsList();
-            });
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"Old data: user Id: {user.UserId}, Curr Login Date: {user.CurrLoginDate}, LastDateSeen: {user.LastDateSeen}");
+#endif
+
+            user.CurrLoginDate = NowSeen;
+            user.LastDateSeen = NowSeen;
+
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
+                                $"Updating {User.UserName} now joined to the channel, Current Login: {user.CurrLoginDate}, Last Date Seen: {user.LastDateSeen}.");
+
+            await context.SaveChangesAsync();
+
+#if DEBUG
+            // validate save occurred; finding "CurrLoginDate" is not reliably saving
+            using var debugcontext = BuildDataContext();
+
+            var debuguser = await debugcontext.Users
+                             .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
+                             .Select(U => U).FirstOrDefaultAsync();
+
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"New data: user Id: {debuguser.UserId}, Curr Login Date: {debuguser.CurrLoginDate}, LastDateSeen: {debuguser.LastDateSeen}");
+#endif
+
+            RefreshUsersList(true);
+            RefreshUserStatsList(true);
         }
 
         /// <summary>
@@ -315,63 +326,85 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// </summary>
         /// <param name="Users">The user to add in database and update.</param>
         /// <param name="NowSeen">The reported date & time of the user.</param>
-        internal Task UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen)
+        internal async Task UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen)
         {
-            return Task.Run(async () =>
-            {
-                using var context = BuildDataContext();
-                foreach (var L in Users)
-                {
-                    LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
-                                    $"Updating {L.UserName} now joined to the channel.");
-                    await UserJoined(L, NowSeen);
-                }
-                await context.SaveChangesAsync();
-                RefreshUsersList();
-                RefreshUserStatsList();
+            using var context = BuildDataContext();
+#if DEBUG
+            DebugUsersList.AddRange(Users);
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"Update Time: {NowSeen}");
+#endif
 
-            });
+            foreach (var L in Users)
+            {
+                LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
+                                $"Updating {L.UserName} now joined to the channel.");
+                Users user = await PostNewUser(L, NowSeen);
+#if DEBUG
+
+
+                //LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"Old data: {user.GetDebugOutput()}");
+#endif
+                user.CurrLoginDate = NowSeen;
+                user.LastDateSeen = NowSeen;
+#if DEBUG
+                //LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"New data: {user.GetDebugOutput()}");
+#endif
+            }
+            await context.SaveChangesAsync();
+            RefreshUsersList(true);
+            RefreshUserStatsList(true);
         }
 
-        internal Task UserLeft(LiveUser User, DateTime LastSeen)
+        internal async Task UserLeft(LiveUser User, DateTime LastSeen)
         {
-            return Task.Run(async () =>
+            using var context = BuildDataContext();
+            await context.Users
+                        .Include(curr => curr.Currency)
+                        .ThenInclude(type => type.CurrencyType)
+                        .Where((u) => u.UserId == User.UserId)
+            .ForEachAsync(async (u) =>
             {
-                using var context = BuildDataContext();
-                await context.Users
-                            .Include(curr => curr.Currency)
-                            .ThenInclude(type => type.CurrencyType)
-                            .Where((u) => u.UserId == User.UserId)
-                .ForEachAsync(async (u) =>
+                if (u.UserStats == default)
                 {
-                    if (u.UserStats == default)
-                    {
-                        await context.UserStats.AddAsync(new(userId: u.UserId, platform: u.Platform));
-                    }
+                    await context.UserStats.AddAsync(new(userId: u.UserId, platform: u.Platform));
+                }
 
-                    if (LastSeen > u.LastDateSeen && LastSeen > CurrStreamStart)
-                    {
-                        u.UserStats.WatchTime = u.UserStats.WatchTime.Add(LastSeen - u.LastDateSeen);
-                    }
+                if (LastSeen > u.LastDateSeen && LastSeen > CurrStreamStart)
+                {
+                    u.UserStats.WatchTime = u.UserStats.WatchTime.Add(LastSeen - u.LastDateSeen);
+                }
 
-                    if (OptionFlags.CurrencyStart && (OptionFlags.CurrencyOnline && OptionFlags.IsStreamOnline))
+                if (OptionFlags.CurrencyStart && (OptionFlags.CurrencyOnline && OptionFlags.IsStreamOnline))
+                {
+                    TimeSpan clock = LastSeen - u.LastDateSeen;
+                    foreach (Currency currency in u.Currency)
                     {
-                        TimeSpan clock = LastSeen - u.LastDateSeen;
-                        foreach (Currency currency in u.Currency)
-                        {
-                            currency.Value =
-                                    Math.Min(
-                                        currency.CurrencyType.MaxValue,
-                                        Math.Round((currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
-                                    );
-                        }
-                        u.LastDateSeen = LastSeen;
+                        currency.Value =
+                                Math.Min(
+                                    currency.CurrencyType.MaxValue,
+                                    Math.Round((currency.Value + currency.CurrencyType.AccrueAmt) * (clock.TotalSeconds / currency.CurrencyType.Seconds), 2)
+                                );
                     }
-                });
-                await context.SaveChangesAsync();
-                RefreshUsersList();
-                RefreshUserStatsList();
+                    u.LastDateSeen = LastSeen;
+                }
             });
+            await context.SaveChangesAsync();
+            RefreshUsersList(true);
+            RefreshUserStatsList(true);
+
+//#if DEBUG
+//            var contextUser = await context.Users
+//                .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
+//                .Select(U => U).FirstOrDefaultAsync();
+
+//            var GUIContextUser = await GUIContext.Users
+//                .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
+//                .Select(U => U).FirstOrDefaultAsync();
+
+//            // compare the data entry context to the GUIContext
+//            LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"Context data: {contextUser.GetDebugOutput()}");
+//            LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"GUIContext data: {GUIContextUser.GetDebugOutput()}");
+//#endif
         }
 
         internal Task UpdateFollowers(IEnumerable<Follow> follows)

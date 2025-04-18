@@ -169,7 +169,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
             }
         }
 
-        private Task<Users> PostNewUser(LiveUser User, DateTime FirstSeen, IDbContextTransaction contextTransaction = null )
+        private Task<Users> PostNewUser(LiveUser User, DateTime FirstSeen, IDbContextTransaction contextTransaction = null)
         {
             return Task.Run(async () =>
             {
@@ -217,7 +217,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
         }
 
         private DateTime currtime;
-        internal Task StartBulkFollowers( IDbContextTransaction contextTransaction = null)
+        internal Task StartBulkFollowers(IDbContextTransaction contextTransaction = null)
         {
             return Task.Run(async () =>
             {

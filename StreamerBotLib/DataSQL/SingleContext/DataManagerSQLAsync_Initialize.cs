@@ -24,7 +24,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
             {
                 LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, $"Initializing the database.");
 
-               // using var context = BuildDataContext();
+                // using var context = BuildDataContext();
 
                 await SetDefaultChannelEventsTable();  // check all default ChannelEvents names
                 await SetDefaultCommandsTable(); // check all default Commands
@@ -100,9 +100,9 @@ namespace StreamerBotLib.DataSQL.SingleContext
 
             using var transaction = context.Database.BeginTransaction();
             context.ChannelEvents.AddRange(from CE in from E in dictionary.ExceptBy(context.ChannelEvents.Select(C => C.Name), E => E.Key)
-                                                         let values = dictionary[E.Key]
-                                                         select (E.Key, values)
-                                              select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
+                                                      let values = dictionary[E.Key]
+                                                      select (E.Key, values)
+                                           select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
             await transaction.CommitAsync();
             context.SaveChanges(true);
         }
@@ -146,30 +146,30 @@ namespace StreamerBotLib.DataSQL.SingleContext
             }
 
             await context.Commands.AddRangeAsync(from C in (from key in DefCommandsDictionary
-                                                    let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
-                                                    select (key.Key, param))
-                                         select new Commands(cmdName: C.Key,
-                                                    addMe: false,
-                                                    permission: C.param.Permission,
-                                                    isEnabled: C.param.IsEnabled,
-                                                    announce: false,
-                                                    message: DefCommandsDictionary[C.Key].Item1,
-                                                    repeatTimer: C.param.Timer,
-                                                    sendMsgCount: C.param.RepeatMsg,
-                                                    category: [string.IsNullOrEmpty(C.param.Category) ?
+                                                            let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
+                                                            select (key.Key, param))
+                                                 select new Commands(cmdName: C.Key,
+                                                            addMe: false,
+                                                            permission: C.param.Permission,
+                                                            isEnabled: C.param.IsEnabled,
+                                                            announce: false,
+                                                            message: DefCommandsDictionary[C.Key].Item1,
+                                                            repeatTimer: C.param.Timer,
+                                                            sendMsgCount: C.param.RepeatMsg,
+                                                            category: [string.IsNullOrEmpty(C.param.Category) ?
                                                                  LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) :
                                                                  C.param.Category],
-                                                    allowParam: C.param.AllowParam,
-                                                    usage: C.param.Usage,
-                                                    lookupData: C.param.LookupData,
-                                                    table: C.param.Table,
-                                                    keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table).Result : "",
-                                                    dataField: C.param.Field,
-                                                    currencyField: C.param.Currency,
-                                                    unit: C.param.Unit,
-                                                    action: C.param.Action,
-                                                    top: C.param.Top,
-                                                    sort: C.param.Sort)
+                                                            allowParam: C.param.AllowParam,
+                                                            usage: C.param.Usage,
+                                                            lookupData: C.param.LookupData,
+                                                            table: C.param.Table,
+                                                            keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table).Result : "",
+                                                            dataField: C.param.Field,
+                                                            currencyField: C.param.Currency,
+                                                            unit: C.param.Unit,
+                                                            action: C.param.Action,
+                                                            top: C.param.Top,
+                                                            sort: C.param.Sort)
              );
 
             //await transaction.CommitAsync();

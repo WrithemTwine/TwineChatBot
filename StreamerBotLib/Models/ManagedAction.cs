@@ -2,10 +2,10 @@
 
 namespace StreamerBotLib.Models
 {
-    internal class ManagedAction(string taskName, Action action) : IEqualityComparer<ManagedAction>
+    internal class ManagedAction(string taskName, Task action) : IEqualityComparer<ManagedAction>
     {
         public string TaskName { get; set; } = taskName;
-        public Action Action { get; set; } = action;
+        public Task Action { get; set; } = action;
 
         public bool Equals(ManagedAction x, ManagedAction y)
         {

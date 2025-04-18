@@ -20,7 +20,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
 
         #region LocalView ObservableCollection
 
-        private readonly SQLDBContext GUIContext;
+        private SQLDBContext GUIContext;
 
         internal object GetICollection(DataTables dataTable)
         {
@@ -346,371 +346,376 @@ namespace StreamerBotLib.DataSQL.MultiContext
         #region Refresh Collections
         private void RefreshBanReasonsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.BanReasons.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), RecordCountChange);
                 });
-            }, "BanReasons");
+            //}), "BanReasons");
         }
 
         private void RefreshBanRulesList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.BanRules.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), RecordCountChange);
                 });
-            }, "BanRules");
+            //}), "BanRules");
         }
 
         private void RefreshCategoryListList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.CategoryList.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), RecordCountChange);
                 });
-            }, "CategoryList");
+            //}), "CategoryList");
         }
 
         private void RefreshChannelEventsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.ChannelEvents.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), RecordCountChange);
                 });
-            }, "ChannelEvents");
+            //}), "ChannelEvents");
         }
 
         private void RefreshClipsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.Clips.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
                 });
-            }, "Clips");
+            //}), "Clips");
         }
 
         private void RefreshCommandsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.Commands.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
                 });
-            }, "Commands");
+            //}), "Commands");
         }
 
         private void RefreshCommandsUserList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.CommandsUser.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), RecordCountChange);
                 });
-            }, "CommandsUser");
+            //}), "CommandsUser");
         }
 
         private void RefreshCurrencyList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     await GUIContext.Currency.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
                 });
-            }, "Currency");
+            //}), "Currency");
         }
 
         private void RefreshCurrencyTypeList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.CurrencyType.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), RecordCountChange);
                 });
-            }, "CurrencyType");
+            //}), "CurrencyType");
         }
 
         private void RefreshCustomWelcomeList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.CustomWelcome.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
                 });
-            }, "CustomWelcome");
+            //}), "CustomWelcome");
         }
 
         private void RefreshFollowersList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.Followers.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.Followers), RecordCountChange);
                 });
-            }, "Followers");
+            //}), "Followers");
         }
 
         private void RefreshGameDeadCounterList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.GameDeadCounter.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);
                 });
-            }, "GameDeadCounter");
+            //}), "GameDeadCounter");
         }
 
         private void RefreshGiveawayUserDataList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.GiveawayUserData.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), RecordCountChange);
                 });
-            }, "GiveawayUser");
+            //}), "GiveawayUser");
         }
 
         private void RefreshInRaidDataList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.InRaidData.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), RecordCountChange);
                 });
-            }, "InRaidData");
+            //}), "InRaidData");
         }
 
         private void RefreshLearnMsgsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.LearnMsgs.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), RecordCountChange);
                 });
-            }, "LearnMsgs");
+            //}), "LearnMsgs");
         }
 
         private void RefreshModeratorApproveList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.ModeratorApprove.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), RecordCountChange);
                 });
-            }, "ModeratorApprove");
+            //}), "ModeratorApprove");
         }
 
         private void RefreshMultiChannelsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.MultiChannels.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), RecordCountChange);
                 });
-            }, "MultiChannels");
+            //}), "MultiChannels");
         }
 
         private void RefreshMultiLiveStreamsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.MultiLiveStreams.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), RecordCountChange);
                 });
-            }, "MultiLiveStreams");
+            //}), "MultiLiveStreams");
         }
 
         private void RefreshMultiSummaryLiveStreamsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.MultiSummaryLiveStreams.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), RecordCountChange);
                 });
-            }, "MultiSummaryLiveStreams");
+            //}), "MultiSummaryLiveStreams");
         }
 
         private void RefreshMultiWebhooksList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.MultiWebhooks.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), RecordCountChange);
                 });
-            }, "MultiWebhooks");
+            //}), "MultiWebhooks");
         }
 
         private void RefreshOldFollowUsersList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.OldFollowUsers.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), RecordCountChange);
                 });
-            }, "OldFollowUsers");
+            //}), "OldFollowUsers");
         }
 
         private void RefreshOutRaidDataList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.OutRaidData.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), RecordCountChange);
                 });
-            }, "OutRaidData");
+            //}), "OutRaidData");
         }
 
         private void RefreshOverlayServicesList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.OverlayServices.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
                 });
-            }, "OverlayServices");
+            //}), "OverlayServices");
         }
 
         private void RefreshOverlayTickerList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.OverlayTicker.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), RecordCountChange);
                 });
-            }, "OverlayTicker");
+            //}), "OverlayTicker");
         }
 
         private void RefreshQuotesList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.Quotes.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), RecordCountChange);
                 });
-            }, "Quotes");
+            //}), "Quotes");
         }
 
         private void RefreshShoutOutsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.ShoutOuts.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), RecordCountChange);
                 });
-            }, "ShoutOUts");
+            //}), "ShoutOUts");
         }
 
         private void RefreshStreamStatsList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
                 {
                     await GUIContext.StreamStats.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), RecordCountChange);
                 });
-            }, "StreamStats");
+            //}), "StreamStats");
         }
 
         private void RefreshUsersList(bool RecordCountChange = false)
         {
-            PostActionQueue(async () =>
-            {
-                //ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUsersObservableCollection", async () =>
-                //{
+            //PostActionQueue(new Task(() =>
+            //{
+                ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUsersObservableCollection", async () =>
+                {
+#if DEBUG
+                    LogWriter.DebugLog("RefreshUsersObservableCollection",
+                            DebugLogTypes.SpecialPurpose, $"Reloading Users data into the database context.");
+#endif
+
                     LogWriter.DebugLog("RefreshUsersObservableCollection",
                             DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
+                    await GUIContext.UserStats.LoadAsync();
                     await GUIContext.Users.LoadAsync();
                     LogWriter.DebugLog("RefreshUsersObservableCollection",
                             DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
                     NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
-                //});
-            }, "Users");
+                });
+            //}), "Users");
         }
 
         private void RefreshUserStatsList(bool RecordCountChange = false)
         {
-            PostActionQueue(async () =>
-            {
-                //ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
-                //{
+            //PostActionQueue(new Task(() =>
+            //{
+                ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+                {
                     LogWriter.DebugLog("RefreshUserStatsObservableCollection",
                       DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
                     await GUIContext.UserStats.LoadAsync();
                     LogWriter.DebugLog("RefreshUserStatsObservableCollection",
        DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
                     NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
-                //});
-            }, "UserStats");
+                });
+            //}), "UserStats");
         }
 
         private void RefreshWebhooksList(bool RecordCountChange = false)
         {
-            PostActionQueue(() =>
-            {
+            //PostActionQueue(new Task(() =>
+            //{
                 ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshWebhooksObservableCollection", async () =>
                 {
                     await GUIContext.Webhooks.LoadAsync();
                     NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), RecordCountChange);
                 });
-            }, "Webhooks");
-
+            //}), "Webhooks");
         }
 
         #endregion

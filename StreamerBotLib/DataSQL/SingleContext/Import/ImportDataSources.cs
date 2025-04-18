@@ -463,8 +463,8 @@ namespace StreamerBotLib.DataSQL.SingleContext.Import
 
             LogWriter.WriteLog("Adding Default Commands data.");
             foreach (CommandsRow C in from C in _DataSource.Commands
-                                       where Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName)
-                                       select C)
+                                      where Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName)
+                                      select C)
             {
                 if (!(from DC in context.Commands where C.CmdName == DC.CmdName select DC).Any())
                 {
@@ -503,8 +503,8 @@ namespace StreamerBotLib.DataSQL.SingleContext.Import
 #endif
 
             foreach (CommandsRow C in from C in _DataSource.Commands
-                                       where !(Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName))
-                                       select C)
+                                      where !(Enum.GetNames<DefaultCommand>().Contains(C.CmdName) || Enum.GetNames<DefaultSocials>().Contains(C.CmdName))
+                                      select C)
             {
 
                 if (!(from CR in context.CommandsUser where C.CmdName == CR.CmdName select CR).Any())
@@ -586,8 +586,8 @@ namespace StreamerBotLib.DataSQL.SingleContext.Import
                           select MS).Any())
                     {
                         var founddata = from C in _MultiDataSource.LiveStream
-                                         where C.ChannelName == S.ChannelName
-                                         select C;
+                                        where C.ChannelName == S.ChannelName
+                                        select C;
 
                         if (founddata.Any())
                         {
@@ -620,8 +620,8 @@ namespace StreamerBotLib.DataSQL.SingleContext.Import
                          ).Any())
                     {
                         var founddata = from C in context.MultiChannels
-                                         where C.UserId == L.UserId
-                                         select C;
+                                        where C.UserId == L.UserId
+                                        select C;
 
                         UsersRow usersRow = (from U in _DataSource.Users
                                              where string.Equals(U.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase)
@@ -938,8 +938,8 @@ namespace StreamerBotLib.DataSQL.SingleContext.Import
             if (_DataSource.Followers.Count > 0)
             {
                 foreach (FollowersRow F in from FR in _DataSource.Followers
-                                            orderby FR.StatusChangeDate descending
-                                            select FR
+                                           orderby FR.StatusChangeDate descending
+                                           select FR
                                             )
                 {
                     if (F.IsFollower)

@@ -4,6 +4,7 @@ using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Static;
 
 using System.Data;
 
@@ -11,73 +12,113 @@ namespace StreamerBotLib.DataSQL.MultiContext
 {
     internal partial class DataManagerSQLAsync
     {
-        internal Task UpdateCurrency(List<string> Users, DateTime dateTime)
+        internal async Task UpdateCurrency(List<LiveUser> Users, DateTime dateTime)
         {
-            return Task.Run(async () =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                await context.Users
-                .Include(curr => curr.Currency)
-                .ThenInclude(type => type.CurrencyType)
-                .Join(Users, (u) => u.UserId, (user) => user, (dbusers, curr) => dbusers)
-                .ForEachAsync((u) =>
+#if DEBUG
+            var NewCurrencyList = new List<Tuple<string, Currency>>();
+            LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.SpecialPurpose, $"Testing Currency update itself:");
+            LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.SpecialPurpose, $"CurrTime: {dateTime}");
+#endif
+
+            var userIds = Users.Select(user => user.UserId).ToList();
+
+            var dbUsers = await context.Users
+                .Include(u => u.Currency)
+                .ThenInclude(c => c.CurrencyType)
+                .Where(u => userIds.Contains(u.UserId))
+                .ToListAsync();
+
+            foreach (var u in dbUsers)
+            {
+                TimeSpan clock = dateTime - u.LastDateSeen;
+
+                if (u.Currency != null && u.LastDateSeen >= CurrStreamStart)
                 {
-                    TimeSpan clock = dateTime - u.LastDateSeen;
-                    foreach (Currency currency in u.Currency)
+                    foreach (var currency in u.Currency)
                     {
-                        currency.Value =
-                            Math.Min(
+                        if (currency.CurrencyType != null)
+                        {
+#if DEBUG
+                            LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.SpecialPurpose, $"context UserId: {u.UserId}, LastDateSeen: {u.LastDateSeen}, Currency Value: {currency.Value}");
+#endif
+                            currency.Value = Math.Min(
                                 currency.CurrencyType.MaxValue,
                                 Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
                             );
+
+#if DEBUG
+                            NewCurrencyList.Add(new Tuple<string, Currency>(u.UserId, currency));
+                            LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.SpecialPurpose, $"context UserId: {u.UserId}, Currency Value: {currency.Value}");
+#endif
+                        }
                     }
-                    u.LastDateSeen = dateTime;
-                });
+                }
+            }
 
-                await context.SaveChangesAsync();
-                RefreshCurrencyList();
-            });
+            await context.SaveChangesAsync();
+            RefreshCurrencyList();
+
+#if DEBUG
+
+            var GUICurrencyList = await context.Currency
+                .Include(c => c.User)
+                .Where(c => userIds.Contains(c.UserId))
+                .Select(c => new Tuple<string, Currency>(c.UserId, c))
+                .ToListAsync();
+
+            LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.SpecialPurpose, $"Testing Currency Context to GUI Context currency records updated:");
+            LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.SpecialPurpose, $"GUICurrencyList count: {GUICurrencyList.Count}");
+
+            for (int i = 0; i < NewCurrencyList.Count; i++)
+            {
+                var newCurrItem = GUICurrencyList.Find(x => x.Item1 == NewCurrencyList[i].Item1);
+
+                LogWriter.DebugLog("UpdateCurrency_GUICurrencyList", DebugLogTypes.SpecialPurpose, $"GUIContext newCurrItem is {(newCurrItem == null ? "Null" : "Not Null")}");
+                LogWriter.DebugLog("UpdateCurrency_GUICurrencyList", DebugLogTypes.SpecialPurpose, $"context NewCurrencyList[{i}].Item1 = {NewCurrencyList[i].Item1}, GUIContext newCurrItem.Item1 = {newCurrItem?.Item1}");
+                LogWriter.DebugLog("UpdateCurrency_GUICurrencyList", DebugLogTypes.SpecialPurpose, $"context NewCurrencyList[{i}].Item2.Value = {NewCurrencyList[i].Item2.Value}, GUIContext newCurrItem.Item2.Value = {newCurrItem?.Item2.Value}");
+            }
+#endif
+
+            await UpdateWatchTime(Users, dateTime);
         }
 
-        internal Task<List<LearnMsgRecord>> UpdateLearnedMsgs()
+        internal async Task<List<LearnMsgRecord>> UpdateLearnedMsgs()
         {
-            return Task.Run(() =>
+            if (!LearnMsgChanged)
             {
-                List<LearnMsgRecord> result;
-                using var context = BuildDataContext();
-                if (LearnMsgChanged)
-                {
-                    LearnMsgChanged = false;
-                    result = [.. from L in context.LearnMsgs
-                                 select new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg)];
-                }
-                else
-                {
-                    result = null;
-                }
+                return (List<LearnMsgRecord>)null;
+            }
 
-                return result;
-            });
+            LearnMsgChanged = false;
+
+            using var context = BuildDataContext();
+            return await context.LearnMsgs
+                .Select(L => new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg))
+                .ToListAsync();
         }
 
-        internal Task UpdateOverlayTicker(OverlayTickerItem item, string name)
+        internal async Task UpdateOverlayTicker(OverlayTickerItem item, string name)
         {
-            return Task.Run(async () =>
+            bool recordchange = false;
+
+            using var context = BuildDataContext();
+            OverlayTicker ticker = await context.OverlayTicker
+                                                .Where(T => T.TickerName == item)
+                                                .Select(T => T)
+                                                .FirstOrDefaultAsync();
+            if (ticker == default)
             {
-                using var context = BuildDataContext();
-                OverlayTicker ticker = (from T in context.OverlayTicker where T.TickerName == item select T).FirstOrDefault();
-                if (ticker == default)
-                {
-                    await context.OverlayTicker.AddAsync(new(tickerName: item, userName: name));
-                }
-                else
-                {
-                    ticker.UserName = name;
-                }
-                await context.SaveChangesAsync();
-                RefreshOverlayTickerList();
-            });
+                await context.OverlayTicker.AddAsync(new(tickerName: item, userName: name));
+                recordchange = true;
+            }
+            else
+            {
+                ticker.UserName = name;
+            }
+            await context.SaveChangesAsync();
+            RefreshOverlayTickerList(recordchange);
         }
 
         internal Task UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime)
@@ -86,68 +127,94 @@ namespace StreamerBotLib.DataSQL.MultiContext
             {
                 using var context = BuildDataContext();
 
-                foreach (var user in from LiveUser L in Users
-                                     let user = (from U in context.Users
-                                                 where U.UserId == L.UserId && U.Platform == L.Platform
-                                                 select U).FirstOrDefault()
-                                     where user != default
-                                     select user)
-                {
-                    if (user.LastDateSeen < CurrTime)
-                    {
-                        user.LastDateSeen = CurrTime;
-                    }
+#if DEBUG
+                List<Tuple<string, TimeSpan>> NewWatchTimeList = [];
+                LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"CurrTime: {CurrTime}, Users Count: {Users.Count}");
+                LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"CurrStreamStart: {CurrStreamStart}");
+#endif
 
-                    if (CurrTime > user.LastDateSeen && CurrTime > CurrStreamStart)
+                foreach (var user in Users.Select(liveUser => context.Users
+                    .Include(u => u.UserStats)
+                    .FirstOrDefault(u => u.UserId == liveUser.UserId && u.Platform == liveUser.Platform))
+                    .Where(user => user != null))
+                {
+#if DEBUG
+                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose,
+                        $"Old stats: user Id: {user.UserId}, LastDateSeen: {user.LastDateSeen}, WatchTime: {user.UserStats.WatchTime}");
+#endif
+
+                    if (user.LastDateSeen >= CurrStreamStart && CurrTime > user.LastDateSeen && CurrTime > CurrStreamStart)
                     {
                         user.UserStats.WatchTime = user.UserStats.WatchTime.Add(CurrTime - user.LastDateSeen);
                     }
+
+                    user.LastDateSeen = CurrTime;
+
+#if DEBUG
+                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose,
+                        $"New stats: user Id: {user.UserId}, LastDateSeen: {user.LastDateSeen}, WatchTime: {user.UserStats.WatchTime}");
+                    NewWatchTimeList.Add(new Tuple<string, TimeSpan>(user.UserId, user.UserStats.WatchTime));
+#endif
                 }
 
                 await context.SaveChangesAsync();
 
-                RefreshUsersList();
                 RefreshUserStatsList();
+                RefreshUsersList();
+
+#if DEBUG
+                List<Tuple<string, TimeSpan>> GUICurrWatchTimeList = GUIContext.Users
+                    .Include(user => user.UserStats)
+                    .Where(U => U.Platform == Platform.Twitch && Users.Any(L => L.UserId == U.UserId))
+                    .Select(U => new Tuple<string, TimeSpan>(U.UserId, U.UserStats.WatchTime))
+                    .ToList();
+
+                LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"GUICurrWatchTimeList.Count = {GUICurrWatchTimeList.Count}, NewWatchTimeList.Count = {NewWatchTimeList.Count}");
+                for (int i = 0; i < NewWatchTimeList.Count; i++)
+                {
+                    var newCurrItem = GUICurrWatchTimeList.Find(x => x.Item1 == NewWatchTimeList[i].Item1);
+
+                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"GUIContext newCurrItem is {(newCurrItem == null ? "Null" : "Not Null")}");
+                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"context NewWatchTimeList[{i}].Item1 = {NewWatchTimeList[i].Item1}, GUIContext newCurrItem.Item1 = {newCurrItem.Item1}");
+                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"context NewWatchTimeList[{i}].Item2 = {NewWatchTimeList[i].Item2}, GUIContext newCurrItem.Item2 = {newCurrItem.Item2}");
+                }
+#endif
             });
         }
 
         #region Update User Stats
 
-        internal Task UpdateStats(DBUserStats Stat, string userId, Platform platform)
+        internal async Task UpdateStats(DBUserStats Stat, string userId, Platform platform)
         {
-            return Task.Run(async () =>
+            using var context = BuildDataContext();
+
+            if (userId != null)
             {
-                using var context = BuildDataContext();
+                UserStats userStats = await context.UserStats
+                                      .Where(U => U.UserId == userId && U.Platform == platform)
+                                       .Select(U => U).FirstOrDefaultAsync();
 
-                if (userId != null)
+                if (userStats != null)
                 {
-                    UserStats userStats = (from U in context.UserStats
-                                           where U.UserId == userId && U.Platform == platform
-                                           select U).FirstOrDefault();
-
-                    if (userStats != null)
+                    switch (Stat)
                     {
-                        switch (Stat)
-                        {
-                            case DBUserStats.Commands:
-                                userStats.CallCommands++;
-                                break;
-                            case DBUserStats.Clips:
-                                userStats.ClipsCreated++;
-                                break;
-                            case DBUserStats.Chats:
-                                userStats.ChannelChat++;
-                                break;
-                            case DBUserStats.ChannelRewards:
-                                userStats.RewardRedeems++;
-                                break;
-                        }
+                        case DBUserStats.Commands:
+                            userStats.CallCommands++;
+                            break;
+                        case DBUserStats.Clips:
+                            userStats.ClipsCreated++;
+                            break;
+                        case DBUserStats.Chats:
+                            userStats.ChannelChat++;
+                            break;
+                        case DBUserStats.ChannelRewards:
+                            userStats.RewardRedeems++;
+                            break;
                     }
-
+                    await context.SaveChangesAsync();
+                    RefreshUserStatsList();
                 }
-                await context.SaveChangesAsync();
-                RefreshUserStatsList();
-            });
+            }
         }
 
         #endregion

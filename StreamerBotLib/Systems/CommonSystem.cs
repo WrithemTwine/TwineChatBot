@@ -200,7 +200,7 @@ namespace StreamerBotLib.Systems
                 LogWriter.DebugLog("GetUserCount", Enums.DebugLogTypes.CommonSystem, "Getting User Count.");
                 lock (StreamViewers)
                 {
-                    return StreamViewers.GetCurrentActiveUsers().Count;
+                    return StreamViewers.GetCurrentActiveUsers(true).Count;
                 }
             }
         }
@@ -225,7 +225,7 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("UpdateGUICurrUsers", Enums.DebugLogTypes.CommonSystem, "Updating GUI Current Users.");
             CurrUserJoin.Clear();
-            var curr = StreamViewers.GetCurrentActiveUsers();
+            var curr = StreamViewers.GetCurrentActiveUsers(true);
             curr.Sort();
 
             foreach (LiveUser liveUser in curr)

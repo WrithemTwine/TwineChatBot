@@ -14,7 +14,8 @@
         bool evaluateCurrentCheck = false,
         bool firstjoinedChannel = false,
         bool firstChatMessage = false,
-        bool inStreamNow = false) : IEquatable<ManageStreamViewer>
+        bool inStreamNow = false,
+        bool registered = false) : IEquatable<ManageStreamViewer>
     {
         /// <summary>
         /// Identification for the current user
@@ -36,6 +37,10 @@
         /// Indicates user is currently in the stream now
         /// </summary>
         public bool InStreamNow { get; set; } = inStreamNow;
+        /// <summary>
+        /// Indicates user is registered in the database
+        /// </summary>
+        public bool Registered { get; set; } = registered;
 
         public bool Equals(ManageStreamViewer other)
         {

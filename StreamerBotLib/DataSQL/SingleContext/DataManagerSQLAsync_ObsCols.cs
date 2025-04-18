@@ -23,7 +23,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
                 DataTables.BanReasons => GetBanReasonsLocalObservableAsync().Result,
                 DataTables.BanRules => GetBanRulesLocalObservableAsync().Result,
                 DataTables.CategoryList => GetCategoryListLocalObservableAsync().Result,
-                DataTables.ChannelEvents =>GetChannelEventsLocalObservableAsync().Result,
+                DataTables.ChannelEvents => GetChannelEventsLocalObservableAsync().Result,
                 DataTables.Clips => GetClipsLocalObservableAsync().Result,
                 DataTables.Commands => GetCommandsLocalObservableAsync().Result,
                 DataTables.CommandsBase => throw new NotImplementedException(),
@@ -32,7 +32,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
                 DataTables.CurrencyType => GetCurrencyTypeLocalObservableAsync().Result,
                 DataTables.CustomWelcome => GetCustomWelcomeLocalObservableAsync().Result,
                 DataTables.Followers => GetFollowersLocalObservableAsync().Result,
-                DataTables.GameDeadCounter =>GetGameDeadCounterLocalObservableAsync().Result,
+                DataTables.GameDeadCounter => GetGameDeadCounterLocalObservableAsync().Result,
                 DataTables.GiveawayUserData => GetGiveawayUserDataLocalObservableAsync().Result,
                 DataTables.InRaidData => GetInRaidDataLocalObservableAsync().Result,
                 DataTables.LearnMsgs => GetLearnMsgsLocalObservableAsync().Result,
@@ -165,7 +165,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
             return Task.Run(async () =>
             {
                 await context.CustomWelcome.LoadAsync();
-                var result = context.CustomWelcome.Local.ToObservableCollection(); 
+                var result = context.CustomWelcome.Local.ToObservableCollection();
                 result.CollectionChanged += UpdatedCollection;
                 return result;
             });

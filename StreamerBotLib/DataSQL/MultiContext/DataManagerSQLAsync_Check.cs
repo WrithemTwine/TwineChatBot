@@ -10,19 +10,14 @@ namespace StreamerBotLib.DataSQL.MultiContext
     {
         #region Check_Methods
 
-        internal Task<bool> CheckCurrency(LiveUser User, double value, string CurrencyName)
+        internal async Task<bool> CheckCurrency(LiveUser User, double value, string CurrencyName)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                var result = (from C in context.Currency
-                              where (C.UserId == User.UserId && C.CurrencyName == CurrencyName)
-                              select C.Value).FirstOrDefault() >= value;
+            using var context = BuildDataContext();
 
-
-
-                return result;
-            });
+            return await context.Currency
+                                .Where(C => C.UserId == User.UserId && C.CurrencyName == CurrencyName)
+                                .Select(C => C.Value >= value)
+                                .FirstOrDefaultAsync();
         }
 
         internal Task<bool> CheckField(string table, string field)
@@ -30,51 +25,40 @@ namespace StreamerBotLib.DataSQL.MultiContext
             return Task.Run(() =>
             {
                 using var context = BuildDataContext();
-                var result = (context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}").FindProperty(field) != null);
-
-                return result;
+                var entityType = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}");
+                return entityType?.FindProperty(field) != null;
             });
         }
 
-        internal Task<bool> CheckFollower(string User)
+        internal async Task<bool> CheckFollower(string User)
         {
-            return Task.Run(async () =>
-            {
-                var result = await CheckFollower(User, default);
-
-                return result;
-            });
+            return await CheckFollower(User, default);
         }
 
-        internal Task<bool> CheckFollower(string User, DateTime ToDateTime)
+        internal async Task<bool> CheckFollower(string User, DateTime ToDateTime)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                var result = (from f in context.Followers.Include(user => user.User)
-                              where f.User.UserName == User && (f.IsFollower && (ToDateTime == default || f.FollowedDate < ToDateTime))
-                              select f).Any();
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.Followers
+                                .Include(user => user.User)
+                                .Where(f => f.User.UserName == User && (f.IsFollower && (ToDateTime == default || f.FollowedDate < ToDateTime)))
+                                .Select(f => f)
+                                .AnyAsync();
         }
 
-        internal Task<Tuple<string, string>> CheckModApprovalRule(ModActionType modActionType, string ModAction)
+        internal async Task<Tuple<string, string>> CheckModApprovalRule(ModActionType modActionType, string ModAction)
         {
-            return Task.Run(() =>
-            {
-                LogWriter.DebugLog("CheckModApprovalRule", DebugLogTypes.DataManager, $"Now checking for mod approval rule for {ModAction}.");
+            LogWriter.DebugLog("CheckModApprovalRule", DebugLogTypes.DataManager, $"Now checking for mod approval rule for {ModAction}.");
 
-                using var context = BuildDataContext();
-                var result = (from M in context.ModeratorApprove
-                              where (M.ModActionType == modActionType && M.ModActionName == ModAction)
-                              select new Tuple<string, string>(
-                                  !string.IsNullOrEmpty(M.ModPerformType.ToString()) ? M.ModPerformType.ToString() : M.ModActionType.ToString(),
-                                  !string.IsNullOrEmpty(M.ModPerformAction) ? M.ModPerformAction : M.ModActionName
-                                  )).FirstOrDefault();
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.ModeratorApprove
+                    .Where(M => (M.ModActionType == modActionType && M.ModActionName == ModAction))
+                    .Select(M => new Tuple<string, string>(
+                        !string.IsNullOrEmpty(M.ModPerformType.ToString()) ? M.ModPerformType.ToString() : M.ModActionType.ToString(),
+                        !string.IsNullOrEmpty(M.ModPerformAction) ? M.ModPerformAction : M.ModActionName
+                        ))
+                    .FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -83,21 +67,12 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// <param name="streamStart">The stream start date and time to check.</param>
         /// <returns><code>true</code> if there are multiple streams on the same day
         /// <code>false</code> if there is no more than one stream for the current day.</returns>
-        internal Task<bool> CheckMultiStreams(DateTime streamStart)
+        internal async Task<bool> CheckMultiStreams(DateTime streamStart)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-
-                bool result = (from s in context.StreamStats
-                                   // check for the Year/Month/Day are the same, ignoring the time
-                               where s.StreamStart.Year == streamStart.Year
-                               && s.StreamStart.Month == streamStart.Month
-                               && s.StreamStart.Day == streamStart.Day
-                               select s).Count() > 1;
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            return await context.StreamStats
+                                .Where(s => s.StreamStart.Date == streamStart.Date)
+                                .CountAsync() > 1;
         }
 
         /// <summary>
@@ -106,18 +81,14 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// <param name="cmd">The command to verify the permission.</param>
         /// <param name="permission">The supplied permission to check.</param>
         /// <returns><code>true</code> - the permission is allowed to the command. <code>false</code> - the command permission is not allowed.</returns>
-        internal Task<bool> CheckPermission(string cmd, ViewerTypes permission)
+        internal async Task<bool> CheckPermission(string cmd, ViewerTypes permission)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                bool result = (from c in context.Commands
-                               where c.CmdName == cmd
-                               select c).FirstOrDefault().Permission > permission;
-
-                return result;
-            });
+            return await context.Commands
+                            .Where(c => c.CmdName == cmd)
+                            .Select(c => c.Permission > permission)
+                            .FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -125,18 +96,14 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// </summary>
         /// <param name="UserName">The UserName to shoutout.</param>
         /// <returns>true if in the ShoutOut table.</returns>
-        internal Task<bool> CheckShoutName(string UserId)
+        internal async Task<bool> CheckShoutName(string UserId)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                bool result = (from s in context.ShoutOuts
-                               where s.UserId == UserId
-                               select s).Any();
-
-                return result;
-            });
+            return await context.ShoutOuts
+                                .Where(s => s.UserId == UserId)
+                                .Select(s => s)
+                                .AnyAsync();
         }
 
         /// <summary>
@@ -144,18 +111,14 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// </summary>
         /// <param name="CurrTime">The time to check</param>
         /// <returns><code>true</code>: the stream already has a data entry; <code>false</code>: the stream has no data entry</returns>
-        internal Task<bool> CheckStreamTime(DateTime CurrTime)
+        internal async Task<bool> CheckStreamTime(DateTime CurrTime)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                bool result = (from s in context.StreamStats
-                               where s.StreamStart == CurrTime
-                               select s).Any();
-
-                return result;
-            });
+            return await context.StreamStats
+                                .Where(s => s.StreamStart == CurrTime)
+                                .Select(s => s)
+                                .AnyAsync();
         }
 
         /// <summary>
@@ -163,12 +126,9 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// </summary>
         /// <param name="User">The user to check in the database.</param>
         /// <returns><code>true</code> if the <paramref name="User"/> has arrived anytime, <code>false</code> otherwise.</returns>
-        internal Task<bool> CheckUser(LiveUser User)
+        internal async Task<bool> CheckUser(LiveUser User)
         {
-            return Task.Run(async () =>
-            {
-                return await CheckUser(User, default);
-            });
+            return await CheckUser(User, default);
         }
 
         /// <summary>
@@ -177,18 +137,13 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// <param name="User">The user to verify.</param>
         /// <param name="ToDateTime">Specify the date to check if the user arrived to the channel prior to this date and time.</param>
         /// <returns><c>True</c> if the <paramref name="User"/> has been in channel before <paramref name="ToDateTime"/>, <c>false</c> otherwise.</returns>
-        internal Task<bool> CheckUser(LiveUser User, DateTime ToDateTime)
+        internal async Task<bool> CheckUser(LiveUser User, DateTime ToDateTime)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-
-                bool result = (from s in context.Users
-                               where (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Platform
-                               select s).Any();
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            return await context.Users
+                                .Where(s => (ToDateTime == default || s.FirstDateSeen < ToDateTime) && s.UserName == User.UserName && s.Platform == User.Platform)
+                                .Select(s => s)
+                                .AnyAsync();
         }
 
         /// <summary>
@@ -196,18 +151,18 @@ namespace StreamerBotLib.DataSQL.MultiContext
         /// </summary>
         /// <param name="User">The user to check for a welcome message.</param>
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
-        internal Task<string> CheckWelcomeUser(string UserId)
+        internal async Task<string> CheckWelcomeUser(string UserId)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                string result = (from s in context.CustomWelcome
-                                 where s.UserId == UserId
-                                 select s.Message).FirstOrDefault() ?? "";
+            string result = (from s in context.CustomWelcome
+                             where s.UserId == UserId
+                             select s.Message).FirstOrDefault() ?? "";
 
-                return result;
-            });
+            return await context.CustomWelcome
+                                .Where(s => s.UserId == UserId)
+                                .Select(s => s.Message)
+                                .FirstOrDefaultAsync() ?? "";
         }
 
         #endregion Check_Methods

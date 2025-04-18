@@ -18,302 +18,227 @@ namespace StreamerBotLib.DataSQL.MultiContext
 
         internal async Task<Tuple<ModActions, Enums.BanReasons, int>> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
         {
-            return await Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                Enums.BanReasons banReasons = (from Br in context.BanReasons
-                                               where Br.MsgType == msgTypes
-                                               select Br.BanReason).FirstOrDefault();
-                BanRules banRules = (from B in context.BanRules
-                                     where (B.ViewerTypes == ViewerTypes.Viewer && B.MsgType == msgTypes)
-                                     select B).FirstOrDefault();
+            using var context = BuildDataContext();
 
+            // Fetch BanReasons asynchronously
+            var banReasons = await context.BanReasons
+                .Where(br => br.MsgType == msgTypes)
+                .Select(br => br.BanReason)
+                .FirstOrDefaultAsync();
 
-                return new Tuple<ModActions, Enums.BanReasons, int>(banRules?.ModAction ?? ModActions.Allow, banReasons, banRules.TimeoutSeconds);
-            });
+            // Fetch BanRules asynchronously
+            var banRules = await context.BanRules
+                .Where(b => b.ViewerTypes == ViewerTypes.Viewer && b.MsgType == msgTypes)
+                .FirstOrDefaultAsync();
+
+            // Return the result as a tuple
+            return new Tuple<ModActions, Enums.BanReasons, int>(
+                banRules?.ModAction ?? ModActions.Allow,
+                banReasons,
+                banRules?.TimeoutSeconds ?? 0
+            );
         }
 
-        internal Task<bool> GetCmdAnnounce(string CmdName)
+        internal async Task<bool> GetCmdAnnounce(string CmdName)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                bool commandAnnounce = (from C in context.Commands
-                                        where C.CmdName == CmdName
-                                        select C.Announce).FirstOrDefault();
-
-                return commandAnnounce;
-            });
-
+            return await context.Commands
+                                .Where(C => C.CmdName == CmdName)
+                                .Select(C => C.Announce)
+                                .FirstOrDefaultAsync();
         }
 
-        internal Task<bool> GetEventAnnounce(ChannelEventActions EventName)
+        internal async Task<bool> GetEventAnnounce(ChannelEventActions EventName)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                bool currannounce = (from E in context.ChannelEvents
-                                     where E.Name == EventName
-                                     select E.Announce).FirstOrDefault();
-                return currannounce;
-            });
+            using var context = BuildDataContext();
+            return await context.ChannelEvents
+                            .Where(E => E.Name == EventName)
+                            .Select(E => E.Announce)
+                            .FirstOrDefaultAsync();
         }
 
-        internal Task<CommandData> GetCommand(string cmd)
+        internal async Task<CommandData> GetCommand(string cmd)
         {
-            return Task.Run(async () =>
+            using var context = BuildDataContext();
+
+            var command = await context.CommandsBase
+                .FirstOrDefaultAsync(c => c.CmdName == cmd);
+
+            if (command != null)
             {
-                using var context = BuildDataContext();
-
-                CommandsBase commands = (from C in context.CommandsBase where C.CmdName == cmd select C).FirstOrDefault();
-
-                if (commands != null)
-                {
-                    commands.Calls++;
-                }
-
-                CommandData result = (commands != null) ? new(commands) : null;// commandsUser != null ? new(commandsUser.First()) : null;
+                command.Calls++;
                 await context.SaveChangesAsync();
-                RefreshCommandsList();
-                RefreshCommandsUserList();
+            }
 
-                return result;
-            });
+            RefreshCommandsList(true);
+            RefreshCommandsUserList(true);
+
+            return command != null ? new CommandData(command) : null;
         }
 
-        internal Task<string> GetCommandString()
+        internal async Task<string> GetCommandString()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                string result = string.Join(", ", GetCommandList().Result);
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            var commandList = await GetCommandList();
+            return string.Join(", ", commandList);
         }
 
-        internal Task<List<string>> GetCommandList(bool prefix = true)
+        internal async Task<List<string>> GetCommandList(bool prefix = true)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                var result = new List<string>(from Com in (context.CommandsBase)
-                                              where (Com.Message != DefaulSocialMsg && Com.IsEnabled)
-                                              orderby Com.CmdName
-                                              select $"{(prefix ? "!" : "")}{Com.CmdName}");
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.CommandsBase
+                .Where(Com => Com.Message != DefaulSocialMsg && Com.IsEnabled)
+                .OrderBy(Com => Com.CmdName)
+                .Select(Com => $"{(prefix ? "!" : "")}{Com.CmdName}")
+                .ToListAsync();
         }
 
-        internal Task<List<string>> GetCurrencyNames()
+        internal async Task<List<string>> GetCurrencyNames()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<string> result = [.. (from C in context.CurrencyType
-                                       select C.CurrencyName)];
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            return await context.CurrencyType
+                            .Select(C => C.CurrencyName)
+                            .ToListAsync();
         }
 
-        internal Task<int> GetDeathCounter(string currCategory)
+        internal async Task<int> GetDeathCounter(string currCategory)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                int result = (from D in context.GameDeadCounter
-                              where D.Category == currCategory
-                              select D.Counter).FirstOrDefault();
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            return await context.GameDeadCounter
+                                .Where(D => D.Category == currCategory)
+                                .Select(D => D.Counter)
+                                .FirstOrDefaultAsync();
         }
 
-        internal Task<Tuple<string, bool, short>> GetEventRowData(ChannelEventActions rowcriteria)
+        internal async Task<Tuple<string, bool, short>> GetEventRowData(ChannelEventActions rowcriteria)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                ChannelEvents found = (from Event in context.ChannelEvents
-                                       where Event.Name == rowcriteria
-                                       select Event).FirstOrDefault();
-                var output = new Tuple<string, bool, short>(
-                    found?.Message,
-                    found?.IsEnabled ?? false,
-                    found?.RepeatMsg ?? 0);
+            using var context = BuildDataContext();
 
-
-
-                return output;
-            });
+            return await context.ChannelEvents
+                                .Where(E => E.Name == rowcriteria)
+                                .Select(E => new Tuple<string, bool, short>(E.Message, E.IsEnabled, E.RepeatMsg))
+                                .FirstOrDefaultAsync();
         }
 
-        internal Task<int> GetFollowerCount()
+        internal async Task<int> GetFollowerCount()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                var result = context.Followers.Count();
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            return await context.Followers.CountAsync();
         }
 
-        internal Task<List<CategoryData>> GetGameCategories()
+        internal async Task<List<CategoryData>> GetGameCategories()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<CategoryData> result = [.. from G in context.CategoryList
-                                                let game = new CategoryData(G.CategoryId, G.Category)
-                                                select game];
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            return await context.CategoryList
+                                .Select(C => new CategoryData(C.CategoryId, C.Category))
+                                .ToListAsync();
         }
 
-        internal Task<string> GetKey(string Table)
+        internal async Task<string> GetKey(string table)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                string result = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().GetName();
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            var entityType = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}");
+            return entityType?.FindPrimaryKey()?.GetName();
         }
 
-        internal Task<IEnumerable<string>> GetKeys(string Table)
+        internal async Task<IEnumerable<string>> GetKeys(string Table)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                IEnumerable<string> result = [.. from P in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}").FindPrimaryKey().Properties select P.Name];
-
-                return result;
-            });
+            using var context = BuildDataContext();
+            var entityType = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}");
+            return entityType?.FindPrimaryKey()?.Properties.Select(p => p.Name) ?? Enumerable.Empty<string>();
         }
 
-        internal Task<List<OverlayActionType>> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
+        internal async Task<List<OverlayActionType>> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<OverlayActionType> result = [.. (from O in context.OverlayServices
-                                                  where (O.IsEnabled
-                                                  && O.OverlayType == overlayType
-                                                  && (string.IsNullOrEmpty(O.UserName) || O.UserName == username)
-                                                  && O.OverlayAction == overlayAction)
-                                                  select new OverlayActionType()
-                                                  {
-                                                      ActionValue = O.OverlayAction,
-                                                      Duration = O.Duration,
-                                                      MediaFile = O.MediaFile,
-                                                      ImageFile = O.ImageFile,
-                                                      Message = O.Message,
-                                                      OverlayType = O.OverlayType,
-                                                      UserName = O.UserName,
-                                                      UseChatMsg = O.UseChatMsg
-                                                  })];
-
-                return result;
-            });
-        }
-
-        internal Task<string> GetQuote(int QuoteNum)
-        {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                var result = (from Q in context.Quotes
-                              where Q.Number == QuoteNum
-                              select $"{Q.Number}: {Q.Quote}").FirstOrDefault();
-
-                return result;
-            });
-        }
-
-        internal Task<int> GetQuoteCount()
-        {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                int result = context.Quotes.MaxBy((q) => q.Number)?.Number ?? 0;
-
-                return result;
-            });
-        }
-
-        internal Task<Dictionary<string, List<string>>> GetOverlayActions()
-        {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                Dictionary<string, List<string>> result = new()
+            using var context = BuildDataContext();
+            return await context.OverlayServices
+                .Where(O => O.IsEnabled && O.OverlayType == overlayType && (string.IsNullOrEmpty(O.UserName) || O.UserName == username) && O.OverlayAction == overlayAction)
+                .Select(O => new OverlayActionType()
                 {
-                    { nameof(Commands), new(from C in context.Commands select C.CmdName) },
-                    { nameof(ChannelEvents), new(from E in context.ChannelEvents select E.Name.ToString()) }
-                };
-
-                return result;
-            });
+                    ActionValue = O.OverlayAction,
+                    Duration = O.Duration,
+                    MediaFile = O.MediaFile,
+                    ImageFile = O.ImageFile,
+                    Message = O.Message,
+                    OverlayType = O.OverlayType,
+                    UserName = O.UserName,
+                    UseChatMsg = O.UseChatMsg
+                })
+                .ToListAsync();
         }
 
-        internal Task<List<string>> GetSocialComs()
+        internal async Task<string> GetQuote(int QuoteNum)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<string> result = [.. from SC in context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)), (c) => c.CmdName)
-                                          select SC.CmdName];
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.Quotes
+                                .Where(Q => Q.Number == QuoteNum)
+                                .Select(Q => $"{Q.Number}: {Q.Quote}")
+                                .FirstOrDefaultAsync();
         }
 
-        internal Task<string> GetSocials()
+        internal async Task<int> GetQuoteCount()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                var result = string.Join(" ", (from SC in
-                                             context.Commands.IntersectBy((string[])Enum.GetValues(typeof(DefaultSocials)),
-                                                (c) => c.CmdName)
-                                               where SC.Message != DefaulSocialMsg
-                                               select SC));
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.Quotes.MaxAsync((q) => q.Number);
         }
 
-        internal Task<StreamStat> GetStreamData(DateTime dateTime)
+        internal async Task<Dictionary<string, List<string>>> GetOverlayActions()
         {
-            return Task.Run(() =>
+            using var context = BuildDataContext();
+
+            return new Dictionary<string, List<string>>
             {
-                using var context = BuildDataContext();
-
-                var result = (from SD in context.StreamStats
-                              where SD.StreamStart == dateTime
-                              select StreamStat.Create(SD)).FirstOrDefault();
-                CurrStreamStart = dateTime;
-
-                return result;
-            });
+                { nameof(Commands), await context.Commands.Select(C => C.CmdName).ToListAsync() },
+                { nameof(ChannelEvents), await context.ChannelEvents.Select(E => E.Name.ToString()).ToListAsync() }
+            };
         }
 
-        internal Task<List<string>> GetTableFields(string TableName)
+        internal async Task<List<string>> GetSocialComs()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<string> result = new(from T in context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
-                                          select T.Name);
+            using var context = BuildDataContext();
+            var Socials = Enum.GetValues<DefaultSocials>().Cast<DefaultSocials>();
 
-                return result;
-            });
+            return await context.Commands
+                              .Where(c => Socials.Any(s => s.ToString() == c.CmdName))
+                              .Select(c => c.CmdName)
+                              .ToListAsync();
+        }
+
+        internal async Task<string> GetSocials()
+        {
+            using var context = BuildDataContext();
+
+            var socials = Enum.GetValues<DefaultSocials>().Select(s => s.ToString());
+            var result = await context.Commands
+                .Where(c => socials.Contains(c.CmdName) && c.Message != DefaulSocialMsg)
+                .Select(c => c.CmdName)
+                .ToListAsync();
+
+            return string.Join(" ", result);
+        }
+
+        internal async Task<StreamStat> GetStreamData(DateTime dateTime)
+        {
+            using var context = BuildDataContext();
+            CurrStreamStart = dateTime;
+
+            return await context.StreamStats
+                                .Where(S => S.StreamStart == dateTime)
+                                .Select(S => StreamStat.Create(S))
+                                .FirstOrDefaultAsync();
+        }
+
+        internal async Task<List<string>> GetTableFields(string TableName)
+        {
+            using var context = BuildDataContext();
+
+            return context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
+                            .Select(T => T.Name)
+                            .ToList();
         }
 
         internal Task<List<string>> GetTableNames()
@@ -335,83 +260,65 @@ namespace StreamerBotLib.DataSQL.MultiContext
             });
         }
 
-        internal Task<List<TickerItem>> GetTickerItems()
+        internal async Task<List<TickerItem>> GetTickerItems()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<TickerItem> result = [.. from F in context.OverlayTicker
-                                              select new TickerItem(F.TickerName, F.UserName)];
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.OverlayTicker
+                    .Select(F => new TickerItem(F.TickerName, F.UserName))
+                    .ToListAsync();
         }
 
-        internal Task<Tuple<string, int, List<string>>> GetTimerCommand(string Cmd)
+        internal async Task<Tuple<string, int, List<string>>> GetTimerCommand(string Cmd)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                Tuple<string, int, List<string>> result = (from R in context.Commands
-                                                           where R.IsEnabled && R.RepeatTimer > 0
-                                                           select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))).FirstOrDefault();
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.Commands
+                                .Where(R => R.IsEnabled && R.RepeatTimer > 0)
+                                .Select(R => new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category)))
+                                .FirstOrDefaultAsync();
         }
 
-        internal Task<List<Tuple<string, int, List<string>>>> GetTimerCommands()
+        internal async Task<List<Tuple<string, int, List<string>>>> GetTimerCommands()
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<Tuple<string, int, List<string>>> result = [.. from R in context.CommandsBase
-                                                                    where R.IsEnabled && R.RepeatTimer > 0
-                                                                    select new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category))];
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.CommandsBase
+                                .Where(R => R.IsEnabled && R.RepeatTimer > 0)
+                                .Select(R => new Tuple<string, int, List<string>>(R.CmdName, R.RepeatTimer, new(R.Category)))
+                                .ToListAsync();
         }
 
-        internal Task<int> GetTimerCommandTime(string Cmd)
+        internal async Task<int> GetTimerCommandTime(string Cmd)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                int result = (from R in context.Commands
-                              where R.CmdName == Cmd
-                              select R.RepeatTimer).FirstOrDefault();
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.Commands
+                                .Where(R => R.CmdName == Cmd)
+                                .Select(R => R.RepeatTimer)
+                                .FirstOrDefaultAsync();
         }
 
-        internal Task<string> GetUsage(string command)
+        internal async Task<string> GetUsage(string command)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                string result = (from C in context.Commands
-                                 where C.CmdName == command
-                                 select C.Usage).FirstOrDefault();
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.Commands
+                                .Where(C => C.CmdName == command)
+                                .Select(C => C.Usage)
+                                .FirstOrDefaultAsync();
         }
 
-        internal Task<List<Tuple<bool, Uri>>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
+        internal async Task<List<Tuple<bool, Uri>>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
         {
-            return Task.Run(() =>
-            {
-                using var context = BuildDataContext();
-                List<Tuple<bool, Uri>> result = [.. from W in context.Webhooks
-                                                    where (W.WebhooksSource == webhooksSource
-                                                    && W.Kind == webhooks && W.DataSource == WebhookDataSource.Channel
-                                                    && W.IsEnabled == true)
-                                                    select new Tuple<bool, Uri>(W.AddEveryone, W.Webhook)];
+            using var context = BuildDataContext();
 
-                return result;
-            });
+            return await context.Webhooks
+                                .Where(W => W.WebhooksSource == webhooksSource
+                                                && W.Kind == webhooks && W.DataSource == WebhookDataSource.Channel
+                                                && W.IsEnabled == true)
+                                .Select(W => new Tuple<bool, Uri>(W.AddEveryone, W.Webhook))
+                                .ToListAsync();
         }
 
         #endregion Get_Methods

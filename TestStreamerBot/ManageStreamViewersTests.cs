@@ -19,7 +19,7 @@ namespace TestStreamerBot
             manageStreamViewers.EndStreamResetList();
 
             // Assert
-            Assert.Empty(manageStreamViewers.GetCurrentActiveUsers());
+            Assert.Empty(manageStreamViewers.GetCurrentActiveUsers(true));
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace TestStreamerBot
             manageStreamViewers.AddUsersFirstJoinedChannel(new List<LiveUser> { liveUser1, liveUser2 });
 
             // Act
-            var currentActiveUsers = manageStreamViewers.GetCurrentActiveUsers();
+            var currentActiveUsers = manageStreamViewers.GetCurrentActiveUsers(true);
             var result = manageStreamViewers.GetUsersLeft(new List<LiveUser> { liveUser1 });
 
             // Assert
@@ -80,7 +80,7 @@ namespace TestStreamerBot
             manageStreamViewers.AddUsersFirstJoinedChannel(new List<LiveUser> { liveUser });
 
             // Act
-            var result = manageStreamViewers.GetCurrentActiveUsers();
+            var result = manageStreamViewers.GetCurrentActiveUsers(true);
 
             // Assert
             Assert.Single(result);

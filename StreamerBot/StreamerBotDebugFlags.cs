@@ -46,6 +46,9 @@ namespace StreamerBot
                     Random random = new();
                     CategoryData itemfound = output[random.Next(output.Count)];
                     Controller.HandleOnStreamUpdate(itemfound);
+#if DEBUG
+                    Controller.Systems.TestAddUsers();
+#endif
                 });
 
 #if DEBUG
@@ -77,6 +80,11 @@ namespace StreamerBot
 
 #if DEBUG
                 TestingWindow.AddDebugUsers -= TestingWindow_AddDebugUsers;
+
+                if (TestingWindow.IsVisible)
+                {
+                    TestingWindow.Close();
+                }
 #endif
 
             }
@@ -101,8 +109,6 @@ namespace StreamerBot
             }
             NotifyPropertyChanged("DebugFlagsList");
         }
-
-
 
     }
 

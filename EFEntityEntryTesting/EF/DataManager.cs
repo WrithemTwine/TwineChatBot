@@ -295,9 +295,9 @@ namespace EFEntityEntryTesting.EF
         {
             //lock (_GUIcontext)
             //{
-                _GUIcontext.Currency.Load();
-                //CurrencyList = _GUIcontext.Currency.Local.ToList();
-                return _GUIcontext.Currency.Local.ToObservableCollection();
+            _GUIcontext.Currency.Load();
+            //CurrencyList = _GUIcontext.Currency.Local.ToList();
+            return _GUIcontext.Currency.Local.ToObservableCollection();
             //}
         }
 
@@ -305,9 +305,9 @@ namespace EFEntityEntryTesting.EF
         {
             //lock (_GUIcontext)
             //{
-                _GUIcontext.CurrencyType.Load();
-                //CurrencyTypeList = _GUIcontext.CurrencyType.Local.ToList();
-                return _GUIcontext.CurrencyType.Local.ToObservableCollection();
+            _GUIcontext.CurrencyType.Load();
+            //CurrencyTypeList = _GUIcontext.CurrencyType.Local.ToList();
+            return _GUIcontext.CurrencyType.Local.ToObservableCollection();
             //}
         }
 
@@ -315,15 +315,15 @@ namespace EFEntityEntryTesting.EF
         {
             //lock (_GUIcontext)
             //{
-                await _GUIcontext.Users.LoadAsync();
+            await _GUIcontext.Users.LoadAsync();
 
-                //ThreadManager.AddTaskToGUIDispatcher(() =>
-                //{
-                //    UsersList.Clear();
-                //    UsersList.AddRange([.. _GUIcontext.Users.Local]);
-                //});
+            //ThreadManager.AddTaskToGUIDispatcher(() =>
+            //{
+            //    UsersList.Clear();
+            //    UsersList.AddRange([.. _GUIcontext.Users.Local]);
+            //});
 
-                OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Users)));
+            OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Users)));
             //}
         }
 
@@ -331,15 +331,15 @@ namespace EFEntityEntryTesting.EF
         {
             //lock (_GUIcontext)
             //{
-                await _GUIcontext.Currency.LoadAsync();
+            await _GUIcontext.Currency.LoadAsync();
 
-                //ThreadManager.AddTaskToGUIDispatcher(() =>
-                //{
-                //    CurrencyList.Clear();
-                //    CurrencyList.AddRange([.. _GUIcontext.Currency.Local]);
-                //});
+            //ThreadManager.AddTaskToGUIDispatcher(() =>
+            //{
+            //    CurrencyList.Clear();
+            //    CurrencyList.AddRange([.. _GUIcontext.Currency.Local]);
+            //});
 
-                OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Currency)));
+            OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Currency)));
             //}
         }
 

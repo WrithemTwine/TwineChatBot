@@ -1028,7 +1028,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void UpdateCurrency(List<string> Users, DateTime dateTime)
+        public void UpdateCurrency(List<LiveUser> Users, DateTime dateTime)
         {
             LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.DataManager, "Updating currency.");
             lock (GUIDataManagerLock.Lock)

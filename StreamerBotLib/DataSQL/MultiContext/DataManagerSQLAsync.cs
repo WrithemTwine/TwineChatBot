@@ -88,7 +88,7 @@ switches:
         private readonly ConcurrentQueue<ManagedAction> queueTasks = new();
         private bool StartedProcessingQueue = false;
 
-        private void PostActionQueue(Action action, string key)
+        private void PostActionQueue(Task action, string key)
         {
             ManagedAction Action = new(key, action);
 
@@ -109,15 +109,40 @@ switches:
         {
             while (OptionFlags.ActiveToken)
             {
-                await Task.Delay(5000); // wait 5 seconds before processing queue
                 try
                 {
                     while (queueTasks.TryDequeue(out ManagedAction result))
                     {
-                        result.Action.Invoke();
-                        await Task.Delay(800);
-                    }
+#if DEBUG
+                        //LogWriter.DebugLog("ProcessQueuedActionsAsync", DebugLogTypes.SpecialPurpose, $"Task {result.TaskName} dequeued.");
+#endif
+                        if (result.Action.Status is TaskStatus.WaitingToRun or TaskStatus.Created or TaskStatus.WaitingForActivation)
+                        {
+                            result.Action.Start();
 
+#if DEBUG
+                            //LogWriter.DebugLog("ProcessQueuedActionsAsync", DebugLogTypes.SpecialPurpose, $"Task {result.TaskName} started.");
+#endif
+
+                        }
+
+                        if (result.Action.Status == TaskStatus.Running)
+                        {
+                            await result.Action.WaitAsync(CancellationToken.None);
+                        }
+                        else if (result.Action.Status == TaskStatus.Faulted)
+                        {
+                            LogWriter.DebugLog("ProcessQueuedActionsAsync", DebugLogTypes.DataManager, $"Task {result.TaskName} failed with exception: {result.Action.Exception}");
+                        }
+                        else if (result.Action.Status == TaskStatus.Canceled)
+                        {
+                            LogWriter.DebugLog("ProcessQueuedActionsAsync", DebugLogTypes.DataManager, $"Task {result.TaskName} was canceled.");
+                        }
+                        else if (result.Action.Status == TaskStatus.RanToCompletion)
+                        {
+                            // Do nothing, the task has already completed
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -128,10 +153,33 @@ switches:
 
         #endregion
 
+#if DEBUG
+        internal async Task Exit()
+#else
         internal void Exit()
+#endif
         {
             processQueueTaskThread?.Join();
-            GUIContext.SaveChanges(true);
+//            GUIContext.SaveChanges(true);
+
+//#if DEBUG
+//            var context = BuildDataContext();
+//            foreach (var user in DebugUsersList)
+//            {
+//                var userData = await context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+//                if (userData != null)
+//                {
+//                    LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"Context data: {userData.GetDebugOutput()}");
+//                }
+
+//                var GUIContextUser = await GUIContext.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+//                if (GUIContextUser != null)
+//                {
+//                    LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"GUIContext data: {GUIContextUser.GetDebugOutput()}");
+//                }
+//            }
+//#endif
+
             GUIContext.Dispose();
         }
 
@@ -150,44 +198,41 @@ switches:
             throw new NotImplementedException();
         }
 
-        internal Task<string> EditCommand(string cmd, List<string> Arglist)
+        internal async Task<string> EditCommand(string cmd, List<string> Arglist)
         {
-            return Task.Run(async () =>
+            string result = "";
+
+            using var context = BuildDataContext();
+
+            Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
+
+            CommandsBase EditCom = context.CommandsBase
+                .FirstOrDefault(C => C.CmdName == cmd);
+
+            if (EditCom != default)
             {
-                string result = "";
-
-                using var context = BuildDataContext();
-
-                Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
-                CommandsBase EditCom = (from C in context.CommandsBase
-                                        where C.CmdName == cmd
-                                        select C).FirstOrDefault();
-
-                if (EditCom != default)
+                foreach (string k in EditParamsDict.Keys)
                 {
-                    foreach (string k in EditParamsDict.Keys)
-                    {
-                        EditCom.GetType().GetProperty(k).SetValue(EditCom, EditParamsDict[k]);
-                    }
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
-                    await context.SaveChangesAsync(true);
+                    EditCom.GetType().GetProperty(k).SetValue(EditCom, EditParamsDict[k]);
+                }
+                result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
+                await context.SaveChangesAsync(true);
 
-                    if (Enum.GetNames<DefaultCommand>().Contains(cmd))
-                    {
-                        RefreshCommandsList();
-                    }
-                    else
-                    {
-                        RefreshCommandsUserList();
-                    }
+                if (Enum.GetNames<DefaultCommand>().Contains(cmd))
+                {
+                    RefreshCommandsList(true);
                 }
                 else
                 {
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+                    RefreshCommandsUserList(true);
                 }
+            }
+            else
+            {
+                result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+            }
 
-                return result;
-            });
+            return result;
         }
 
         internal Task<object[]> PerformQuery(CommandsBase row, int Top = 0)
@@ -250,27 +295,21 @@ switches:
         }
 
         #region Set_IsEnabled Methods
-        internal Task SetBuiltInCommandsEnabled(bool Enabled)
+        internal async Task SetBuiltInCommandsEnabled(bool Enabled)
         {
-            return Task.Run(async () =>
-            {
-                using var context = BuildDataContext();
-                await context.Commands.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
-                await context.SaveChangesAsync();
-                RefreshCommandsList();
-            });
+            using var context = BuildDataContext();
+            await context.Commands.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
+            await context.SaveChangesAsync();
+            RefreshCommandsList();
         }
 
-        internal Task SetWebhooksEnabled(bool Enabled)
+        internal async Task SetWebhooksEnabled(bool Enabled)
         {
-            return Task.Run(async () =>
-            {
-                using var context = BuildDataContext();
+            using var context = BuildDataContext();
 
-                await context.Webhooks.ExecuteUpdateAsync((w) => w.SetProperty((u) => u.IsEnabled, (h) => Enabled));
-                await context.SaveChangesAsync();
-                RefreshWebhooksList();
-            });
+            await context.Webhooks.ExecuteUpdateAsync((w) => w.SetProperty((u) => u.IsEnabled, (h) => Enabled));
+            await context.SaveChangesAsync();
+            RefreshWebhooksList();
         }
 
         [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
@@ -279,30 +318,24 @@ switches:
             throw new NotImplementedException();
         }
 
-        internal Task SetSystemEventsEnabled(bool Enabled)
+        internal async Task SetSystemEventsEnabled(bool Enabled)
         {
-            return Task.Run(async () =>
-            {
-                using var context = BuildDataContext();
-                await context.ChannelEvents.ExecuteUpdateAsync((c) => c.SetProperty((e) => e.IsEnabled, (ce) => Enabled));
-                await context.SaveChangesAsync();
-                RefreshChannelEventsList();
-            });
+            using var context = BuildDataContext();
+            await context.ChannelEvents.ExecuteUpdateAsync((c) => c.SetProperty((e) => e.IsEnabled, (ce) => Enabled));
+            await context.SaveChangesAsync();
+            RefreshChannelEventsList();
         }
 
         /// <summary>
         /// Sets the 'IsEnabled' column for all records of the Commands table, specifically the user created commands (not the default commands).
         /// </summary>
         /// <param name="Enabled">The value to set for 'IsEnabled'.</param>
-        internal Task SetUserDefinedCommandsEnabled(bool Enabled)
+        internal async Task SetUserDefinedCommandsEnabled(bool Enabled)
         {
-            return Task.Run(async () =>
-            {
-                using var context = BuildDataContext();
-                await context.CommandsUser.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
-                await context.SaveChangesAsync();
-                RefreshCommandsUserList();
-            });
+            using var context = BuildDataContext();
+            await context.CommandsUser.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
+            await context.SaveChangesAsync();
+            RefreshCommandsUserList();
         }
 
         #endregion
@@ -321,12 +354,9 @@ switches:
             LearnMsgChanged = true;
         }
 
-        internal Task GUIRowEditSave()
+        internal async Task GUIRowEditSave()
         {
-            return Task.Run(async () =>
-            {
-                await GUIContext.SaveChangesAsync(); // tracked entities displayed in GUI DataGrid; user performed an edit, need to save any changes
-            });
+            await GUIContext.SaveChangesAsync(); // tracked entities displayed in GUI DataGrid; user performed an edit, need to save any changes
         }
     }
 }

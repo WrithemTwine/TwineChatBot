@@ -29,7 +29,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
         {
             return Task.Run(() =>
             {
-               // using var context = BuildDataContext();
+                // using var context = BuildDataContext();
                 var result = (context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{table}").FindProperty(field) != null);
 
                 return result;

@@ -139,7 +139,7 @@ namespace StreamerBotLib.Systems
 
             ThreadManager.CreateThreadStart("AutoShoutUsers", () =>
             {
-                foreach (LiveUser u in StreamViewers.GetCurrentActiveUsers())
+                foreach (LiveUser u in StreamViewers.GetCurrentActiveUsers(true))
                 {
                     LogWriter.DebugLog("AutoShoutUsers", DebugLogTypes.CommandSystem, $"Checking for auto-shout: {u.UserName}, {u.UserId}, {u.Platform}");
                     CheckShout(u, out _);
