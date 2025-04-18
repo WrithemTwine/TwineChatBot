@@ -333,9 +333,9 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 Tuple<string, bool, short> data = _dataManager.GetEventRowData(rowcriteria).Result;
-                Enabled = data.Item2;
-                Multi = data.Item3;
-                return data.Item1;
+                Enabled = data?.Item2 ?? false;
+                Multi = data?.Item3 ?? 0;
+                return data?.Item1;
             }
         }
 

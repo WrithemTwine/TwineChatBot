@@ -58,6 +58,11 @@ switches:
 
         internal DataManagerSQLAsync()
         {
+            var initialcontext = BuildDataContext();
+            initialcontext.Database.EnsureCreated();
+            initialcontext.SaveChanges(true);
+            initialcontext.Dispose();
+
             if (!OptionFlags.EFCDataImportedDataGram)
             {
                 bool LogStatus = OptionFlags.LogBotStatus;  // save current logging status
@@ -74,10 +79,13 @@ switches:
                 OptionFlags.EFCDataImportedDataGram = true;
             }
 
-            using var context1 = BuildDataContext();
-
-            context1.Database.Migrate();
-            context1.SaveChanges();
+            try
+            {
+                using var context1 = BuildDataContext();
+                context1.Database.Migrate();
+                context1.SaveChanges();
+            }
+            catch { /* ignore */ }
 
             GUIContext = BuildDataContext();
         }

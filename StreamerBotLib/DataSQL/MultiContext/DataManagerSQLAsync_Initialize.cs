@@ -28,6 +28,13 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //CleanCategories(context);
 
             OptionFlags.DataLoaded = true;
+
+            // refresh GUI data
+            RefreshChannelEventsList(true);
+            RefreshCommandsList(true);
+            RefreshLearnMsgsList(true);
+            RefreshBanReasonsList(true);
+            RefreshBanRulesList(true);
         }
 
         /// <summary>
