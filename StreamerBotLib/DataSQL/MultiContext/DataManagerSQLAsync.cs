@@ -58,10 +58,6 @@ switches:
 
         internal DataManagerSQLAsync()
         {
-            var initialcontext = BuildDataContext();
-            initialcontext.Database.EnsureCreated();
-            initialcontext.SaveChanges(true);
-            initialcontext.Dispose();
 
             if (!OptionFlags.EFCDataImportedDataGram)
             {
@@ -78,6 +74,11 @@ switches:
                 OptionFlags.LogBotStatus = LogStatus; // restore preferred log status after import
                 OptionFlags.EFCDataImportedDataGram = true;
             }
+
+            var initialcontext = BuildDataContext();
+            initialcontext.Database.EnsureCreated();
+            initialcontext.SaveChanges(true);
+            initialcontext.Dispose();
 
             try
             {
