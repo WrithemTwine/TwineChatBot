@@ -71,8 +71,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 await context.SaveChangesAsync();
             }
 
-            RefreshCommandsList(true);
-            RefreshCommandsUserList(true);
+            await RefreshCommandsList(true);
+            await RefreshCommandsUserList(true);
 
             return command != null ? new CommandData(command) : null;
         }

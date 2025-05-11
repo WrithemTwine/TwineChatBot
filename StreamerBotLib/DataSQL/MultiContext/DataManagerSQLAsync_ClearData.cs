@@ -12,7 +12,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.Currency.ExecuteUpdateAsync((c) => c.SetProperty((v) => v.Value, (c) => 0));
             await context.SaveChangesAsync();
-            RefreshCurrencyList(true);
+           await RefreshCurrencyList(true);
         }
 
         /// <summary>
@@ -25,8 +25,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             await context.Users.Where((u) => u.Follower == null || !u.Follower.IsFollower).ExecuteDeleteAsync();
             await context.SaveChangesAsync();
 
-            RefreshUsersList(true);
-            RefreshFollowersList(true);
+            await RefreshUsersList(true);
+            await RefreshFollowersList(true);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             await context.UserStats.ExecuteUpdateAsync((us) => us.SetProperty((u) => u.WatchTime, (s) => TimeSpan.FromSeconds(0)));
             await context.SaveChangesAsync();
 
-            RefreshUserStatsList(true);
+            await RefreshUserStatsList(true);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.Followers.ExecuteDeleteAsync();
             await context.SaveChangesAsync();
-            RefreshFollowersList(true);
+            await RefreshFollowersList(true);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.GiveawayUserData.ExecuteDeleteAsync();
             await context.SaveChangesAsync();
-            RefreshGiveawayUserDataList(true);
+            await RefreshGiveawayUserDataList(true);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.InRaidData.ExecuteDeleteAsync();
             await context.SaveChangesAsync();
-            RefreshInRaidDataList(true);
+            await RefreshInRaidDataList(true);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.OutRaidData.ExecuteDeleteAsync();
             await context.SaveChangesAsync();
-            RefreshOutRaidDataList(true);
+            await RefreshOutRaidDataList(true);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.OverlayTicker.ExecuteUpdateAsync((t) => t.SetProperty((o) => o.UserName, (u) => ""));
             await context.SaveChangesAsync();
-            RefreshOverlayTickerList(true);
+            await RefreshOverlayTickerList(true);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.StreamStats.ExecuteDeleteAsync();
             await context.SaveChangesAsync();
-            RefreshStreamStatsList(true);
+            await RefreshStreamStatsList(true);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.Users.ExecuteDeleteAsync();
             await context.SaveChangesAsync();
-            RefreshUsersList(true);
+            await RefreshUsersList(true);
         }
         #endregion
 
@@ -133,7 +133,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 found = true;
             }
             await context.SaveChangesAsync();
-            RefreshCommandsUserList(true);
+            await RefreshCommandsUserList(true);
 
             return found;
         }
@@ -151,7 +151,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 found = true;
             }
             await context.SaveChangesAsync();
-            RefreshQuotesList(true);
+            await RefreshQuotesList(true);
 
             return found;
         }

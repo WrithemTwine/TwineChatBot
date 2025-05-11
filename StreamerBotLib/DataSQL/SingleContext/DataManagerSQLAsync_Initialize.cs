@@ -18,27 +18,31 @@ namespace StreamerBotLib.DataSQL.SingleContext
         /// <summary>
         /// Perform table setup procedures
         /// </summary>
-        internal Task Initialize()
+        internal async Task Initialize(SQLDBContext Refcontext = null)
         {
-            return Task.Run(async () =>
-            {
-                LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, $"Initializing the database.");
+            LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, $"Initializing the database.");
 
-                // using var context = BuildDataContext();
+            // using var context = Refcontext ?? BuildDataContext();
 
-                await SetDefaultChannelEventsTable();  // check all default ChannelEvents names
-                await SetDefaultCommandsTable(); // check all default Commands
-                await SetLearnedMessages();
-                //CleanCategories(context);
+            await SetDefaultChannelEventsTable(context);  // check all default ChannelEvents names
+            await SetDefaultCommandsTable(context); // check all default Commands
+            await SetLearnedMessages(context);
+            //CleanCategories(context);
 
-                OptionFlags.DataLoaded = true;
-            });
+            OptionFlags.DataLoaded = true;
+
+            // refresh GUI data
+            RefreshChannelEventsList();
+            RefreshCommandsList();
+            RefreshLearnMsgsList();
+            RefreshBanReasonsList();
+            RefreshBanRulesList();
         }
 
         /// <summary>
         /// Add default data to Channel Events table, to ensure the data is available to use in event messages.
         /// </summary>
-        private async Task SetDefaultChannelEventsTable(IDbContextTransaction contextTransaction = null)
+        private async Task SetDefaultChannelEventsTable(SQLDBContext Refcontext = null)
         {
             LogWriter.DebugLog("SetDefaultChannelEventsTable", DebugLogTypes.DataManager, $"Setting default channel events, adding any missing events.");
 
@@ -98,27 +102,24 @@ namespace StreamerBotLib.DataSQL.SingleContext
                     }
                 };
 
-            using var transaction = context.Database.BeginTransaction();
-            context.ChannelEvents.AddRange(from CE in from E in dictionary.ExceptBy(context.ChannelEvents.Select(C => C.Name), E => E.Key)
-                                                      let values = dictionary[E.Key]
-                                                      select (E.Key, values)
-                                           select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
-            await transaction.CommitAsync();
-            context.SaveChanges(true);
+            Refcontext.ChannelEvents.AddRange(from CE in from E in dictionary.ExceptBy(Refcontext.ChannelEvents.Select(C => C.Name), E => E.Key)
+                                                         let values = dictionary[E.Key]
+                                                         select (E.Key, values)
+                                              select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
+
+            await Refcontext.SaveChangesAsync(true);
         }
 
         /// <summary>
         /// Add all of the default commands to the table, ensure they are available
         /// </summary>
-        private async Task SetDefaultCommandsTable(IDbContextTransaction contextTransaction = null)
+        private async Task SetDefaultCommandsTable(SQLDBContext Refcontext = null)
         {
             LogWriter.DebugLog("SetDefaultCommandsTable", DebugLogTypes.DataManager, $"Setting up and checking default commands, adding missing commands.");
 
-            //using var transaction = await context.Database.BeginTransactionAsync();
-
-            if (!(from C in context.CategoryList where C.Category == LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) select C).Any())
+            if (!(from C in Refcontext.CategoryList where C.Category == LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) select C).Any())
             {
-                await context.CategoryList.AddAsync(new(categoryId: "0", category: LocalizedMsgSystem.GetVar(Msg.MsgAllCategory), streamCount: 0));
+                Refcontext.CategoryList.Add(new(categoryId: "0", category: LocalizedMsgSystem.GetVar(Msg.MsgAllCategory), streamCount: 0));
             }
 
             // dictionary with commands, messages, and parameters
@@ -137,80 +138,79 @@ namespace StreamerBotLib.DataSQL.SingleContext
                 DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
             }
 
-            if (context.CommandsBase.Any())
+            if (Refcontext.CommandsBase.Any())
             {
-                foreach (var C in from C in context.CommandsBase select C)
+                foreach (var C in from C in Refcontext.CommandsBase select C)
                 {
                     DefCommandsDictionary.Remove(C.CmdName);
                 }
             }
 
-            await context.Commands.AddRangeAsync(from C in (from key in DefCommandsDictionary
-                                                            let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
-                                                            select (key.Key, param))
-                                                 select new Commands(cmdName: C.Key,
-                                                            addMe: false,
-                                                            permission: C.param.Permission,
-                                                            isEnabled: C.param.IsEnabled,
-                                                            announce: false,
-                                                            message: DefCommandsDictionary[C.Key].Item1,
-                                                            repeatTimer: C.param.Timer,
-                                                            sendMsgCount: C.param.RepeatMsg,
-                                                            category: [string.IsNullOrEmpty(C.param.Category) ?
+            await Refcontext.Commands.AddRangeAsync(from C in (from key in DefCommandsDictionary
+                                                               let param = CommandParams.Parse(DefCommandsDictionary[key.Key].Item2)
+                                                               select (key.Key, param))
+                                                    select new Commands(cmdName: C.Key,
+                                                               addMe: false,
+                                                               permission: C.param.Permission,
+                                                               isEnabled: C.param.IsEnabled,
+                                                               announce: false,
+                                                               message: DefCommandsDictionary[C.Key].Item1,
+                                                               repeatTimer: C.param.Timer,
+                                                               sendMsgCount: C.param.RepeatMsg,
+                                                               category: [string.IsNullOrEmpty(C.param.Category) ?
                                                                  LocalizedMsgSystem.GetVar(Msg.MsgAllCategory) :
                                                                  C.param.Category],
-                                                            allowParam: C.param.AllowParam,
-                                                            usage: C.param.Usage,
-                                                            lookupData: C.param.LookupData,
-                                                            table: C.param.Table,
-                                                            keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table).Result : "",
-                                                            dataField: C.param.Field,
-                                                            currencyField: C.param.Currency,
-                                                            unit: C.param.Unit,
-                                                            action: C.param.Action,
-                                                            top: C.param.Top,
-                                                            sort: C.param.Sort)
+                                                               allowParam: C.param.AllowParam,
+                                                               usage: C.param.Usage,
+                                                               lookupData: C.param.LookupData,
+                                                               table: C.param.Table,
+                                                               keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table).Result : "",
+                                                               dataField: C.param.Field,
+                                                               currencyField: C.param.Currency,
+                                                               unit: C.param.Unit,
+                                                               action: C.param.Action,
+                                                               top: C.param.Top,
+                                                               sort: C.param.Sort)
              );
 
-            //await transaction.CommitAsync();
-
-            await context.SaveChangesAsync(true);
+            await Refcontext.SaveChangesAsync(true);
         }
-        private async Task SetLearnedMessages(IDbContextTransaction contextTransaction = null)
+        private async Task SetLearnedMessages(SQLDBContext Refcontext = null)
         {
             LogWriter.DebugLog("SetLearnedMessages", DebugLogTypes.DataManager, $"Machine learning, setting learned messages.");
 
-            //using var transaction = await context.Database.BeginTransactionAsync();
-
-            if (!context.LearnMsgs.Any())
+            if (!Refcontext.LearnMsgs.Any())
             {
-                await context.LearnMsgs.AddRangeAsync(from M in LearnedMessagesPrimer.PrimerList
-                                                      select new LearnMsgs(msgType: M.MsgType, teachingMsg: M.Message));
+                await Refcontext.LearnMsgs.AddRangeAsync(
+                    LearnedMessagesPrimer.PrimerList
+                                            .Select(m => new LearnMsgs(msgType: m.MsgType, teachingMsg: m.Message))
+                                              );
             }
 
-            if (!context.BanReasons.Any())
+            if (!Refcontext.BanReasons.Any())
             {
-                await context.BanReasons.AddRangeAsync(from B in LearnedMessagesPrimer.BanReasonList
-                                                       select new Models.BanReasons(msgType: B.MsgType, banReason: B.Reason));
+                await Refcontext.BanReasons.AddRangeAsync(
+                    LearnedMessagesPrimer.BanReasonList
+                                            .Select(b => new Models.BanReasons(msgType: b.MsgType, banReason: b.Reason))
+                                              );
             }
 
-            if (!context.BanRules.Any())
+            if (!Refcontext.BanRules.Any())
             {
-                await context.BanRules.AddRangeAsync(from R in LearnedMessagesPrimer.BanViewerRulesList
-                                                     select new BanRules(0, R.ViewerType, R.MsgType, R.ModAction, R.TimeoutSeconds));
+                await Refcontext.BanRules.AddRangeAsync(
+                    LearnedMessagesPrimer.BanViewerRulesList
+                                             .Select(R => new BanRules(0, R.ViewerType, R.MsgType, R.ModAction, R.TimeoutSeconds))
+                                             );
             }
 
-            //await transaction.CommitAsync();
-            await context.SaveChangesAsync(true);
+            await Refcontext.SaveChangesAsync(true);
         }
 
-        private async Task CleanCategories(IDbContextTransaction contextTransaction = null)
+        private void CleanCategories(SQLDBContext Refcontext = null)
         {
             List<CategoryList> CatsToReplace = [];
 
-            //using var transaction = await context.Database.BeginTransactionAsync();
-
-            foreach (CategoryList C in context.CategoryList)
+            foreach (CategoryList C in Refcontext.CategoryList)
             {
                 if (C.Category.Contains("''''"))
                 {
@@ -218,11 +218,11 @@ namespace StreamerBotLib.DataSQL.SingleContext
                 }
             }
 
-            context.CategoryList.RemoveRange(CatsToReplace);
+            Refcontext.CategoryList.RemoveRange(CatsToReplace);
             CatsToReplace.ForEach((c) => c.Category = FormatData.AddEscapeFormat(c.Category));
-            context.CategoryList.AddRange(CatsToReplace);
+            Refcontext.CategoryList.AddRange(CatsToReplace);
 
-            foreach (var CU in context.CommandsBase)
+            foreach (var CU in Refcontext.CommandsBase)
             {
                 if (CU.Category is null || CU.Category.Contains(""))
                 {
@@ -242,9 +242,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
                 }
 
             }
-
-            //await transaction.CommitAsync();
-            await context.SaveChangesAsync(true);
+            Refcontext.SaveChanges(true);
         }
 
         #endregion

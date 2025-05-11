@@ -198,7 +198,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("ClearAllCurrencyValues", DebugLogTypes.DataManager, "Clearing all currency values.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.ClearAllCurrencyValues();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.ClearAllCurrencyValues();
+                });
             }
         }
 
@@ -207,7 +210,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("ClearUsersNotFollowers", DebugLogTypes.DataManager, "Clearing users not followers.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.ClearUsersNotFollowers();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.ClearUsersNotFollowers();
+                });
             }
         }
 
@@ -216,13 +222,16 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("ClearWatchTime", DebugLogTypes.DataManager, "Clearing watch time.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.ClearWatchTime();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.ClearWatchTime();
+                });
             }
         }
 
         public void DeleteDataRows(IEnumerable<DataRow> dataRows)
         {
-            LogWriter.DebugLog("DeleteDataRows", DebugLogTypes.DataManager, "Deleting data rows.");
+            LogWriter.DebugLog("DeleteDataRows", DebugLogTypes.DataManager, "Deleting data rows - not available.");
             lock (GUIDataManagerLock.Lock) { }
         }
 
@@ -573,7 +582,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("GUIRowEditSave", DebugLogTypes.DataManager, "GUI row edit save.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.GUIRowEditSave();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.GUIRowEditSave();
+                });
             }
         }
 
@@ -630,7 +642,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.DataManager, "Posting category stream.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostCategoryStream(category, StreamCount);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostCategoryStream(category, StreamCount);
+                });
             }
         }
 
@@ -659,7 +674,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostCurrencyType", DebugLogTypes.DataManager, "Posting currency type.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostCurrencyType(currencyType);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostCurrencyType(currencyType);
+                });
             }
         }
 
@@ -668,7 +686,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostCurrencyUpdate", DebugLogTypes.DataManager, "Posting currency update.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostCurrencyUpdate(User, value, CurrencyName);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostCurrencyUpdate(User, value, CurrencyName);
+                });
             }
         }
 
@@ -677,7 +698,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostCurrencyUpdate", DebugLogTypes.DataManager, "Posting currency update.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostCurrencyUpdate(Updates, CurrencyName);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostCurrencyUpdate(Updates, CurrencyName);
+                });
             }
         }
 
@@ -686,12 +710,15 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostDataGridGUIAddRow", DebugLogTypes.DataManager, "Posting data grid GUI add row.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostDataGridGUIAddRow(tableMeta);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostDataGridGUIAddRow(tableMeta);
 
-                if (tableMeta.TableName is "Commands" or "CommandsUser")
-                { // some update to Commands or CommandsUser, reset the repeat timer command list - in case the user changed the timer value
-                    RepeatTimerList.Clear();
-                }
+                    if (tableMeta.TableName is "Commands" or "CommandsUser")
+                    { // some update to Commands or CommandsUser, reset the repeat timer command list - in case the user changed the timer value
+                        RepeatTimerList.Clear();
+                    }
+                });
             }
         }
 
@@ -727,7 +754,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostGiveawayData", DebugLogTypes.DataManager, "Posting giveaway data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostGiveawayData(UserId, dateTime);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostGiveawayData(UserId, dateTime);
+                });
             }
         }
 
@@ -736,7 +766,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostInRaidData", DebugLogTypes.DataManager, "Posting in-raid data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostInRaidData(user, time, viewers, gamename);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostInRaidData(user, time, viewers, gamename);
+                });
             }
         }
 
@@ -745,7 +778,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostLearnMsgsRow", DebugLogTypes.DataManager, "Posting learn messages row.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostLearnMsgsRow(Message, MsgType);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostLearnMsgsRow(Message, MsgType);
+                });
             }
         }
 
@@ -763,7 +799,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostMonitorChannel", DebugLogTypes.DataManager, "Posting monitor channel.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostMonitorChannel(liveUsers);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostMonitorChannel(liveUsers);
+                });
             }
         }
 
@@ -772,14 +811,17 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostMultiLiveLog", DebugLogTypes.DataManager, "Posting multi-live log.");
             lock (GUIDataManagerLock.Lock)
             {
-                MultiLiveStatusList.Insert(0, LogItem);
-
-                if (MultiLiveStatusList.Count > MaxList)
+                ThreadManager.AddTaskToGUIDispatcher(() =>
                 {
-                    MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
-                }
-                MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
-                _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
+                    MultiLiveStatusList.Insert(0, LogItem);
+
+                    if (MultiLiveStatusList.Count > MaxList)
+                    {
+                        MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
+                    }
+                    MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
+                    _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
+                });
             }
         }
 
@@ -797,7 +839,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostNewAutoShoutUser", DebugLogTypes.DataManager, "Posting new auto-shout user.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostNewAutoShoutUser(UserId, platform);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostNewAutoShoutUser(UserId, platform);
+                });
             }
         }
 
@@ -806,7 +851,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostOutgoingRaid", DebugLogTypes.DataManager, "Posting outgoing raid.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostOutgoingRaid(HostedChannel, dateTime);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostOutgoingRaid(HostedChannel, dateTime);
+                });
             }
         }
 
@@ -824,7 +872,11 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostStream", DebugLogTypes.DataManager, "Posting stream.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.PostStream(StreamStart, Category).Result;
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostStream(StreamStart, Category);
+                });
+                return true;
             }
         }
 
@@ -835,7 +887,10 @@ namespace StreamerBotLib.DataSQL
             {
                 LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, $"Posting stream stats for stream started {streamStat.StreamStart}.");
 
-                _dataManager.PostStreamStat(streamStat);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostStreamStat(streamStat);
+                });
             }
         }
 
@@ -844,7 +899,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("PostUserCustomWelcome", DebugLogTypes.DataManager, "Posting user custom welcome.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.PostUserCustomWelcome(User, WelcomeMsg);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostUserCustomWelcome(User, WelcomeMsg);
+                });
             }
         }
 
@@ -853,7 +911,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("RemoveAllFollowers", DebugLogTypes.DataManager, "Removing all followers.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.RemoveAllFollowers();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.RemoveAllFollowers();
+                });
             }
         }
 
@@ -862,7 +923,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("RemoveAllGiveawayData", DebugLogTypes.DataManager, "Removing all giveaway data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.RemoveAllGiveawayData();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.RemoveAllGiveawayData();
+                });
             }
         }
 
@@ -871,7 +935,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("RemoveAllInRaidData", DebugLogTypes.DataManager, "Removing all in-raid data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.RemoveAllInRaidData();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.RemoveAllInRaidData();
+                });
             }
         }
 
@@ -880,7 +947,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("RemoveAllOutRaidData", DebugLogTypes.DataManager, "Removing all out-raid data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.RemoveAllOutRaidData();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.RemoveAllOutRaidData();
+                });
             }
         }
 
@@ -889,7 +959,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("RemoveAllOverlayTickerData", DebugLogTypes.DataManager, "Removing all overlay ticker data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.RemoveAllOverlayTickerData();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.RemoveAllOverlayTickerData();
+                });
             }
         }
 
@@ -898,7 +971,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("RemoveAllStreamStats", DebugLogTypes.DataManager, "Removing all stream stats.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.RemoveAllStreamStats();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.RemoveAllStreamStats();
+                });
             }
         }
 
@@ -907,7 +983,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("RemoveAllUsers", DebugLogTypes.DataManager, "Removing all users.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.RemoveAllUsers();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.RemoveAllUsers();
+                });
             }
         }
 
@@ -934,7 +1013,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("SetBuiltInCommandsEnabled", DebugLogTypes.DataManager, "Setting built-in commands enabled.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.SetBuiltInCommandsEnabled(Enabled);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.SetBuiltInCommandsEnabled(Enabled);
+                });
             }
         }
 
@@ -950,7 +1032,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("SetSystemEventsEnabled", DebugLogTypes.DataManager, "Setting system events enabled.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.SetSystemEventsEnabled(Enabled);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.SetSystemEventsEnabled(Enabled);
+                });
             }
         }
 
@@ -959,9 +1044,12 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("SetUserDefinedCommandsEnabled", DebugLogTypes.DataManager, "Setting user-defined commands enabled.");
             lock (GUIDataManagerLock.Lock)
             {
-                RepeatTimerList.Clear(); // clear the list for enabled change - the timers don't respond for disabled commands
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    RepeatTimerList.Clear(); // clear the list for enabled change - the timers don't respond for disabled commands
 
-                _dataManager.SetUserDefinedCommandsEnabled(Enabled);
+                    await _dataManager.SetUserDefinedCommandsEnabled(Enabled);
+                });
             }
         }
 
@@ -970,7 +1058,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("SetWebhooksEnabled", DebugLogTypes.DataManager, "Setting webhooks enabled.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.SetWebhooksEnabled(Enabled);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.SetWebhooksEnabled(Enabled);
+                });
             }
         }
 
@@ -979,7 +1070,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("StartBulkFollowers", DebugLogTypes.DataManager, "Starting bulk followers.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.StartBulkFollowers();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.StartBulkFollowers();
+                });
             }
         }
 
@@ -988,7 +1082,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("SummarizeStreamData", DebugLogTypes.DataManager, "Summarizing stream data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.SummarizeStreamData();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.SummarizeStreamData();
+                });
             }
         }
 
@@ -997,7 +1094,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("SummarizeStreamData", DebugLogTypes.DataManager, "Summarizing stream data.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.SummarizeStreamData(archiveRecord);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.SummarizeStreamData(archiveRecord);
+                });
             }
         }
 
@@ -1033,7 +1133,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.DataManager, "Updating currency.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.UpdateCurrency(Users, dateTime);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UpdateCurrency(Users, dateTime);
+                });
             }
         }
 
@@ -1042,7 +1145,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UpdateFollowers", DebugLogTypes.DataManager, "Updating followers.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.UpdateFollowers(follows);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UpdateFollowers(follows);
+                });
             }
         }
 
@@ -1060,7 +1166,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UpdateOverlayTicker", DebugLogTypes.DataManager, "Updating overlay ticker.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.UpdateOverlayTicker(item, name);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UpdateOverlayTicker(item, name);
+                });
             }
         }
 
@@ -1069,7 +1178,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UpdateStats", DebugLogTypes.DataManager, "Updating stats.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.UpdateStats(Stat, userId, platform);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UpdateStats(Stat, userId, platform);
+                });
             }
         }
 
@@ -1078,7 +1190,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.DataManager, "Updating watch time.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.UpdateWatchTime(Users, CurrTime);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UpdateWatchTime(Users, CurrTime);
+                });
             }
         }
 
@@ -1087,7 +1202,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.DataManager, "Updating watch time.");
             lock (GUIDataManagerLock.Lock)
             {
-                UpdateWatchTime([User], CurrTime);
+                ThreadManager.AddTaskToGUIDispatcher(() =>
+                {
+                    UpdateWatchTime([User], CurrTime);
+                });
             }
         }
 
@@ -1096,7 +1214,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager, "User joined.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.UserJoined(User, NowSeen);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UserJoined(User, NowSeen);
+                });
             }
         }
 
@@ -1107,7 +1228,10 @@ namespace StreamerBotLib.DataSQL
             {
                 LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
                     $"Updating {Users.Count()} users now joined to the channel.");
-                _dataManager.UserJoined(Users, NowSeen);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UserJoined(Users, NowSeen);
+                });
             }
         }
 
@@ -1116,7 +1240,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("UserLeft", DebugLogTypes.DataManager, "User left.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.UserLeft(User, LastSeen);
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.UserLeft(User, LastSeen);
+                });
             }
         }
 
@@ -1125,7 +1252,10 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("Exit", DebugLogTypes.DataManager, "Exiting.");
             lock (GUIDataManagerLock.Lock)
             {
-                _dataManager.Exit();
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.Exit();
+                });
             }
         }
     }

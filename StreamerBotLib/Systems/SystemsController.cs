@@ -227,53 +227,61 @@ namespace StreamerBotLib.Systems
                 List<string> UserList = [];
 
                 LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Evaluating new followers.");
-                foreach (Follow f in DataManage.PostFollowers(FollowList))
+
+                IEnumerable<Follow> ResultList;
+
+                ThreadManager.AddTaskToGUIDispatcher(() =>
                 {
-                    if (OptionFlags.ManageFollowers)
+                    ResultList = DataManage.PostFollowers(FollowList);
+
+                    foreach (Follow f in ResultList)
                     {
-                        LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Managing new followers.");
-                        if (FollowEnabled)
+                        if (OptionFlags.ManageFollowers)
                         {
-                            if (OptionFlags.TwitchFollowerEnableMsgLimit && FollowList.Count() >= OptionFlags.TwitchFollowerMsgLimit)
+                            LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Managing new followers.");
+                            if (FollowEnabled)
                             {
-                                LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Adding user to group follower list.");
-                                UserList.Add(f.FromUserName);
-                            }
-                            else
-                            {
-                                LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Sending message about user.");
-                                string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
-                                SendMessage(message);
+                                if (OptionFlags.TwitchFollowerEnableMsgLimit && FollowList.Count() >= OptionFlags.TwitchFollowerMsgLimit)
+                                {
+                                    LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Adding user to group follower list.");
+                                    UserList.Add(f.FromUserName);
+                                }
+                                else
+                                {
+                                    LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Sending message about user.");
+                                    string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
+                                    SendMessage(message);
 
-                                SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), f.FromUser, UserMsg: message);
+                                    SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), f.FromUser, UserMsg: message);
+                                }
                             }
+
+                            LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Updating statistics.");
+                            UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
                         }
-
-                        LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Updating statistics.");
-                        UpdatedStat(StreamStatType.Follow, StreamStatType.AutoEvents);
                     }
-                }
 
-                LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Checking for overlay follower event.");
-                AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, FollowList.Last().FromUserName);
+                    LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Checking for overlay follower event.");
+                    AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, FollowList.Last().FromUserName);
 
 
-                if (UserList.Count > 0)
-                {
-                    LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Processing group follower list.");
-                    int Pick = 5;
-                    int i = 0;
-
-                    LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Sending to channel a group multi-follower message, i.e. 1 message with n-followers.");
-                    while (i * Pick < UserList.Count)
+                    if (UserList.Count > 0)
                     {
-                        string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) }));
-                        SendMessage(message);
-                        SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), null, UserMsg: message);
+                        LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Processing group follower list.");
+                        int Pick = 5;
+                        int i = 0;
 
-                        i++;
+                        LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Sending to channel a group multi-follower message, i.e. 1 message with n-followers.");
+                        while (i * Pick < UserList.Count)
+                        {
+                            string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) }));
+                            SendMessage(message);
+                            SystemActions.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), null, UserMsg: message);
+
+                            i++;
+                        }
                     }
-                }
+                });
             }
         }
 
@@ -813,32 +821,35 @@ namespace StreamerBotLib.Systems
 
         public void ProcessCommand(CmdMessage cmdMessage, Platform Source)
         {
-            try
+            ThreadManager.AddTaskToGUIDispatcher(() =>
             {
-                LogWriter.DebugLog("ProcessCommand", DebugLogTypes.SystemController, "Processing command.");
-                lock (ProcMsgQueue)
+                try
                 {
-                    ProcMsgQueue.Enqueue(new Task(() =>
+                    LogWriter.DebugLog("ProcessCommand", DebugLogTypes.SystemController, "Processing command.");
+                    lock (ProcMsgQueue)
                     {
-                        LogWriter.DebugLog("ProcessCommand", DebugLogTypes.SystemController, "Evaluating command.");
-                        SystemActions.EvalCommand(cmdMessage, Source);
-                    }));
+                        ProcMsgQueue.Enqueue(new Task(() =>
+                        {
+                            LogWriter.DebugLog("ProcessCommand", DebugLogTypes.SystemController, "Evaluating command.");
+                            SystemActions.EvalCommand(cmdMessage, Source);
+                        }));
+                    }
                 }
-            }
-            catch (InvalidOperationException InvalidOp)
-            {
-                LogWriter.LogException(InvalidOp, "ProcessCommand");
-                SendMessage(InvalidOp.Message);
-            }
-            catch (NullReferenceException NullRef)
-            {
-                LogWriter.LogException(NullRef, "ProcessCommand");
-                SendMessage(NullRef.Message);
-            }
-            catch (Exception ex)
-            {
-                LogWriter.LogException(ex, "ProcessCommand");
-            }
+                catch (InvalidOperationException InvalidOp)
+                {
+                    LogWriter.LogException(InvalidOp, "ProcessCommand");
+                    SendMessage(InvalidOp.Message);
+                }
+                catch (NullReferenceException NullRef)
+                {
+                    LogWriter.LogException(NullRef, "ProcessCommand");
+                    SendMessage(NullRef.Message);
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, "ProcessCommand");
+                }
+            });
         }
 
         private void ProcessCommands_OnRepeatEventOccured(object sender, TimerCommandsEventArgs e)

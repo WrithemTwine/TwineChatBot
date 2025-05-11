@@ -20,26 +20,19 @@ namespace StreamerBotLib.DataSQL.SingleContext
             return CleanupList;
         }
 
-        internal Task<bool> CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
+        internal async Task<bool> CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
         {
-            return Task.Run(() =>
-            {
-                // using var context = BuildDataContext();
-                var result = (from P in context.MultiLiveStreams where (P.UserId == UserId && P.Platform == platform && P.LiveDate == dateTime) select P).Count() > 1;
+            // using var context = BuildDataContext();
+            var result = await (from P in context.MultiLiveStreams where (P.UserId == UserId && P.Platform == platform && P.LiveDate == dateTime) select P).CountAsync() > 1;
 
-                return result;
-            });
+            return result;
         }
 
-        internal Task<bool> CheckMultiChannelName(string UserName, Platform platform)
+        internal async Task<bool> CheckMultiChannelName(string UserName, Platform platform)
         {
-            return Task.Run(() =>
-            {
-                // using var context = BuildDataContext();
-                var result = (from M in context.MultiChannels where (M.UserName == UserName && M.Platform == platform) select M).Any();
-
-                return result;
-            });
+            // using var context = BuildDataContext();
+            var result = await context.MultiChannels.Where(M => M.UserName == UserName && M.Platform == platform).Select(M => M).AnyAsync();
+            return result;
         }
 
         /// <summary>
@@ -47,156 +40,157 @@ namespace StreamerBotLib.DataSQL.SingleContext
         /// </summary>
         /// <param name="platform">The platform to retrieve</param>
         /// <returns>A list of monitored UserIds for the provided platform.</returns>
-        internal Task<List<string>> GetMultiChannelIds(Platform platform)
+        internal async Task<List<string>> GetMultiChannelIds(Platform platform)
         {
-            return Task.Run(() =>
-            {
-                // using var context = BuildDataContext();
-                List<string> result = [.. from M in context.MultiChannels where M.Platform == platform select M.UserId];
-
-                return result;
-            });
+            // using var context = BuildDataContext();
+            return await context.MultiChannels
+                                .Where(M => M.Platform == platform)
+                                .Select(M => M.UserId)
+                                .ToListAsync();
         }
 
-        internal Task<List<Tuple<WebhooksSource, Uri>>> GetMultiWebHooks()
+        internal async Task<List<Tuple<WebhooksSource, Uri>>> GetMultiWebHooks()
         {
-            return Task.Run(() =>
-            {
-                // using var context = BuildDataContext();
-                List<Tuple<WebhooksSource, Uri>> result = [.. (from W in context.MultiWebhooks
-                                                              where W.IsEnabled
-                                                              select new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook))];
-
-                return result;
-            });
+            // using var context = BuildDataContext();
+            return await context.MultiWebhooks
+                                .Where(W => W.IsEnabled)
+                                .Select(W => new Tuple<WebhooksSource, Uri>(W.WebhooksSource, W.Webhook))
+                                .ToListAsync();
         }
 
-        internal Task PostMonitorChannel(IEnumerable<LiveUser> liveUsers, IDbContextTransaction contextTransaction = null)
+        internal async Task PostMonitorChannel(IEnumerable<LiveUser> liveUsers)
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
+            // using var context = BuildDataContext();
 
-                foreach (LiveUser U in liveUsers)
+            var existingUsers = await context.MultiChannels
+                .Where(mc => liveUsers.Any(lu => lu.UserName == mc.UserName && lu.UserId == mc.UserId && lu.Platform == mc.Platform))
+                .ToListAsync();
+
+            var newUsers = liveUsers
+                .Where(lu => !existingUsers.Any(eu => eu.UserName == lu.UserName && eu.UserId == lu.UserId && eu.Platform == lu.Platform))
+                .Select(lu => new MultiChannels(userId: lu.UserId, userName: lu.UserName, platform: lu.Platform));
+
+            await context.MultiChannels.AddRangeAsync(newUsers);
+            await context.SaveChangesAsync();
+
+            UpdatedMonitoringChannels?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal async Task<bool> PostMultiStreamDate(LiveUser liveUser, DateTime onDate)
+        {
+            // using var context = BuildDataContext();
+
+            var currUser = await context.MultiChannels
+                .Include(mc => mc.MultiLiveStreams)
+                .FirstOrDefaultAsync(mc => mc.UserId == liveUser.UserId);
+
+            if (currUser == null)
+            {
+                return false; // User not found, no action needed
+            }
+
+            if (currUser.UserName != liveUser.UserName) // Update username if changed
+            {
+                currUser.UserName = liveUser.UserName;
+            }
+
+            if (!currUser.MultiLiveStreams.Any(m => m.LiveDate == onDate))
+            {
+                await context.MultiLiveStreams.AddAsync(new MultiLiveStreams
                 {
-                    if ((from L in context.MultiChannels
-                         where (L.UserName == U.UserName && L.UserId == U.UserId && L.Platform == U.Platform)
-                         select L).Any())
-                    {
-                        await context.MultiChannels.AddAsync(new(userId: U.UserId, userName: U.UserName, platform: U.Platform));
-                    }
-                }
-                //await transaction.CommitAsync();
+                    UserId = liveUser.UserId,
+                    Platform = liveUser.Platform,
+                    LiveDate = onDate
+                });
                 await context.SaveChangesAsync();
-                UpdatedMonitoringChannels?.Invoke(this, new());
+                return true; // New stream date added
+            }
 
-            });
-        }
-
-        internal Task<bool> PostMultiStreamDate(LiveUser liveUser, DateTime onDate, IDbContextTransaction contextTransaction = null)
-        {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                MultiChannels currUser = (from MC in context.MultiChannels.Include(multi => multi.MultiLiveStreams) where MC.UserId == liveUser.UserId select MC).FirstOrDefault();
-
-                if (currUser.UserName != liveUser.UserName) // update username if it's changed
-                {
-                    currUser.UserName = liveUser.UserName;
-                }
-
-                bool result = currUser.MultiLiveStreams.Where(m => m.LiveDate == onDate).Any();
-                if (!result)
-                {
-                    await context.MultiLiveStreams.AddAsync(new(userId: liveUser.UserId, platform: liveUser.Platform, liveDate: onDate));
-                }
-
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync(true);
-
-                return !result;
-            });
+            return false; // Stream date already exists
         }
 
         internal Task SummarizeStreamData()
         {
             return Task.Run(async () =>
             {
-                if (IsLiveStreamUpdated || CleanupList.Count == 0) // only perform if flag for update occurs
+                if (!IsLiveStreamUpdated && CleanupList.Count > 0)
                 {
-                    await ThreadManager.AddTaskToGUIDispatcher(
-                        new Task(() =>
-                        {
-                            // using var context = BuildDataContext();
-                            CleanupList.Clear();
-
-                            List<DateTime> AllDates = [.. from ML in context.MultiLiveStreams select ML.LiveDate.Date];
-                            List<DateTime> UniqueDates = [.. AllDates.Intersect(AllDates)];
-
-                            CleanupList.AddRange(from M in UniqueDates.Select(uniqueDate => new ArchiveMultiStream()
-                            {
-                                ThroughDate = uniqueDate,
-                                StreamCount = (from DateTime dates in AllDates
-                                               where dates.Date <= uniqueDate
-                                               select dates).Count()
-                            })
-                                                 select M);
-
-                            IsLiveStreamUpdated = false; // reset update flag indicator
-                        })
-                    );
+                    return;
                 }
+
+                await ThreadManager.AddTaskToGUIDispatcher(new Task(() =>
+                {
+                    // using var context = BuildDataContext();
+                    CleanupList.Clear();
+
+                    var allDates = context.MultiLiveStreams
+                                          .Select(ml => ml.LiveDate.Date)
+                                          .ToList();
+
+                    var uniqueDates = allDates.Distinct().ToList();
+
+                    CleanupList.AddRange(uniqueDates.Select(uniqueDate => new ArchiveMultiStream
+                    {
+                        ThroughDate = uniqueDate,
+                        StreamCount = allDates.Count(date => date <= uniqueDate)
+                    }));
+
+                    IsLiveStreamUpdated = false; // Reset update flag
+                }));
             });
         }
 
-        internal Task SummarizeStreamData(ArchiveMultiStream archiveRecord, IDbContextTransaction contextTransaction = null)
+        internal Task SummarizeStreamData(ArchiveMultiStream archiveRecord)
         {
             return Task.Run(async () =>
             {
                 LogWriter.DebugLog("SummarizeStreamData", DebugLogTypes.DataManager, $"Summarize multi-stream data, referring to {archiveRecord}.");
                 // using var context = BuildDataContext();
 
-                //using var transaction = await context.Database.BeginTransactionAsync();
+                // Fetch all records to archive in a single query
+                var archiveRecords = await context.MultiLiveStreams
+                    .Where(ls => ls.LiveDate <= archiveRecord.ThroughDate.Date)
+                    .ToListAsync();
 
-                List<MultiLiveStreams> ArchiveRecords = new(from LS in context.MultiLiveStreams
-                                                            where LS.LiveDate <= archiveRecord.ThroughDate.Date
-                                                            select LS);
-                List<string> UniqueUserIds = [];
-                UniqueUserIds.UniqueAddRange(from LS in ArchiveRecords
-                                             select LS.UserId);
-                foreach (var (userId, CurrUser, MaxDate, CurrSummaryLiveStream) in from string userId in UniqueUserIds
-                                                                                   let CurrUser = new List<MultiLiveStreams>(from AR in ArchiveRecords
-                                                                                                                             where AR.UserId == userId
-                                                                                                                             select AR)
-                                                                                   let MaxDate = (from D in CurrUser
-                                                                                                  select D.LiveDate).Max()
-                                                                                   let CurrSummaryLiveStream = (from M in context.MultiSummaryLiveStreams
-                                                                                                                where M.UserId == userId
-                                                                                                                select M).FirstOrDefault()
-                                                                                   select (userId, CurrUser, MaxDate, CurrSummaryLiveStream))
+                // Group records by UserId for efficient processing
+                var groupedRecords = archiveRecords
+                    .GroupBy(ls => ls.UserId)
+                    .ToDictionary(g => g.Key, g => g.ToList());
+
+                // Prepare new or updated summary records
+                var newSummaries = new List<MultiSummaryLiveStreams>();
+                foreach (var (userId, userRecords) in groupedRecords)
                 {
-                    if (CurrSummaryLiveStream == default)
+                    var maxDate = userRecords.Max(r => r.LiveDate);
+                    var platform = userRecords.First().Platform;
+
+                    var existingSummary = await context.MultiSummaryLiveStreams
+                        .FirstOrDefaultAsync(ms => ms.UserId == userId);
+
+                    if (existingSummary == null)
                     {
-                        await context.MultiSummaryLiveStreams.AddAsync(new(CurrUser.Count, MaxDate, userId, CurrUser.First().Platform));
+                        newSummaries.Add(new MultiSummaryLiveStreams(userRecords.Count, maxDate, userId, platform));
                     }
                     else
                     {
-                        CurrSummaryLiveStream.ThroughDate = MaxDate;
-                        CurrSummaryLiveStream.StreamCount += CurrUser.Count;
+                        existingSummary.ThroughDate = maxDate;
+                        existingSummary.StreamCount += userRecords.Count;
                     }
                 }
 
-                context.MultiLiveStreams.RemoveRange(ArchiveRecords);
+                // Add new summaries and remove archived records in batches
+                if (newSummaries.Count != 0)
+                {
+                    await context.MultiSummaryLiveStreams.AddRangeAsync(newSummaries);
+                }
+                context.MultiLiveStreams.RemoveRange(archiveRecords);
 
+                // Save changes and update state
+                await context.SaveChangesAsync();
                 IsLiveStreamUpdated = true;
 
+                // Clear and refresh lists
                 CleanupList.Clear();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
                 await SummarizeStreamData();
                 RefreshMultiLiveStreamsList();
                 RefreshMultiSummaryLiveStreamsList();

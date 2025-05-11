@@ -19,7 +19,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
         {
             return Task.Run(() =>
             {
-                //using var context = BuildDataContext();
+                //// using var context = BuildDataContext();
                 var result = (from I in context.InRaidData
                               where (I.UserId == userId && I.RaidDate == time && I.ViewerCount == viewers && I.Category == gamename)
                               select I).Any();
@@ -39,7 +39,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
         {
             return Task.Run(() =>
             {
-                //using var context = BuildDataContext();
+                //// using var context = BuildDataContext();
                 var result = (from O in context.OutRaidData
                               where (O.ChannelRaided == HostedChannel && O.RaidDate == dateTime)
                               select O).Any();
@@ -52,7 +52,7 @@ namespace StreamerBotLib.DataSQL.SingleContext
         {
             return Task.Run(() =>
             {
-                //using var context = BuildDataContext();
+                //// using var context = BuildDataContext();
                 var Users = (from U in context.Users select U).ToList();
 
                 Random random = new();

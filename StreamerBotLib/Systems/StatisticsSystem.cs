@@ -423,7 +423,10 @@ namespace StreamerBotLib.Systems
                 LogWriter.DebugLog("AddDeathCounter", DebugLogTypes.StatSystem, "Starting a check to prevent multiple death counter updates.");
 
                 UpdateDeathCounter = true;
-                result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category));
+                ThreadManager.AddTaskToGUIDispatcher(() =>
+                {
+                    result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category));
+                });
 
                 ThreadManager.CreateThreadStart("AddDeathCounter", () =>
                 {
@@ -448,8 +451,12 @@ namespace StreamerBotLib.Systems
         internal static int ResetDeathCounter(int Counter)
         {
             LogWriter.DebugLog("ResetDeathCounter", DebugLogTypes.StatSystem, $"Request to update the current {Category} death counter to {Counter}.");
-
-            return DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category), true, Counter);
+            int result = 0;
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                result = DataManage.PostDeathCounterUpdate(FormatData.AddEscapeFormat(Category), true, Counter);
+            });
+            return result;
         }
 
         #endregion

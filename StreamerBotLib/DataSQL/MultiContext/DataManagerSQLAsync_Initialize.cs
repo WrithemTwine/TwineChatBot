@@ -30,11 +30,11 @@ namespace StreamerBotLib.DataSQL.MultiContext
             OptionFlags.DataLoaded = true;
 
             // refresh GUI data
-            RefreshChannelEventsList(true);
-            RefreshCommandsList(true);
-            RefreshLearnMsgsList(true);
-            RefreshBanReasonsList(true);
-            RefreshBanRulesList(true);
+            await RefreshChannelEventsList(true);
+            await RefreshCommandsList(true);
+            await RefreshLearnMsgsList(true);
+            await  RefreshBanReasonsList(true);
+           await  RefreshBanRulesList(true);
         }
 
         /// <summary>

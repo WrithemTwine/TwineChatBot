@@ -14,17 +14,20 @@ namespace StreamerBotLib.Systems
         #region Auto-Mod Messages
         public static void ManageLearnedMsgList()
         {
-            LogWriter.DebugLog("ManageLearnedMsgList", DebugLogTypes.ModerationSystem, "Checking for learned messages.");
-            List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
-            if (learnMsgsRows != null)
+            ThreadManager.AddTaskToGUIDispatcher(() =>
             {
-                MessageAnalysis.UpdateLearningList((from LearnMsgRecord M in learnMsgsRows
-                                                    select new BotModAction()
-                                                    {
-                                                        LearnMsg = M.TeachingMsg,
-                                                        ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
-                                                    }).ToList());
-            }
+                LogWriter.DebugLog("ManageLearnedMsgList", DebugLogTypes.ModerationSystem, "Checking for learned messages.");
+                List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
+                if (learnMsgsRows != null)
+                {
+                    MessageAnalysis.UpdateLearningList((from LearnMsgRecord M in learnMsgsRows
+                                                        select new BotModAction()
+                                                        {
+                                                            LearnMsg = M.TeachingMsg,
+                                                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
+                                                        }).ToList());
+                }
+            });
         }
 
         public Tuple<ModActions, int, MsgTypes, BanReasons> ModerateMessage(CmdMessage MsgReceived)

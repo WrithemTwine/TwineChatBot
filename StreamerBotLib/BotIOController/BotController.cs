@@ -1019,19 +1019,23 @@ namespace StreamerBotLib.BotIOController
             DateTime CurrTime = StartedAt.ToLocalTime();
 
             // true posted new event, false did not post
-            bool PostedLive = SystemsController.DataManage.PostMultiStreamDate(User, CurrTime);
+            bool PostedLive;
 
-            if (PostedLive)
+            ThreadManager.AddTaskToGUIDispatcher(() =>
             {
-                bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(User.UserId, User.Platform, CurrTime);
+                PostedLive = SystemsController.DataManage.PostMultiStreamDate(User, CurrTime);
 
-                if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
+                if (PostedLive)
                 {
-                    // get message, set a default if otherwise deleted/unavailable
-                    string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+                    bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(User.UserId, User.Platform, CurrTime);
 
-                    // keys for exchanging codes for representative names
-                    Dictionary<string, string> dictionary = new()
+                    if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
+                    {
+                        // get message, set a default if otherwise deleted/unavailable
+                        string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+
+                        // keys for exchanging codes for representative names
+                        Dictionary<string, string> dictionary = new()
                         {
                             { "#user", User.UserName },
                             { "#category", Category },
@@ -1039,32 +1043,33 @@ namespace StreamerBotLib.BotIOController
                             { "#url", User.UserName }
                         };
 
-                    SystemsController.DataManage.PostMultiLiveLog(VariableParser.ParseReplace(msg, dictionary));
+                        SystemsController.DataManage.PostMultiLiveLog(VariableParser.ParseReplace(msg, dictionary));
 
-                    foreach (Tuple<WebhooksSource, Uri> u in SystemsController.DataManage.GetMultiWebHooks())
-                    {
-                        if (u.Item1 == WebhooksSource.Discord)
+                        foreach (Tuple<WebhooksSource, Uri> u in SystemsController.DataManage.GetMultiWebHooks())
                         {
-                            DiscordWebhook.SendMessage(u.Item2,
-                                VariableParser.ParseReplace(msg, dictionary),
-                                VariableParser.BuildPlatformUrl(User.UserName, User.Platform));
+                            if (u.Item1 == WebhooksSource.Discord)
+                            {
+                                DiscordWebhook.SendMessage(u.Item2,
+                                    VariableParser.ParseReplace(msg, dictionary),
+                                    VariableParser.BuildPlatformUrl(User.UserName, User.Platform));
+                            }
                         }
                     }
                 }
-            }
 
-            if (User.Platform == Platform.Twitch)
-            {
-                if (OptionFlags.TwitchMultiLiveBrowseChannel)
+                if (User.Platform == Platform.Twitch)
                 {
-                    string URL = Resources.TwitchHomepage + User.UserName;
+                    if (OptionFlags.TwitchMultiLiveBrowseChannel)
+                    {
+                        string URL = Resources.TwitchHomepage + User.UserName;
 
-                    Process startBrowser = new();
-                    startBrowser.StartInfo.UseShellExecute = true;
-                    startBrowser.StartInfo.FileName = $"\"{URL}\"";
-                    _ = startBrowser.Start();
+                        Process startBrowser = new();
+                        startBrowser.StartInfo.UseShellExecute = true;
+                        startBrowser.StartInfo.FileName = $"\"{URL}\"";
+                        _ = startBrowser.Start();
+                    }
                 }
-            }
+            });
         }
 
         private void ManageOnlineStream(Platform platform)

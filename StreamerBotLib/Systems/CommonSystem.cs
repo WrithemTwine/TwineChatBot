@@ -186,7 +186,12 @@ namespace StreamerBotLib.Systems
         public static bool AddClip(Clip c)
         {
             LogWriter.DebugLog("AddClip", Enums.DebugLogTypes.CommonSystem, $"Adding Clip: {c.Title}");
-            return DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName);
+            bool success = false;
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                success = DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName);
+            });
+            return success;
         }
 
         /// <summary>

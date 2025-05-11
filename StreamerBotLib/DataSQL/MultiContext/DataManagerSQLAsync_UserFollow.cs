@@ -116,7 +116,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             {
                 ProcessFollowQueuestarted = true;
 
-                ThreadManager.CreateThreadStart("PostFollowsQueue", async () =>
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     using var context = BuildDataContext();
 
@@ -125,10 +125,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
                         List<Followers> tempfollow = [];
                         foreach (Follow f in currUser)
                         {
-                            ThreadManager.AddTaskToGUIDispatcher(async () =>
-                            {
-                                await PostNewUser(f.FromUser, f.FollowedAt);
-                            });
+                            await PostNewUser(f.FromUser, f.FollowedAt);
 
                             Followers currFollow = (from UF in context.Followers
                                                     where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
@@ -149,14 +146,11 @@ namespace StreamerBotLib.DataSQL.MultiContext
                                                                      category: f.Category));
                             }
                         }
-                        ThreadManager.AddTaskToGUIDispatcher(async () =>
-                        {
-                            await context.Followers.AddRangeAsync(tempfollow);
-                        });
+                        await context.Followers.AddRangeAsync(tempfollow);
                     }
                     await context.SaveChangesAsync();
-                    RefreshFollowersList(true);
-                    RefreshUsersList(true);
+                    await RefreshFollowersList(true);
+                    await RefreshUsersList(true);
 
                     ProcessFollowQueuestarted = false;
 
@@ -275,9 +269,9 @@ namespace StreamerBotLib.DataSQL.MultiContext
             }
 
             OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));
-            RefreshUsersList(true);
-            RefreshFollowersList(true);
-            RefreshOldFollowUsersList(true);
+           await  RefreshUsersList(true);
+          await  RefreshFollowersList(true);
+          await  RefreshOldFollowUsersList(true);
         }
 
         /// <summary>
@@ -317,8 +311,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"New data: user Id: {debuguser.UserId}, Curr Login Date: {debuguser.CurrLoginDate}, LastDateSeen: {debuguser.LastDateSeen}");
 #endif
 
-            RefreshUsersList(true);
-            RefreshUserStatsList(true);
+            await RefreshUsersList(true);
+            await RefreshUserStatsList(true);
         }
 
         /// <summary>
@@ -350,9 +344,10 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 //LogWriter.DebugLog("UserJoined", DebugLogTypes.SpecialPurpose, $"New data: {user.GetDebugOutput()}");
 #endif
             }
+
             await context.SaveChangesAsync();
-            RefreshUsersList(true);
-            RefreshUserStatsList(true);
+       await     RefreshUsersList(true);
+      await      RefreshUserStatsList(true);
         }
 
         internal async Task UserLeft(LiveUser User, DateTime LastSeen)
@@ -361,7 +356,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             await context.Users
                         .Include(curr => curr.Currency)
                         .ThenInclude(type => type.CurrencyType)
-                        .Where((u) => u.UserId == User.UserId)
+                        .Include(stat => stat.UserStats)
+                        .Where((u) => u.UserId == User.UserId && u.Platform == User.Platform)
             .ForEachAsync(async (u) =>
             {
                 if (u.UserStats == default)
@@ -389,8 +385,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 }
             });
             await context.SaveChangesAsync();
-            RefreshUsersList(true);
-            RefreshUserStatsList(true);
+         await   RefreshUsersList(true);
+         await   RefreshUserStatsList(true);
 
 //#if DEBUG
 //            var contextUser = await context.Users

@@ -67,7 +67,7 @@ switches:
 
                 OptionFlags.LogBotStatus = true; // force logging operations to status during import
 
-                using var importcontext = BuildDataContext();
+                using var importcontext = dbContextFactory.CreateDbContext();
 
                 using var transaction = importcontext.Database.BeginTransaction();
 
@@ -81,13 +81,20 @@ switches:
                 OptionFlags.EFCDataImportedDataGram = true;
             }
 
-            using var context1 = BuildDataContext();
+            var initialcontext = dbContextFactory.CreateDbContext();
+            initialcontext.Database.EnsureCreated();
+            initialcontext.SaveChanges(true);
+            initialcontext.Dispose();
 
-            // apply any migrations to update the database to the current data schema model
-            context1.Database.Migrate();
-            context1.SaveChanges();
+            try
+            {
+                using var context1 = dbContextFactory.CreateDbContext();
+                context1.Database.Migrate();
+                context1.SaveChanges();
+            }
+            catch { /* ignore */ }
 
-            context = BuildDataContext();
+            context = dbContextFactory.CreateDbContext();
         }
 
         #region Process Queue
@@ -136,16 +143,16 @@ switches:
 
         #endregion
 
-        internal void Exit()
+        internal async Task Exit()
         {
             //processQueueTaskThread?.Join();
-            context.SaveChanges(true);
+            await context.SaveChangesAsync(true);
             context.Dispose();
         }
 
         private SQLDBContext BuildDataContext()
         {
-            return dbContextFactory.CreateDbContext();
+            return context;
         }
 
         private void ClearDataContext(SQLDBContext context)
@@ -158,13 +165,11 @@ switches:
             throw new NotImplementedException();
         }
 
-        internal Task<string> EditCommand(string cmd, List<string> Arglist, IDbContextTransaction contextTransaction = null)
+        internal async Task<string> EditCommand(string cmd, List<string> Arglist, IDbContextTransaction contextTransaction = null)
         {
-            return Task.Run(async () =>
-            {
                 string result = "";
 
-                // using var context = BuildDataContext();
+                // // using var context = BuildDataContext();
 
                 Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
                 CommandsBase EditCom = (from C in context.CommandsBase
@@ -199,7 +204,6 @@ switches:
                 }
 
                 return result;
-            });
         }
 
         internal Task<object[]> PerformQuery(CommandsBase row, int Top = 0)
@@ -208,7 +212,7 @@ switches:
             {
                 IEnumerable<object> output;
 
-                // using var context = BuildDataContext();
+                // // using var context = BuildDataContext();
 
                 output = row.Table switch
                 {
@@ -239,7 +243,7 @@ switches:
             {
                 object output;
 
-                // using var context = BuildDataContext();
+                // // using var context = BuildDataContext();
 
                 output = row.Table switch
                 {
@@ -262,11 +266,9 @@ switches:
         }
 
         #region Set_IsEnabled Methods
-        internal Task SetBuiltInCommandsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
+        internal async Task SetBuiltInCommandsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
+                // // using var context = BuildDataContext();
                 using var transaction = context.Database.BeginTransaction();
 
                 await context.Commands.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
@@ -274,21 +276,17 @@ switches:
                 //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshCommandsList();
-            });
         }
 
-        internal Task SetWebhooksEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
+        internal async Task SetWebhooksEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
+                // // using var context = BuildDataContext();
                 using var transaction = context.Database.BeginTransaction();
 
                 await context.Webhooks.ExecuteUpdateAsync((w) => w.SetProperty((u) => u.IsEnabled, (h) => Enabled));
                 //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshWebhooksList();
-            });
         }
 
         [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
@@ -297,36 +295,30 @@ switches:
             throw new NotImplementedException();
         }
 
-        internal Task SetSystemEventsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
+        internal async Task SetSystemEventsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
+                // // using var context = BuildDataContext();
                 using var transaction = context.Database.BeginTransaction();
 
                 await context.ChannelEvents.ExecuteUpdateAsync((c) => c.SetProperty((e) => e.IsEnabled, (ce) => Enabled));
                 //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshChannelEventsList();
-            });
         }
 
         /// <summary>
         /// Sets the 'IsEnabled' column for all records of the Commands table, specifically the user created commands (not the default commands).
         /// </summary>
         /// <param name="Enabled">The value to set for 'IsEnabled'.</param>
-        internal Task SetUserDefinedCommandsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
+        internal async Task SetUserDefinedCommandsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
+                // // using var context = BuildDataContext();
                 using var transaction = context.Database.BeginTransaction();
 
                 await context.CommandsUser.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
                 //await transaction.CommitAsync();
                 await context.SaveChangesAsync();
                 RefreshCommandsUserList();
-            });
         }
 
         #endregion

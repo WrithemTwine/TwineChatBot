@@ -7,6 +7,7 @@ using StreamerBotLib.Static;
 
 using System.Data;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml;
 
 using static StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
@@ -142,7 +143,7 @@ namespace StreamerBotLib.DataSQL.MultiContext.Import
         /// </summary>
         /// <param name="context">The new Database context to use for importing data.</param>
         /// <param name="dataManagerSQL">To access already built methods for entering data into the database using the application data flow.</param>
-        public void ConvertData(SQLDBContext context, DataManagerSQLAsync dataManagerSQL)
+        public async Task ConvertData(SQLDBContext context, DataManagerSQLAsync dataManagerSQL)
         {
             int totalTables = _DataSource?.Tables.Count ?? 0 + _MultiDataSource?.Tables.Count ?? 0;
             int totalRows = 0;
@@ -636,7 +637,7 @@ namespace StreamerBotLib.DataSQL.MultiContext.Import
                             {
                                 channelsRow.UserName = L.ChannelName;
                             }
-                            dataManagerSQL.PostMultiStreamDate(liveUser: new(userId: channelsRow.UserId, userName: channelsRow.UserName, botSource: Platform.Twitch), onDate: L.LiveDate);
+                           await  dataManagerSQL.PostMultiStreamDate(liveUser: new(userId: channelsRow.UserId, userName: channelsRow.UserName, botSource: Platform.Twitch), onDate: L.LiveDate);
                         }
                         else
                         {
@@ -749,7 +750,7 @@ namespace StreamerBotLib.DataSQL.MultiContext.Import
                     }
                     else if (!(from I in context.InRaidData where I.UserId == uId && I.RaidDate == A.DateTime select I).Any())
                     {
-                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category));
+                       await  dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category));
                     }
                 }
             }
@@ -1038,7 +1039,7 @@ namespace StreamerBotLib.DataSQL.MultiContext.Import
                                              select U).FirstOrDefault();
                         if (currUser != null)
                         {
-                            dataManagerSQL.PostNewAutoShoutUser(currUser.UserId, Platform.Twitch);
+                            await dataManagerSQL.PostNewAutoShoutUser(currUser.UserId, Platform.Twitch);
                         }
                         else
                         {

@@ -191,8 +191,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 // Clear and refresh lists
                 CleanupList.Clear();
                 await SummarizeStreamData();
-                RefreshMultiLiveStreamsList(true);
-                RefreshMultiSummaryLiveStreamsList(true);
+                await RefreshMultiLiveStreamsList(true);
+                await RefreshMultiSummaryLiveStreamsList(true);
             });
         }
 

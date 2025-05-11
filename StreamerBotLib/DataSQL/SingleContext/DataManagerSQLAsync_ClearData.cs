@@ -8,231 +8,153 @@ namespace StreamerBotLib.DataSQL.SingleContext
     internal partial class DataManagerSQLAsync
     {
         #region Clear DataBase Records 
-        internal Task ClearAllCurrencyValues(IDbContextTransaction contextTransaction = null)
+        internal async Task ClearAllCurrencyValues()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-
-                //using var transaction = await context.Database.BeginTransactionAsync();
-                await context.Currency.ExecuteUpdateAsync((c) => c.SetProperty((v) => v.Value, (c) => 0));
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshCurrencyList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.Currency.ExecuteUpdateAsync((c) => c.SetProperty((v) => v.Value, (c) => 0));
+            await context.SaveChangesAsync();
+            RefreshCurrencyList();
         }
 
         /// <summary>
         /// Clear all User rows for users not included in the Followers table.
         /// </summary>
-        internal Task ClearUsersNotFollowers(IDbContextTransaction contextTransaction = null)
+        internal async Task ClearUsersNotFollowers()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
+            // using var context = BuildDataContext();
 
-                //using var transaction = await context.Database.BeginTransactionAsync();
-                await context.Users.Where((u) => u.Follower == null || !u.Follower.IsFollower).ExecuteDeleteAsync();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
+            await context.Users.Where((u) => u.Follower == null || !u.Follower.IsFollower).ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
 
-                RefreshUsersList();
-                RefreshFollowersList();
-
-
-            });
+            RefreshUsersList();
+            RefreshFollowersList();
         }
 
         /// <summary>
         /// Clear all user watchtimes
         /// </summary>
-        internal Task ClearWatchTime(IDbContextTransaction contextTransaction = null)
+        internal async Task ClearWatchTime()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
+            // using var context = BuildDataContext();
 
-                await context.UserStats.ExecuteUpdateAsync((us) => us.SetProperty((u) => u.WatchTime, (s) => TimeSpan.FromSeconds(0)));
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
+            await context.UserStats.ExecuteUpdateAsync((us) => us.SetProperty((u) => u.WatchTime, (s) => TimeSpan.FromSeconds(0)));
+            await context.SaveChangesAsync();
 
-                RefreshUserStatsList();
-
-            });
+            RefreshUserStatsList();
         }
 
         /// <summary>
         /// Clear all 'Followers' table records.
         /// </summary>
-        internal Task RemoveAllFollowers(IDbContextTransaction contextTransaction = null)
+        internal async Task RemoveAllFollowers()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                await context.Followers.ExecuteDeleteAsync();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshFollowersList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.Followers.ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
+            RefreshFollowersList();
         }
 
         /// <summary>
         /// Clear all 'GiveawayUserData' table records.
         /// </summary>
-        internal Task RemoveAllGiveawayData(IDbContextTransaction contextTransaction = null)
+        internal async Task RemoveAllGiveawayData()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                await context.GiveawayUserData.ExecuteDeleteAsync();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshGiveawayUserDataList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.GiveawayUserData.ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
+            RefreshGiveawayUserDataList();
         }
 
         /// <summary>
         /// Clear all 'InRaidData' table records.
         /// </summary>
-        internal Task RemoveAllInRaidData(IDbContextTransaction contextTransaction = null)
+        internal async Task RemoveAllInRaidData()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                await context.InRaidData.ExecuteDeleteAsync();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshInRaidDataList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.InRaidData.ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
+            RefreshInRaidDataList();
         }
 
         /// <summary>
         /// Clear all 'OutRaidData' table records.
         /// </summary>
-        internal Task RemoveAllOutRaidData(IDbContextTransaction contextTransaction = null)
+        internal async Task RemoveAllOutRaidData()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                await context.OutRaidData.ExecuteDeleteAsync();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshOutRaidDataList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.OutRaidData.ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
+            RefreshOutRaidDataList();
         }
 
         /// <summary>
         /// Clear all 'OverlayTicker' table records.
         /// </summary>
-        internal Task RemoveAllOverlayTickerData(IDbContextTransaction contextTransaction = null)
+        internal async Task RemoveAllOverlayTickerData()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                await context.OverlayTicker.ExecuteUpdateAsync((t) => t.SetProperty((o) => o.UserName, (u) => ""));
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshOverlayTickerList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.OverlayTicker.ExecuteUpdateAsync((t) => t.SetProperty((o) => o.UserName, (u) => ""));
+            await context.SaveChangesAsync();
+            RefreshOverlayTickerList();
         }
 
         /// <summary>
         /// Clear all 'StreamStats' table records.
         /// </summary>
-        internal Task RemoveAllStreamStats(IDbContextTransaction contextTransaction = null)
+        internal async Task RemoveAllStreamStats()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                await context.StreamStats.ExecuteDeleteAsync();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshStreamStatsList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.StreamStats.ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
+            RefreshStreamStatsList();
         }
 
         /// <summary>
         /// Clear all 'Users' table records.
         /// </summary>
-        internal Task RemoveAllUsers(IDbContextTransaction contextTransaction = null)
+        internal async Task RemoveAllUsers()
         {
-            return Task.Run(async () =>
-            {
-                // using var context = BuildDataContext();
-                //using var transaction = await context.Database.BeginTransactionAsync();
-
-                await context.Users.ExecuteDeleteAsync();
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshUsersList();
-
-            });
+            // using var context = BuildDataContext();
+            await context.Users.ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
+            RefreshUsersList();
         }
         #endregion
 
         #region Remove Records
-        internal Task<bool> RemoveCommand(string command, IDbContextTransaction contextTransaction = null)
+        internal async Task<bool> RemoveCommand(string command)
         {
-            return Task.Run(async () =>
+            // using var context = BuildDataContext();
+            bool found = false;
+
+            CommandsUser cmd = await context.CommandsUser.Where(C => C.CmdName == command).Select(C => C).FirstOrDefaultAsync();
+            if (cmd != default)
             {
-                // using var context = BuildDataContext();
-                bool found = false;
-                //using var transaction = await context.Database.BeginTransactionAsync();
+                context.CommandsUser.Remove(cmd);
+                found = true;
+            }
+            await context.SaveChangesAsync();
+            RefreshCommandsUserList();
 
-                CommandsUser cmd = (from C in context.CommandsUser where C.CmdName == command select C).FirstOrDefault();
-                if (cmd != default)
-                {
-                    context.CommandsUser.Remove(cmd);
-                    found = true;
-                }
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshCommandsUserList();
-
-                return found;
-            });
+            return found;
         }
 
-        internal Task<bool> RemoveQuote(int QuoteNum, IDbContextTransaction contextTransaction = null)
+        internal async Task<bool> RemoveQuote(int QuoteNum)
         {
-            return Task.Run(async () =>
+            // using var context = BuildDataContext();
+            bool found = false;
+
+            Quotes quotes = await context.Quotes.Where(Q => Q.Number == QuoteNum).Select(Q => Q).FirstOrDefaultAsync();
+
+            if (quotes != default)
             {
-                // using var context = BuildDataContext();
-                bool found = false;
-                //using var transaction = await context.Database.BeginTransactionAsync();
+                context.Quotes.Remove(quotes);
+                found = true;
+            }
+            await context.SaveChangesAsync();
+            RefreshQuotesList();
 
-                Quotes quotes = (from Q in context.Quotes where Q.Number == QuoteNum select Q).FirstOrDefault();
-                if (quotes != default)
-                {
-                    context.Quotes.Remove(quotes);
-                    found = true;
-                }
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshQuotesList();
-
-                return found;
-            });
+            return found;
         }
 
         #endregion
