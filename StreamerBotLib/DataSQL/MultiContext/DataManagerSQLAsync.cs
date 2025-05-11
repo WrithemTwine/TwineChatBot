@@ -162,11 +162,11 @@ switches:
 
         #endregion
 
-#if DEBUG
+//#if DEBUG
         internal async Task Exit()
-#else
-        internal void Exit()
-#endif
+//#else
+//        internal void Exit()
+//#endif
         {
             processQueueTaskThread?.Join();
 //            GUIContext.SaveChanges(true);
