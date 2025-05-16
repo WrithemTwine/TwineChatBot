@@ -2738,6 +2738,7 @@
                                                     <DataGridTextColumn Header="Times Called" Binding="{Binding Calls, StringFormat={}{0:N0}}" />
                                                     <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                                                     <DataGridCheckBoxColumn Header="Add Me" Binding="{Binding AddMe}" />
+                                                    <DataGridCheckBoxColumn Header="Announce" Binding="{Binding Announce}" />
                                                     <DataGridComboBoxColumn Header="Permission" ItemsSource="{Binding Source={StaticResource EnumViewerTypes}}" SelectedItemBinding="{Binding Permission}" />
                                                     <DataGridTextColumn Header="# Msgs" Binding="{Binding SendMsgCount, Converter={StaticResource IntConverter}}" />
                                                     <DataGridTextColumn Header="Usage" Binding="{Binding Usage}" Width="250" />
