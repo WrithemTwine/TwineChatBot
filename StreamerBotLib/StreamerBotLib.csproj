@@ -124,6 +124,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Update="DataSQL\EFC9\Import\DataSource.Designer.cs">
+		  <DependentUpon>DataSource.xsd</DependentUpon>
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		</Compile>
+		<Compile Update="DataSQL\EFC9\Import\Multi\MultiDataSource.Designer.cs">
+		  <DependentUpon>MultiDataSource.xsd</DependentUpon>
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		</Compile>
 		<Compile Update="DataSQL\MultiContext\Import\DataSource.Designer.cs">
 		  <DependentUpon>DataSource.xsd</DependentUpon>
 		  <DesignTime>True</DesignTime>
@@ -164,6 +174,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="DataSQL\EFC9\Import\DataSource.xsd">
+		  <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+		  <Generator>MSDataSetGenerator</Generator>
+		</None>
+		<None Update="DataSQL\EFC9\Import\Multi\MultiDataSource.xsd">
+		  <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
+		  <Generator>MSDataSetGenerator</Generator>
+		</None>
 		<None Update="DataSQL\MultiContext\Import\DataSource.xsd">
 		  <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
 		  <Generator>MSDataSetGenerator</Generator>

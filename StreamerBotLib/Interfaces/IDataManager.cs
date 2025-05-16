@@ -105,8 +105,6 @@ namespace StreamerBotLib.Interfaces
         void UpdateOverlayTicker(OverlayTickerItem item, string name);
         void UpdateStats(DBUserStats Stat, string userId, Platform platform);
         void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime);
-        void UpdateWatchTime(LiveUser User, DateTime CurrTime);
-        void UserJoined(LiveUser User, DateTime NowSeen);
         void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen);
         void UserLeft(LiveUser User, DateTime LastSeen);
         void NotifyStopBulkFollowers();

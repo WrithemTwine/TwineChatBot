@@ -1,0 +1,715 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Enums;
+using StreamerBotLib.Static;
+
+using System.Collections.ObjectModel;
+
+namespace StreamerBotLib.DataSQL.EFC9
+{
+    internal partial class DataManagerSQLAsync
+    {
+        private SQLDBContext GUIContext;
+
+        #region LocalView ObservableCollection
+
+        internal object GetICollection(DataTables dataTable)
+        {
+            LogWriter.DebugLog("GetObservableCollection", DebugLogTypes.DataManager,
+                $"Getting the observable collection for {dataTable}.");
+
+            return dataTable switch
+            {
+                DataTables.BanReasons => GetBanReasonsLocalObservableAsync().Result,
+                DataTables.BanRules => GetBanRulesLocalObservableAsync().Result,
+                DataTables.CategoryList => GetCategoryListLocalObservableAsync().Result,
+                DataTables.ChannelEvents => GetChannelEventsLocalObservableAsync().Result,
+                DataTables.Clips => GetClipsLocalObservableAsync().Result,
+                DataTables.Commands => GetCommandsLocalObservableAsync().Result,
+                DataTables.CommandsBase => throw new NotImplementedException(),
+                DataTables.CommandsUser => GetCommandsUserLocalObservableAsync().Result,
+                DataTables.Currency => GetCurrencyLocalObservableAsync().Result,
+                DataTables.CurrencyType => GetCurrencyTypeLocalObservableAsync().Result,
+                DataTables.CustomWelcome => GetCustomWelcomeLocalObservableAsync().Result,
+                DataTables.Followers => GetFollowersLocalObservableAsync().Result,
+                DataTables.GameDeadCounter => GetGameDeadCounterLocalObservableAsync().Result,
+                DataTables.GiveawayUserData => GetGiveawayUserDataLocalObservableAsync().Result,
+                DataTables.InRaidData => GetInRaidDataLocalObservableAsync().Result,
+                DataTables.LearnMsgs => GetLearnMsgsLocalObservableAsync().Result,
+                DataTables.ModeratorApprove => GetModeratorApproveLocalObservableAsync().Result,
+                DataTables.MultiChannels => GetMultiChannelsLocalObservableAsync().Result,
+                DataTables.MultiLiveStreams => GetMultiLiveStreamsLocalObservableAsync().Result,
+                DataTables.MultiSummaryLiveStreams => GetMultiSummaryLiveStreamsLocalObservableAsync().Result,
+                DataTables.MultiWebhooks => GetMultiWebhooksLocalObservableAsync().Result,
+                DataTables.OldFollowUsers => GetOldFollowUsersLocalObservableAsync().Result,
+                DataTables.OutRaidData => GetOutRaidDataLocalObservableAsync().Result,
+                DataTables.OverlayServices => GetOverlayServicesLocalObservableAsync().Result,
+                DataTables.OverlayTicker => GetOverlayTickerLocalObservableAsync().Result,
+                DataTables.Quotes => GetQuotesLocalObservableAsync().Result,
+                DataTables.ShoutOuts => GetShoutOutsLocalObservableAsync().Result,
+                DataTables.StreamStats => GetStreamStatsLocalObservableAsync().Result,
+                DataTables.UserBase => throw new NotImplementedException(),
+                DataTables.Users => GetUsersLocalObservableAsync().Result,
+                DataTables.UserStats => GetUserStatsLocalObservableAsync().Result,
+                DataTables.Webhooks => GetWebhooksLocalObservableAsync().Result,
+                DataTables.WebhooksBase => throw new NotImplementedException(),
+                _ => throw new NotImplementedException()
+            };
+        }
+
+        private Task<ObservableCollection<Models.BanReasons>> GetBanReasonsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.BanReasons.LoadAsync();
+                return GUIContext.BanReasons.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<BanRules>> GetBanRulesLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.BanRules.LoadAsync();
+                return GUIContext.BanRules.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<CategoryList>> GetCategoryListLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.CategoryList.LoadAsync();
+                return GUIContext.CategoryList.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<ChannelEvents>> GetChannelEventsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.ChannelEvents.LoadAsync();
+                return GUIContext.ChannelEvents.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Clips>> GetClipsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.Clips.LoadAsync();
+                return GUIContext.Clips.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Commands>> GetCommandsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.Commands.LoadAsync();
+                return GUIContext.Commands.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<CommandsUser>> GetCommandsUserLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.CommandsUser.LoadAsync();
+                return GUIContext.CommandsUser.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Currency>> GetCurrencyLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.Currency.LoadAsync();
+                return GUIContext.Currency.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Models.CurrencyType>> GetCurrencyTypeLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.CurrencyType.LoadAsync();
+                return GUIContext.CurrencyType.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<CustomWelcome>> GetCustomWelcomeLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.CustomWelcome.LoadAsync();
+                return GUIContext.CustomWelcome.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Followers>> GetFollowersLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.Followers.LoadAsync();
+                return GUIContext.Followers.Local.ToObservableCollection();
+            });
+        }
+
+        private async Task<ObservableCollection<GameDeadCounter>> GetGameDeadCounterLocalObservableAsync()
+        {
+            //return Task.Run(async () =>
+            //{
+            await GUIContext.GameDeadCounter.LoadAsync();
+            return GUIContext.GameDeadCounter.Local.ToObservableCollection();
+            //});
+        }
+
+        private async Task<ObservableCollection<GiveawayUserData>> GetGiveawayUserDataLocalObservableAsync()
+        {
+            //return Task.Run(async () =>
+            //{
+            await GUIContext.GiveawayUserData.LoadAsync();
+            return GUIContext.GiveawayUserData.Local.ToObservableCollection();
+            //});
+        }
+
+        private Task<ObservableCollection<InRaidData>> GetInRaidDataLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.InRaidData.LoadAsync();
+                return GUIContext.InRaidData.Local.ToObservableCollection();
+            });
+        }
+
+        private async Task<ObservableCollection<LearnMsgs>> GetLearnMsgsLocalObservableAsync()
+        {
+            //return Task.Run(async () =>
+            //{
+            await GUIContext.LearnMsgs.LoadAsync();
+            return GUIContext.LearnMsgs.Local.ToObservableCollection();
+            //});
+        }
+
+        private async Task<ObservableCollection<ModeratorApprove>> GetModeratorApproveLocalObservableAsync()
+        {
+            //return Task.Run(async () =>
+            //{
+            await GUIContext.ModeratorApprove.LoadAsync();
+            return GUIContext.ModeratorApprove.Local.ToObservableCollection();
+            //});
+        }
+
+        private async Task<ObservableCollection<MultiChannels>> GetMultiChannelsLocalObservableAsync()
+        {
+            //return Task.Run(async () =>
+            //{
+            await GUIContext.MultiChannels.LoadAsync();
+            return GUIContext.MultiChannels.Local.ToObservableCollection();
+            //});
+        }
+
+        private async Task<ObservableCollection<MultiLiveStreams>> GetMultiLiveStreamsLocalObservableAsync()
+        {
+            //return Task.Run(async () =>
+            //{
+            await GUIContext.MultiLiveStreams.LoadAsync();
+            return GUIContext.MultiLiveStreams.Local.ToObservableCollection();
+            //});
+        }
+
+        private Task<ObservableCollection<MultiWebhooks>> GetMultiWebhooksLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.MultiWebhooks.LoadAsync();
+                return GUIContext.MultiWebhooks.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<MultiSummaryLiveStreams>> GetMultiSummaryLiveStreamsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.MultiSummaryLiveStreams.LoadAsync();
+                return GUIContext.MultiSummaryLiveStreams.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<OldFollowUsers>> GetOldFollowUsersLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.OldFollowUsers.LoadAsync();
+                return GUIContext.OldFollowUsers.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<OutRaidData>> GetOutRaidDataLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.OutRaidData.LoadAsync();
+                return GUIContext.OutRaidData.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<OverlayServices>> GetOverlayServicesLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.OverlayServices.LoadAsync();
+                return GUIContext.OverlayServices.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<OverlayTicker>> GetOverlayTickerLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.OverlayTicker.LoadAsync();
+                return GUIContext.OverlayTicker.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Quotes>> GetQuotesLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.Quotes.LoadAsync();
+                return GUIContext.Quotes.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<ShoutOuts>> GetShoutOutsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.ShoutOuts.LoadAsync();
+                return GUIContext.ShoutOuts.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<StreamStats>> GetStreamStatsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.StreamStats.LoadAsync();
+                return GUIContext.StreamStats.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Users>> GetUsersLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.Users.LoadAsync();
+                return GUIContext.Users.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<UserStats>> GetUserStatsLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.UserStats.LoadAsync();
+                return GUIContext.UserStats.Local.ToObservableCollection();
+            });
+        }
+
+        private Task<ObservableCollection<Webhooks>> GetWebhooksLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.Webhooks.LoadAsync();
+                return GUIContext.Webhooks.Local.ToObservableCollection();
+            });
+        }
+
+        #endregion
+
+        internal void NotifyDataCollectionUpdated(string TableName, bool RecordCountChange = false)
+        {
+            OnDataCollectionUpdated?.Invoke(this, new(TableName, RecordCountChange));
+        }
+
+        #region Refresh Collections
+        private async Task RefreshBanReasonsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.BanReasons.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), RecordCountChange);
+            //    });
+            //}), "BanReasons");
+        }
+
+        private async Task RefreshBanRulesList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.BanRules.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), RecordCountChange);
+            //    });
+            //}), "BanRules");
+        }
+
+        private async Task RefreshCategoryListList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.CategoryList.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), RecordCountChange);
+            //    });
+            //}), "CategoryList");
+        }
+
+        private async Task RefreshChannelEventsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.ChannelEvents.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), RecordCountChange);
+            //    });
+            //}), "ChannelEvents");
+        }
+
+        private async Task RefreshClipsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.Clips.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
+            //    });
+            //}), "Clips");
+        }
+
+        private async Task RefreshCommandsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.Commands.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
+            //    });
+            //}), "Commands");
+        }
+
+        private async Task RefreshCommandsUserList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.CommandsUser.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), RecordCountChange);
+            //    });
+            //}), "CommandsUser");
+        }
+
+        private async Task RefreshCurrencyList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddTaskToGUIDispatcher(async () =>
+            //    {
+            await GUIContext.Currency.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
+            //    });
+            //}), "Currency");
+        }
+
+        private async Task RefreshCurrencyTypeList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.CurrencyType.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), RecordCountChange);
+            //    });
+            //}), "CurrencyType");
+        }
+
+        private async Task RefreshCustomWelcomeList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.CustomWelcome.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
+            //    });
+            //}), "CustomWelcome");
+        }
+
+        private async Task RefreshFollowersList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.Followers.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Followers), RecordCountChange);
+            //    });
+            //}), "Followers");
+        }
+
+        private async Task RefreshGameDeadCounterList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.GameDeadCounter.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);
+            //    });
+            //}), "GameDeadCounter");
+        }
+
+        private async Task RefreshGiveawayUserDataList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.GiveawayUserData.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), RecordCountChange);
+            //    });
+            //}), "GiveawayUser");
+        }
+
+        private async Task RefreshInRaidDataList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.InRaidData.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), RecordCountChange);
+            //    });
+            //}), "InRaidData");
+        }
+
+        private async Task RefreshLearnMsgsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.LearnMsgs.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), RecordCountChange);
+            //    });
+            //}), "LearnMsgs");
+        }
+
+        private async Task RefreshModeratorApproveList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.ModeratorApprove.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), RecordCountChange);
+            //    });
+            //}), "ModeratorApprove");
+        }
+
+        private async Task RefreshMultiChannelsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.MultiChannels.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), RecordCountChange);
+            //    });
+            //}), "MultiChannels");
+        }
+
+        private async Task RefreshMultiLiveStreamsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.MultiLiveStreams.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), RecordCountChange);
+            //    });
+            //}), "MultiLiveStreams");
+        }
+
+        private async Task RefreshMultiSummaryLiveStreamsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.MultiSummaryLiveStreams.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), RecordCountChange);
+            //});
+            //}), "MultiSummaryLiveStreams");
+        }
+
+        private async Task RefreshMultiWebhooksList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.MultiWebhooks.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), RecordCountChange);
+            //    });
+            //}), "MultiWebhooks");
+        }
+
+        private async Task RefreshOldFollowUsersList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.OldFollowUsers.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), RecordCountChange);
+            //    });
+            //}), "OldFollowUsers");
+        }
+
+        private async Task RefreshOutRaidDataList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.OutRaidData.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), RecordCountChange);
+            //    });
+            //}), "OutRaidData");
+        }
+
+        private async Task RefreshOverlayServicesList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.OverlayServices.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
+            //    });
+            //}), "OverlayServices");
+        }
+
+        private async Task RefreshOverlayTickerList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.OverlayTicker.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), RecordCountChange);
+            //    });
+            //}), "OverlayTicker");
+        }
+
+        private async Task RefreshQuotesList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.Quotes.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), RecordCountChange);
+            //    });
+            //}), "Quotes");
+        }
+
+        private async Task RefreshShoutOutsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.ShoutOuts.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), RecordCountChange);
+            //    });
+            //}), "ShoutOUts");
+        }
+
+        private async Task RefreshStreamStatsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            await GUIContext.StreamStats.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), RecordCountChange);
+            //    });
+            //}), "StreamStats");
+        }
+
+        private async Task RefreshUsersList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUsersObservableCollection", async () =>
+            //    {
+#if DEBUG
+            LogWriter.DebugLog("RefreshUsersObservableCollection",
+                    DebugLogTypes.SpecialPurpose, $"Reloading Users data into the database context.");
+#endif
+
+            LogWriter.DebugLog("RefreshUsersObservableCollection",
+                    DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
+            await GUIContext.UserStats.LoadAsync();
+            await GUIContext.Users.LoadAsync();
+            LogWriter.DebugLog("RefreshUsersObservableCollection",
+                    DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+            NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
+            //    });
+            //}), "Users");
+        }
+
+        private async Task RefreshUserStatsList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+            //    {
+            LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+              DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
+            await GUIContext.UserStats.LoadAsync();
+            LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+            NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+            //    });
+            //}), "UserStats");
+        }
+
+        private async Task RefreshWebhooksList(bool RecordCountChange = false)
+        {
+            //PostActionQueue(new Task(() =>
+            //{
+            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshWebhooksObservableCollection", async () =>
+            //    {
+            await GUIContext.Webhooks.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), RecordCountChange);
+            //    });
+            //}), "Webhooks");
+        }
+
+        #endregion
+    }
+}

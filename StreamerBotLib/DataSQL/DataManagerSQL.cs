@@ -1,5 +1,5 @@
 ﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.DataSQL.MultiContext;
+using StreamerBotLib.DataSQL.EFC9;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
@@ -1193,30 +1193,6 @@ namespace StreamerBotLib.DataSQL
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     await _dataManager.UpdateWatchTime(Users, CurrTime);
-                });
-            }
-        }
-
-        public void UpdateWatchTime(LiveUser User, DateTime CurrTime)
-        {
-            LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.DataManager, "Updating watch time.");
-            lock (GUIDataManagerLock.Lock)
-            {
-                ThreadManager.AddTaskToGUIDispatcher(() =>
-                {
-                    UpdateWatchTime([User], CurrTime);
-                });
-            }
-        }
-
-        public void UserJoined(LiveUser User, DateTime NowSeen)
-        {
-            LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager, "User joined.");
-            lock (GUIDataManagerLock.Lock)
-            {
-                ThreadManager.AddTaskToGUIDispatcher(async () =>
-                {
-                    await _dataManager.UserJoined(User, NowSeen);
                 });
             }
         }
