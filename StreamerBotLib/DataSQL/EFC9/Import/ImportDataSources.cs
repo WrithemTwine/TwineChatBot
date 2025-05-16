@@ -636,7 +636,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
                             {
                                 channelsRow.UserName = L.ChannelName;
                             }
-                           await  dataManagerSQL.PostMultiStreamDate(liveUser: new(userId: channelsRow.UserId, userName: channelsRow.UserName, botSource: Platform.Twitch), onDate: L.LiveDate);
+                            await dataManagerSQL.PostMultiStreamDate(liveUser: new(userId: channelsRow.UserId, userName: channelsRow.UserName, botSource: Platform.Twitch), onDate: L.LiveDate);
                         }
                         else
                         {
@@ -749,7 +749,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
                     }
                     else if (!(from I in context.InRaidData where I.UserId == uId && I.RaidDate == A.DateTime select I).Any())
                     {
-                       await  dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category));
+                        await dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category));
                     }
                 }
             }

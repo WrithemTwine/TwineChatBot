@@ -12,7 +12,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
             using var context = BuildDataContext();
             await context.Currency.ExecuteUpdateAsync((c) => c.SetProperty((v) => v.Value, (c) => 0));
             await context.SaveChangesAsync();
-           await RefreshCurrencyList(true);
+            await RefreshCurrencyList(true);
         }
 
         /// <summary>

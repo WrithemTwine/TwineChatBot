@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Storage;
 
 using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Models;

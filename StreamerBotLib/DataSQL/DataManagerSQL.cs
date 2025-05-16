@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.DataSQL.EFC9;
+﻿using StreamerBotLib.DataSQL.EFC9;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
 using StreamerBotLib.GUI;

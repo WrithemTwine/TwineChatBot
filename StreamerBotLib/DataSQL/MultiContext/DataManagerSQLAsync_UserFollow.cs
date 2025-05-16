@@ -269,9 +269,9 @@ namespace StreamerBotLib.DataSQL.MultiContext
             }
 
             OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));
-           await  RefreshUsersList(true);
-          await  RefreshFollowersList(true);
-          await  RefreshOldFollowUsersList(true);
+            await RefreshUsersList(true);
+            await RefreshFollowersList(true);
+            await RefreshOldFollowUsersList(true);
         }
 
         /// <summary>
@@ -346,8 +346,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             }
 
             await context.SaveChangesAsync();
-       await     RefreshUsersList(true);
-      await      RefreshUserStatsList(true);
+            await RefreshUsersList(true);
+            await RefreshUserStatsList(true);
         }
 
         internal async Task UserLeft(LiveUser User, DateTime LastSeen)
@@ -385,22 +385,22 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 }
             });
             await context.SaveChangesAsync();
-         await   RefreshUsersList(true);
-         await   RefreshUserStatsList(true);
+            await RefreshUsersList(true);
+            await RefreshUserStatsList(true);
 
-//#if DEBUG
-//            var contextUser = await context.Users
-//                .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
-//                .Select(U => U).FirstOrDefaultAsync();
+            //#if DEBUG
+            //            var contextUser = await context.Users
+            //                .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
+            //                .Select(U => U).FirstOrDefaultAsync();
 
-//            var GUIContextUser = await GUIContext.Users
-//                .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
-//                .Select(U => U).FirstOrDefaultAsync();
+            //            var GUIContextUser = await GUIContext.Users
+            //                .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
+            //                .Select(U => U).FirstOrDefaultAsync();
 
-//            // compare the data entry context to the GUIContext
-//            LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"Context data: {contextUser.GetDebugOutput()}");
-//            LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"GUIContext data: {GUIContextUser.GetDebugOutput()}");
-//#endif
+            //            // compare the data entry context to the GUIContext
+            //            LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"Context data: {contextUser.GetDebugOutput()}");
+            //            LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"GUIContext data: {GUIContextUser.GetDebugOutput()}");
+            //#endif
         }
 
         internal Task UpdateFollowers(IEnumerable<Follow> follows)

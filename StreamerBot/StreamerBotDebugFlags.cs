@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;

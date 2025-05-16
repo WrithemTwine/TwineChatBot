@@ -33,8 +33,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             await RefreshChannelEventsList(true);
             await RefreshCommandsList(true);
             await RefreshLearnMsgsList(true);
-            await  RefreshBanReasonsList(true);
-           await  RefreshBanRulesList(true);
+            await RefreshBanReasonsList(true);
+            await RefreshBanRulesList(true);
         }
 
         /// <summary>

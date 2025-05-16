@@ -29,7 +29,7 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         internal async Task<Tuple<string, string>> CheckModApprovalRule(ModActionType modActionType, string ModAction)
         {
-            return await Task.FromResult<Tuple<string,string>>(null);
+            return await Task.FromResult<Tuple<string, string>>(null);
         }
 
         /// <summary>

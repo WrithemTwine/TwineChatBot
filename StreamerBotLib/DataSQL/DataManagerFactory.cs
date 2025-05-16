@@ -10,8 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-using StreamerBotLib.Static;
-
 namespace StreamerBotLib.DataSQL
 {
     public class DataManagerFactory : IDbContextFactory<SQLDBContext>, IDesignTimeDbContextFactory<SQLDBContext>
@@ -22,8 +20,8 @@ namespace StreamerBotLib.DataSQL
         {
             var options = new DbContextOptionsBuilder<SQLDBContext>()
 
-                // these flags build the different connections to specific databases
-                // for splitting code to each release build package
+            // these flags build the different connections to specific databases
+            // for splitting code to each release build package
 #if DEBUG || DEBUG_VIEWXAML || RELEASE_SQLITE
                 .UseSqlite(OptionFlags.EFCConnectStringSqlite)
 #if DEBUG_LOG

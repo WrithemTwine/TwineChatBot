@@ -1,6 +1,4 @@
-﻿using StreamerBotLib.Static;
-
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace StreamerBotLib.GUI.Windows

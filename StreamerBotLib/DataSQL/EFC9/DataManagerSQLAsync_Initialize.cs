@@ -19,11 +19,15 @@ namespace StreamerBotLib.DataSQL.EFC9
             LogWriter.DebugLog("Initialize", DebugLogTypes.DataManager, $"Initializing the database.");
 
             using var context = Refcontext ?? BuildDataContext();
-
+            await context.Database.BeginTransactionAsync();
+            
             await SetDefaultChannelEventsTable(context);  // check all default ChannelEvents names
             await SetDefaultCommandsTable(context); // check all default Commands
             await SetLearnedMessages(context);
             //CleanCategories(context);
+
+            await context.Database.CommitTransactionAsync();
+            await context.SaveChangesAsync(true);
 
             OptionFlags.DataLoaded = true;
 
@@ -98,12 +102,10 @@ namespace StreamerBotLib.DataSQL.EFC9
                     }
                 };
 
-            Refcontext.ChannelEvents.AddRange(from CE in from E in dictionary.ExceptBy(Refcontext.ChannelEvents.Select(C => C.Name), E => E.Key)
+            await Refcontext.ChannelEvents.AddRangeAsync(from CE in from E in dictionary.ExceptBy(Refcontext.ChannelEvents.Select(C => C.Name), E => E.Key)
                                                          let values = dictionary[E.Key]
                                                          select (E.Key, values)
                                               select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
-
-            await Refcontext.SaveChangesAsync(true);
         }
 
         /// <summary>
@@ -160,7 +162,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                                usage: C.param.Usage,
                                                                lookupData: C.param.LookupData,
                                                                table: C.param.Table,
-                                                               keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table).Result : "",
+                                                               keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table) : "",
                                                                dataField: C.param.Field,
                                                                currencyField: C.param.Currency,
                                                                unit: C.param.Unit,
@@ -168,8 +170,6 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                                top: C.param.Top,
                                                                sort: C.param.Sort)
              );
-
-            await Refcontext.SaveChangesAsync(true);
         }
         private async Task SetLearnedMessages(SQLDBContext Refcontext = null)
         {
@@ -198,8 +198,6 @@ namespace StreamerBotLib.DataSQL.EFC9
                                              .Select(R => new BanRules(0, R.ViewerType, R.MsgType, R.ModAction, R.TimeoutSeconds))
                                              );
             }
-
-            await Refcontext.SaveChangesAsync(true);
         }
 
         private void CleanCategories(SQLDBContext Refcontext = null)

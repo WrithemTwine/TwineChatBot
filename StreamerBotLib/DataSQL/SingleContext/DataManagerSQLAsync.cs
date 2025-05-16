@@ -167,43 +167,43 @@ switches:
 
         internal async Task<string> EditCommand(string cmd, List<string> Arglist, IDbContextTransaction contextTransaction = null)
         {
-                string result = "";
+            string result = "";
 
-                // // using var context = BuildDataContext();
+            // // using var context = BuildDataContext();
 
-                Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
-                CommandsBase EditCom = (from C in context.CommandsBase
-                                        where C.CmdName == cmd
-                                        select C).FirstOrDefault();
+            Dictionary<string, string> EditParamsDict = CommandParams.ParseEditCommandParams(Arglist);
+            CommandsBase EditCom = (from C in context.CommandsBase
+                                    where C.CmdName == cmd
+                                    select C).FirstOrDefault();
 
-                if (EditCom != default)
+            if (EditCom != default)
+            {
+                using var transaction = context.Database.BeginTransaction();
+
+                foreach (string k in EditParamsDict.Keys)
                 {
-                    using var transaction = context.Database.BeginTransaction();
+                    EditCom.GetType().GetProperty(k).SetValue(EditCom, EditParamsDict[k]);
+                }
+                result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
 
-                    foreach (string k in EditParamsDict.Keys)
-                    {
-                        EditCom.GetType().GetProperty(k).SetValue(EditCom, EditParamsDict[k]);
-                    }
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.editcommand), cmd);
+                //await transaction.CommitAsync();
+                await context.SaveChangesAsync(true);
 
-                    //await transaction.CommitAsync();
-                    await context.SaveChangesAsync(true);
-
-                    if (Enum.GetNames<DefaultCommand>().Contains(cmd))
-                    {
-                        RefreshCommandsList();
-                    }
-                    else
-                    {
-                        RefreshCommandsUserList();
-                    }
+                if (Enum.GetNames<DefaultCommand>().Contains(cmd))
+                {
+                    RefreshCommandsList();
                 }
                 else
                 {
-                    result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+                    RefreshCommandsUserList();
                 }
+            }
+            else
+            {
+                result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetVar("Msgcommandnotfound"), cmd);
+            }
 
-                return result;
+            return result;
         }
 
         internal Task<object[]> PerformQuery(CommandsBase row, int Top = 0)
@@ -268,25 +268,25 @@ switches:
         #region Set_IsEnabled Methods
         internal async Task SetBuiltInCommandsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-                // // using var context = BuildDataContext();
-                using var transaction = context.Database.BeginTransaction();
+            // // using var context = BuildDataContext();
+            using var transaction = context.Database.BeginTransaction();
 
-                await context.Commands.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
+            await context.Commands.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
 
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshCommandsList();
+            //await transaction.CommitAsync();
+            await context.SaveChangesAsync();
+            RefreshCommandsList();
         }
 
         internal async Task SetWebhooksEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-                // // using var context = BuildDataContext();
-                using var transaction = context.Database.BeginTransaction();
+            // // using var context = BuildDataContext();
+            using var transaction = context.Database.BeginTransaction();
 
-                await context.Webhooks.ExecuteUpdateAsync((w) => w.SetProperty((u) => u.IsEnabled, (h) => Enabled));
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshWebhooksList();
+            await context.Webhooks.ExecuteUpdateAsync((w) => w.SetProperty((u) => u.IsEnabled, (h) => Enabled));
+            //await transaction.CommitAsync();
+            await context.SaveChangesAsync();
+            RefreshWebhooksList();
         }
 
         [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
@@ -297,13 +297,13 @@ switches:
 
         internal async Task SetSystemEventsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-                // // using var context = BuildDataContext();
-                using var transaction = context.Database.BeginTransaction();
+            // // using var context = BuildDataContext();
+            using var transaction = context.Database.BeginTransaction();
 
-                await context.ChannelEvents.ExecuteUpdateAsync((c) => c.SetProperty((e) => e.IsEnabled, (ce) => Enabled));
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshChannelEventsList();
+            await context.ChannelEvents.ExecuteUpdateAsync((c) => c.SetProperty((e) => e.IsEnabled, (ce) => Enabled));
+            //await transaction.CommitAsync();
+            await context.SaveChangesAsync();
+            RefreshChannelEventsList();
         }
 
         /// <summary>
@@ -312,13 +312,13 @@ switches:
         /// <param name="Enabled">The value to set for 'IsEnabled'.</param>
         internal async Task SetUserDefinedCommandsEnabled(bool Enabled, IDbContextTransaction contextTransaction = null)
         {
-                // // using var context = BuildDataContext();
-                using var transaction = context.Database.BeginTransaction();
+            // // using var context = BuildDataContext();
+            using var transaction = context.Database.BeginTransaction();
 
-                await context.CommandsUser.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
-                //await transaction.CommitAsync();
-                await context.SaveChangesAsync();
-                RefreshCommandsUserList();
+            await context.CommandsUser.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
+            //await transaction.CommitAsync();
+            await context.SaveChangesAsync();
+            RefreshCommandsUserList();
         }
 
         #endregion

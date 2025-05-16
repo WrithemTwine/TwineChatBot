@@ -4,7 +4,6 @@ using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
 using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Static;
 
 using System.Data;
 
@@ -162,23 +161,23 @@ namespace StreamerBotLib.DataSQL.MultiContext
                 await RefreshUserStatsList();
                 await RefreshUsersList();
 
-//#if DEBUG
-//                List<Tuple<string, TimeSpan>> GUICurrWatchTimeList = await GUIContext.Users
-//                    .Include(user => user.UserStats)
-//                    .Where(U => U.Platform == Platform.Twitch && Users.Any(L => L.UserId == U.UserId))
-//                    .Select(U => new Tuple<string, TimeSpan>(U.UserId, U.UserStats.WatchTime))
-//                    .ToListAsync();
+                //#if DEBUG
+                //                List<Tuple<string, TimeSpan>> GUICurrWatchTimeList = await GUIContext.Users
+                //                    .Include(user => user.UserStats)
+                //                    .Where(U => U.Platform == Platform.Twitch && Users.Any(L => L.UserId == U.UserId))
+                //                    .Select(U => new Tuple<string, TimeSpan>(U.UserId, U.UserStats.WatchTime))
+                //                    .ToListAsync();
 
-//                LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"GUICurrWatchTimeList.Count = {GUICurrWatchTimeList.Count}, NewWatchTimeList.Count = {NewWatchTimeList.Count}");
-//                for (int i = 0; i < NewWatchTimeList.Count; i++)
-//                {
-//                    var newCurrItem = GUICurrWatchTimeList.Find(x => x.Item1 == NewWatchTimeList[i].Item1);
+                //                LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"GUICurrWatchTimeList.Count = {GUICurrWatchTimeList.Count}, NewWatchTimeList.Count = {NewWatchTimeList.Count}");
+                //                for (int i = 0; i < NewWatchTimeList.Count; i++)
+                //                {
+                //                    var newCurrItem = GUICurrWatchTimeList.Find(x => x.Item1 == NewWatchTimeList[i].Item1);
 
-//                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"GUIContext newCurrItem is {(newCurrItem == null ? "Null" : "Not Null")}");
-//                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"context NewWatchTimeList[{i}].Item1 = {NewWatchTimeList[i].Item1}, GUIContext newCurrItem.Item1 = {newCurrItem.Item1}");
-//                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"context NewWatchTimeList[{i}].Item2 = {NewWatchTimeList[i].Item2}, GUIContext newCurrItem.Item2 = {newCurrItem.Item2}");
-//                }
-//#endif
+                //                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"GUIContext newCurrItem is {(newCurrItem == null ? "Null" : "Not Null")}");
+                //                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"context NewWatchTimeList[{i}].Item1 = {NewWatchTimeList[i].Item1}, GUIContext newCurrItem.Item1 = {newCurrItem.Item1}");
+                //                    LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.SpecialPurpose, $"context NewWatchTimeList[{i}].Item2 = {NewWatchTimeList[i].Item2}, GUIContext newCurrItem.Item2 = {newCurrItem.Item2}");
+                //                }
+                //#endif
             });
         }
 

@@ -162,32 +162,32 @@ switches:
 
         #endregion
 
-//#if DEBUG
+        //#if DEBUG
         internal async Task Exit()
-//#else
-//        internal void Exit()
-//#endif
+        //#else
+        //        internal void Exit()
+        //#endif
         {
             processQueueTaskThread?.Join();
-//            GUIContext.SaveChanges(true);
+            //            GUIContext.SaveChanges(true);
 
-//#if DEBUG
-//            var context = BuildDataContext();
-//            foreach (var user in DebugUsersList)
-//            {
-//                var userData = await context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
-//                if (userData != null)
-//                {
-//                    LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"Context data: {userData.GetDebugOutput()}");
-//                }
+            //#if DEBUG
+            //            var context = BuildDataContext();
+            //            foreach (var user in DebugUsersList)
+            //            {
+            //                var userData = await context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            //                if (userData != null)
+            //                {
+            //                    LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"Context data: {userData.GetDebugOutput()}");
+            //                }
 
-//                var GUIContextUser = await GUIContext.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
-//                if (GUIContextUser != null)
-//                {
-//                    LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"GUIContext data: {GUIContextUser.GetDebugOutput()}");
-//                }
-//            }
-//#endif
+            //                var GUIContextUser = await GUIContext.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            //                if (GUIContextUser != null)
+            //                {
+            //                    LogWriter.DebugLog("UserLeft", DebugLogTypes.SpecialPurpose, $"GUIContext data: {GUIContextUser.GetDebugOutput()}");
+            //                }
+            //            }
+            //#endif
 
             GUIContext.Dispose();
         }

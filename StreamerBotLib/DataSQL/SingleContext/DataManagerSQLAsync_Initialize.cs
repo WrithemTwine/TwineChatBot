@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-
-using StreamerBotLib.DataSQL.Models;
+﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Enums;
 using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;

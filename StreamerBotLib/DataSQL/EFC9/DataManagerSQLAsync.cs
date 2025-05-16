@@ -1,17 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
+using StreamerBotLib.DataSQL.EFC9.Import;
+using StreamerBotLib.Enums;
 using StreamerBotLib.Events;
+using StreamerBotLib.Models;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Markup;
 
 namespace StreamerBotLib.DataSQL.EFC9
 {
@@ -36,7 +32,6 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         internal DataManagerSQLAsync()
         {
-
             if (!OptionFlags.EFCDataImportedDataGram)
             {
                 bool LogStatus = OptionFlags.LogBotStatus;  // save current logging status

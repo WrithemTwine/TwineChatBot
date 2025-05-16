@@ -202,7 +202,7 @@ namespace StreamerBotLib.Systems
 
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
-                    result = DataManage.PostCommand(newcom[1..], CommandParams.Parse(arglist));
+                result = DataManage.PostCommand(newcom[1..], CommandParams.Parse(arglist));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.settitle))
             {
@@ -320,7 +320,7 @@ namespace StreamerBotLib.Systems
                             break;
                     }
 
-                        output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Platform);
+                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Platform);
                 }
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Merge result: {output}.");
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
@@ -367,7 +367,7 @@ namespace StreamerBotLib.Systems
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Editing command: {newcom}.");
-                    result = DataManage.EditCommand(newcom[1..], arglist);
+                result = DataManage.EditCommand(newcom[1..], arglist);
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removecommand))
             {
@@ -563,7 +563,7 @@ namespace StreamerBotLib.Systems
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Adding quote: {string.Join(' ', arglist)}.");
                     int quoteNum;
 
-                        quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
+                    quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
 
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {

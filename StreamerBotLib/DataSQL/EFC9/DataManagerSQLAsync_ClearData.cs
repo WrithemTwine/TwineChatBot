@@ -7,7 +7,7 @@ namespace StreamerBotLib.DataSQL.EFC9
     internal partial class DataManagerSQLAsync
     {
         #region Clear DataBase Records 
-        
+
         /// <summary>
         /// Resets all currency values in the database to zero.
         /// </summary>
@@ -17,7 +17,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task ClearAllCurrencyValues()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.Currency.ExecuteUpdateAsync((c) => c.SetProperty((v) => v.Value, (c) => 0));
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshCurrencyList(true);
         }
@@ -32,8 +34,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task ClearUsersNotFollowers()
         {
             using var context = BuildDataContext();
-
+            await context.Database.BeginTransactionAsync();
             await context.Users.Where((u) => u.Follower == null || !u.Follower.IsFollower).ExecuteDeleteAsync();
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
 
             await RefreshUsersList(true);
@@ -49,8 +52,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task ClearWatchTime()
         {
             using var context = BuildDataContext();
-
+            await context.Database.BeginTransactionAsync();
             await context.UserStats.ExecuteUpdateAsync((us) => us.SetProperty((u) => u.WatchTime, (s) => TimeSpan.FromSeconds(0)));
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
 
             await RefreshUserStatsList(true);
@@ -65,7 +69,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task RemoveAllFollowers()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.Followers.ExecuteDeleteAsync();
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshFollowersList(true);
         }
@@ -80,7 +86,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task RemoveAllGiveawayData()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.GiveawayUserData.ExecuteDeleteAsync();
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshGiveawayUserDataList(true);
         }
@@ -94,7 +102,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task RemoveAllInRaidData()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.InRaidData.ExecuteDeleteAsync();
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshInRaidDataList(true);
         }
@@ -109,7 +119,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task RemoveAllOutRaidData()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.OutRaidData.ExecuteDeleteAsync();
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshOutRaidDataList(true);
         }
@@ -124,7 +136,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task RemoveAllOverlayTickerData()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.OverlayTicker.ExecuteUpdateAsync((t) => t.SetProperty((o) => o.UserName, (u) => ""));
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshOverlayTickerList(true);
         }
@@ -138,7 +152,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task RemoveAllStreamStats()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.StreamStats.ExecuteDeleteAsync();
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshStreamStatsList(true);
         }
@@ -153,7 +169,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task RemoveAllUsers()
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             await context.Users.ExecuteDeleteAsync();
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshUsersList(true);
         }
@@ -172,6 +190,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task<bool> RemoveCommand(string command)
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             bool found = false;
 
             CommandsUser cmd = await context.CommandsUser.Where(C => C.CmdName == command).Select(C => C).FirstOrDefaultAsync();
@@ -180,6 +199,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 context.CommandsUser.Remove(cmd);
                 found = true;
             }
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshCommandsUserList(true);
 
@@ -197,6 +217,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task<bool> RemoveQuote(int QuoteNum)
         {
             using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
             bool found = false;
 
             Quotes quotes = await context.Quotes.Where(Q => Q.Number == QuoteNum).Select(Q => Q).FirstOrDefaultAsync();
@@ -206,6 +227,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 context.Quotes.Remove(quotes);
                 found = true;
             }
+            await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
             await RefreshQuotesList(true);
 

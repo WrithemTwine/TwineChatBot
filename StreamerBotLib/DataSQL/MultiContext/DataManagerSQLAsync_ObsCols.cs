@@ -9,7 +9,6 @@ using StreamerBotLib.Static;
 
 #if USE_OBSERVABLECOLLECTION
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 #endif
 
 namespace StreamerBotLib.DataSQL.MultiContext
@@ -170,8 +169,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             //return Task.Run(async () =>
             //{
-                await GUIContext.GameDeadCounter.LoadAsync();
-                return GUIContext.GameDeadCounter.Local.ToObservableCollection();
+            await GUIContext.GameDeadCounter.LoadAsync();
+            return GUIContext.GameDeadCounter.Local.ToObservableCollection();
             //});
         }
 
@@ -179,8 +178,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             //return Task.Run(async () =>
             //{
-                await GUIContext.GiveawayUserData.LoadAsync();
-                return GUIContext.GiveawayUserData.Local.ToObservableCollection();
+            await GUIContext.GiveawayUserData.LoadAsync();
+            return GUIContext.GiveawayUserData.Local.ToObservableCollection();
             //});
         }
 
@@ -197,8 +196,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             //return Task.Run(async () =>
             //{
-                await GUIContext.LearnMsgs.LoadAsync();
-                return GUIContext.LearnMsgs.Local.ToObservableCollection();
+            await GUIContext.LearnMsgs.LoadAsync();
+            return GUIContext.LearnMsgs.Local.ToObservableCollection();
             //});
         }
 
@@ -206,8 +205,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             //return Task.Run(async () =>
             //{
-                await GUIContext.ModeratorApprove.LoadAsync();
-                return GUIContext.ModeratorApprove.Local.ToObservableCollection();
+            await GUIContext.ModeratorApprove.LoadAsync();
+            return GUIContext.ModeratorApprove.Local.ToObservableCollection();
             //});
         }
 
@@ -215,8 +214,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             //return Task.Run(async () =>
             //{
-                await GUIContext.MultiChannels.LoadAsync();
-                return GUIContext.MultiChannels.Local.ToObservableCollection();
+            await GUIContext.MultiChannels.LoadAsync();
+            return GUIContext.MultiChannels.Local.ToObservableCollection();
             //});
         }
 
@@ -224,8 +223,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             //return Task.Run(async () =>
             //{
-                await GUIContext.MultiLiveStreams.LoadAsync();
-                return GUIContext.MultiLiveStreams.Local.ToObservableCollection();
+            await GUIContext.MultiLiveStreams.LoadAsync();
+            return GUIContext.MultiLiveStreams.Local.ToObservableCollection();
             //});
         }
 
@@ -351,8 +350,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.BanReasons.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), RecordCountChange);
+            await GUIContext.BanReasons.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), RecordCountChange);
             //    });
             //}), "BanReasons");
         }
@@ -363,8 +362,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.BanRules.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), RecordCountChange);
+            await GUIContext.BanRules.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), RecordCountChange);
             //    });
             //}), "BanRules");
         }
@@ -375,8 +374,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.CategoryList.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), RecordCountChange);
+            await GUIContext.CategoryList.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), RecordCountChange);
             //    });
             //}), "CategoryList");
         }
@@ -387,8 +386,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.ChannelEvents.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), RecordCountChange);
+            await GUIContext.ChannelEvents.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), RecordCountChange);
             //    });
             //}), "ChannelEvents");
         }
@@ -399,8 +398,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.Clips.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
+            await GUIContext.Clips.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
             //    });
             //}), "Clips");
         }
@@ -411,8 +410,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.Commands.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
+            await GUIContext.Commands.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
             //    });
             //}), "Commands");
         }
@@ -423,8 +422,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.CommandsUser.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), RecordCountChange);
+            await GUIContext.CommandsUser.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), RecordCountChange);
             //    });
             //}), "CommandsUser");
         }
@@ -435,8 +434,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddTaskToGUIDispatcher(async () =>
             //    {
-                    await GUIContext.Currency.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
+            await GUIContext.Currency.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
             //    });
             //}), "Currency");
         }
@@ -447,8 +446,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.CurrencyType.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), RecordCountChange);
+            await GUIContext.CurrencyType.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), RecordCountChange);
             //    });
             //}), "CurrencyType");
         }
@@ -459,8 +458,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.CustomWelcome.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
+            await GUIContext.CustomWelcome.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
             //    });
             //}), "CustomWelcome");
         }
@@ -471,8 +470,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.Followers.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Followers), RecordCountChange);
+            await GUIContext.Followers.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Followers), RecordCountChange);
             //    });
             //}), "Followers");
         }
@@ -483,8 +482,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.GameDeadCounter.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);
+            await GUIContext.GameDeadCounter.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);
             //    });
             //}), "GameDeadCounter");
         }
@@ -495,20 +494,20 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.GiveawayUserData.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), RecordCountChange);
+            await GUIContext.GiveawayUserData.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), RecordCountChange);
             //    });
             //}), "GiveawayUser");
         }
 
-        private     async Task RefreshInRaidDataList(bool RecordCountChange = false)
+        private async Task RefreshInRaidDataList(bool RecordCountChange = false)
         {
             //PostActionQueue(new Task(() =>
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.InRaidData.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), RecordCountChange);
+            await GUIContext.InRaidData.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), RecordCountChange);
             //    });
             //}), "InRaidData");
         }
@@ -519,20 +518,20 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.LearnMsgs.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), RecordCountChange);
+            await GUIContext.LearnMsgs.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), RecordCountChange);
             //    });
             //}), "LearnMsgs");
         }
 
-        private async Task   RefreshModeratorApproveList(bool RecordCountChange = false)
+        private async Task RefreshModeratorApproveList(bool RecordCountChange = false)
         {
             //PostActionQueue(new Task(() =>
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.ModeratorApprove.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), RecordCountChange);
+            await GUIContext.ModeratorApprove.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), RecordCountChange);
             //    });
             //}), "ModeratorApprove");
         }
@@ -543,8 +542,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.MultiChannels.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), RecordCountChange);
+            await GUIContext.MultiChannels.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), RecordCountChange);
             //    });
             //}), "MultiChannels");
         }
@@ -555,8 +554,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.MultiLiveStreams.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), RecordCountChange);
+            await GUIContext.MultiLiveStreams.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), RecordCountChange);
             //    });
             //}), "MultiLiveStreams");
         }
@@ -567,9 +566,9 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.MultiSummaryLiveStreams.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), RecordCountChange);
-                //});
+            await GUIContext.MultiSummaryLiveStreams.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), RecordCountChange);
+            //});
             //}), "MultiSummaryLiveStreams");
         }
 
@@ -579,8 +578,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.MultiWebhooks.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), RecordCountChange);
+            await GUIContext.MultiWebhooks.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), RecordCountChange);
             //    });
             //}), "MultiWebhooks");
         }
@@ -591,8 +590,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.OldFollowUsers.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), RecordCountChange);
+            await GUIContext.OldFollowUsers.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), RecordCountChange);
             //    });
             //}), "OldFollowUsers");
         }
@@ -603,8 +602,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.OutRaidData.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), RecordCountChange);
+            await GUIContext.OutRaidData.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), RecordCountChange);
             //    });
             //}), "OutRaidData");
         }
@@ -615,8 +614,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.OverlayServices.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
+            await GUIContext.OverlayServices.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
             //    });
             //}), "OverlayServices");
         }
@@ -627,8 +626,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.OverlayTicker.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), RecordCountChange);
+            await GUIContext.OverlayTicker.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), RecordCountChange);
             //    });
             //}), "OverlayTicker");
         }
@@ -639,8 +638,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.Quotes.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), RecordCountChange);
+            await GUIContext.Quotes.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), RecordCountChange);
             //    });
             //}), "Quotes");
         }
@@ -651,8 +650,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.ShoutOuts.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), RecordCountChange);
+            await GUIContext.ShoutOuts.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), RecordCountChange);
             //    });
             //}), "ShoutOUts");
         }
@@ -663,8 +662,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    await GUIContext.StreamStats.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), RecordCountChange);
+            await GUIContext.StreamStats.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), RecordCountChange);
             //    });
             //}), "StreamStats");
         }
@@ -680,13 +679,13 @@ namespace StreamerBotLib.DataSQL.MultiContext
                             DebugLogTypes.SpecialPurpose, $"Reloading Users data into the database context.");
 #endif
 
-                    LogWriter.DebugLog("RefreshUsersObservableCollection",
-                            DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
-                    await GUIContext.UserStats.LoadAsync();
-                    await GUIContext.Users.LoadAsync();
-                    LogWriter.DebugLog("RefreshUsersObservableCollection",
-                            DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
+            LogWriter.DebugLog("RefreshUsersObservableCollection",
+                    DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
+            await GUIContext.UserStats.LoadAsync();
+            await GUIContext.Users.LoadAsync();
+            LogWriter.DebugLog("RefreshUsersObservableCollection",
+                    DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+            NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
             //    });
             //}), "Users");
         }
@@ -697,12 +696,12 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
-                    LogWriter.DebugLog("RefreshUserStatsObservableCollection",
-                      DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
-                    await GUIContext.UserStats.LoadAsync();
-                    LogWriter.DebugLog("RefreshUserStatsObservableCollection",
-       DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
-                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+            LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+              DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
+            await GUIContext.UserStats.LoadAsync();
+            LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+            NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
             //    });
             //}), "UserStats");
         }
@@ -713,8 +712,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshWebhooksObservableCollection", async () =>
             //    {
-                    await GUIContext.Webhooks.LoadAsync();
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), RecordCountChange);
+            await GUIContext.Webhooks.LoadAsync();
+            NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), RecordCountChange);
             //    });
             //}), "Webhooks");
         }
