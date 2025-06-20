@@ -20,7 +20,7 @@ namespace StreamerBotLib.Systems
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
         public event EventHandler<TwitchShoutOutUsersEventArgs> TwitchShoutOutUser;
 
-        public static IDataManager DataManage { get; private set; }
+        public static IDataManager DataManage { get; private set; } = new DataManagerSQL();
 
         private static CategoryData CurrCategory { get; set; } = new("", "");
 
@@ -46,10 +46,8 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog(".ctor_SystemsController", DebugLogTypes.SystemController, "Initializing Systems Controller.");
 
-            DataManage = new DataManagerSQL();
             ActionSystem.DataManage = DataManage;
             LocalizedMsgSystem.SetDataManager(DataManage);
-            DataManage.Initialize();
 
             SystemActions = new();
 

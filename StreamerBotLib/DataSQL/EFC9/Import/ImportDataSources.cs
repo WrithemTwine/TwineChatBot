@@ -1056,7 +1056,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             #endregion
 
             ImportCompleted?.Invoke(this, new());
-
+            context.SaveChanges(true);
         }
 
         private static string ConvertDataRow(DataRow data, int maxcolumns)

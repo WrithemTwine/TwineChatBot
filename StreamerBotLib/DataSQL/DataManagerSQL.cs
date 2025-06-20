@@ -32,6 +32,7 @@ namespace StreamerBotLib.DataSQL
         public event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
 
         public event EventHandler UpdatedMonitoringChannels;
+        public event EventHandler<EventArgs> OnLoadCompleted;
 
         /// <summary>
         /// Cache a list to maintain until user adjusts commands, they remain unchanged
@@ -45,13 +46,19 @@ namespace StreamerBotLib.DataSQL
             _dataManager.OnDataCollectionUpdated += _dataManager_OnDataCollectionUpdated;
             _dataManager.OnBulkFollowersAddFinished += _dataManager_OnBulkFollowersAddFinished;
             _dataManager.UpdatedMonitoringChannels += _dataManager_UpdatedMonitoringChannels;
+            _dataManager.OnLoadCompleted += _dataManager_OnLoadCompleted;
+        }
+
+        private void _dataManager_OnLoadCompleted(object sender, EventArgs e)
+        {
+            OnLoadCompleted?.Invoke(sender, e);
         }
 
         private void _dataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
         {
             LogWriter.DebugLog("_dataManager_UpdatedMonitoringChannels", DebugLogTypes.DataManager, "UpdatedMonitoringChannels event triggered.");
 
-            UpdatedMonitoringChannels?.Invoke(this, new());
+            UpdatedMonitoringChannels?.Invoke(this, e);
         }
 
         private void _dataManager_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)

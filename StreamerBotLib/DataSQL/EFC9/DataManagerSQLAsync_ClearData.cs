@@ -39,7 +39,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
 
-            await RefreshUsersList(true);
+            RefreshUsersList(true);
             await RefreshFollowersList(true);
         }
 
@@ -57,7 +57,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
 
-            await RefreshUserStatsList(true);
+            RefreshUserStatsList(true);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Users.ExecuteDeleteAsync();
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync();
-            await RefreshUsersList(true);
+            RefreshUsersList(true);
         }
         #endregion
 

@@ -13,6 +13,7 @@ namespace StreamerBotLib.Interfaces
     {
         event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
         event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
+        event EventHandler<EventArgs> OnLoadCompleted;
 
         bool CheckCurrency(LiveUser User, double value, string CurrencyName);
         new bool CheckField(string table, string field);

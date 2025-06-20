@@ -162,7 +162,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                                usage: C.param.Usage,
                                                                lookupData: C.param.LookupData,
                                                                table: C.param.Table,
-                                                               keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table) : "",
+                                                               keyField: !string.IsNullOrEmpty(C.param.Table) ? GetKey(C.param.Table).Result : "",
                                                                dataField: C.param.Field,
                                                                currencyField: C.param.Currency,
                                                                unit: C.param.Unit,

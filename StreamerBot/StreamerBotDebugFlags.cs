@@ -7,14 +7,19 @@ using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 
+#if DEBUG
+using StreamerBotLib.GUI.Windows;
+#endif
+
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
-        #region Debug Empty Stream
 #if DEBUG
         private DebugStreamUsers TestingWindow;
 #endif
+
+        #region Debug Empty Stream
 
         private void CheckDebug(object sender, RoutedEventArgs e)
         {

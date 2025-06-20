@@ -1,0 +1,2 @@
+6/20/2025 00:11:53-Exit-ThreadManager-Closed all threads started through ThreadManager.
+6/20/2025 00:11:53-.ctor_GUIDataManager_SetObsCol-ThreadManager-ThreadManager starting a thread for .ctor_GUIDataManager_SetObsCol.

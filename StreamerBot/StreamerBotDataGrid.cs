@@ -57,6 +57,8 @@ namespace StreamerBot
         private void DataManager_OnInstanceCreated(object sender, EventArgs e)
         {
             GUIDataManagerViews = sender as GUIDataManagerViews;
+            SystemsController.DataManage.OnLoadCompleted += GUIDataManagerViews.DataManager_OnLoadCompleted;
+            SystemsController.DataManage.OnLoadCompleted += DataManage_OnLoadCompleted;
             //OnDataGridUpdated += (sender as GUIDataManagerViews).DataManager_OnDataCollectionUpdated;
         }
 

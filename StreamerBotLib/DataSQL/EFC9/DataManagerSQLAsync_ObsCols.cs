@@ -660,42 +660,46 @@ namespace StreamerBotLib.DataSQL.EFC9
             //}), "StreamStats");
         }
 
-        private async Task RefreshUsersList(bool RecordCountChange = false)
+        private void RefreshUsersList(bool RecordCountChange = false)
         {
-            //PostActionQueue(new Task(() =>
-            //{
-            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUsersObservableCollection", async () =>
-            //    {
+            PostActionQueue(new Task(() =>
+            {
+                ThreadManager.CreateThreadStart("RefreshUsersObservableCollection", async () =>
+            {
+                ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUsersObservableCollection", async () =>
+                {
 #if DEBUG
-            LogWriter.DebugLog("RefreshUsersObservableCollection",
-                    DebugLogTypes.SpecialPurpose, $"Reloading Users data into the database context.");
+                    LogWriter.DebugLog("RefreshUsersObservableCollection",
+                                DebugLogTypes.SpecialPurpose, $"Reloading Users data into the database context.");
 #endif
 
-            LogWriter.DebugLog("RefreshUsersObservableCollection",
-                    DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
-            await GUIContext.UserStats.LoadAsync();
-            await GUIContext.Users.LoadAsync();
-            LogWriter.DebugLog("RefreshUsersObservableCollection",
-                    DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
-            NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
-            //    });
-            //}), "Users");
+                    LogWriter.DebugLog("RefreshUsersObservableCollection",
+                                DebugLogTypes.DataManager, $"Reloading Users data into the database context.");
+                    await GUIContext.UserStats.LoadAsync();
+                    await GUIContext.Users.LoadAsync();
+                    LogWriter.DebugLog("RefreshUsersObservableCollection",
+                                DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
+                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+                });
+            });
+            }), "Users");
         }
 
-        private async Task RefreshUserStatsList(bool RecordCountChange = false)
+        private void RefreshUserStatsList(bool RecordCountChange = false)
         {
-            //PostActionQueue(new Task(() =>
-            //{
-            //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
-            //    {
-            LogWriter.DebugLog("RefreshUserStatsObservableCollection",
-              DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
-            await GUIContext.UserStats.LoadAsync();
-            LogWriter.DebugLog("RefreshUserStatsObservableCollection",
-DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
-            NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
-            //    });
-            //}), "UserStats");
+            PostActionQueue(new Task(() =>
+            {
+                ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
+                {
+                    LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+                      DebugLogTypes.DataManager, $"Reloading UserStats data into the database context.");
+                    await GUIContext.UserStats.LoadAsync();
+                    LogWriter.DebugLog("RefreshUserStatsObservableCollection",
+            DebugLogTypes.DataManager, $"Notifying the DataCollection is Updated.");
+                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+                });
+            }), "UserStats");
         }
 
         private async Task RefreshWebhooksList(bool RecordCountChange = false)

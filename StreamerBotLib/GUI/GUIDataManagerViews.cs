@@ -19,10 +19,8 @@ namespace StreamerBotLib.GUI
 {
     public class GUIDataManagerViews : INotifyPropertyChanged
     {
-        // TODO: determine how to preload the Observable Collections into the DataGrid controls - instead of relying on GUI focus
         #region DataManager TableViews
-        //private readonly SQLDBContext context = new DataManagerFactory().CreateDbContext();
-        private IDataManager DataManager { get; }
+        private static IDataManager DataManager { get; } = SystemsController.DataManage;
 
         public FlowDocument ChatData { get; private set; }
         public ObservableCollection<string> CurrUserList { get; private set; }
@@ -124,7 +122,6 @@ namespace StreamerBotLib.GUI
 
         public GUIDataManagerViews()
         {
-            DataManager = SystemsController.DataManage;
             //DataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
 
             ChatData = ActionSystem.ChatData;
@@ -134,10 +131,14 @@ namespace StreamerBotLib.GUI
 
             // commenting this method or using "Debug_ViewXaml" build config and building allows the xaml designer to display
             // the xaml design; otherwise, xaml designer throws an exception
+            OnInstanceCreated?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void DataManager_OnLoadCompleted(object sender, EventArgs e)
+        {
 #if !DEBUG_VIEWXAML
             SetObservables();
 #endif
-            OnInstanceCreated?.Invoke(this, EventArgs.Empty);
         }
 
         private void SetObservables()

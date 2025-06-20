@@ -151,6 +151,8 @@ switches:
                         {
                             // Do nothing, the task has already completed
                         }
+
+                        await Task.Delay(150); // Prevents tight loop, allowing other tasks to run
                     }
                 }
                 catch (Exception ex)

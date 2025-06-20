@@ -58,7 +58,7 @@ namespace StreamerBotLib.Systems
                 CurrStream.MaxUsers = Math.Max(CurrStream.MaxUsers, StreamViewers.Count);
                 if (OptionFlags.ManageUsers)
                 {
-                    DataManage.UserJoined(User, CurrTime);
+                    DataManage.UserJoined([User], CurrTime);
                 }
             }
         }

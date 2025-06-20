@@ -167,7 +167,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             using var context = BuildDataContext();
 
-            Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).FirstOrDefault();
+            Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).Include(S=> S.UserStats).FirstOrDefault();
             if (newuser == default)
             {
                 newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,
