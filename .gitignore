@@ -346,3 +346,6 @@ healthchecksdb
 /MaintainStreamerBotLib
 *.db
 /TestScrollViewer/TestScrollViewer.csproj
+*.txt
+*.db-shm
+*.db-wal
