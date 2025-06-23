@@ -1,17 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
-using StreamerBotLib.DataSQL.DiscriminatorEnums;
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Models;
-
-using System.Data;
-
+﻿
 namespace StreamerBotLib.DataSQL.MultiContext
 {
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
+    using StreamerBotLib.DataSQL.DiscriminatorEnums;
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Models;
+
+    using System.Data;
     internal partial class DataManagerSQLAsync
     {
         #region Get_Methods

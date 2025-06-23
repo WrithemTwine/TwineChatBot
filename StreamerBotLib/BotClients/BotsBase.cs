@@ -1,12 +1,13 @@
-﻿using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Static;
-
-using System.Collections.ObjectModel;
-
+﻿
 namespace StreamerBotLib.BotClients
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Static;
+
+    using System.Collections.ObjectModel;
+
     public class BotsBase : IBotTypes
     {
         public event EventHandler<BotEventArgs> BotEvent;

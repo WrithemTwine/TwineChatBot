@@ -1,8 +1,8 @@
-﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models.Enums;
-
-namespace StreamerBotLib.Models
+﻿namespace StreamerBotLib.Models
 {
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models.Enums;
+
     public record CommandData
     {
         public string Usage { get; }

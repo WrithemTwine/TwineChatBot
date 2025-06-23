@@ -1,10 +1,11 @@
-﻿using StreamerBotLib.Properties;
-
-using System.Configuration;
-using System.Reflection;
-
+﻿
 namespace StreamerBotLib.Static
 {
+    using StreamerBotLib.Properties;
+
+    using System.Configuration;
+    using System.Reflection;
+
     /// <summary>
     /// Holds settings and flags for access across the application.
     /// </summary>

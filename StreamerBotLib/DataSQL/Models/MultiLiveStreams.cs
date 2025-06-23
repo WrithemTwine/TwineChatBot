@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Models.Enums;
-
-using System.Diagnostics.CodeAnalysis;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.Models.Enums;
+
+    using System.Diagnostics.CodeAnalysis;
+
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(LiveDate))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class MultiLiveStreams(DateTime liveDate,

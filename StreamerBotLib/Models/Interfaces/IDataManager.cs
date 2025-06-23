@@ -1,14 +1,15 @@
-﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Models;
-
-using System.Data;
-
+﻿
 namespace StreamerBotLib.Models.Interfaces
 {
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Models;
+
+    using System.Data;
+
     public interface IDataManager : IDataManagerReadOnly
     {
         event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;

@@ -7,7 +7,6 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
 
 using System.Collections.Concurrent;
 using System.Data;

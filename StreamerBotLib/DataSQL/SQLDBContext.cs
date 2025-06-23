@@ -2,13 +2,17 @@
 #define DEBUG_LOG1 // rename to DEBUG_LOG to enable the debug log
 #endif
 
+
+
+namespace StreamerBotLib.DataSQL
+{
 #if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
 #endif
 
-using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.DataSQL.DiscriminatorEnums;
+    using StreamerBotLib.DataSQL.DiscriminatorEnums;
 
 
 #if DEBUG_LOG
@@ -16,11 +20,8 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 #endif
 
-using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.DataSQL.Models;
 
-
-namespace StreamerBotLib.DataSQL
-{
     public class SQLDBContext(DbContextOptions<SQLDBContext> options) : DbContext(options)
     {
         #region User Data

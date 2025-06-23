@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-
+﻿
 namespace StreamerBotLib.DataSQL.SingleContext
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
     internal partial class DataManagerSQLAsync
     {
         #region Clear DataBase Records 

@@ -1,8 +1,8 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-
+﻿
 namespace StreamerBotLib.Models.Interfaces
 {
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
     public interface IDataManagerReadOnly
     {
         event EventHandler UpdatedMonitoringChannels;

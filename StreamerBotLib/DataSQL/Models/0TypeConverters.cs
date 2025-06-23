@@ -1,9 +1,10 @@
-﻿using System.Globalization;
-using System.Windows.Controls;
-using System.Windows.Data;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using System.Globalization;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+
     public class TimeoutSecondsConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

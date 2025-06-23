@@ -1,17 +1,18 @@
 ﻿
-using StreamerBotLib.BotIOController;
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Enums;
-
-using System.ComponentModel;
-using System.Globalization;
-
 namespace StreamerBotLib.Systems
 {
+    using StreamerBotLib.BotIOController;
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Enums;
+
+    using System.ComponentModel;
+    using System.Globalization;
+
+
     public partial class ActionSystem : INotifyPropertyChanged
     {
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
@@ -104,7 +105,7 @@ namespace StreamerBotLib.Systems
 
                     PostApproval($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
                         new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
-                    result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotController.GetBotName(source), source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
+                    result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotUserName, source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
                 }
             }
             else

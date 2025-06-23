@@ -1,12 +1,12 @@
 ﻿
-using StreamerBotLib.BotClients;
-using StreamerBotLib.BotClients.Twitch;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Static;
-
 namespace StreamerBotLib.GUI
 {
+    using StreamerBotLib.BotClients;
+    using StreamerBotLib.BotClients.Twitch;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Static;
+
     public class GUITwitchBots : GUIBotBase
     {
         public static event EventHandler OnFollowerBotStarted;

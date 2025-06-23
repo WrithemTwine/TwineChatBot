@@ -1,7 +1,9 @@
-﻿using System.ComponentModel;
-
+﻿
 namespace StreamerBotLib.Systems.Overlay.Models
 {
+    using System.ComponentModel;
+
+
     /// <summary>
     /// Manages an Overlay statistic to show how much the server performed the Overlay action.
     /// </summary>

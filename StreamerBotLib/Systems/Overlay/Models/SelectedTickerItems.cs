@@ -1,10 +1,12 @@
-﻿using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Enums;
-
-using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.Systems.Overlay.Models
 {
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Enums;
+
+    using System.Diagnostics;
+
+
     [DebuggerDisplay("IsSelected={IsSelected}, Overlay={OverlayTickerItem}")]
     public class SelectedTickerItem
     {
@@ -38,8 +40,8 @@ namespace StreamerBotLib.Systems.Overlay.Models
         public IEnumerable<SelectedTickerItem> GetSelectedTickers()
         {
             return from ticker in TickerItems
-                    where ticker.IsSelected
-                    select ticker;
+                   where ticker.IsSelected
+                   select ticker;
         }
     }
 }

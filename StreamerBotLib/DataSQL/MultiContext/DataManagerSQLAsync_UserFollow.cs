@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-
+﻿
 namespace StreamerBotLib.DataSQL.MultiContext
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
     internal partial class DataManagerSQLAsync
     {
 #if DEBUG
@@ -167,7 +167,7 @@ namespace StreamerBotLib.DataSQL.MultiContext
         {
             using var context = BuildDataContext();
 
-            Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).Include(S=> S.UserStats).FirstOrDefault();
+            Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).Include(S => S.UserStats).FirstOrDefault();
             if (newuser == default)
             {
                 newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,

@@ -1,12 +1,12 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Enums;
-
-using System.Numerics;
-
+﻿
 namespace StreamerBotLib.Systems
 {
+
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Enums;
+
     public partial class ActionSystem
     {
         private delegate void BotOperation();
@@ -39,13 +39,18 @@ namespace StreamerBotLib.Systems
 
         public static void SetCategory(CategoryData categoryData)
         {
-            LogWriter.DebugLog("SetCategory", DebugLogTypes.StatSystem, "Setting the current category for the stream.");
-            Category = categoryData.CategoryName;
-
-            if (OptionFlags.ManageStreamStats)
+            LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, $"Setting category to {categoryData.CategoryName}.");
+            if (CurrCategory != categoryData)
             {
-                DataManage.PostCategoryStream(categoryData);
+                LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, "Updating category.");
+                CurrCategory = categoryData;
+                Category = categoryData.CategoryName;
+                if (OptionFlags.ManageStreamStats)
+                {
+                    DataManage.PostCategoryStream(categoryData);
+                }
             }
+            LogWriter.DebugLog("SetCategory", DebugLogTypes.StatSystem, $"Current category is {CurrCategory.CategoryName}.");
         }
 
         public void UserJoined(List<LiveUser> UserNames)
@@ -229,7 +234,14 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void UserLeft(LiveUser User, DateTime CurrTime)
+        public void UserLeft(LiveUser User)
+        {
+            LogWriter.DebugLog("UserLeft", DebugLogTypes.StatSystem, "User left.");
+            UserLeft(User, DateTime.Now.ToLocalTime());
+            UpdateUserJoinedList();
+        }
+
+        private void UserLeft(LiveUser User, DateTime CurrTime)
         {
             LogWriter.DebugLog("UserLeft", DebugLogTypes.StatSystem, "Posting to the database a user that left the channel.");
             lock (StreamViewers)
@@ -340,6 +352,8 @@ namespace StreamerBotLib.Systems
 
             CurrStream.Clear();
 
+            StartElapsedTimerThread();
+
             OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started;
             CurrStream.StreamEnd = Started; // temp assign ending time as start
@@ -369,6 +383,8 @@ namespace StreamerBotLib.Systems
             }
             MonitorWatchTime();
             StartCurrencyClock();
+
+            CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Live.ToString(), null);
 
             // setting if user wants to save Stream Stat data
             return OptionFlags.ManageStreamStats && !found;
@@ -426,6 +442,11 @@ namespace StreamerBotLib.Systems
             SubUsers.Clear();
             VIPUsers.Clear();
             StreamViewers.EndStreamResetList();
+
+            // reset category to empty, so next time stream starts, the "streamed category" counter
+            // updates - a streamer may have consecutive streams with same category,
+            // not doing this locks the counter from incrementing each stream
+            CurrCategory = new("", "");
         }
 
         #region Stream Stat Methods

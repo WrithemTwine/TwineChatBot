@@ -1,13 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-
-using System.Collections.ObjectModel;
-
+﻿
 namespace StreamerBotLib.DataSQL.EFC9
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+
+    using System.Collections.ObjectModel;
+
     internal partial class DataManagerSQLAsync
     {
         private SQLDBContext GUIContext;

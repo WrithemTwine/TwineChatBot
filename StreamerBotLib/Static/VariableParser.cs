@@ -1,8 +1,9 @@
-﻿using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Properties;
-
+﻿
 namespace StreamerBotLib.Static
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Properties;
+
     /// <summary>
     /// Provides dictionaries to use for parsing user provided parse strings and to provide common dictionary structure
     /// </summary>

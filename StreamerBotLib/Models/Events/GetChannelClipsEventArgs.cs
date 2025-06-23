@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Models;
-
+﻿
 namespace StreamerBotLib.Models.Events
 {
+    using StreamerBotLib.Models;
     /// <summary>
     /// The EventArgs for the GetChannelClips event.
     /// </summary>

@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.DiscriminatorEnums;
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Models;
-
+﻿
 namespace StreamerBotLib.DataSQL.EFC9
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.DiscriminatorEnums;
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Models;
+
     internal partial class DataManagerSQLAsync
     {
 

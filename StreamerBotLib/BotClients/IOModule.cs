@@ -1,8 +1,9 @@
-﻿using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
-
+﻿
 namespace StreamerBotLib.BotClients
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
+
     /// <summary>
     /// Abstract base class for any bot attached to this application
     /// </summary>

@@ -1,19 +1,20 @@
-using StreamerBotLib.DataSQL;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Properties;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Enums;
-
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Globalization;
-using System.Windows.Documents;
 
 namespace StreamerBotLib.Systems
 {
+    using StreamerBotLib.BotClients;
+    using StreamerBotLib.DataSQL;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Properties;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Enums;
+
+    using System.Collections.ObjectModel;
+    using System.Data;
+    using System.Globalization;
+    using System.Windows.Documents;
 
     /// <summary>
     /// The common shared operations class between each of the subsystems. 
@@ -92,7 +93,7 @@ namespace StreamerBotLib.Systems
 
 
         #region Database Ops
-        public static void ManageDatabase()
+        public void ManageDatabase()
         {
             LogWriter.DebugLog("ManageDatabase", DebugLogTypes.CommonSystem, "Managing Database.");
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
@@ -142,43 +143,43 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void ClearWatchTime()
+        public void ClearWatchTime()
         {
             LogWriter.DebugLog("ClearWatchTime", DebugLogTypes.CommonSystem, "Clearing Watch Time.");
             DataManage.ClearWatchTime();
         }
 
-        public static void ClearAllCurrenciesValues()
+        public void ClearAllCurrenciesValues()
         {
             LogWriter.DebugLog("ClearAllCurrenciesValues", DebugLogTypes.CommonSystem, "Clearing All Currency Values.");
             DataManage.ClearAllCurrencyValues();
         }
 
-        public static void ClearUsersNonFollowers()
+        public void ClearUsersNonFollowers()
         {
             LogWriter.DebugLog("ClearUsersNonFollowers", DebugLogTypes.CommonSystem, "Clearing Users Non-Followers.");
             DataManage.ClearUsersNotFollowers();
         }
 
-        public static void SetSystemEventsEnabled(bool Enabled)
+        public void SetSystemEventsEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetSystemEventsEnabled", DebugLogTypes.CommonSystem, $"Setting System Events Enabled: {Enabled}");
             DataManage.SetSystemEventsEnabled(Enabled);
         }
 
-        public static void SetBuiltInCommandsEnabled(bool Enabled)
+        public void SetBuiltInCommandsEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetBuiltInCommandsEnabled", DebugLogTypes.CommonSystem, $"Setting Built-In Commands Enabled: {Enabled}");
             DataManage.SetBuiltInCommandsEnabled(Enabled);
         }
 
-        public static void SetUserDefinedCommandsEnabled(bool Enabled)
+        public void SetUserDefinedCommandsEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetUserDefinedCommandsEnabled", DebugLogTypes.CommonSystem, $"Setting User Defined Commands Enabled: {Enabled}");
             DataManage.SetUserDefinedCommandsEnabled(Enabled);
         }
 
-        public static void SetDiscordWebhooksEnabled(bool Enabled)
+        public void SetDiscordWebhooksEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetDiscordWebhooksEnabled", DebugLogTypes.CommonSystem, $"Setting Discord Webhooks Enabled: {Enabled}");
             DataManage.SetWebhooksEnabled(Enabled);
@@ -190,37 +191,37 @@ namespace StreamerBotLib.Systems
             //DataManage.PostUpdatedDataRow(RowChanged);
         }
 
-        public static void DeleteRows(IEnumerable<DataRow> dataRows)
+        public void DeleteRows(IEnumerable<DataRow> dataRows)
         {
             LogWriter.DebugLog("DeleteRows", DebugLogTypes.CommonSystem, $"Deleting Rows: {dataRows.Count()}");
             DataManage.DeleteDataRows(dataRows);
         }
 
-        public static void AddNewAutoShoutUser(string UserId, Platform platform)
+        public void AddNewAutoShoutUser(string UserId, Platform platform)
         {
             LogWriter.DebugLog("AddNewAutoShoutUser", DebugLogTypes.CommonSystem, $"Adding New AutoShout User: {UserId}");
             DataManage.PostNewAutoShoutUser(UserId, platform);
         }
 
-        internal static void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
+        internal void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
         {
             LogWriter.DebugLog("UpdatedIsEnabledRows", DebugLogTypes.CommonSystem, $"Updating IsEnabled Rows: {dataRows.Count()}");
             DataManage.SetIsEnabled(dataRows, IsEnabled);
         }
 
-        internal static bool CheckField(string dataTable, string fieldName)
+        internal bool CheckField(string dataTable, string fieldName)
         {
             LogWriter.DebugLog("CheckField", DebugLogTypes.CommonSystem, $"Checking Field: {fieldName}");
             return DataManage.CheckField(dataTable, fieldName);
         }
 
-        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksSource source, WebhooksKind webhooksKind)
+        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksSource source, WebhooksKind webhooksKind)
         {
             LogWriter.DebugLog("GetDiscordWebhooks", DebugLogTypes.SystemController, $"Getting Discord webhooks for source: {source} and kind: {webhooksKind}.");
             return DataManage.GetWebhooks(source, webhooksKind);
         }
 
-        internal static void DataGridUpdatedRow(object sender, AddNewRowEventArgs e)
+        internal void DataGridUpdatedRow(object sender, AddNewRowEventArgs e)
         {
             LogWriter.DebugLog("DataGridUpdatedRow", DebugLogTypes.SystemController, "Updating data grid row.");
             DataManage.PostDataGridGUIAddRow(e.NewRow);
@@ -229,7 +230,7 @@ namespace StreamerBotLib.Systems
         #endregion
 
 
-        public static bool AddClip(Clip c)
+        public bool AddClip(Clip c)
         {
             LogWriter.DebugLog("AddClip", DebugLogTypes.CommonSystem, $"Adding Clip: {c.Title}");
             bool success = false;
@@ -244,7 +245,7 @@ namespace StreamerBotLib.Systems
         /// Retrieves the current users within the channel during the stream.
         /// </summary>
         /// <returns>The current user count as of now.</returns>
-        public static int GetUserCount
+        public int GetUserCount
         {
             get
             {
@@ -260,7 +261,7 @@ namespace StreamerBotLib.Systems
         /// Retrieve how many chats have occurred in the current live stream to now.
         /// </summary>
         /// <returns>Current total chats as of now.</returns>
-        public static int GetCurrentChatCount
+        public int GetCurrentChatCount
         {
             get
             {
@@ -272,7 +273,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void UpdateGUICurrUsers()
+        public void UpdateGUICurrUsers()
         {
             LogWriter.DebugLog("UpdateGUICurrUsers", DebugLogTypes.CommonSystem, "Updating GUI Current Users.");
             CurrUserJoin.Clear();
@@ -285,13 +286,13 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        internal static void AddChatString(string UserName, string Message)
+        internal void AddChatString(string UserName, string Message)
         {
             LogWriter.DebugLog("AddChatString", DebugLogTypes.CommonSystem, $"Adding Chat String: {UserName}: {Message}");
             ThreadManager.AddTaskToGUIDispatcher(() => UpdateGUIChatMessages(UserName, Message));
         }
 
-        private static void UpdateGUIChatMessages(string UserName, string Message)
+        private void UpdateGUIChatMessages(string UserName, string Message)
         {
             LogWriter.DebugLog("UpdateGUIChatMessages", DebugLogTypes.CommonSystem, $"Updating GUI Chat Messages: {UserName}: {Message}");
 
@@ -307,7 +308,7 @@ namespace StreamerBotLib.Systems
             ChatData.Blocks.Add(p);
         }
 
-        internal static void OutputSentToBotsHandler(object sender, PostChannelMessageEventArgs e)
+        internal void OutputSentToBotsHandler(object sender, PostChannelMessageEventArgs e)
         {
             LogWriter.DebugLog("OutputSentToBotsHandler", DebugLogTypes.CommonSystem, $"Output Sent To Bots Handler: {e.Msg}");
             AddChatString(Settings.Default.TwitchBotUserName, e.Msg);
@@ -535,6 +536,132 @@ namespace StreamerBotLib.Systems
             DataManage.UpdateStats(dBUserStats, userId, platform);
         }
 
+        private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)
+        {
+            LogWriter.DebugLog("RequestBanUser", DebugLogTypes.SystemController, "Requesting to ban user.");
+            BanUserRequest?.Invoke(this, new() { User = User, BanReason = Reason, Duration = Duration });
+        }
+
+        public void UserCheered(LiveUser User, int Bits)
+        {
+            // handle bit cheers
+            if (Bits > 0)
+            {
+                LogWriter.DebugLog("UserCheered", DebugLogTypes.SystemController, "User cheered.");
+                lock (ProcMsgQueue)
+                {
+                    ProcMsgQueue.Enqueue(new(() =>
+                    {
+                        string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Bits, out bool Enabled, out short Multi);
+                        if (Enabled)
+                        {
+                            LogWriter.DebugLog("UserCheered", DebugLogTypes.SystemController, "Sending message about user cheering.");
+                            Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                            {
+                                new(MsgVars.user, User.UserName ?? "anonymous"),
+                                new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
+                            });
+
+                            SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Bits), Multi);
+
+                            UpdatedStat(StreamStatType.Bits, Bits);
+                            UpdatedStat(StreamStatType.AutoEvents);
+                        }
+
+                        LogWriter.DebugLog("UserCheered", DebugLogTypes.SystemController, "Checking for overlay event.");
+                        CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Bits.ToString(), User, User.UserName ?? "anonymous");
+                    }));
+                }
+
+                AddNewOverlayTickerItem(OverlayTickerItem.LastBits, User.UserName ?? "anonymous");
+            }
+        }
+
+        public void MessageReceived(CmdMessage MsgReceived, LiveUser User)
+        {
+            LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Message received.");
+            UpdateUserStats(DBUserStats.Chats, User.UserId, User.Platform);
+
+            MsgReceived.UserType = ParsePermission(MsgReceived);
+
+            if ((OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn) && MsgReceived.DisplayName != OptionFlags.TwitchBotUserName)
+            {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Moderating message.");
+                Tuple<ModActions, int, MsgTypes, BanReasons> action = ModerateMessage(MsgReceived);
+
+                if (OptionFlags.ModerateUsersWarn)
+                {
+                    if (action.Item1 is ModActions.Ban or ModActions.Timeout)
+                    {
+                        SendMessage($"Moderator should {action.Item1} User for {action.Item4} due to {action.Item3} message.");
+                    }
+                    else if (action.Item3 == MsgTypes.LearnMore)
+                    {
+                        SendMessage("I am unable to make a determination. Please teach me more so I can better decide.");
+                    }
+                }
+                else if (OptionFlags.ModerateUsersAction)
+                {
+                    LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Requesting ban or timeout.");
+                    // don't fix it yet
+                    if (action.Item1 == ModActions.Ban)
+                    {
+                        RequestBanUser(User, action.Item4);
+                    }
+                    else if (action.Item1 == ModActions.Timeout)
+                    {
+                        RequestBanUser(User, action.Item4, action.Item2);
+                    }
+                }
+            }
+
+            if (OptionFlags.ModerateUserLearnMsgs)
+            {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Posting a new message to learned.");
+                DataManage.PostLearnMsgsRow(MsgReceived.Message, MsgTypes.UnidentifiedChatInput);
+            }
+
+            AddChatString(MsgReceived.DisplayName, MsgReceived.Message);
+
+            LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Updating statistics.");
+            if (User.UserName != OptionFlags.TwitchBotUserName)
+            {
+                UpdatedStat(StreamStatType.TotalChats);
+            }
+
+            if (MsgReceived.IsSubscriber)
+            {
+                SubJoined(MsgReceived.DisplayName);
+            }
+            if (MsgReceived.IsVip)
+            {
+                VIPJoined(MsgReceived.DisplayName);
+            }
+            if (MsgReceived.IsModerator)
+            {
+                ModJoined(MsgReceived.DisplayName);
+            }
+
+            if (OptionFlags.FirstUserChatMsg)
+            {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Checking for first user chat message.");
+                foreach (LiveUser user in StreamViewers.AddUsersFirstChatMessage([User]))
+                {
+                    UserWelcomeMessage(user);
+                }
+            }
+
+            #region Currency Games
+
+            if (BlackJackActive)
+            {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Evaluating user message for blackjack game.");
+                GameCheckBlackJackResponse(User, MsgReceived.Message);
+            }
+
+            #endregion
+        }
+
         #endregion
 
         #region Followers
@@ -701,5 +828,45 @@ namespace StreamerBotLib.Systems
 
         #endregion
 
+        #region Clips
+        public void ClipHelper(IEnumerable<Clip> Clips)
+        {
+            LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Processing clips.");
+            foreach (Clip c in Clips)
+            {
+                if (AddClip(c))
+                {
+                    if (OptionFlags.TwitchClipPostChat)
+                    {
+                        LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Posting clip to chat.");
+                        lock (ProcMsgQueue)
+                        {
+                            ProcMsgQueue.Enqueue(new Task(() =>
+                            {
+                                SendMessage(c.Url);
+                            }));
+                        }
+                    }
+
+                    if (OptionFlags.TwitchClipPostDiscord)
+                    {
+                        LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Posting clip to Discord.");
+                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksSource.Discord, WebhooksKind.Clips))
+                        {
+                            // TODO: add into database->enable adding data
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to WebHooks
+                        }
+                    }
+
+                    LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Updating statistics.");
+                    UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
+
+                    // CheckForOverlayEvent(OverlayTypes.Clip, OverlayTypes.Clip, ProvidedURL: c.Url);
+                }
+            }
+        }
+
+        #endregion
     }
 }

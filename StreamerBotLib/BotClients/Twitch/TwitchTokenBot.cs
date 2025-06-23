@@ -4,7 +4,6 @@ using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
 
 using TwitchLib.Api;
 using TwitchLib.Api.Auth;

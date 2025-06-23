@@ -1,10 +1,11 @@
-﻿using StreamerBotLib.BotClients.Twitch;
-using StreamerBotLib.Models.Enums;
-
-using TwitchLib.EventSub.Websockets;
-
+﻿
 namespace StreamerBotLib.Models.Interfaces
 {
+    using StreamerBotLib.BotClients.Twitch;
+    using StreamerBotLib.Models.Enums;
+
+    using TwitchLib.EventSub.Websockets;
+
     public interface ITwitchBotEventSubSubscriptions
     {
         public BotType CurrBot { get; }

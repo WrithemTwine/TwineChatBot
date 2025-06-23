@@ -1,14 +1,16 @@
-﻿using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Communication;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Interfaces;
-using StreamerBotLib.Systems.Overlay.Static;
-
-using System.Diagnostics;
-using System.IO;
-
+﻿
 namespace StreamerBotLib.Systems.Overlay.Models
 {
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Communication;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Interfaces;
+    using StreamerBotLib.Systems.Overlay.Static;
+
+    using System.Diagnostics;
+    using System.IO;
+
+
     /// <summary>
     /// Loads a style and saves to a file.
     /// </summary>

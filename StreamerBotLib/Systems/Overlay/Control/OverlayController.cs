@@ -4,14 +4,15 @@
 #define UseGUIDLL
 #endif
 
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Models;
-using StreamerBotLib.Systems.Overlay.Server;
 
 namespace StreamerBotLib.Systems.Overlay.Control
 {
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Models;
+    using StreamerBotLib.Systems.Overlay.Server;
+
     /// <summary>
     /// Class to receive overlay requested data and send to the webserver.
     /// </summary>

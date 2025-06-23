@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Systems.Overlay.Enums;
-
+﻿
 namespace StreamerBotLib.Systems.Overlay.Static
 {
+    using StreamerBotLib.Systems.Overlay.Enums;
     public static class PublicConstants
     {
         public static string PipeName { get; } = "MediaOverlayPipe";

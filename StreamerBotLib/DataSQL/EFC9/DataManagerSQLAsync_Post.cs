@@ -1,16 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
-
-using System.Globalization;
-
+﻿
 namespace StreamerBotLib.DataSQL.EFC9
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
+
+    using System.Globalization;
+
     internal partial class DataManagerSQLAsync
     {
         #region Post_Methods

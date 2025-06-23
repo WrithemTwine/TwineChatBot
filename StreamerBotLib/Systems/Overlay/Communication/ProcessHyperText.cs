@@ -1,18 +1,19 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
-using StreamerBotLib.Systems.Overlay.Control;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Models;
-using StreamerBotLib.Systems.Overlay.Static;
-
-using System.Drawing;
-using System.IO;
-using System.Xml.Linq;
-
+﻿
 namespace StreamerBotLib.Systems.Overlay.Communication
 {
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
+    using StreamerBotLib.Systems.Overlay.Control;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Models;
+    using StreamerBotLib.Systems.Overlay.Static;
+
+    using System.Drawing;
+    using System.IO;
+    using System.Xml.Linq;
+
     /// <summary>
     /// Provides HTML strings to supply via the HTTP server, includes building an Overlay media page based on provided image, audio, and/or video.
     /// </summary>

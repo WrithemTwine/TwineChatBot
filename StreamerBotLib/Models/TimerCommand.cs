@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.Models
 {
+    using System.Diagnostics;
+
     [DebuggerDisplay("Command={Command}, RepeatTime={RepeatTime}, NextRun={NextRun}")]
     public class TimerCommand : IComparable<TimerCommand>, IEquatable<TimerCommand>
     {

@@ -1,15 +1,16 @@
-﻿using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Communication;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Interfaces;
-
-using System.IO;
-using System.Net;
-using System.Net.NetworkInformation;
-
+﻿
 namespace StreamerBotLib.Systems.Overlay.Server
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Communication;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Interfaces;
+
+    using System.IO;
+    using System.Net;
+    using System.Net.NetworkInformation;
+
     public class TwineBotWebServer
     {
         private static bool ServerStarted;

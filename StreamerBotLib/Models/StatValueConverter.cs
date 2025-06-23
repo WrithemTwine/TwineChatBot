@@ -1,10 +1,11 @@
-﻿using StreamerBotLib.Static;
-
-using System.Globalization;
-using System.Windows.Data;
-
+﻿
 namespace StreamerBotLib.Models
 {
+    using StreamerBotLib.Static;
+
+    using System.Globalization;
+    using System.Windows.Data;
+
     public class StatValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

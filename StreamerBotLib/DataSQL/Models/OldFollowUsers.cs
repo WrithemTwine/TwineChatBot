@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Models.Enums;
-
-using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.Models.Enums;
+
+    using System.Diagnostics;
+
     [PrimaryKey(nameof(UserId), nameof(UserName), nameof(Platform))]
     [Index(nameof(StatusChangeDate), nameof(UserId), nameof(FollowedDate), IsDescending = [true, false, true])]
     [DebuggerDisplay("UserId={UserId}, UserName={UserName}, IsFollower={IsFollower}")]

@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Models.Enums;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.Models.Enums;
+
     [PrimaryKey(nameof(UserId), nameof(DateTime), nameof(Platform))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class GiveawayUserData(DateTime dateTime,

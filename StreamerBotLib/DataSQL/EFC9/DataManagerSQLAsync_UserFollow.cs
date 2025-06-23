@@ -1,19 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-
-using System.Linq;
-
+﻿
 namespace StreamerBotLib.DataSQL.EFC9
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+
+    using System.Linq;
     internal partial class DataManagerSQLAsync
     {
         private DateTime currtime;
         private static bool ProcessFollowQueuestarted = false;
-        
+
         #region Users
         internal async Task<LiveUser> GetUser(string UserName)
         {
@@ -51,7 +51,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 if (newuser.UserName != User.UserName && newuser.UserId == User.UserId) { newuser.UserName = User.UserName; }
             }
 
-            if(newuser.UserStats == null)
+            if (newuser.UserStats == null)
             {
                 await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
             }
@@ -144,7 +144,7 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         #endregion
 
-            #region Followers
+        #region Followers
 
         internal async Task<string> GetNewestFollower()
         {

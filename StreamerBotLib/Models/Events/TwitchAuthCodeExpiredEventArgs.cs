@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Models.Enums;
-
+﻿
 namespace StreamerBotLib.Models.Events
 {
+    using StreamerBotLib.Models.Enums;
     /// <summary>
     /// Event response when the Twitch Authentication Code expired or is unavailable 
     /// and the user needs to authenticate the application.

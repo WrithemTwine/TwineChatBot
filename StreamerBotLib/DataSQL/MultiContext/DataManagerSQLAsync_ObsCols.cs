@@ -1,18 +1,18 @@
 ﻿#define USE_OBSERVABLECOLLECTION
 #define BUNDLE_REFRESHPACKAGE
 
-using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-
-#if USE_OBSERVABLECOLLECTION
-using System.Collections.ObjectModel;
-#endif
-
 namespace StreamerBotLib.DataSQL.MultiContext
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+
+#if USE_OBSERVABLECOLLECTION
+    using System.Collections.ObjectModel;
+#endif
+
     internal partial class DataManagerSQLAsync
     {
 
@@ -675,8 +675,8 @@ namespace StreamerBotLib.DataSQL.MultiContext
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUsersObservableCollection", async () =>
             //    {
 #if DEBUG
-                    LogWriter.DebugLog("RefreshUsersObservableCollection",
-                            DebugLogTypes.SpecialPurpose, $"Reloading Users data into the database context.");
+            LogWriter.DebugLog("RefreshUsersObservableCollection",
+                    DebugLogTypes.SpecialPurpose, $"Reloading Users data into the database context.");
 #endif
 
             LogWriter.DebugLog("RefreshUsersObservableCollection",

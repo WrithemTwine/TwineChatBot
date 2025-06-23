@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
     [PrimaryKey(nameof(Number))]
     [Index(nameof(Number))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

@@ -1,15 +1,17 @@
-﻿using StreamerBotLib.Culture;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Properties;
-using StreamerBotLib.Static;
-
-using System.Globalization;
-using System.Resources;
-
+﻿
 namespace StreamerBotLib.Systems
 {
+    using StreamerBotLib.Culture;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Properties;
+    using StreamerBotLib.Static;
+
+    using System.Globalization;
+    using System.Resources;
+
+
     /// <summary>
     /// Class to manage event messages - donated bits, subscriptions, incoming raid, etc
     /// Culture localized strings

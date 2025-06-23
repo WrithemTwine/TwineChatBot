@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Models.Enums;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.Models.Enums;
+
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(RaidDate))]
     [Index(nameof(RaidDate), IsDescending = [true])]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

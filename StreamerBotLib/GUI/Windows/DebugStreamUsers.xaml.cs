@@ -1,7 +1,8 @@
-﻿using System.Windows;
-
+﻿
 namespace StreamerBotLib.GUI.Windows
 {
+    using System.Windows;
+
     /// <summary>
     /// Interaction logic for DebugStreamUsers.xaml
     /// </summary>

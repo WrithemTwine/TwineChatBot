@@ -2,7 +2,6 @@
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
 
 using TwitchLib.Api.Core.Exceptions;
 

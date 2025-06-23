@@ -1,8 +1,8 @@
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Systems.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Systems.Overlay.Enums;
     internal class OverlayServices : IDatabaseTableMeta
     {
         public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }

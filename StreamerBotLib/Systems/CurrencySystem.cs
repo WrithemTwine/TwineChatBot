@@ -61,14 +61,14 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void StartCurrencyClock()
+        private void StartCurrencyClock()
         {
             LogWriter.DebugLog("StartCurrencyClock", DebugLogTypes.CurrencySystem, "Starting currency clock");
 
             AccrualClocks();
         }
 
-        public void MonitorWatchTime()
+        private void MonitorWatchTime()
         {
             LogWriter.DebugLog("MonitorWatchTime", DebugLogTypes.CurrencySystem, "Starting watch time monitor");
 

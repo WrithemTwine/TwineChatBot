@@ -1,10 +1,10 @@
-﻿using StreamerBotLib.Static;
-
-using System.Data;
-using System.IO;
-
-namespace StreamerBotLib.DataSQL.MultiContext.Import
+﻿namespace StreamerBotLib.DataSQL.MultiContext.Import
 {
+    using StreamerBotLib.Static;
+
+    using System.Data;
+    using System.IO;
+
     internal class BaseDataManager
     {
         protected string DataFileName;

@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Models.Enums;
-
-namespace StreamerBotLib.Models
+﻿namespace StreamerBotLib.Models
 {
+    using StreamerBotLib.Models.Enums;
+
     public class ThreadData
     {
         /// <summary>

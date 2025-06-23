@@ -1,8 +1,8 @@
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
     internal class OldFollowUsers : IDatabaseTableMeta
     {
         public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }

@@ -1,9 +1,10 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-
+﻿
 namespace StreamerBotLib.Systems
 {
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+
     public class ManageStreamViewers
     {
         private readonly List<ManageStreamViewer> ManageViewers = [];

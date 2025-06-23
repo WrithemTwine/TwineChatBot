@@ -1,19 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
-
-using System.Data;
-using System.Globalization;
-
-
+﻿
 namespace StreamerBotLib.DataSQL.MultiContext
 {
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
+
+    using System.Data;
+    using System.Globalization;
+
     internal partial class DataManagerSQLAsync
     {
         #region Post_Methods

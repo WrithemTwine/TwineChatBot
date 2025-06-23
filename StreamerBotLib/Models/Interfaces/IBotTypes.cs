@@ -1,7 +1,8 @@
-﻿using StreamerBotLib.Models.Events;
-
+﻿
 namespace StreamerBotLib.Models.Interfaces
 {
+    using StreamerBotLib.Models.Events;
+
     /// <summary>
     /// Specifies the base methods to manage each bot cluster.
     /// </summary>

@@ -1,41 +1,41 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.DataSQL.MultiContext.Import;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
-
-using System.Collections.Concurrent;
-using System.Data;
-using System.Globalization;
-
+﻿
 namespace StreamerBotLib.DataSQL.MultiContext
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.DataSQL.MultiContext.Import;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
+
+    using System.Collections.Concurrent;
+    using System.Data;
+    using System.Globalization;
     /*
 
-!command: <switches-optional> <message>
+ !command: <switches-optional> <message>
 
-switches:
--t:<table>   (requires -f)
--f:<field>    (requires -t)
--c:<currency> (requires -f, optional switch)
--unit:<field units>   (optional with -f, but recommended)
+ switches:
+ -t:<table>   (requires -f)
+ -f:<field>    (requires -t)
+ -c:<currency> (requires -f, optional switch)
+ -unit:<field units>   (optional with -f, but recommended)
 
--p:<permission>
--top:<number>
--s:<sort>
--a:<action>
--e:<true|false> // IsEnabled
--param:<allow params to command>
--timer:<seconds>
--use:<usage message>
--category:<All-defaul>
+ -p:<permission>
+ -top:<number>
+ -s:<sort>
+ -a:<action>
+ -e:<true|false> // IsEnabled
+ -param:<allow params to command>
+ -timer:<seconds>
+ -use:<usage message>
+ -category:<All-defaul>
 
--m:<message> -> The message to display, may include parameters (e.g. #user, #field).
- */
+ -m:<message> -> The message to display, may include parameters (e.g. #user, #field).
+  */
 
     internal partial class DataManagerSQLAsync
     {

@@ -1,9 +1,10 @@
-﻿using StreamerBotLib.Models.Events;
-
-using System.Windows;
-
+﻿
 namespace StreamerBotLib.GUI.Windows
 {
+    using StreamerBotLib.Models.Events;
+
+    using System.Windows;
+
     /// <summary>
     /// Interaction logic for ImportUpdate.xaml
     /// </summary>

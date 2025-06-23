@@ -2,28 +2,29 @@
 
 //#define XAML_AddEdit
 
-using Microsoft.Win32;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Static;
-
-using System.ComponentModel;
-using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace StreamerBotLib.GUI.Windows
 {
+    using Microsoft.Win32;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Static;
+
+    using System.ComponentModel;
+    using System.IO;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Input;
+    using System.Windows.Media;
+
     /// <summary>
     /// Shows new Window for Adding or Editing DataGrid data rows
     /// </summary>

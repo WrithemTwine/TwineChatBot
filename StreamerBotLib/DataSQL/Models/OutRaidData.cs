@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using System.ComponentModel.DataAnnotations.Schema;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using System.ComponentModel.DataAnnotations.Schema;
+
     [PrimaryKey(nameof(Id))]
     [Index(nameof(Id), nameof(ChannelRaided))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

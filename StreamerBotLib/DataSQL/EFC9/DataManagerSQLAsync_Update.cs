@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Systems.Overlay.Enums;
-
+﻿
 namespace StreamerBotLib.DataSQL.EFC9
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Systems.Overlay.Enums;
     internal partial class DataManagerSQLAsync
     {
         internal async Task UpdateCurrency(List<LiveUser> Users, DateTime dateTime)

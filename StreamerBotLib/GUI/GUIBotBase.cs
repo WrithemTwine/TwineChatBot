@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Models.Events;
-
+﻿
 namespace StreamerBotLib.GUI
 {
+    using StreamerBotLib.Models.Events;
     public class GUIBotBase
     {
         public static event EventHandler<BotStartStopEventArgs> OnBotStarted;

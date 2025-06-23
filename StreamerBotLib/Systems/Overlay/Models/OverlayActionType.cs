@@ -1,7 +1,9 @@
-﻿using StreamerBotLib.Systems.Overlay.Enums;
-
+﻿
 namespace StreamerBotLib.Systems.Overlay.Models
 {
+    using StreamerBotLib.Systems.Overlay.Enums;
+
+
     /// <summary>
     /// Defines message payload to either load data or specify active data via the named pipe from the main bot process.
     /// </summary>

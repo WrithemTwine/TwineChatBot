@@ -1,8 +1,8 @@
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
     internal class Followers : IDatabaseTableMeta
     {
         public System.Boolean IsFollower { get => (System.Boolean)Values["IsFollower"]; set => Values["IsFollower"] = value; }

@@ -1,12 +1,12 @@
-﻿using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Systems;
-
-using System.Diagnostics;
-using System.Globalization;
-using System.Text.RegularExpressions;
-
-namespace StreamerBotLib.Models
+﻿namespace StreamerBotLib.Models
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Systems;
+
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Text.RegularExpressions;
+
     [DebuggerDisplay("Table={Table}, Field={Field}")]
     public partial class CommandParams
     {

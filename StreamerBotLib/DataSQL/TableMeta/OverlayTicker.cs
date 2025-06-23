@@ -1,8 +1,8 @@
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Systems.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Systems.Overlay.Enums;
     internal class OverlayTicker : IDatabaseTableMeta
     {
         public OverlayTickerItem TickerName { get => (OverlayTickerItem)Values["TickerName"]; set => Values["TickerName"] = value; }

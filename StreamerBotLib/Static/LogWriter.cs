@@ -1,17 +1,19 @@
 ﻿#define AUTO_FLUSH
 
-using StreamerBotLib.Models.Enums;
 
-using System.Globalization;
-using System.IO;
+
+namespace StreamerBotLib.Static
+{
+    using StreamerBotLib.Models.Enums;
+
+    using System.Globalization;
+    using System.IO;
 
 #if !AUTO_FLUSH
 using System.Reflection;
 using System.Text;
 #endif
 
-namespace StreamerBotLib.Static
-{
     /// <summary>
     /// Manages log output across the whole bot.
     /// </summary>

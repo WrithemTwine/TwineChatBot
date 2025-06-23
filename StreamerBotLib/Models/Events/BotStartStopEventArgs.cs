@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Models.Enums;
-
-namespace StreamerBotLib.Models.Events
+﻿namespace StreamerBotLib.Models.Events
 {
+    using StreamerBotLib.Models.Enums;
+
     public class BotStartStopEventArgs : EventArgs
     {
         public Bots BotName { get; set; }

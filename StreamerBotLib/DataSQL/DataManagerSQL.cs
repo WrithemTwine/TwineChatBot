@@ -1,18 +1,18 @@
-﻿using StreamerBotLib.DataSQL.EFC9;
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.GUI;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Models;
-
-using System.Data;
-
-namespace StreamerBotLib.DataSQL
+﻿namespace StreamerBotLib.DataSQL
 {
+    using StreamerBotLib.DataSQL.EFC9;
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.GUI;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Models;
+
+    using System.Data;
+
     /// <summary>
     /// A wrapper class to manage sequential DbContext access, which is not thread-safe. 
     /// https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/

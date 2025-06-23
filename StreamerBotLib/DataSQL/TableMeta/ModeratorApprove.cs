@@ -1,8 +1,8 @@
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
-
 namespace StreamerBotLib.DataSQL.TableMeta
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
+
     internal class ModeratorApprove : IDatabaseTableMeta
     {
         public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }

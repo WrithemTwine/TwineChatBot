@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
     [PrimaryKey(nameof(ClipId), nameof(CategoryId))]
     [Index(nameof(ClipId), nameof(CreatedAt), nameof(CategoryId))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

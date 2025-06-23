@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.Models
 {
+    using System.Diagnostics;
     [DebuggerDisplay("Parameter={Parameter}, Value={Value}")]
     public record Command
     {

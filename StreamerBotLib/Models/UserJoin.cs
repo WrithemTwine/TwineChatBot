@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.Models
 {
+    using System.Diagnostics;
+
     [DebuggerDisplay("ChatUser={ChatUser}, GameUserName={GameUserName}")]
     public record UserJoin
     {

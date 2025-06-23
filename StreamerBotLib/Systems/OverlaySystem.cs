@@ -1,10 +1,4 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems.Overlay.Enums;
-using StreamerBotLib.Systems.Overlay.Models;
-
+﻿
 /*
  * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 
  * https://dev.twitch.tv/docs/embed
@@ -15,6 +9,14 @@ using StreamerBotLib.Systems.Overlay.Models;
 
 namespace StreamerBotLib.Systems
 {
+
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems.Overlay.Enums;
+    using StreamerBotLib.Systems.Overlay.Models;
+
     public partial class ActionSystem
     {
         /// <summary>
@@ -92,13 +94,13 @@ namespace StreamerBotLib.Systems
             NewOverlayEvent?.Invoke(this, e);
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        private void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
             LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlaySystem, "Checking for overlay event.");
             CheckForOverlayEvent(overlayType, enumvalue.ToString(), User, UserMsg, ProvidedURL, UrlDuration);
         }
 
-        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        private void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
             LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"Checking for an Overlay Event with action data, {overlayType} and {Action}.");
             List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType, Action, User?.UserName);
@@ -196,7 +198,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="item">An object containing the overlay ticker item details for updating.</param>
         /// <param name="UserName">The Username specific to the ticker item.</param>
-        public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
+        public void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
             LogWriter.DebugLog("AddNewOverlayTickerItem", DebugLogTypes.OverlayBot, $"Adding a new Overlay Ticker Item for {UserName}.");
             if (OptionFlags.ManageOverlayTicker)

@@ -12,7 +12,7 @@ namespace StreamerBotLib.Systems
         private readonly List<string> describe = [];
 
         #region Auto-Mod Messages
-        public static void ManageLearnedMsgList()
+        private static void ManageLearnedMsgList()
         {
             ThreadManager.AddTaskToGUIDispatcher(() =>
             {
@@ -30,7 +30,7 @@ namespace StreamerBotLib.Systems
             });
         }
 
-        public Tuple<ModActions, int, MsgTypes, BanReasons> ModerateMessage(CmdMessage MsgReceived)
+        private Tuple<ModActions, int, MsgTypes, BanReasons> ModerateMessage(CmdMessage MsgReceived)
         {
             LogWriter.DebugLog("ModerateMessage", DebugLogTypes.ModerationSystem, $"Moderating message from {MsgReceived.DisplayName}.");
             ManageLearnedMsgList();
@@ -45,7 +45,7 @@ namespace StreamerBotLib.Systems
 
         #region User Requests
 
-        internal static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
+        private static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
         {
             LogWriter.DebugLog("GetApprovalRule", DebugLogTypes.ModerationSystem, $"Checking for approval rule for {Command}.");
             return DataManage.CheckModApprovalRule(ActionType, FormatData.AddEscapeFormat(Command));
@@ -56,7 +56,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="Description">A description of the request to approve.</param>
         /// <param name="Request">The Task of the request to perform once approved.</param>
-        public void PostApproval(string Description, Task Request)
+        private void PostApproval(string Description, Task Request)
         {
             LogWriter.DebugLog("AddApprovalRequest", DebugLogTypes.ModerationSystem, $"Adding a new approval request for {Description}.");
             bool ItemCount = false;
@@ -76,7 +76,7 @@ namespace StreamerBotLib.Systems
         /// Retrieve the numbered description list for each request.
         /// </summary>
         /// <returns>A numbered list of request descriptions.</returns>
-        public List<string> GetDescriptions()
+        private List<string> GetDescriptions()
         {
             LogWriter.DebugLog("GetDescriptions", DebugLogTypes.ModerationSystem, $"Getting approval list.");
             describe.Clear();
@@ -97,7 +97,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="Idx">The index of the label to retrieve</param>
         /// <returns>The description label of the request.</returns>
-        public string GetLabel(string Idx)
+        private string GetLabel(string Idx)
         {
             LogWriter.DebugLog("GetLabel", DebugLogTypes.ModerationSystem, $"Getting the label, {RequestApprovalList[Convert.ToInt32(Idx)].Item1}.");
             lock (RequestApprovalList)
@@ -110,7 +110,7 @@ namespace StreamerBotLib.Systems
         /// A moderator approved a specific request, and this method runs the approved request.
         /// </summary>
         /// <param name="Label">The specific request to approve.</param>
-        public void RunApprovedRequest(string Label)
+        private void RunApprovedRequest(string Label)
         {
             lock (RequestApprovalList)
             {

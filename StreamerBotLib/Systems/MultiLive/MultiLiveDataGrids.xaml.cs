@@ -1,16 +1,17 @@
-﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Static;
-
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-
+﻿
 namespace StreamerBotLib.Systems.MultiLive
 {
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.GUI.Windows;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Static;
+
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Controls.Primitives;
+
     /// <summary>
     /// Interaction logic for MultiLiveDataGrids.xaml
     /// </summary>

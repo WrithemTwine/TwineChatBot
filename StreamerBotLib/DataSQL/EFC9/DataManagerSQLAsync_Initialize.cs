@@ -1,12 +1,13 @@
-﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
-using StreamerBotLib.Systems.MLearning;
-
+﻿
 namespace StreamerBotLib.DataSQL.EFC9
 {
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
+    using StreamerBotLib.Systems.MLearning;
+
     internal partial class DataManagerSQLAsync
     {
         #region Construct default items
@@ -20,7 +21,7 @@ namespace StreamerBotLib.DataSQL.EFC9
 
             using var context = Refcontext ?? BuildDataContext();
             await context.Database.BeginTransactionAsync();
-            
+
             await SetDefaultChannelEventsTable(context);  // check all default ChannelEvents names
             await SetDefaultCommandsTable(context); // check all default Commands
             await SetLearnedMessages(context);
@@ -103,9 +104,9 @@ namespace StreamerBotLib.DataSQL.EFC9
                 };
 
             await Refcontext.ChannelEvents.AddRangeAsync(from CE in from E in dictionary.ExceptBy(Refcontext.ChannelEvents.Select(C => C.Name), E => E.Key)
-                                                         let values = dictionary[E.Key]
-                                                         select (E.Key, values)
-                                              select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
+                                                                    let values = dictionary[E.Key]
+                                                                    select (E.Key, values)
+                                                         select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
         }
 
         /// <summary>

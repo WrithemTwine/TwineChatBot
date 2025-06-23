@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Models;
-
+﻿
 namespace StreamerBotLib.Models.Events
 {
+    using StreamerBotLib.Models;
     public class OnIncomingRaidArgs : EventArgs
     {
         public LiveUser LiveUser { get; set; }

@@ -1,10 +1,12 @@
-﻿using StreamerBotLib.Themes;
-
-using System.Windows;
-using System.Windows.Controls;
-
+﻿
 namespace StreamerBotLib.Overlay
 {
+    using StreamerBotLib.Themes;
+
+    using System.Windows;
+    using System.Windows.Controls;
+
+
     /// <summary>
     /// Interaction logic for MediaOverlay.xaml
     /// </summary>

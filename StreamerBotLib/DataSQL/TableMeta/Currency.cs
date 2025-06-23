@@ -1,8 +1,8 @@
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Interfaces;
     internal class Currency : IDatabaseTableMeta
     {
         public System.Double Value { get => (System.Double)Values["Value"]; set => Values["Value"] = value; }

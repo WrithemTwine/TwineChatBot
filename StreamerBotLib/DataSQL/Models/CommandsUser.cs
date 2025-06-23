@@ -1,9 +1,10 @@
-﻿using StreamerBotLib.Models.Enums;
-
-using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using StreamerBotLib.Models.Enums;
+
+    using System.Diagnostics;
+
     [DebuggerDisplay("Command = {CmdName}")]
 
 #if DEBUG_EFMODELS_NODEFAULTPARAM

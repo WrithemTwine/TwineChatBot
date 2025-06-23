@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Models.Enums;
-
-using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.Models.Enums;
+
+    using System.Diagnostics;
     [PrimaryKey(nameof(UserId), nameof(Platform))]
     [DebuggerDisplay("UserId={UserId}, UserName={UserName}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
@@ -18,13 +18,13 @@ namespace StreamerBotLib.DataSQL.Models
                        Platform platform)
 #else
     public class Users(DateTime firstDateSeen = default,
-    DateTime currLoginDate = default,
-                       DateTime lastDateSeen = default,
-                       string userId = null,
-                       string userName = null,
-                       Platform platform = Platform.Default)
+      DateTime currLoginDate = default,
+                         DateTime lastDateSeen = default,
+                         string userId = null,
+                         string userName = null,
+                         Platform platform = Platform.Default)
 #endif
- : UserBase(userId, platform)
+   : UserBase(userId, platform)
     {
         public string UserName { get; set; } = userName;
         public DateTime FirstDateSeen { get; set; } = firstDateSeen;

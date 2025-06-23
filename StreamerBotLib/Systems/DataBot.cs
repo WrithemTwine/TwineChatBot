@@ -1,10 +1,12 @@
-﻿using StreamerBotLib.Models.Interfaces;
-
+﻿
 namespace StreamerBotLib.Systems
 {
+
+    using StreamerBotLib.Models.Interfaces;
+
     public class DataBot
     {
-        private static SystemsController SystemsController { get; set; } = new();
+        private static ActionSystem SystemAction { get; set; } = new();
 
         public DataBot()
         {
@@ -13,7 +15,7 @@ namespace StreamerBotLib.Systems
 
         public void InitializeDataManagerViews(IGUIDataManagerViews GUIDataManagerViews)
         {
-            GUIDataManagerViews.SetDataManagerViews(SystemsController.DataManage);
+            GUIDataManagerViews.SetDataManagerViews(ActionSystem.DataManage);
             GUIDataManagerViews.SetSystemCollections();
         }
     }

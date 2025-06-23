@@ -1,9 +1,9 @@
-﻿using StreamerBotLib.Static;
-
-using System.Reflection;
-
-namespace StreamerBotLib.DataSQL
+﻿namespace StreamerBotLib.DataSQL
 {
+    using StreamerBotLib.Static;
+
+    using System.Reflection;
+
     public class EntityBase
     {
         public object this[string name]

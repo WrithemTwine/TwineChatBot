@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
-using System.Collections.Concurrent;
-
+﻿
 namespace StreamerBotLib.Static.Logger
 {
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+
+    using System.Collections.Concurrent;
+
     internal class StreamLoggerProvider : ILoggerProvider
     {
         private readonly IDisposable _onChangeToken;

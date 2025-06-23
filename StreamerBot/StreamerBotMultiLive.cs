@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.BotIOController;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Models.Events;
-using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.MultiLive;
 
 using System.Windows;

@@ -1,13 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.DataSQL.DiscriminatorEnums;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-
-using System.Diagnostics;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.DataSQL.DiscriminatorEnums;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+
+    using System.Diagnostics;
+
     [PrimaryKey(nameof(CmdName))]
     [Index(nameof(CmdName), IsUnique = true)]
     [DebuggerDisplay("Command = {CmdName}")]

@@ -1,7 +1,8 @@
-﻿using StreamerBotLib.Models.Enums;
-
+﻿
 namespace StreamerBotLib.Models
 {
+    using StreamerBotLib.Models.Enums;
+
     public class PlayingCard<T, S>
         where T : Enum
         where S : Enum

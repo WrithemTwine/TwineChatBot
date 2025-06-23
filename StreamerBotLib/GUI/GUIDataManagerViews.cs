@@ -1,26 +1,26 @@
 ﻿#define USE_OBSERVABLECOLLECTION
 
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
-using StreamerBotLib.Models.Interfaces;
-using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
-
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-
-using BanReasons = StreamerBotLib.DataSQL.Models.BanReasons;
-using CurrencyType = StreamerBotLib.DataSQL.Models.CurrencyType;
 
 namespace StreamerBotLib.GUI
 {
+    using StreamerBotLib.DataSQL.Models;
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Models.Events;
+    using StreamerBotLib.Models.Interfaces;
+    using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
+
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Runtime.CompilerServices;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Documents;
+
+    using BanReasons = StreamerBotLib.DataSQL.Models.BanReasons;
+    using CurrencyType = StreamerBotLib.DataSQL.Models.CurrencyType;
     public class GUIDataManagerViews : INotifyPropertyChanged, IGUIDataManagerViews
     {
         #region DataManager TableViews

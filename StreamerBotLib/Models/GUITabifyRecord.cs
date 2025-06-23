@@ -1,7 +1,7 @@
-﻿using System.Windows.Controls;
-
-namespace StreamerBotLib.Models
+﻿namespace StreamerBotLib.Models
 {
+    using System.Windows.Controls;
+
     public record GUITabifyRecord
     {
         public Grid SourceGrid { get; set; }

@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Static;
-
+﻿
 namespace StreamerBotLib.DataSQL.Models
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.Static;
+
     [PrimaryKey(nameof(StreamStart))]
     [Index(nameof(StreamStart), IsDescending = [true])]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

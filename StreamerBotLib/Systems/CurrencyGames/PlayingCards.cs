@@ -1,7 +1,8 @@
-﻿using StreamerBotLib.Models;
-
+﻿
 namespace StreamerBotLib.Systems.CurrencyGames
 {
+    using StreamerBotLib.Models;
+
     /// <summary>
     /// Generate Playing Cards
     /// </summary>

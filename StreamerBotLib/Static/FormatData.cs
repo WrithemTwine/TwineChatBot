@@ -1,12 +1,13 @@
-﻿using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Systems;
-
-using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
-
+﻿
 namespace StreamerBotLib.Static
 {
+    using StreamerBotLib.Models.Enums;
+    using StreamerBotLib.Systems;
+
+    using System.Globalization;
+    using System.Text;
+    using System.Text.RegularExpressions;
+
     // specific partial class for the common messages processes
     public static class FormatData
     {

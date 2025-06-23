@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
-
+﻿
 namespace StreamerBotLib.DataSQL.EFC9
 {
+    using Microsoft.EntityFrameworkCore;
+
+    using StreamerBotLib.Models;
+    using StreamerBotLib.Models.Enums;
+
     internal partial class DataManagerSQLAsync
     {
         #region MultiLive data
@@ -76,6 +77,6 @@ namespace StreamerBotLib.DataSQL.EFC9
             return null;
         }
 
-            #endregion
-        }
+        #endregion
+    }
 }
