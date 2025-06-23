@@ -1,9 +1,9 @@
 ﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.MLearning;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.MLearning;
 
 using System.Data;
 

@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Static;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
@@ -110,7 +111,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         private void HandleLiveStreamUpdate(string channel, Stream liveStream, bool callEvents)
         {
-            LogWriter.DebugLog("HandleLiveStreamUpdate", Enums.DebugLogTypes.TwitchMultiLiveBot, $"Performing stream update.");
+            LogWriter.DebugLog("HandleLiveStreamUpdate", DebugLogTypes.TwitchMultiLiveBot, $"Performing stream update.");
 
             var wasAlreadyLive = LiveStreams.ContainsKey(channel);
 

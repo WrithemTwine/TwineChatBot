@@ -5,12 +5,12 @@ using StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
 using StreamerBotLib.Culture;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
-using StreamerBotLib.Logger;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
+using StreamerBotLib.Static.Logger;
 using StreamerBotLib.Systems;
 
 using System.Net;

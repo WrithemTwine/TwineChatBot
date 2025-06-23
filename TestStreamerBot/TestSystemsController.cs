@@ -1,5 +1,6 @@
 using StreamerBotLib.DataSQL;
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -32,7 +33,7 @@ namespace TestStreamerBot
             }
         }
 
-        private void SystemsController_PostChannelMessage(object? sender, StreamerBotLib.Events.PostChannelMessageEventArgs e)
+        private void SystemsController_PostChannelMessage(object? sender, PostChannelMessageEventArgs e)
         {
             result = e.Msg;
         }

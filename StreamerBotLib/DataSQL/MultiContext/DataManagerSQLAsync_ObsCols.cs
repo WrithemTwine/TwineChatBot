@@ -4,7 +4,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
 #if USE_OBSERVABLECOLLECTION

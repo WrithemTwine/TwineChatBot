@@ -7,7 +7,7 @@
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:local="clr-namespace:StreamerBot"
         xmlns:SqlModels="clr-namespace:StreamerBotLib.DataSQL.Models;assembly=StreamerBotLib"
-        xmlns:Enums="clr-namespace:StreamerBotLib.Enums;assembly=StreamerBotLib"
+        xmlns:Enums="clr-namespace:StreamerBotLib.Models.Enums;assembly=StreamerBotLib"
         xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
         xmlns:Models="clr-namespace:StreamerBotLib.Models;assembly=StreamerBotLib"
         xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"

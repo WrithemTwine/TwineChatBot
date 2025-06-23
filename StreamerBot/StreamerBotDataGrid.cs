@@ -1,10 +1,11 @@
 ﻿using StreamerBotLib.BotIOController;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.TableMeta;
-using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -37,6 +38,7 @@ namespace StreamerBot
                 while (GUIDataGridUpdateQueue.TryDequeue(out Task task))
                 {
                     task.Start();
+                    Task.Delay(200).Wait(); // Allow some time for the task to complete before processing the next one.
                 }
             }
         }
@@ -45,21 +47,7 @@ namespace StreamerBot
 
         private void DataManagerViewLoaded()
         {
-            //GUIDataManagerViews.DataViewsUpdated += DataManager_OnDataCollectionUpdated;
-            GUIDataManagerViews.OnInstanceCreated += DataManager_OnInstanceCreated;
-
             SystemsController.DataManage.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
-
-            //GUIDataGridUpdates = ThreadManager.CreateThread("GUIDataGridUpdate", GUIDataGridUpdateThread);
-            //GUIDataGridUpdates.Start();
-        }
-
-        private void DataManager_OnInstanceCreated(object sender, EventArgs e)
-        {
-            GUIDataManagerViews = sender as GUIDataManagerViews;
-            SystemsController.DataManage.OnLoadCompleted += GUIDataManagerViews.DataManager_OnLoadCompleted;
-            SystemsController.DataManage.OnLoadCompleted += DataManage_OnLoadCompleted;
-            //OnDataGridUpdated += (sender as GUIDataManagerViews).DataManager_OnDataCollectionUpdated;
         }
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
@@ -69,20 +57,10 @@ namespace StreamerBot
             Dispatcher.BeginInvoke(() =>
             {
                 LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
-                   StreamerBotLib.Enums.DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");
-
-#if DEBUG
-                //LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
-                //    StreamerBotLib.Enums.DebugLogTypes.SpecialPurpose, $"Refreshing data for the {e.DatabaseModelName} data table.");
-#endif
-
+                   DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");
 
                 if (e.RecordCountChange)
                 {
-#if DEBUG
-                    //LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
-                    //   StreamerBotLib.Enums.DebugLogTypes.SpecialPurpose, $"RecordChanges detected for the {e.DatabaseModelName} data table. Refreshing Items.");
-#endif
 
                     switch (e.DatabaseModelName)
                     {
@@ -177,13 +155,7 @@ namespace StreamerBot
                     }
                 }
 
-#if DEBUG
-                //LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
-                //   StreamerBotLib.Enums.DebugLogTypes.SpecialPurpose, $"Calling GUIDataManagerViews for the {e.DatabaseModelName} data table.");
-#endif
-
                 GUIDataManagerViews.UpdatedGUIData(e);
-                //OnDataGridUpdated?.Invoke(this, e);
             });
             //}));
         }
@@ -263,14 +235,14 @@ namespace StreamerBot
                 nameof(DG_BuiltInCommands) => typeof(Commands),
                 nameof(DG_CategoryList) => typeof(CategoryList),
                 nameof(DG_Clips) => typeof(Clips),
-                nameof(DG_CurrencyType) => typeof(CurrencyType),
+                nameof(DG_CurrencyType) => typeof(StreamerBotLib.DataSQL.Models.CurrencyType),
                 nameof(DG_Currency) => typeof(Currency),
                 nameof(DG_CustomWelcome) => typeof(CustomWelcome),
                 nameof(DG_DeathCounter) => typeof(GameDeadCounter),
                 nameof(DG_Followers) => typeof(Followers),
                 nameof(DG_InRaids) => typeof(InRaidData),
                 nameof(DG_ModApprove) => typeof(ModeratorApprove),
-                nameof(DG_Mod_BanReasons) => typeof(BanReasons),
+                nameof(DG_Mod_BanReasons) => typeof(StreamerBotLib.DataSQL.Models.BanReasons),
                 nameof(DG_Mod_BanRules) => typeof(BanRules),
                 nameof(DG_Mod_LearnMsgs) => typeof(LearnedMessage),
                 nameof(DG_OldFollowUsers) => typeof(OldFollowUsers),

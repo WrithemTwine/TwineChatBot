@@ -1,6 +1,6 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 

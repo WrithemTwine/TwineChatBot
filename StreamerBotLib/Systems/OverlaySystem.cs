@@ -1,9 +1,9 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Overlay.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
 
 /*
  * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 
@@ -31,6 +31,13 @@ namespace StreamerBotLib.Systems
         public static event EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerItems;
 
         private readonly List<string> ChannelPointRewards = [];
+
+        public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> NewOverlayeventHandler, EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerEventHandler)
+        {
+            LogWriter.DebugLog("SetNewOverlayEventHandler", DebugLogTypes.SystemController, "Setting new overlay event handlers.");
+            NewOverlayEvent += NewOverlayeventHandler;
+            UpdatedTickerItems += UpdatedTickerEventHandler;
+        }
 
         /// <summary>
         /// Setup the channel points reward list, update the new information.
@@ -83,6 +90,12 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("OnNewOverlayEvent", DebugLogTypes.OverlayBot, $"Building Overlay Event with action data, {e.OverlayAction.OverlayType} and {e.OverlayAction.ActionValue}.");
 
             NewOverlayEvent?.Invoke(this, e);
+        }
+
+        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        {
+            LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlaySystem, "Checking for overlay event.");
+            CheckForOverlayEvent(overlayType, enumvalue.ToString(), User, UserMsg, ProvidedURL, UrlDuration);
         }
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)

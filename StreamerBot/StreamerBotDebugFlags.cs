@@ -6,6 +6,8 @@ using StreamerBotLib.Systems;
 using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
+using StreamerBotLib.Models.Enums;
+
 
 #if DEBUG
 using StreamerBotLib.GUI.Windows;
@@ -44,7 +46,7 @@ namespace StreamerBot
 
                 ThreadManager.CreateThreadStart("StartDebugStream_Click", () =>
                 {
-                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), platform: StreamerBotLib.Enums.Platform.Default, Debug: true);
+                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), platform: Platform.Default, Debug: true);
 
                     List<CategoryData> output = SystemsController.DataManage.GetGameCategories();
                     Random random = new();
@@ -76,7 +78,7 @@ namespace StreamerBot
         {
             if (DebugStreamStarted != DateTime.MinValue)
             {
-                Controller.HandleOnStreamOffline(StreamerBotLib.Enums.Platform.Default);
+                Controller.HandleOnStreamOffline(Platform.Default);
 
                 DebugStreamStarted = DateTime.MinValue;
 

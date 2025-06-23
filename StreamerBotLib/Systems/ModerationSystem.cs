@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.MLearning;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.MLearning;
 
 namespace StreamerBotLib.Systems
 {
@@ -56,7 +56,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="Description">A description of the request to approve.</param>
         /// <param name="Request">The Task of the request to perform once approved.</param>
-        public void AddApprovalRequest(string Description, Task Request)
+        public void PostApproval(string Description, Task Request)
         {
             LogWriter.DebugLog("AddApprovalRequest", DebugLogTypes.ModerationSystem, $"Adding a new approval request for {Description}.");
             bool ItemCount = false;

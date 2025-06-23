@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Events;
+﻿using StreamerBotLib.Models.Events;
 
 using System.Windows;
 

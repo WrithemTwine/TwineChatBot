@@ -1,11 +1,15 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.Numerics;
 
 namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem
     {
+        private delegate void BotOperation();
         private bool UpdateDeathCounter;
 
         public void ManageUsers()
@@ -44,13 +48,42 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        public void UserJoined(List<LiveUser> UserNames)
+        {
+            LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, "User joined.");
+            DateTime Curr = DateTime.Now.ToLocalTime();
+
+            var FirstUsers = StreamViewers.AddUsersFirstJoinedChannel(UserNames);
+
+            UserJoined(UserNames, Curr);
+            StreamViewers.RegisterUsers(FirstUsers);
+
+            if (OptionFlags.FirstUserJoinedMsg)
+            {
+                LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, "Checking for first user joined message.");
+                foreach (LiveUser user in FirstUsers)
+                {
+                    LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, "Sending first user joined message.");
+                    UserWelcomeMessage(user);
+                }
+            }
+
+            UpdateUserJoinedList();
+
+            foreach (LiveUser L in StreamViewers.GetUsersLeft(UserNames))
+            {
+                LogWriter.DebugLog("UserJoined", DebugLogTypes.SystemController, $"User left, {L.UserName}.");
+                UserLeft(L, Curr);
+            }
+        }
+
         /// <summary>
         /// Adds user to the database by name, or updates existing user, and the time they joined the channel
         /// </summary>
         /// <param name="User">User's DisplayName</param>
         /// <param name="CurrTime">The current time the user joined</param>
         /// <returns></returns>
-        public static void UserJoined(LiveUser User, DateTime CurrTime)
+        private void UserJoined(LiveUser User, DateTime CurrTime)
         {
             LogWriter.DebugLog("UserJoined", DebugLogTypes.StatSystem, "Adding to database a user now joined to the channel.");
             if (OptionFlags.IsStreamOnline)
@@ -69,7 +102,7 @@ namespace StreamerBotLib.Systems
         /// <param name="User">User's DisplayName</param>
         /// <param name="CurrTime">The current time the user joined</param>
         /// <returns></returns>
-        public static void UserJoined(IEnumerable<LiveUser> User, DateTime CurrTime)
+        private void UserJoined(IEnumerable<LiveUser> User, DateTime CurrTime)
         {
             LogWriter.DebugLog("UserJoined", DebugLogTypes.StatSystem, $"Adding to database {User.Count()} users now joined to the channel.");
             if (OptionFlags.IsStreamOnline)
@@ -84,7 +117,92 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void ModJoined(string User)
+        private void UserWelcomeMessage(LiveUser User)
+        {
+            LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Checking user welcome message.");
+
+            if ((!User.UserName.Equals(ChannelName, StringComparison.CurrentCultureIgnoreCase)
+               && (!User.UserName.Equals(BotUserName, StringComparison.CurrentCultureIgnoreCase)))
+               || OptionFlags.MsgWelcomeStreamer)
+            {
+                string msg = CheckWelcomeUser(User.UserId);
+
+                ChannelEventActions selected = ChannelEventActions.UserJoined;
+
+                if (OptionFlags.WelcomeCustomMsg)
+                {
+                    LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Using custom welcome message.");
+                    selected =
+                        IsFollower(User.UserName) ?
+                        ChannelEventActions.SupporterJoined :
+                            IsReturningUser(User) ?
+                                ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
+                }
+
+                string TempWelcomeMsg = LocalizedMsgSystem.GetEventMsg(selected, out bool Enabled, out short Multi);
+
+                msg = msg == "" ? TempWelcomeMsg : msg;
+
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, $"Welcome message: {msg}");
+
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, $"Checking if sending welcome message is enabled, {Enabled}.");
+                if (Enabled)
+                {
+                    LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Sending welcome message.");
+                    SendMessage(
+                        VariableParser.ParseReplace(
+                            msg,
+                            VariableParser.BuildDictionary(
+                                new Tuple<MsgVars, string>[]
+                                    {
+                                        new( MsgVars.user, User.UserName )
+                                    }
+                            )
+                        )
+                    , Repeat: Multi);
+                }
+
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Checking for overlay event.");
+                CheckForOverlayEvent(OverlayTypes.ChannelEvents, selected.ToString(), User);
+            }
+
+            if (OptionFlags.AutoShout)
+            {
+                LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Checking for auto shout.");
+                lock (ProcMsgQueue)
+                {
+                    ProcMsgQueue.Enqueue(new(() =>
+                    {
+                        CheckShout(User, out string response);
+                    }));
+                }
+            }
+        }
+        private void UpdateUserJoinedList()
+        {
+            try
+            {
+                LogWriter.DebugLog("UpdateUserJoinedList", DebugLogTypes.SystemController, "Updating user joined list.");
+                ThreadManager.CreateThreadStart("UpdateUserJoinedList", () =>
+                {
+                    ThreadManager.AddTaskToGUIDispatcher(() =>
+                    {
+                        _ = new BotOperation(() =>
+                        {
+                            LogWriter.DebugLog("UpdateUserJoinedList", DebugLogTypes.SystemController, "Updating GUI current users.");
+                            UpdateGUICurrUsers();
+                        });
+                    }
+                    );
+                });
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, "UpdateUserJoinedList");
+            }
+        }
+
+        public void ModJoined(string User)
         {
             LogWriter.DebugLog("ModJoined", DebugLogTypes.StatSystem, "Adding a moderator to the list of moderators.");
             if (OptionFlags.IsStreamOnline)
@@ -93,7 +211,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void SubJoined(string User)
+        public void SubJoined(string User)
         {
             LogWriter.DebugLog("SubJoined", DebugLogTypes.StatSystem, "Adding a subscriber to the list of subscribers.");
             if (OptionFlags.IsStreamOnline)
@@ -102,7 +220,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void VIPJoined(string User)
+        public void VIPJoined(string User)
         {
             LogWriter.DebugLog("VIPJoined", DebugLogTypes.StatSystem, "Adding a VIP to the list of VIPs.");
             if (OptionFlags.IsStreamOnline)
@@ -111,7 +229,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void UserLeft(LiveUser User, DateTime CurrTime)
+        public void UserLeft(LiveUser User, DateTime CurrTime)
         {
             LogWriter.DebugLog("UserLeft", DebugLogTypes.StatSystem, "Posting to the database a user that left the channel.");
             lock (StreamViewers)
@@ -120,7 +238,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void ClearUserList(DateTime Stopped)
+        public void ClearUserList(DateTime Stopped)
         {
             LogWriter.DebugLog("ClearUserList", DebugLogTypes.StatSystem, "Register current viewers as leaving the stream.");
             lock (StreamViewers)
@@ -134,7 +252,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        private static void PostDataUserLeft(LiveUser User, DateTime CurrTime)
+        private void PostDataUserLeft(LiveUser User, DateTime CurrTime)
         {
             LogWriter.DebugLog("PostDataUserLeft", DebugLogTypes.StatSystem, "Posting to the database a user that left the channel.");
             if (OptionFlags.ManageUsers && OptionFlags.IsStreamOnline)
@@ -155,12 +273,57 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckUser(User, CurrStream.StreamStart);
         }
 
-        #region Incoming Raids
+        #region Incoming-Outgoing - Raids
 
-        public static void PostIncomingRaid(LiveUser liveUser, DateTime RaidTime, int Viewers, CategoryData GameName)
+        public void PostIncomingRaid(LiveUser User, DateTime RaidTime, int Viewers, CategoryData GameName)
         {
-            LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.StatSystem, "Posting the incoming raid data to the database.");
-            DataManage.PostInRaidData(liveUser, RaidTime, Viewers, GameName);
+            lock (ProcMsgQueue)
+            {
+                ProcMsgQueue.Enqueue(new(() =>
+                {
+                    LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Processing incoming raid.");
+                    string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out bool Enabled, out short Multi);
+                    if (Enabled)
+                    {
+                        LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Sending message about incoming raid.");
+                        Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
+                            new(MsgVars.user, User.UserName ),
+                            new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers))
+                            });
+
+                        SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Raid), Multi);
+                    }
+
+                    CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid.ToString(), User);
+
+                    UpdatedStat(StreamStatType.Raids, StreamStatType.AutoEvents);
+
+                    if (OptionFlags.TwitchRaidShoutOut)
+                    {
+                        LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Posting raid shout out of incoming raider.");
+                        CheckShout(User, out string response, false);
+                    }
+                }));
+            }
+            if (OptionFlags.ManageRaidData)
+            {
+                LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.StatSystem, "Posting the incoming raid data to the database.");
+                DataManage.PostInRaidData(User, RaidTime, Viewers, GameName);
+            }
+            if (OptionFlags.ManageOverlayTicker)
+            {
+                LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Adding new overlay ticker item.");
+                AddNewOverlayTickerItem(OverlayTickerItem.LastInRaid, User.UserName);
+            }
+        }
+
+        public static void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
+        {
+            if (OptionFlags.ManageOutRaidData)
+            {
+                LogWriter.DebugLog("PostOutgoingRaid", DebugLogTypes.SystemController, "Posting outgoing raid data.");
+                DataManage.PostOutgoingRaid(HostedChannel, dateTime);
+            }
         }
 
         #endregion
@@ -224,7 +387,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void StreamOffline(DateTime Stopped)
+        public void StreamOffline(DateTime Stopped)
         {
             LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Received notice event the channel livestream is offline.");
             LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Clearing user list with stream end time, to end watchtime & currency accrual.");

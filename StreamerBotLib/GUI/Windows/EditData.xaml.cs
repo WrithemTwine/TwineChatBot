@@ -5,14 +5,14 @@
 using Microsoft.Win32;
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Overlay.Static;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Static;
 
 using System.ComponentModel;
 using System.IO;
@@ -68,7 +68,7 @@ namespace StreamerBotLib.GUI.Windows
                     { "Sort", Enum.GetValues(typeof(CommandSort)) },
                     { "ModAction", Enum.GetValues(typeof(ModActions)) },
                     { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
-                    { "BanReason", Enum.GetValues(typeof(Enums.BanReasons)) },
+                    { "BanReason", Enum.GetValues(typeof(Models.Enums.BanReasons)) },
                     { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
                     { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
                     { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },

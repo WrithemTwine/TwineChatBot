@@ -1,11 +1,11 @@
 ﻿
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.ComponentModel;
 using System.Globalization;
@@ -102,7 +102,7 @@ namespace StreamerBotLib.Systems
                 {
                     LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command requires approval: {cmdMessage.CommandText}.");
 
-                    AddApprovalRequest($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
+                    PostApproval($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
                         new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
                     result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotController.GetBotName(source), source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
                 }

@@ -2,10 +2,10 @@
 
 using StreamerBotLib.DataSQL.DiscriminatorEnums;
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
 
 namespace StreamerBotLib.DataSQL.EFC9
 {
@@ -14,7 +14,7 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         #region Get_Methods
 
-        internal async Task<Tuple<ModActions, Enums.BanReasons, int>> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        internal async Task<Tuple<ModActions, StreamerBotLib.Models.Enums.BanReasons, int>> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
         {
             using var context = BuildDataContext();
 
@@ -30,7 +30,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 .FirstOrDefaultAsync();
 
             // Return the result as a tuple
-            return new Tuple<ModActions, Enums.BanReasons, int>(
+            return new Tuple<ModActions, StreamerBotLib.Models.Enums.BanReasons, int>(
                 banRules?.ModAction ?? ModActions.Allow,
                 banReasons,
                 banRules?.TimeoutSeconds ?? 0

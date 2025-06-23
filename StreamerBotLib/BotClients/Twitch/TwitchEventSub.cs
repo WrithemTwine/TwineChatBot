@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 
-using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
-using StreamerBotLib.Logger;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
+using StreamerBotLib.Static.Logger;
 
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.EventSub.Websockets;
@@ -120,7 +120,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             return Task.Run(() =>
             {
-                LogWriter.DebugLog("OnErrorOccurred", Enums.DebugLogTypes.TwitchEventSub, $"Websocket session {EventSubWebsocketClient.SessionId} encountered an error:\r\n" +
+                LogWriter.DebugLog("OnErrorOccurred", DebugLogTypes.TwitchEventSub, $"Websocket session {EventSubWebsocketClient.SessionId} encountered an error:\r\n" +
                  $"Exception: {args.Exception}\r\n" +
                  $"Message: {args.Message}");
 
@@ -133,7 +133,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             return Task.Run(() =>
             {
-                LogWriter.DebugLog("OnWebsocketReconnected", Enums.DebugLogTypes.TwitchEventSub, $"Websocket session {EventSubWebsocketClient.SessionId} reconnected!");
+                LogWriter.DebugLog("OnWebsocketReconnected", DebugLogTypes.TwitchEventSub, $"Websocket session {EventSubWebsocketClient.SessionId} reconnected!");
             });
         }
 
@@ -143,7 +143,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 try
                 {
-                    LogWriter.DebugLog("OnWebsocketDisconnected", Enums.DebugLogTypes.TwitchEventSub, $"Websocket session {EventSubWebsocketClient.SessionId} disconnected.");
+                    LogWriter.DebugLog("OnWebsocketDisconnected", DebugLogTypes.TwitchEventSub, $"Websocket session {EventSubWebsocketClient.SessionId} disconnected.");
 
                     if (IsActive == true && !ErrorFound)
                     {
@@ -227,7 +227,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     LogWriter.LogException(ex, "StartBot");
                     IsActive = false;
                     InvokeBotFailedStart();
-                    LogWriter.DebugLog("StartBot", Enums.DebugLogTypes.TwitchEventSub, $"Websocket failed to start.");
+                    LogWriter.DebugLog("StartBot", DebugLogTypes.TwitchEventSub, $"Websocket failed to start.");
                 }
             });
         }
@@ -245,7 +245,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     if (IsActive == true)
                     {
-                        LogWriter.DebugLog("StopBot", Enums.DebugLogTypes.TwitchEventSub, "Stopping EventSub bot.");
+                        LogWriter.DebugLog("StopBot", DebugLogTypes.TwitchEventSub, "Stopping EventSub bot.");
 
                         await StopAsync(new());
                         IsActive = false;

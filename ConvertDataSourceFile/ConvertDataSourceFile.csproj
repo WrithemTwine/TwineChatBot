@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Version>0.1.12.4</Version>
     <AssemblyVersion>0.1.12.4</AssemblyVersion>
     <Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML;Release_PomeloMySql;Debug_EFEETesting;Update_Nuget_Only</Configurations>

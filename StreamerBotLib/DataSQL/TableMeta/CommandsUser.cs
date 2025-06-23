@@ -1,4 +1,5 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -6,7 +7,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
     {
         public System.String CmdName { get => (System.String)Values["CmdName"]; set => Values["CmdName"] = value; }
         public System.Boolean AddMe { get => (System.Boolean)Values["AddMe"]; set => Values["AddMe"] = value; }
-        public StreamerBotLib.Enums.ViewerTypes Permission { get => (StreamerBotLib.Enums.ViewerTypes)Values["Permission"]; set => Values["Permission"] = value; }
+        public ViewerTypes Permission { get => (ViewerTypes)Values["Permission"]; set => Values["Permission"] = value; }
         public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }
         public System.Boolean Announce { get => (System.Boolean)Values["Announce"]; set => Values["Announce"] = value; }
         public System.String Message { get => (System.String)Values["Message"]; set => Values["Message"] = value; }
@@ -21,9 +22,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public System.String DataField { get => (System.String)Values["DataField"]; set => Values["DataField"] = value; }
         public System.String CurrencyField { get => (System.String)Values["CurrencyField"]; set => Values["CurrencyField"] = value; }
         public System.String Unit { get => (System.String)Values["Unit"]; set => Values["Unit"] = value; }
-        public StreamerBotLib.Enums.CommandAction Action { get => (StreamerBotLib.Enums.CommandAction)Values["Action"]; set => Values["Action"] = value; }
+        public CommandAction Action { get => (CommandAction)Values["Action"]; set => Values["Action"] = value; }
         public System.Int32 Top { get => (System.Int32)Values["Top"]; set => Values["Top"] = value; }
-        public StreamerBotLib.Enums.CommandSort Sort { get => (StreamerBotLib.Enums.CommandSort)Values["Sort"]; set => Values["Sort"] = value; }
+        public CommandSort Sort { get => (CommandSort)Values["Sort"]; set => Values["Sort"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -59,7 +60,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         {
               { "CmdName", typeof(System.String) },
               { "AddMe", typeof(System.Boolean) },
-              { "Permission", typeof(StreamerBotLib.Enums.ViewerTypes) },
+              { "Permission", typeof(ViewerTypes) },
               { "IsEnabled", typeof(System.Boolean) },
               { "Announce", typeof(System.Boolean) },
               { "Message", typeof(System.String) },
@@ -74,9 +75,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "DataField", typeof(System.String) },
               { "CurrencyField", typeof(System.String) },
               { "Unit", typeof(System.String) },
-              { "Action", typeof(StreamerBotLib.Enums.CommandAction) },
+              { "Action", typeof(CommandAction) },
               { "Top", typeof(System.Int32) },
-              { "Sort", typeof(StreamerBotLib.Enums.CommandSort) }
+              { "Sort", typeof(CommandSort) }
         };
         public object GetModelEntity()
         {

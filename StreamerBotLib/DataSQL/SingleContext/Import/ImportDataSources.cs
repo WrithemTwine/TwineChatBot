@@ -1,9 +1,9 @@
 ﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Data;
 using System.IO;
@@ -376,12 +376,12 @@ namespace StreamerBotLib.DataSQL.SingleContext.Import
                 foreach (BanReasonsRow BR in _DataSource.BanReasons)
                 {
                     if (!(from B in context.BanReasons
-                          where Enum.Parse<MsgTypes>(BR.MsgType) == B.MsgType && Enum.Parse<Enums.BanReasons>(BR.BanReason) == B.BanReason
+                          where Enum.Parse<MsgTypes>(BR.MsgType) == B.MsgType && Enum.Parse<StreamerBotLib.Models.Enums.BanReasons>(BR.BanReason) == B.BanReason
                           select B).Any())
                     {
                         context.BanReasons.Add(new Models.BanReasons(
                                                         msgType: Enum.Parse<MsgTypes>(BR.MsgType),
-                                                        banReason: Enum.Parse<Enums.BanReasons>(BR.BanReason)));
+                                                        banReason: Enum.Parse<StreamerBotLib.Models.Enums.BanReasons>(BR.BanReason)));
                     }
                 }
             }

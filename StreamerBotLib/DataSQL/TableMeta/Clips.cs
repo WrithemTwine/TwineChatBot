@@ -1,4 +1,4 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {

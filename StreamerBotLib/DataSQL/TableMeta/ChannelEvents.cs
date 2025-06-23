@@ -1,10 +1,11 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class ChannelEvents : IDatabaseTableMeta
     {
-        public StreamerBotLib.Enums.ChannelEventActions Name { get => (StreamerBotLib.Enums.ChannelEventActions)Values["Name"]; set => Values["Name"] = value; }
+        public ChannelEventActions Name { get => (ChannelEventActions)Values["Name"]; set => Values["Name"] = value; }
         public System.Int16 RepeatMsg { get => (System.Int16)Values["RepeatMsg"]; set => Values["RepeatMsg"] = value; }
         public System.Boolean AddMe { get => (System.Boolean)Values["AddMe"]; set => Values["AddMe"] = value; }
         public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }
@@ -27,7 +28,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         }
         public Dictionary<string, Type> Meta => new()
         {
-              { "Name", typeof(StreamerBotLib.Enums.ChannelEventActions) },
+              { "Name", typeof(ChannelEventActions) },
               { "RepeatMsg", typeof(System.Int16) },
               { "AddMe", typeof(System.Boolean) },
               { "IsEnabled", typeof(System.Boolean) },

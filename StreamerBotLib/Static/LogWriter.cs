@@ -1,6 +1,6 @@
 ﻿#define AUTO_FLUSH
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
 
 using System.Globalization;
 using System.IO;

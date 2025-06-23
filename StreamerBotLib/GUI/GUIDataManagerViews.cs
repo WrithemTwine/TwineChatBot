@@ -1,9 +1,10 @@
 ﻿#define USE_OBSERVABLECOLLECTION
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -15,12 +16,16 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 
+using BanReasons = StreamerBotLib.DataSQL.Models.BanReasons;
+using CurrencyType = StreamerBotLib.DataSQL.Models.CurrencyType;
+
 namespace StreamerBotLib.GUI
 {
-    public class GUIDataManagerViews : INotifyPropertyChanged
+    public class GUIDataManagerViews : INotifyPropertyChanged, IGUIDataManagerViews
     {
         #region DataManager TableViews
-        private static IDataManager DataManager { get; } = SystemsController.DataManage;
+
+        private Func<bool, IEnumerable<string>> GetDataCommands { get; set; }
 
         public FlowDocument ChatData { get; private set; }
         public ObservableCollection<string> CurrUserList { get; private set; }
@@ -71,7 +76,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; private set; }
 
         public List<ArchiveMultiStream> CleanupList { get; private set; }
-        public string MultiLiveStatusLog { get => DataManager.MultiLiveStatusLog; }
+        public string MultiLiveStatusLog { get; private set; }
         #endregion
 
 #else
@@ -118,107 +123,96 @@ namespace StreamerBotLib.GUI
         #endregion
 
         public static event EventHandler<OnDataCollectionUpdatedEventArgs> DataViewsUpdated;
-        public static event EventHandler<EventArgs> OnInstanceCreated;
 
-        public GUIDataManagerViews()
+        public GUIDataManagerViews() { }
+
+        public void SetSystemCollections()
         {
-            //DataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
-
+            // TODO: EF9 - update parameter for ActionSystem
             ChatData = ActionSystem.ChatData;
             JoinCollection = ActionSystem.JoinCollection;
             GiveawayCollection = ActionSystem.GiveawayCollection;
             CurrUserList = ActionSystem.CurrUserJoin;
-
-            // commenting this method or using "Debug_ViewXaml" build config and building allows the xaml designer to display
-            // the xaml design; otherwise, xaml designer throws an exception
-            OnInstanceCreated?.Invoke(this, EventArgs.Empty);
         }
 
-        public void DataManager_OnLoadCompleted(object sender, EventArgs e)
+        public void SetDataManagerViews(IDataManager DataManager)
         {
-#if !DEBUG_VIEWXAML
-            SetObservables();
-#endif
-        }
-
-        private void SetObservables()
-        {
-            ThreadManager.CreateThreadStart(".ctor_GUIDataManagerViews", () =>
-            {
+            GetDataCommands = (a) => DataManager.GetCommandList(false);
+            MultiLiveStatusLog = DataManager.MultiLiveStatusLog;
+            DataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
 
 #if USE_OBSERVABLECOLLECTION
 
-                // set specific collection changed events for StatusBar data
-                Users = (ObservableCollection<Users>)DataManager.GetICollection(Enums.DataTables.Users);
-                Users.CollectionChanged += DataGrid_CollectionChanged;
-                Followers = (ObservableCollection<Followers>)DataManager.GetICollection(Enums.DataTables.Followers);
-                Followers.CollectionChanged += DataGrid_CollectionChanged;
-                CommandsUser = (ObservableCollection<CommandsUser>)DataManager.GetICollection(Enums.DataTables.CommandsUser);
-                CommandsUser.CollectionChanged += DataGrid_CollectionChanged;
-                Commands = (ObservableCollection<Commands>)DataManager.GetICollection(Enums.DataTables.Commands);
-                Commands.CollectionChanged += DataGrid_CollectionChanged;
+            // set specific collection changed events for StatusBar data
+            Users = (ObservableCollection<Users>)DataManager.GetICollection(DataTables.Users);
+            Users.CollectionChanged += DataGrid_CollectionChanged;
+            Followers = (ObservableCollection<Followers>)DataManager.GetICollection(DataTables.Followers);
+            Followers.CollectionChanged += DataGrid_CollectionChanged;
+            CommandsUser = (ObservableCollection<CommandsUser>)DataManager.GetICollection(DataTables.CommandsUser);
+            CommandsUser.CollectionChanged += DataGrid_CollectionChanged;
+            Commands = (ObservableCollection<Commands>)DataManager.GetICollection(DataTables.Commands);
+            Commands.CollectionChanged += DataGrid_CollectionChanged;
 
-                // continue setting collections for remaining tables
-                BanReasons = (ObservableCollection<BanReasons>)DataManager.GetICollection(Enums.DataTables.BanReasons);
-                BanRules = (ObservableCollection<BanRules>)DataManager.GetICollection(Enums.DataTables.BanRules);
-                CategoryList = (ObservableCollection<CategoryList>)DataManager.GetICollection(Enums.DataTables.CategoryList);
-                ChannelEvents = (ObservableCollection<ChannelEvents>)DataManager.GetICollection(Enums.DataTables.ChannelEvents);
-                Clips = (ObservableCollection<Clips>)DataManager.GetICollection(Enums.DataTables.Clips);
-                Currency = (ObservableCollection<Currency>)DataManager.GetICollection(Enums.DataTables.Currency);
-                CurrencyType = (ObservableCollection<CurrencyType>)DataManager.GetICollection(Enums.DataTables.CurrencyType);
-                CustomWelcome = (ObservableCollection<CustomWelcome>)DataManager.GetICollection(Enums.DataTables.CustomWelcome);
-                GameDeadCounter = (ObservableCollection<GameDeadCounter>)DataManager.GetICollection(Enums.DataTables.GameDeadCounter);
-                GiveawayUserData = (ObservableCollection<GiveawayUserData>)DataManager.GetICollection(Enums.DataTables.GiveawayUserData);
-                InRaidData = (ObservableCollection<InRaidData>)DataManager.GetICollection(Enums.DataTables.InRaidData);
-                LearnMsgs = (ObservableCollection<LearnMsgs>)DataManager.GetICollection(Enums.DataTables.LearnMsgs);
-                ModeratorApprove = (ObservableCollection<ModeratorApprove>)DataManager.GetICollection(Enums.DataTables.ModeratorApprove);
-                MultiChannels = (ObservableCollection<MultiChannels>)DataManager.GetICollection(Enums.DataTables.MultiChannels);
-                MultiLiveStreams = (ObservableCollection<MultiLiveStreams>)DataManager.GetICollection(Enums.DataTables.MultiLiveStreams);
-                MultiSummaryLiveStreams = (ObservableCollection<MultiSummaryLiveStreams>)DataManager.GetICollection(Enums.DataTables.MultiSummaryLiveStreams);
-                MultiWebhooks = (ObservableCollection<MultiWebhooks>)DataManager.GetICollection(Enums.DataTables.MultiWebhooks);
-                OldFollowUsers = (ObservableCollection<OldFollowUsers>)DataManager.GetICollection(Enums.DataTables.OldFollowUsers);
-                OutRaidData = (ObservableCollection<OutRaidData>)DataManager.GetICollection(Enums.DataTables.OutRaidData);
-                OverlayServices = (ObservableCollection<OverlayServices>)DataManager.GetICollection(Enums.DataTables.OverlayServices);
-                OverlayTicker = (ObservableCollection<OverlayTicker>)DataManager.GetICollection(Enums.DataTables.OverlayTicker);
-                Quotes = (ObservableCollection<Quotes>)DataManager.GetICollection(Enums.DataTables.Quotes);
-                ShoutOuts = (ObservableCollection<ShoutOuts>)DataManager.GetICollection(Enums.DataTables.ShoutOuts);
-                StreamStats = (ObservableCollection<StreamStats>)DataManager.GetICollection(Enums.DataTables.StreamStats);
-                UserStats = (ObservableCollection<UserStats>)DataManager.GetICollection(Enums.DataTables.UserStats);
-                Webhooks = (ObservableCollection<Webhooks>)DataManager.GetICollection(Enums.DataTables.Webhooks);
+            // continue setting collections for remaining tables
+            BanReasons = (ObservableCollection<BanReasons>)DataManager.GetICollection(DataTables.BanReasons);
+            BanRules = (ObservableCollection<BanRules>)DataManager.GetICollection(DataTables.BanRules);
+            CategoryList = (ObservableCollection<CategoryList>)DataManager.GetICollection(DataTables.CategoryList);
+            ChannelEvents = (ObservableCollection<ChannelEvents>)DataManager.GetICollection(DataTables.ChannelEvents);
+            Clips = (ObservableCollection<Clips>)DataManager.GetICollection(DataTables.Clips);
+            Currency = (ObservableCollection<Currency>)DataManager.GetICollection(DataTables.Currency);
+            CurrencyType = (ObservableCollection<CurrencyType>)DataManager.GetICollection(DataTables.CurrencyType);
+            CustomWelcome = (ObservableCollection<CustomWelcome>)DataManager.GetICollection(DataTables.CustomWelcome);
+            GameDeadCounter = (ObservableCollection<GameDeadCounter>)DataManager.GetICollection(DataTables.GameDeadCounter);
+            GiveawayUserData = (ObservableCollection<GiveawayUserData>)DataManager.GetICollection(DataTables.GiveawayUserData);
+            InRaidData = (ObservableCollection<InRaidData>)DataManager.GetICollection(DataTables.InRaidData);
+            LearnMsgs = (ObservableCollection<LearnMsgs>)DataManager.GetICollection(DataTables.LearnMsgs);
+            ModeratorApprove = (ObservableCollection<ModeratorApprove>)DataManager.GetICollection(DataTables.ModeratorApprove);
+            MultiChannels = (ObservableCollection<MultiChannels>)DataManager.GetICollection(DataTables.MultiChannels);
+            MultiLiveStreams = (ObservableCollection<MultiLiveStreams>)DataManager.GetICollection(DataTables.MultiLiveStreams);
+            MultiSummaryLiveStreams = (ObservableCollection<MultiSummaryLiveStreams>)DataManager.GetICollection(DataTables.MultiSummaryLiveStreams);
+            MultiWebhooks = (ObservableCollection<MultiWebhooks>)DataManager.GetICollection(DataTables.MultiWebhooks);
+            OldFollowUsers = (ObservableCollection<OldFollowUsers>)DataManager.GetICollection(DataTables.OldFollowUsers);
+            OutRaidData = (ObservableCollection<OutRaidData>)DataManager.GetICollection(DataTables.OutRaidData);
+            OverlayServices = (ObservableCollection<OverlayServices>)DataManager.GetICollection(DataTables.OverlayServices);
+            OverlayTicker = (ObservableCollection<OverlayTicker>)DataManager.GetICollection(DataTables.OverlayTicker);
+            Quotes = (ObservableCollection<Quotes>)DataManager.GetICollection(DataTables.Quotes);
+            ShoutOuts = (ObservableCollection<ShoutOuts>)DataManager.GetICollection(DataTables.ShoutOuts);
+            StreamStats = (ObservableCollection<StreamStats>)DataManager.GetICollection(DataTables.StreamStats);
+            UserStats = (ObservableCollection<UserStats>)DataManager.GetICollection(DataTables.UserStats);
+            Webhooks = (ObservableCollection<Webhooks>)DataManager.GetICollection(DataTables.Webhooks);
 
-                CleanupList = DataManager.GetCleanupList();
+            CleanupList = DataManager.GetCleanupList();
 
-                NotifyPropertyChanged(nameof(Users));
-                NotifyPropertyChanged(nameof(Followers));
-                NotifyPropertyChanged(nameof(CommandsUser));
-                NotifyPropertyChanged(nameof(Commands));
-                NotifyPropertyChanged(nameof(BanReasons));
-                NotifyPropertyChanged(nameof(BanRules));
-                NotifyPropertyChanged(nameof(CategoryList));
-                NotifyPropertyChanged(nameof(ChannelEvents));
-                NotifyPropertyChanged(nameof(Clips));
-                NotifyPropertyChanged(nameof(Currency));
-                NotifyPropertyChanged(nameof(CurrencyType));
-                NotifyPropertyChanged(nameof(CustomWelcome));
-                NotifyPropertyChanged(nameof(GameDeadCounter));
-                NotifyPropertyChanged(nameof(GiveawayUserData));
-                NotifyPropertyChanged(nameof(InRaidData));
-                NotifyPropertyChanged(nameof(LearnMsgs));
-                NotifyPropertyChanged(nameof(ModeratorApprove));
-                NotifyPropertyChanged(nameof(MultiChannels));
-                NotifyPropertyChanged(nameof(MultiLiveStreams));
-                NotifyPropertyChanged(nameof(MultiSummaryLiveStreams));
-                NotifyPropertyChanged(nameof(MultiWebhooks));
-                NotifyPropertyChanged(nameof(OldFollowUsers));
-                NotifyPropertyChanged(nameof(OutRaidData));
-                NotifyPropertyChanged(nameof(OverlayServices));
-                NotifyPropertyChanged(nameof(OverlayTicker));
-                NotifyPropertyChanged(nameof(Quotes));
-                NotifyPropertyChanged(nameof(ShoutOuts));
-                NotifyPropertyChanged(nameof(StreamStats));
-                NotifyPropertyChanged(nameof(UserStats));
-                NotifyPropertyChanged(nameof(Webhooks));
-
+            NotifyPropertyChanged(nameof(Users));
+            NotifyPropertyChanged(nameof(Followers));
+            NotifyPropertyChanged(nameof(CommandsUser));
+            NotifyPropertyChanged(nameof(Commands));
+            NotifyPropertyChanged(nameof(BanReasons));
+            NotifyPropertyChanged(nameof(BanRules));
+            NotifyPropertyChanged(nameof(CategoryList));
+            NotifyPropertyChanged(nameof(ChannelEvents));
+            NotifyPropertyChanged(nameof(Clips));
+            NotifyPropertyChanged(nameof(Currency));
+            NotifyPropertyChanged(nameof(CurrencyType));
+            NotifyPropertyChanged(nameof(CustomWelcome));
+            NotifyPropertyChanged(nameof(GameDeadCounter));
+            NotifyPropertyChanged(nameof(GiveawayUserData));
+            NotifyPropertyChanged(nameof(InRaidData));
+            NotifyPropertyChanged(nameof(LearnMsgs));
+            NotifyPropertyChanged(nameof(ModeratorApprove));
+            NotifyPropertyChanged(nameof(MultiChannels));
+            NotifyPropertyChanged(nameof(MultiLiveStreams));
+            NotifyPropertyChanged(nameof(MultiSummaryLiveStreams));
+            NotifyPropertyChanged(nameof(MultiWebhooks));
+            NotifyPropertyChanged(nameof(OldFollowUsers));
+            NotifyPropertyChanged(nameof(OutRaidData));
+            NotifyPropertyChanged(nameof(OverlayServices));
+            NotifyPropertyChanged(nameof(OverlayTicker));
+            NotifyPropertyChanged(nameof(Quotes));
+            NotifyPropertyChanged(nameof(ShoutOuts));
+            NotifyPropertyChanged(nameof(StreamStats));
+            NotifyPropertyChanged(nameof(UserStats));
+            NotifyPropertyChanged(nameof(Webhooks));
 
 #else
                 // set specific collection changed events for StatusBar data
@@ -290,16 +284,13 @@ namespace StreamerBotLib.GUI
                 NotifyPropertyChanged(nameof(Webhooks));
 
 #endif
+            // refresh the 'status bar' count items
+            NotifyPropertyChanged(nameof(CurrUserCount));
+            NotifyPropertyChanged(nameof(CurrFollowers));
+            NotifyPropertyChanged(nameof(CurrBuiltInComCount));
+            NotifyPropertyChanged(nameof(CurrUserComsCount));
 
-
-                // refresh the 'status bar' count items
-                NotifyPropertyChanged(nameof(CurrUserCount));
-                NotifyPropertyChanged(nameof(CurrFollowers));
-                NotifyPropertyChanged(nameof(CurrBuiltInComCount));
-                NotifyPropertyChanged(nameof(CurrUserComsCount));
-
-                SetCommandCollection();
-            });
+            SetCommandCollection();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -311,7 +302,7 @@ namespace StreamerBotLib.GUI
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new(propertyName));
-            LogWriter.DebugLog("NotifyPropertyChanged", Enums.DebugLogTypes.GUIDataViews, $"Notifying GUI for updated {propertyName} property data.");
+            LogWriter.DebugLog("NotifyPropertyChanged", DebugLogTypes.GUIDataViews, $"Notifying GUI for updated {propertyName} property data.");
 
             if (propertyName is "CategoryList")
             {
@@ -325,10 +316,6 @@ namespace StreamerBotLib.GUI
 
         public void UpdatedGUIData(OnDataCollectionUpdatedEventArgs e)
         {
-#if DEBUG
-            //LogWriter.DebugLog("UpdatedGUIData", Enums.DebugLogTypes.SpecialPurpose, $"Notifying GUI for updated {e.DatabaseModelName} property data.");
-#endif
-
             NotifyPropertyChanged(e.DatabaseModelName);
 
             // refresh the 'status bar' count items
@@ -346,10 +333,6 @@ namespace StreamerBotLib.GUI
                 NotifyPropertyChanged(nameof(CurrBuiltInComCount));
                 NotifyPropertyChanged(nameof(CurrUserComsCount));
             }
-
-#if DEBUG
-            //LogWriter.DebugLog("UpdatedGUIData", Enums.DebugLogTypes.SpecialPurpose, $"Completed GUI NotifyPropertyChanged.");
-#endif
         }
 
         public void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
@@ -403,7 +386,7 @@ namespace StreamerBotLib.GUI
             {
                 CommandCollection.Clear();
 
-                foreach (var command in DataManager.GetCommandList())
+                foreach (var command in GetDataCommands.Invoke(false))
                 {
                     CommandCollection.Add(command);
                 }

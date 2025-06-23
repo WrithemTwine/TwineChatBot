@@ -1,6 +1,6 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.GUI;
+﻿using StreamerBotLib.GUI;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 
 using System.Windows;
 using System.Windows.Controls;

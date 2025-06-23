@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.SingleContext.Import;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 

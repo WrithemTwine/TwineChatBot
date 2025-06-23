@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 

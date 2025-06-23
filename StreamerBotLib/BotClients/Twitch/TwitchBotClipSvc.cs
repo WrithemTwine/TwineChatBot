@@ -1,5 +1,5 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Exceptions;

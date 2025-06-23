@@ -1,9 +1,9 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -34,7 +34,7 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
-        internal static BotController Controller { get; private set; }
+        internal static BotController Controller { get; } = new();
 
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
@@ -68,9 +68,6 @@ namespace StreamerBot
 
             WatchProcessOps = true;
 
-            Controller = new();
-
-            DataManagerViewLoaded();
 
             InitializeComponent();
 
@@ -88,6 +85,9 @@ namespace StreamerBot
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
+            GUIDataManagerViews = Resources["DataViews"] as GUIDataManagerViews;
+
+            DataManagerViewLoaded();
 
             ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();

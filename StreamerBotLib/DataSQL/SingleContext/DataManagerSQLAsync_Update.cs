@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Data;
 

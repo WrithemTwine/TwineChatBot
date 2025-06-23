@@ -1,13 +1,14 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class ModeratorApprove : IDatabaseTableMeta
     {
         public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }
-        public StreamerBotLib.Enums.ModActionType ModActionType { get => (StreamerBotLib.Enums.ModActionType)Values["ModActionType"]; set => Values["ModActionType"] = value; }
+        public ModActionType ModActionType { get => (ModActionType)Values["ModActionType"]; set => Values["ModActionType"] = value; }
         public System.String ModActionName { get => (System.String)Values["ModActionName"]; set => Values["ModActionName"] = value; }
-        public StreamerBotLib.Enums.ModPerformType ModPerformType { get => (StreamerBotLib.Enums.ModPerformType)Values["ModPerformType"]; set => Values["ModPerformType"] = value; }
+        public ModPerformType ModPerformType { get => (ModPerformType)Values["ModPerformType"]; set => Values["ModPerformType"] = value; }
         public System.String ModPerformAction { get => (System.String)Values["ModPerformAction"]; set => Values["ModPerformAction"] = value; }
 
         public Dictionary<string, object> Values { get; }
@@ -28,9 +29,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public Dictionary<string, Type> Meta => new()
         {
               { "IsEnabled", typeof(System.Boolean) },
-              { "ModActionType", typeof(StreamerBotLib.Enums.ModActionType) },
+              { "ModActionType", typeof(ModActionType) },
               { "ModActionName", typeof(System.String) },
-              { "ModPerformType", typeof(StreamerBotLib.Enums.ModPerformType) },
+              { "ModPerformType", typeof(ModPerformType) },
               { "ModPerformAction", typeof(System.String) }
         };
         public object GetModelEntity()

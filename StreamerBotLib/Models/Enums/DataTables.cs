@@ -1,0 +1,39 @@
+﻿namespace StreamerBotLib.Models.Enums
+{
+    public enum DataTables
+    {
+        BanReasons,
+        BanRules,
+        CategoryList,
+        ChannelEvents,
+        Clips,
+        Commands,
+        CommandsBase,
+        CommandsUser,
+        Currency,
+        CurrencyType,
+        CustomWelcome,
+        Followers,
+        GameDeadCounter,
+        GiveawayUserData,
+        InRaidData,
+        LearnMsgs,
+        ModeratorApprove,
+        MultiChannels,
+        MultiLiveStreams,
+        MultiSummaryLiveStreams,
+        MultiWebhooks,
+        OldFollowUsers,
+        OutRaidData,
+        OverlayServices,
+        OverlayTicker,
+        Quotes,
+        ShoutOuts,
+        StreamStats,
+        UserBase,
+        Users,
+        UserStats,
+        Webhooks,
+        WebhooksBase
+    }
+}

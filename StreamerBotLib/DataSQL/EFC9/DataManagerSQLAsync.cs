@@ -2,9 +2,9 @@
 
 using StreamerBotLib.DataSQL.EFC9.Import;
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
@@ -97,7 +97,8 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         internal async Task Exit()
         {
-            GUIContext.Dispose();
+            await Task.Delay(100); // Allow any pending operations to complete
+            GUIContext?.Dispose();
         }
 
         #region Process Queue

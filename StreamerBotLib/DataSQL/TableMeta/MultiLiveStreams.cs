@@ -1,4 +1,5 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -6,7 +7,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
     {
         public System.DateTime LiveDate { get => (System.DateTime)Values["LiveDate"]; set => Values["LiveDate"] = value; }
         public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
-        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
+        public Platform Platform { get => (Platform)Values["Platform"]; set => Values["Platform"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -25,7 +26,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         {
               { "LiveDate", typeof(System.DateTime) },
               { "UserId", typeof(System.String) },
-              { "Platform", typeof(StreamerBotLib.Enums.Platform) }
+              { "Platform", typeof(Platform) }
         };
         public object GetModelEntity()
         {

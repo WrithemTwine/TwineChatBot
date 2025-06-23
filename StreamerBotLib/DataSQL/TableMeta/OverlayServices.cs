@@ -1,4 +1,5 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -7,7 +8,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }
         public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }
         public System.Int32 Duration { get => (System.Int32)Values["Duration"]; set => Values["Duration"] = value; }
-        public StreamerBotLib.Overlay.Enums.OverlayTypes OverlayType { get => (StreamerBotLib.Overlay.Enums.OverlayTypes)Values["OverlayType"]; set => Values["OverlayType"] = value; }
+        public OverlayTypes OverlayType { get => (OverlayTypes)Values["OverlayType"]; set => Values["OverlayType"] = value; }
         public System.String OverlayAction { get => (System.String)Values["OverlayAction"]; set => Values["OverlayAction"] = value; }
         public System.String UserName { get => (System.String)Values["UserName"]; set => Values["UserName"] = value; }
         public System.Boolean UseChatMsg { get => (System.Boolean)Values["UseChatMsg"]; set => Values["UseChatMsg"] = value; }
@@ -40,7 +41,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "Id", typeof(System.Int32) },
               { "IsEnabled", typeof(System.Boolean) },
               { "Duration", typeof(System.Int32) },
-              { "OverlayType", typeof(StreamerBotLib.Overlay.Enums.OverlayTypes) },
+              { "OverlayType", typeof(OverlayTypes) },
               { "OverlayAction", typeof(System.String) },
               { "UserName", typeof(System.String) },
               { "UseChatMsg", typeof(System.Boolean) },

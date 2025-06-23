@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.BotClients
 {

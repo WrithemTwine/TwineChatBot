@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
 namespace TestStreamerBot
@@ -130,11 +131,11 @@ namespace TestStreamerBot
                 firstTest = false; repeatTest = false; shoutTest = false;
             }
 
-            LiveUser liveUser1 = new("userName1", StreamerBotLib.Enums.Platform.Twitch);
-            LiveUser liveUser2 = new("userName2", StreamerBotLib.Enums.Platform.Twitch);
-            LiveUser liveUser3 = new("userName3", StreamerBotLib.Enums.Platform.Twitch);
-            LiveUser liveUser4 = new("userName4", StreamerBotLib.Enums.Platform.Twitch);
-            LiveUser liveUser5 = new("userName5", StreamerBotLib.Enums.Platform.Twitch);
+            LiveUser liveUser1 = new("userName1", Platform.Twitch);
+            LiveUser liveUser2 = new("userName2", Platform.Twitch);
+            LiveUser liveUser3 = new("userName3", Platform.Twitch);
+            LiveUser liveUser4 = new("userName4", Platform.Twitch);
+            LiveUser liveUser5 = new("userName5", Platform.Twitch);
 
             SendShoutOut(liveUser1);
             //Assert.True(firstTest);

@@ -1,13 +1,13 @@
 ﻿using StreamerBotLib.DataSQL.EFC9;
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
 
 using System.Data;
 
@@ -253,7 +253,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        public Tuple<ModActions, StreamerBotLib.Models.Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
         {
             LogWriter.DebugLog("FindRemedy", DebugLogTypes.DataManager, "Finding remedy.");
             lock (GUIDataManagerLock.Lock)

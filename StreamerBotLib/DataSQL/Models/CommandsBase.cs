@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.DiscriminatorEnums;
-using StreamerBotLib.Enums;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 
 using System.Diagnostics;
 

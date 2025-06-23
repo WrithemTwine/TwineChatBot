@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {

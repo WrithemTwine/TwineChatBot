@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 
 using TwitchLib.EventSub.Websockets.Core.Models;
