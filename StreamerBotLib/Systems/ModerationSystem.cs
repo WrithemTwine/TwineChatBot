@@ -45,7 +45,7 @@ namespace StreamerBotLib.Systems
 
         #region User Requests
 
-        private static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
+        public Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
         {
             LogWriter.DebugLog("GetApprovalRule", DebugLogTypes.ModerationSystem, $"Checking for approval rule for {Command}.");
             return DataManage.CheckModApprovalRule(ActionType, FormatData.AddEscapeFormat(Command));
@@ -56,7 +56,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="Description">A description of the request to approve.</param>
         /// <param name="Request">The Task of the request to perform once approved.</param>
-        private void PostApproval(string Description, Task Request)
+        public void PostApproval(string Description, Task Request)
         {
             LogWriter.DebugLog("AddApprovalRequest", DebugLogTypes.ModerationSystem, $"Adding a new approval request for {Description}.");
             bool ItemCount = false;

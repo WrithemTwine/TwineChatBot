@@ -4,7 +4,7 @@ namespace StreamerBotLib.BotClients
     using StreamerBotLib.Models.Enums;
     using StreamerBotLib.Models.Events;
     using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Overlay;
+    using StreamerBotLib.Systems.Overlay;
     using StreamerBotLib.Static;
     using StreamerBotLib.Systems.Overlay.Models;
 

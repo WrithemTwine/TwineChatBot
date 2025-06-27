@@ -1,5 +1,5 @@
 ﻿
-namespace StreamerBotLib.Overlay
+namespace StreamerBotLib.Systems.Overlay
 {
     using StreamerBotLib.Models.Events;
     using StreamerBotLib.Static;

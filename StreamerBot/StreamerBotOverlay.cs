@@ -30,7 +30,7 @@ namespace StreamerBot
 
         private void UpdateOverlayChannelPointList(List<string> channelPointNames)
         {
-            Controller.Systems.SetChannelRewardList(channelPointNames);
+            Controller.SetChannelRewardList(channelPointNames);
         }
 
         #endregion

@@ -31,6 +31,12 @@ namespace StreamerBotLib.Systems
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
         }
 
+        public IEnumerable<string> GetCommandList(bool prefix = true)
+        {
+            LogWriter.DebugLog("GetCommandList", DebugLogTypes.CommandSystem, "Getting command list.");
+            return DataManage.GetCommandList(prefix);
+        }
+
         /// <summary>
         /// Establishes the permission level for the user who sends the message.
         /// </summary>
@@ -710,7 +716,7 @@ namespace StreamerBotLib.Systems
             ProcessedCommand?.Invoke(this, new() { Msg = Message, Announcement = announcement, RepeatMsg = repeatMsg });
         }
 
-        private static string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)
+        private string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)
         {
             LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, $"Processing party command: {command}.");
 
@@ -762,7 +768,7 @@ namespace StreamerBotLib.Systems
             return response;
         }
 
-        private static void LookupQuery(CommandData CommData, string paramvalue, ref Dictionary<string, string> datavalues)
+        private void LookupQuery(CommandData CommData, string paramvalue, ref Dictionary<string, string> datavalues)
         {
             //TODO: the query commands with data lookup needs a lot of work!
             LogWriter.DebugLog("LookupQuery", DebugLogTypes.CommandSystem, $"Performing query: {CommData.CmdName}.");

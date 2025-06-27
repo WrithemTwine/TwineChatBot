@@ -3,6 +3,7 @@ namespace StreamerBotLib.Systems
 {
     using StreamerBotLib.BotClients;
     using StreamerBotLib.DataSQL;
+    using StreamerBotLib.GUI.Windows;
     using StreamerBotLib.Models;
     using StreamerBotLib.Models.Enums;
     using StreamerBotLib.Models.Events;
@@ -28,11 +29,11 @@ namespace StreamerBotLib.Systems
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
-        internal static IDataManager DataManage { get; set; } = new DataManagerSQL();
-        public static FlowDocument ChatData { get; private set; } = new();
-        public static ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
-        public static ObservableCollection<LiveUser> GiveawayCollection { get; set; } = [];
-        public static ObservableCollection<string> CurrUserJoin { get; private set; } = [];
+        public static IDataManager DataManage { get; set; }
+        public FlowDocument ChatData { get; private set; } = new();
+        public ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
+        public ObservableCollection<LiveUser> GiveawayCollection { get; set; } = [];
+        public ObservableCollection<string> CurrUserJoin { get; private set; } = [];
 
         private static CategoryData CurrCategory { get; set; } = new("", "");
 
@@ -72,6 +73,7 @@ namespace StreamerBotLib.Systems
 
         public ActionSystem()
         {
+            DataManage = new DataManagerSQL();
             LocalizedMsgSystem.SetDataManager(DataManage);
 
             OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
@@ -79,6 +81,31 @@ namespace StreamerBotLib.Systems
 
             DataManage.OnBulkFollowersAddFinished += DataManage_OnBulkFollowersAddFinished;
         }
+
+        public async Task InitializeDataManager()
+        {
+            await ((DataManagerSQL)DataManage).InitializeDataManager();
+        }
+
+        public void InitializeDataManagerCollectionUpdateEvent(EventHandler<OnDataCollectionUpdatedEventArgs> eventHandler)
+        {
+            DataManage.OnDataCollectionUpdated += eventHandler;
+        }
+
+        public void InitializeUpdatedMonitoringChannelsEvent(EventHandler eventHandler)
+        {
+            ((DataManagerSQL)DataManage).UpdatedMonitoringChannels += eventHandler;
+        }
+
+        public object GetICollection(DataTables dataTable)
+        {
+            LogWriter.DebugLog("GetICollection", DebugLogTypes.CommonSystem, $"Getting ICollection for DataTable: {dataTable}");
+            return DataManage.GetICollection(dataTable);
+        }
+
+        public string GetMultiStatusLog() => DataManage.MultiLiveStatusLog;
+
+        public List<ArchiveMultiStream> GetCleanupList() => DataManage.CleanupList;
 
         /// <summary>
         /// Closing actions when the application is exiting
@@ -141,6 +168,12 @@ namespace StreamerBotLib.Systems
             {
                 DataManage.RemoveAllOverlayTickerData();
             }
+        }
+
+        public void PostDataGridGUIAddRow(IDatabaseTableMeta NewRow)
+        {
+            LogWriter.DebugLog("PostDataGridGUIAddRow", DebugLogTypes.CommonSystem, "Posting DataGrid GUI Add Row.");
+            DataManage.PostDataGridGUIAddRow(NewRow);
         }
 
         public void ClearWatchTime()
@@ -227,8 +260,24 @@ namespace StreamerBotLib.Systems
             DataManage.PostDataGridGUIAddRow(e.NewRow);
         }
 
-        #endregion
+        public bool GetEventAnnounce(ChannelEventActions channelEventAction)
+        {
+            return DataManage.GetEventAnnounce(channelEventAction);
+        }
 
+        public string GetUserId(LiveUser user)
+        {
+            LogWriter.DebugLog("GetUserId", DebugLogTypes.CommonSystem, $"Getting User ID for: {user.UserName}");
+            return DataManage.GetUserId(user);
+        }
+
+        public List<CategoryData> GetGameCategories()
+        {
+            LogWriter.DebugLog("GetGameCategories", DebugLogTypes.CommonSystem, "Getting Game Categories.");
+            return DataManage.GetGameCategories();
+        }
+
+        #endregion
 
         public bool AddClip(Clip c)
         {
@@ -477,7 +526,6 @@ namespace StreamerBotLib.Systems
             Random random = new();
 
             UserJoined([.. ((IDataManagerTestMethods)DataManage).TestGetRandomUsers(random.Next(getUsers))]);
-
         }
 #endif
 
@@ -666,13 +714,13 @@ namespace StreamerBotLib.Systems
 
         #region Followers
 
-        public static void StartBulkFollowers()
+        public void StartBulkFollowers()
         {
             LogWriter.DebugLog("StartBulkFollowers", DebugLogTypes.SystemController, "Starting bulk followers procedure.");
             DataManage.StartBulkFollowers();
         }
 
-        public static void UpdateFollowers(List<Follow> Follows)
+        public void UpdateFollowers(List<Follow> Follows)
         {
             LogWriter.DebugLog("UpdateFollowers", DebugLogTypes.SystemController, "Updating followers.");
             Follows.ForEach((f) => { f.Category = CurrCategory.CategoryName; });
@@ -685,7 +733,7 @@ namespace StreamerBotLib.Systems
             AddNewOverlayTickerItem(OverlayTickerItem.LastFollower, e.LastFollowerUserName);
         }
 
-        public static void StopBulkFollowers()
+        public void StopBulkFollowers()
         {
             LogWriter.DebugLog("StopBulkFollowers", DebugLogTypes.SystemController, "Stopping bulk followers procedure.");
             DataManage.NotifyStopBulkFollowers();
@@ -773,37 +821,6 @@ namespace StreamerBotLib.Systems
                         }
                     }
                 });
-            }
-        }
-
-        #endregion
-
-        #region MultiLive 
-
-        public void AddNewMonitorChannel(IEnumerable<LiveUser> liveUsers)
-        {
-            LogWriter.DebugLog("AddNewMonitorChannel", DebugLogTypes.SystemController, "Adding new monitor channel.");
-            DataManage.PostMonitorChannel(liveUsers);
-        }
-
-        /// <summary>
-        /// Summarize the multi-live data.
-        /// </summary>
-        /// <param name="multiLiveSummarizeEventArgs">Defines data, if null then all date records are summarized, and 
-        /// a callback action to invoke after querying the database. 
-        /// See also: <seealso cref="MultiLiveSummarizeEventArgs"/></param>
-        public static void MultiSummarize(MultiLiveSummarizeEventArgs multiLiveSummarizeEventArgs)
-        {
-            LogWriter.DebugLog("MultiSummarize", DebugLogTypes.SystemController, "Summarizing multi-live data.");
-            if (multiLiveSummarizeEventArgs.Data == null)
-            {
-                DataManage.SummarizeStreamData();
-                multiLiveSummarizeEventArgs.CallbackAction.Invoke();
-            }
-            else
-            {
-                DataManage.SummarizeStreamData(multiLiveSummarizeEventArgs.Data);
-                multiLiveSummarizeEventArgs.CallbackAction.Invoke();
             }
         }
 

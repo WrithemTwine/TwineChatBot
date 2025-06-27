@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
+using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
@@ -41,7 +42,7 @@ namespace StreamerBotLib.BotClients.Twitch
         private Dictionary<BotType, bool> ActiveBotTokens { get; set; }
 
 
-        private readonly IDataManagerReadOnly DataManager = SystemsController.DataManage;
+        //private readonly IDataManagerReadOnly DataManager = SystemsController.DataManage;
 
         private bool TokenRenewalStarted; // flag to use a single thread for checking AuthCode access tokens
         private bool InitializeTokens;
@@ -89,6 +90,8 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private DateTime StreamerNoScopesAccessTokenLastCheckedDate;
 
+        private Func<LiveUser, string> GetUserId;
+
         public TwitchTokenBot()
         {
             BotClientName = Bots.TwitchTokenBot;
@@ -100,6 +103,11 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 ActiveBotTokens.Add(b, false);
             }
+        }
+
+        public void InitializeGetUserId(Func<LiveUser, string> GetUserIdFunc)
+        {
+            GetUserId = GetUserIdFunc;
         }
 
         /// <summary>
@@ -174,7 +182,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (string.IsNullOrEmpty(OptionFlags.TwitchBotUserId))
             {
-                OptionFlags.TwitchBotUserId = DataManager.GetUserId(new(OptionFlags.TwitchBotUserName, Platform.Twitch)) ?? StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchBotUserName]).Result.Users[0].Id;
+                OptionFlags.TwitchBotUserId = GetUserId(new(OptionFlags.TwitchBotUserName, Platform.Twitch)) ?? StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchBotUserName]).Result.Users[0].Id;
             }
 
             if (string.IsNullOrEmpty(OptionFlags.TwitchStreamerUserId))
@@ -182,7 +190,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 OptionFlags.TwitchStreamerUserId =
                     OptionFlags.TwitchChannelName == OptionFlags.TwitchBotUserName ?
                         OptionFlags.TwitchBotUserId
-                        : DataManager.GetUserId(new(OptionFlags.TwitchChannelName, Platform.Twitch)) ?? StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchChannelName]).Result.Users[0].Id;
+                        : GetUserId(new(OptionFlags.TwitchChannelName, Platform.Twitch)) ?? StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchChannelName]).Result.Users[0].Id;
             }
         }
 

@@ -46,7 +46,8 @@ namespace StreamerBot
 
         private void DataManagerViewLoaded()
         {
-            SystemsController.DataManage.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
+            Controller.HandleOnDataCollectionUpdated(DataManager_OnDataCollectionUpdated);
+            BotController.DataBot.InitializeDataManagerViews(GUIDataManagerViews);
         }
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
@@ -60,7 +61,6 @@ namespace StreamerBot
 
                 if (e.RecordCountChange)
                 {
-
                     switch (e.DatabaseModelName)
                     {
                         case "BanReasons":
@@ -154,21 +154,21 @@ namespace StreamerBot
                     }
                 }
 
-                GUIDataManagerViews.UpdatedGUIData(e);
+                GUIDataManagerViews?.UpdatedGUIData(e);
             });
             //}));
         }
         private void Button_ClearWatchTime_Click(object sender, RoutedEventArgs e)
         {
-            BotController.ClearWatchTime();
+            Controller.ClearWatchTime();
         }
         private void Button_ClearCurrencyAccrlValues_Click(object sender, RoutedEventArgs e)
         {
-            BotController.ClearAllCurrenciesValues();
+            Controller.ClearAllCurrenciesValues();
         }
         private void Button_ClearNonFollowers_Click(object sender, RoutedEventArgs e)
         {
-            BotController.ClearUsersNonFollowers();
+            Controller.ClearUsersNonFollowers();
         }
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
@@ -224,7 +224,6 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-
             DGOpenEditWindow(item);
         }
         private void DGOpenEditWindow(DataGrid item)
@@ -262,11 +261,17 @@ namespace StreamerBot
 
             if (item.Name is "DG_OverlayService_Actions" or "DG_ModApprove")
             {
-                PopupWindows.SetTableData(Controller.Systems.GetOverlayActions());
+                UpdateOverlays();
             }
 
             PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
         }
+
+        private void UpdateOverlays()
+        {
+            Controller.GetOverlayActions((actions) => PopupWindows.SetTableData(actions));
+        }
+
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -287,25 +292,25 @@ namespace StreamerBot
 
             foreach (UserBase dr in new List<UserBase>(item.SelectedItems.Cast<UserBase>().Select(DRV => DRV)))
             {
-                BotController.AddNewAutoShoutUser(dr.UserId, dr.Platform);
+                Controller.AddNewAutoShoutUser(dr.UserId, dr.Platform);
             }
         }
         private void MenuItem_LiveMonitorClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
-            Controller.Systems.AddNewMonitorChannel(new List<LiveUser>(item.SelectedItems.Cast<Users>().Select(DRV => new LiveUser(DRV.UserName, DRV.Platform, DRV.UserId))));
+            Controller.AddNewMonitorChannel(new List<LiveUser>(item.SelectedItems.Cast<Users>().Select(DRV => new LiveUser(DRV.UserName, DRV.Platform, DRV.UserId))));
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), true);
+            Controller.UpdatedIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), true);
         }
         private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            SystemsController.UpdateIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
+            Controller.UpdatedIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
         }
 
         #endregion
@@ -315,7 +320,7 @@ namespace StreamerBot
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
-                Controller.Systems.GUISaveDataGridEdits((sender as DataGrid).Name is "DG_BuiltInCommands" or "DG_UserDefinedCommands");
+                Controller.GUISaveDataGridEdits((sender as DataGrid).Name is "DG_BuiltInCommands" or "DG_UserDefinedCommands");
             }
         }
 

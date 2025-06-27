@@ -2,6 +2,7 @@ using StreamerBotLib.DataSQL;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
 
 namespace TestStreamerBot
 {
@@ -11,19 +12,21 @@ namespace TestStreamerBot
 
         private string result = string.Empty;
 
-        private readonly SystemsController systemsController;
+        private readonly DataBot dataBot;
+        private DataManagerSQL DataManage;
 
         public TestSystemsController()
         {
-            systemsController = new();
+            dataBot = new();
             Initialize();
+            DataManage = dataBot.GetDataManager();
         }
 
         private void Initialize()
         {
             if (!Initialized)
             {
-                systemsController.PostChannelMessage += SystemsController_PostChannelMessage;
+                dataBot.SetPostChannelMessageHandler(SystemsController_PostChannelMessage);
 
                 OptionFlags.FirstUserChatMsg = true;
                 OptionFlags.FirstUserJoinedMsg = false;
@@ -45,7 +48,7 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
+            dataBot.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
             Assert.Empty(result);
         }
 
@@ -57,11 +60,11 @@ namespace TestStreamerBot
             Assert.True(OptionFlags.FirstUserChatMsg);
             Assert.False(OptionFlags.FirstUserJoinedMsg);
 
-            systemsController.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
+            dataBot.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
 
             result = string.Empty;
 
-            systemsController.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
+            dataBot.UserJoined([new("DarkStreamPhantom", Platform.Twitch)]);
             Assert.Empty(result);
         }
 
@@ -78,11 +81,11 @@ namespace TestStreamerBot
             string Category = "New World";
             DateTime RaidTime = DateTime.Now;
 
-            systemsController.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, new("3813210654", Category));
-            SystemsController.PostOutgoingRaid(RaidName, RaidTime);
+            dataBot.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, new("3813210654", Category));
+            dataBot.PostOutgoingRaid(RaidName, RaidTime);
 
-            Assert.True(((DataManagerSQL)SystemsController.DataManage).TestInRaidData(RaidName, RaidTime, viewers, Category));
-            Assert.True(((DataManagerSQL)SystemsController.DataManage).TestOutRaidData(RaidName, RaidTime));
+            Assert.True((DataManage).TestInRaidData(RaidName, RaidTime, viewers, Category));
+            Assert.True((DataManage).TestOutRaidData(RaidName, RaidTime));
         }
 
         [Theory]
@@ -95,9 +98,9 @@ namespace TestStreamerBot
             OptionFlags.ManageUsers = true;
             OptionFlags.IsStreamOnline = true;
 
-            systemsController.UserJoined([new(UserName, Platform.Twitch)]);
-            Assert.True(SystemsController.DataManage.CheckUser(new(UserName, Platform.Twitch)));
-            systemsController.UserLeft(new(UserName, Platform.Twitch));
+            dataBot.UserJoined([new(UserName, Platform.Twitch)]);
+            Assert.True(DataManage.CheckUser(new(UserName, Platform.Twitch)));
+            dataBot.UserLeft(new(UserName, Platform.Twitch));
         }
     }
 }

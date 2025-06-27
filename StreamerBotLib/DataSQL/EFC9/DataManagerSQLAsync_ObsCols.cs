@@ -403,7 +403,9 @@ namespace StreamerBotLib.DataSQL.EFC9
             //{
             //    ThreadManager.AddAsyncTaskToGUIDispatcher("RefreshUserStatsObservableCollection", async () =>
             //    {
+
             await GUIContext.Commands.LoadAsync();
+
             NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
             //    });
             //}), "Commands");
@@ -715,6 +717,6 @@ namespace StreamerBotLib.DataSQL.EFC9
             //}), "Webhooks");
         }
 
-        #endregion
+#endregion
     }
 }

@@ -119,7 +119,6 @@ namespace StreamerBotLib.BotClients
             StatusMessages = new();
 #endif
 
-            DataManager = SystemsController.DataManage;
             TwitchTokenBot = new();
             TwitchBotClipSvc = new(TwitchTokenBot);
             TwitchBotLiveMonitorSvc = new(TwitchTokenBot);
@@ -145,6 +144,18 @@ namespace StreamerBotLib.BotClients
 #if USEQUEUELOGGER
             StartLogging();
 #endif
+        }
+
+        public EventHandler InitializeLiveMonitor(Func<Platform,IEnumerable<string>> GetChannelIds)
+        {
+            LogWriter.DebugLog("InitializeLiveMonitor", DebugLogTypes.TwitchBots, "Setting up the LiveMonitor service to monitor multiple channels.");
+            return TwitchBotLiveMonitorSvc.SetMultiChannelIds(GetChannelIds);
+        }
+
+        public void InitializeGetIds(Func<LiveUser, string> GetIds)
+        {
+            LogWriter.DebugLog("InitializeGetIds", DebugLogTypes.TwitchBots, "Setting up the LiveMonitor service to monitor multiple channels.");
+            TwitchTokenBot.InitializeGetUserId(GetIds);
         }
 
         private void StreamLoggerProvider_OnWriteLine(object sender, OnWriteLineEventArgs e)

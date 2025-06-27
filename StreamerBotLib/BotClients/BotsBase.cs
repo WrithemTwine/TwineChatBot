@@ -13,10 +13,6 @@ namespace StreamerBotLib.BotClients
         public event EventHandler<BotEventArgs> BotEvent;
 
         protected Collection<Thread> MultiThreadOps = [];
-        /// <summary>
-        /// Utilize the read-only version of the data manager, designed to only read data
-        /// </summary>
-        public static IDataManagerReadOnly DataManager { get; set; }
 
         internal Collection<IIOModule> BotsList { get; private set; } = [];
 

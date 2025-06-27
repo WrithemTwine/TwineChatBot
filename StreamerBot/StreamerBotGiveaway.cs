@@ -16,7 +16,6 @@ namespace StreamerBot
 
         private void TabItem_Giveaways_Loaded(object sender, RoutedEventArgs e)
         {
-            //BeginGiveawayChannelPtsUpdate();
             CheckGiveawayFocusStatus();
         }
 

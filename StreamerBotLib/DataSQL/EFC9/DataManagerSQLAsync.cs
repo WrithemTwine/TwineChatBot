@@ -35,13 +35,16 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
 
         internal event EventHandler<EventArgs> OnLoadCompleted;
-        private event EventHandler<EventArgs> OnInitialize;
+        //private event EventHandler<EventArgs> OnInitialize;
 
         internal DataManagerSQLAsync()
         {
-            OnInitialize += OnInitializeHandler;
+            GUIContext = BuildDataContext();
+            GUIContext.Database.AutoTransactionBehavior = AutoTransactionBehavior.WhenNeeded;
+            
+            //OnInitialize += OnInitializeHandler;
 
-            ThreadManager.CreateThreadStart(".ctor_DataManagerSQLAsync", () => { OnInitialize?.Invoke(this, EventArgs.Empty); });
+            //ThreadManager.CreateThreadStart(".ctor_DataManagerSQLAsync", () => { OnInitialize?.Invoke(this, EventArgs.Empty); });
         }
 
         private SQLDBContext BuildDataContext()
@@ -49,12 +52,12 @@ namespace StreamerBotLib.DataSQL.EFC9
             return dbContextFactory.CreateDbContext();
         }
 
-        private void OnInitializeHandler(object sender, EventArgs e)
-        {
-            _ = InitializeDataBaseAsync();
-        }
+        //private void OnInitializeHandler(object sender, EventArgs e)
+        //{
+        //    _ = InitializeDataBaseAsync();
+        //}
 
-        private async Task InitializeDataBaseAsync()
+        public async Task InitializeDataBaseAsync()
         {
             if (!OptionFlags.EFCDataImportedDataGram)
             {
@@ -83,9 +86,6 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context1.SaveChangesAsync();
             }
             catch { /* ignore */ }
-
-            GUIContext = BuildDataContext();
-
             await Initialize();
 
             OnLoadCompleted?.Invoke(this, EventArgs.Empty);
@@ -268,7 +268,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             using var context = BuildDataContext();
             await context.Commands.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshCommandsList();
         }
 
@@ -277,7 +277,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             using var context = BuildDataContext();
 
             await context.Webhooks.ExecuteUpdateAsync((w) => w.SetProperty((u) => u.IsEnabled, (h) => Enabled));
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshWebhooksList();
         }
 
@@ -291,7 +291,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             using var context = BuildDataContext();
             await context.ChannelEvents.ExecuteUpdateAsync((c) => c.SetProperty((e) => e.IsEnabled, (ce) => Enabled));
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshChannelEventsList();
         }
 
@@ -303,7 +303,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             using var context = BuildDataContext();
             await context.CommandsUser.ExecuteUpdateAsync((c) => c.SetProperty((n) => n.IsEnabled, (e) => Enabled));
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshCommandsUserList();
         }
 

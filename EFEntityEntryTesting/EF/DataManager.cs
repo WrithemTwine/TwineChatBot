@@ -234,10 +234,6 @@ namespace EFEntityEntryTesting.EF
 
         internal event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionChanged;
 
-        private List<Users> UsersList { get; set; } = [];
-        private List<Currency> CurrencyList { get; set; } = [];
-        private List<CurrencyType> CurrencyTypeList { get; set; } = [];
-
         public DataManager()
         {
             using EFTestDataContext _context = new();
@@ -283,64 +279,32 @@ namespace EFEntityEntryTesting.EF
 
         public ObservableCollection<Users> GetUsersObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             _GUIcontext.Users.Load();
-            //UsersList = _GUIcontext.Users.Local.ToList();
             return _GUIcontext.Users.Local.ToObservableCollection();
-            //}
         }
 
         public ObservableCollection<Currency> GetCurrObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             _GUIcontext.Currency.Load();
-            //CurrencyList = _GUIcontext.Currency.Local.ToList();
             return _GUIcontext.Currency.Local.ToObservableCollection();
-            //}
         }
 
         public ObservableCollection<CurrencyType> GetCurrTypeObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             _GUIcontext.CurrencyType.Load();
-            //CurrencyTypeList = _GUIcontext.CurrencyType.Local.ToList();
             return _GUIcontext.CurrencyType.Local.ToObservableCollection();
-            //}
         }
 
         private async Task RefreshUsersObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             await _GUIcontext.Users.LoadAsync();
-
-            //ThreadManager.AddTaskToGUIDispatcher(() =>
-            //{
-            //    UsersList.Clear();
-            //    UsersList.AddRange([.. _GUIcontext.Users.Local]);
-            //});
-
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Users)));
-            //}
         }
 
         private async Task RefreshCurrencyObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             await _GUIcontext.Currency.LoadAsync();
-
-            //ThreadManager.AddTaskToGUIDispatcher(() =>
-            //{
-            //    CurrencyList.Clear();
-            //    CurrencyList.AddRange([.. _GUIcontext.Currency.Local]);
-            //});
-
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Currency)));
-            //}
         }
 
         #endregion

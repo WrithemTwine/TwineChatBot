@@ -592,6 +592,10 @@
     <value>No Category</value>
     <comment>When user has no category</comment>
   </data>
+  <data name="MsgNoCommands" xml:space="preserve">
+    <value>No Commands Enabled for use.</value>
+    <comment>Response message for retrieving datamanager commands with "isEnabled" is false for all commands.</comment>
+  </data>
   <data name="MsgNoDeathCounter" xml:space="preserve">
     <value>The death counter is not established.</value>
   </data>

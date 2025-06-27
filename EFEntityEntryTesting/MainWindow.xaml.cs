@@ -31,6 +31,10 @@ namespace EFEntityEntryTesting
 
             ThreadManager.SetGUIDispatcher(Dispatcher);
         }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            GUIDataManager.SetObsCols();
+        }
 
         private void SetStatusUpdate(string text)
         {
@@ -124,5 +128,7 @@ namespace EFEntityEntryTesting
                 await Task.Delay(6000);
             }
         }
+
+
     }
 }

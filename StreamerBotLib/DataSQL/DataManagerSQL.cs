@@ -8,6 +8,7 @@
     using StreamerBotLib.Models.Events;
     using StreamerBotLib.Models.Interfaces;
     using StreamerBotLib.Static;
+    using StreamerBotLib.Systems;
     using StreamerBotLib.Systems.Overlay.Enums;
     using StreamerBotLib.Systems.Overlay.Models;
 
@@ -28,9 +29,7 @@
         public List<ArchiveMultiStream> CleanupList { get; } = [];
 
         public event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
-
         public event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
-
         public event EventHandler UpdatedMonitoringChannels;
         public event EventHandler<EventArgs> OnLoadCompleted;
 
@@ -47,6 +46,11 @@
             _dataManager.OnBulkFollowersAddFinished += _dataManager_OnBulkFollowersAddFinished;
             _dataManager.UpdatedMonitoringChannels += _dataManager_UpdatedMonitoringChannels;
             _dataManager.OnLoadCompleted += _dataManager_OnLoadCompleted;
+        }
+
+        public async Task InitializeDataManager()
+        {
+            await _dataManager.InitializeDataBaseAsync();
         }
 
         private void _dataManager_OnLoadCompleted(object sender, EventArgs e)
@@ -312,7 +316,9 @@
             LogWriter.DebugLog("GetCommandList", DebugLogTypes.DataManager, "Getting command list.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.GetCommandList(prefix).Result;
+                var Commands = _dataManager.GetCommandList(prefix).Result;
+
+                return Commands.Count == 0 ? [LocalizedMsgSystem.GetVar("MsgNoCommands")] : Commands;
             }
         }
 

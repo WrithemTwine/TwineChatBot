@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EFEntityEntryTesting"
         xmlns:GUI="clr-namespace:EFEntityEntryTesting.GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800" Closed="Window_Closed">
+        Title="MainWindow" Height="600" Width="800" Loaded="Window_Loaded" Closed="Window_Closed">
     <Window.Resources>
         <GUI:GUIDataManager x:Key="GUIDataManager" />
     </Window.Resources>

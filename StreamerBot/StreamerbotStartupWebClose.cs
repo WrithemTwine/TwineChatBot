@@ -108,7 +108,6 @@ namespace StreamerBot
             Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
             Controller.TokensInitialized += Controller_TokensInitializedAsync;
 
-
             GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
             guiAppServices.AppDataDirectory = GetAppDataCWD();

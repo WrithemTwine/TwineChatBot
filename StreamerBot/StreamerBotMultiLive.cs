@@ -31,7 +31,7 @@ namespace StreamerBot
 
         private void StreamerBotWindow_AddNewMultiChannelUser(object sender, AddNewMultiChannelUserEventArgs e)
         {
-            SystemsController.DataManage.PostMonitorChannel([e.LiveUser]);
+            Controller.AddNewMonitorChannel([e.LiveUser]);
         }
 
         private void StreamerBotWindow_FindMultiChannelUserId(object sender, AddNewMultiChannelUserEventArgs e)
@@ -47,7 +47,7 @@ namespace StreamerBot
             if (!SummarizeChannels) // some reason, this event is being called three times, prevent extra calls
             {
                 SummarizeChannels = true;
-                SystemsController.MultiSummarize(e);
+                Controller.MultiChannelSummarize(e);
                 SummarizeChannels = false;
             }
         }

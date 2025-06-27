@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Overlay;
+﻿using StreamerBotLib.Systems.Overlay;
 
 namespace StreamerBotLib.Models.Events
 {

@@ -1,7 +1,7 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
-using StreamerBotLib.Overlay;
+using StreamerBotLib.Systems.Overlay;
 using StreamerBotLib.Static;
 
 using System.Windows;
@@ -54,7 +54,7 @@ namespace StreamerBot
 
                     if (e.BotName == Bots.MediaOverlayServer)
                     {
-                        Controller.Systems.SendInitialTickerItems();
+                        Controller.SendInitialTickerItems();
                     }
                 }
             }), null);

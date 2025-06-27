@@ -56,7 +56,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
             }
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
 
             foreach (Models.CurrencyType t in context.CurrencyType)
             {
@@ -70,7 +70,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 }
             }
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
 
             return newuser;
         }
@@ -100,7 +100,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             RefreshUsersList(true);
             RefreshUserStatsList(true);
         }
@@ -137,7 +137,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             RefreshUsersList(true);
             RefreshUserStatsList(true);
         }
@@ -212,7 +212,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                         }
                         await context.Followers.AddRangeAsync(tempfollow);
                     }
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshFollowersList(true);
                     RefreshUsersList(true);
 
@@ -249,7 +249,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             using var context = BuildDataContext();
 
             await context.Followers.ExecuteUpdateAsync((f) => f.SetProperty((u) => u.IsFollower, (c) => false));
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
         }
 
         internal void NotifyStopBulkFollowers()
@@ -300,7 +300,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 context.Followers.RemoveRange(nonFollowers);
                 context.OldFollowUsers.RemoveRange(context.OldFollowUsers.Where(of => of.IsFollower));
 
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
             }
 
             OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));

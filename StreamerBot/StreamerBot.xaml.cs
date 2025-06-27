@@ -34,7 +34,7 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
-        internal static BotController Controller { get; } = new();
+        internal static BotController Controller { get; private set; }
 
         private readonly GUITwitchBots guiTwitchBot;
         private readonly GUIAppStats guiAppStats;
@@ -68,6 +68,7 @@ namespace StreamerBot
 
             WatchProcessOps = true;
 
+            Controller = new BotController(DataManage_OnLoadCompleted);
 
             InitializeComponent();
 
@@ -85,7 +86,7 @@ namespace StreamerBot
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
-            GUIDataManagerViews = Resources["DataViews"] as GUIDataManagerViews;
+            GUIDataManagerViews = TryFindResource("DataViews") as GUIDataManagerViews;
 
             DataManagerViewLoaded();
 
@@ -104,22 +105,22 @@ namespace StreamerBot
         #region Bot_Ops
         private void Button_SystemEvents_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetSystemEventsEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetSystemEventsEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void Button_BuiltInCommands_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetBuiltInCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetBuiltInCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void Button_UserDefinedCommands_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetUserDefinedCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetUserDefinedCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void Button_DiscordWebhooks_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetDiscordWebhooksEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetDiscordWebhooksEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void ShoutUsers_Click(object sender, RoutedEventArgs e)
@@ -329,7 +330,7 @@ namespace StreamerBot
             //    }
             //}
 
-            BotController.ManageDatabase();
+            Controller.ManageDatabase();
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)

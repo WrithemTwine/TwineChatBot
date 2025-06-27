@@ -43,17 +43,17 @@ namespace StreamerBot
                 string Category = "Microsoft Flight Simulator";
                 string ID = "7193";
                 string Title = "Testing a debug stream";
+                    List<CategoryData> output = [ .. Controller.GetGameCategories()];
 
                 ThreadManager.CreateThreadStart("StartDebugStream_Click", () =>
                 {
                     Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), platform: Platform.Default, Debug: true);
 
-                    List<CategoryData> output = SystemsController.DataManage.GetGameCategories();
                     Random random = new();
                     CategoryData itemfound = output[random.Next(output.Count)];
                     Controller.HandleOnStreamUpdate(itemfound);
 #if DEBUG
-                    Controller.Systems.TestAddUsers();
+                    Controller.TestAddUsers();
 #endif
                 });
 
@@ -70,7 +70,7 @@ namespace StreamerBot
 #if DEBUG
         private void TestingWindow_AddDebugUsers(object sender, EventArgs e)
         {
-            Controller.Systems.TestAddUsers();
+            Controller.TestAddUsers();
         }
 #endif
 

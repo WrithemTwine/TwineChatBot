@@ -2,6 +2,7 @@
 namespace StreamerBotLib.GUI.Windows
 {
     using StreamerBotLib.DataSQL.TableMeta;
+    using StreamerBotLib.Models.Events;
     using StreamerBotLib.Systems;
 
     public class ManageWindows
@@ -11,6 +12,8 @@ namespace StreamerBotLib.GUI.Windows
         private Dictionary<string, List<string>> TableDataPairs { get; } = [];
 
         private TableMeta CurrTableRow { get; set; }
+
+        internal static EventHandler<AddNewRowEventArgs> DataGridUpdatedRowHandler { get; set; }
 
         public ManageWindows() { }
 
@@ -29,7 +32,7 @@ namespace StreamerBotLib.GUI.Windows
         private void OpenDataGridRowWindow(bool NewRow)
         {
             EditDataWindow = new(ActionSystem.DataManage);
-            EditDataWindow.AddNewRow += SystemsController.DataGridUpdatedRow; // hookup adding a new row to a table
+            EditDataWindow.AddNewRow += DataGridUpdatedRowHandler; // hookup adding a new row to a table
 
             if (CurrTableRow.CurrEntity.TableName is "OverlayServices" or "ModeratorApprove")
             {

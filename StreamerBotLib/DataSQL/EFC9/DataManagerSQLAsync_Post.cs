@@ -28,210 +28,210 @@ namespace StreamerBotLib.DataSQL.EFC9
                 {
                     await context.BanReasons.AddAsync((Models.BanReasons)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshBanReasonsList(true);
                 }
                 else if (tableMeta.TableName == "BanRules")
                 {
                     await context.BanRules.AddAsync((Models.BanRules)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshBanRulesList(true);
                 }
                 else if (tableMeta.TableName == "CategoryList")
                 {
                     await context.CategoryList.AddAsync((Models.CategoryList)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshCategoryListList(true);
                 }
                 else if (tableMeta.TableName == "ChannelEvents")
                 {
                     await context.ChannelEvents.AddAsync((Models.ChannelEvents)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshChannelEventsList(true);
                 }
                 else if (tableMeta.TableName == "Clips")
                 {
                     await context.Clips.AddAsync((Models.Clips)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshClipsList(true);
                 }
                 else if (tableMeta.TableName == "Commands")
                 {
                     await context.Commands.AddAsync((Models.Commands)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshCommandsList(true);
                 }
                 else if (tableMeta.TableName == "CommandsUser")
                 {
                     await context.CommandsUser.AddAsync((Models.CommandsUser)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshCommandsUserList(true);
                 }
                 else if (tableMeta.TableName == "Currency")
                 {
                     await context.Currency.AddAsync((Models.Currency)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshCurrencyList(true);
                 }
                 else if (tableMeta.TableName == "CurrencyType")
                 {
                     await context.CurrencyType.AddAsync((Models.CurrencyType)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshCurrencyTypeList(true);
                 }
                 else if (tableMeta.TableName == "CustomWelcome")
                 {
                     await context.CustomWelcome.AddAsync((Models.CustomWelcome)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshCustomWelcomeList(true);
                 }
                 else if (tableMeta.TableName == "Followers")
                 {
                     await context.Followers.AddAsync((Models.Followers)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshFollowersList(true);
                 }
                 else if (tableMeta.TableName == "GameDeadCounter")
                 {
                     await context.GameDeadCounter.AddAsync((Models.GameDeadCounter)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshGameDeadCounterList(true);
                 }
                 else if (tableMeta.TableName == "GiveawayUserData")
                 {
                     await context.GiveawayUserData.AddAsync((Models.GiveawayUserData)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshGiveawayUserDataList(true);
                 }
                 else if (tableMeta.TableName == "InRaidData")
                 {
                     await context.InRaidData.AddAsync((Models.InRaidData)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshInRaidDataList(true);
                 }
                 else if (tableMeta.TableName == "LearnMsgs")
                 {
                     await context.LearnMsgs.AddAsync((Models.LearnMsgs)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshLearnMsgsList(true);
                 }
                 else if (tableMeta.TableName == "ModeratorApprove")
                 {
                     await context.ModeratorApprove.AddAsync((Models.ModeratorApprove)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshModeratorApproveList(true);
                 }
                 else if (tableMeta.TableName == "MultiChannels")
                 {
                     await context.MultiChannels.AddAsync((Models.MultiChannels)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshMultiChannelsList(true);
                 }
                 else if (tableMeta.TableName == "MultiLiveStreams")
                 {
                     await context.MultiLiveStreams.AddAsync((Models.MultiLiveStreams)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshMultiLiveStreamsList(true);
                 }
                 else if (tableMeta.TableName == "MultiSummaryLiveStreams")
                 {
                     await context.MultiSummaryLiveStreams.AddAsync((Models.MultiSummaryLiveStreams)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshMultiSummaryLiveStreamsList(true);
                 }
                 else if (tableMeta.TableName == "MultiWebhooks")
                 {
                     await context.MultiWebhooks.AddAsync((Models.MultiWebhooks)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshMultiWebhooksList(true);
                 }
                 else if (tableMeta.TableName == "OldFollowUsers")
                 {
                     await context.OldFollowUsers.AddAsync((Models.OldFollowUsers)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshOldFollowUsersList(true);
                 }
                 else if (tableMeta.TableName == "OutRaidData")
                 {
                     await context.OutRaidData.AddAsync((Models.OutRaidData)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshOutRaidDataList(true);
                 }
                 else if (tableMeta.TableName == "OverlayServices")
                 {
                     await context.OverlayServices.AddAsync((Models.OverlayServices)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshOverlayServicesList(true);
                 }
                 else if (tableMeta.TableName == "OverlayTicker")
                 {
                     await context.OverlayTicker.AddAsync((Models.OverlayTicker)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshOverlayTickerList(true);
                 }
                 else if (tableMeta.TableName == "Quotes")
                 {
                     await context.Quotes.AddAsync((Models.Quotes)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshQuotesList(true);
                 }
                 else if (tableMeta.TableName == "ShoutOuts")
                 {
                     await context.ShoutOuts.AddAsync((Models.ShoutOuts)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshShoutOutsList(true);
                 }
                 else if (tableMeta.TableName == "StreamStats")
                 {
                     await context.StreamStats.AddAsync((Models.StreamStats)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshStreamStatsList(true);
                 }
                 else if (tableMeta.TableName == "Users")
                 {
                     await context.Users.AddAsync((Models.Users)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     RefreshUsersList(true);
                 }
                 else if (tableMeta.TableName == "UserStats")
                 {
                     await context.UserStats.AddAsync((Models.UserStats)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     RefreshUserStatsList(true);
                 }
                 else if (tableMeta.TableName == "Webhooks")
                 {
                     await context.Webhooks.AddAsync((Models.Webhooks)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     await RefreshWebhooksList(true);
                 }
             }
@@ -257,7 +257,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.Database.BeginTransactionAsync();
                 await context.CategoryList.AddAsync(new(categoryId: categoryData.CategoryId, category: categoryData.CategoryName, streamCount: 0));
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshCategoryListList(true);
                 return true;
             }
@@ -278,7 +278,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                      .Select(CL => CL).FirstOrDefaultAsync();
                 category.StreamCount++;
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshCategoryListList(true);
             }
         }
@@ -294,7 +294,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.Database.BeginTransactionAsync();
                 await context.Clips.AddAsync(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, language: Language, duration: (float)Duration, url: Url));
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshClipsList(true);
                 result = true;
             }
@@ -319,7 +319,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                      dataField: Params.Field, currencyField: Params.Currency, unit: Params.Unit, action: Params.Action, top: Params.Top, sort: Params.Sort));
 
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshCommandsUserList(true);
                 result = string.Format(CultureInfo.CurrentCulture, LocalizedMsgSystem.GetDefaultComMsg(DefaultCommand.addcommand), cmd);
             }
@@ -352,7 +352,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 }
 
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshCurrencyTypeList(recordchange);
                 await RefreshCurrencyList(recordchange);
             }
@@ -370,7 +370,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.Database.BeginTransactionAsync();
                 currency.Value = Math.Min(Math.Round(currency.Value + value, 2), currency.CurrencyType.MaxValue);
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshCurrencyList();
             }
 
@@ -393,7 +393,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshCurrencyList();
         }
 
@@ -424,7 +424,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 recordchange = true;
             }
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshGameDeadCounterList(recordchange);
 
             return update?.Counter ?? 0;
@@ -436,7 +436,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.BeginTransactionAsync();
             await context.GiveawayUserData.AddAsync(new(dateTime: dateTime, userId: UserId));
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
 
             await RefreshGiveawayUserDataList(true);
         }
@@ -449,7 +449,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await PostCategory(gamename);
             await context.InRaidData.AddAsync(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             RefreshUsersList();
             await RefreshCategoryListList(true);
             await RefreshInRaidDataList(true);
@@ -467,7 +467,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 LearnMsgChanged = true;
             }
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshLearnMsgsList(LearnMsgChanged);
         }
 
@@ -520,7 +520,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshCurrencyList(true);
             RefreshUsersList(true);
 
@@ -540,7 +540,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 recordchange = true;
             }
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshShoutOutsList(recordchange);
         }
 
@@ -555,7 +555,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.BeginTransactionAsync();
             await context.OutRaidData.AddAsync(new(channelRaided: HostedChannel, raidDate: dateTime));
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshOutRaidDataList(true);
         }
 
@@ -575,7 +575,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             // Add the new quote
             await context.Quotes.AddAsync(new(number: openNum, quote: Text));
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
 
             // Refresh the quotes list
             await RefreshQuotesList(true);
@@ -597,7 +597,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.Database.BeginTransactionAsync();
                 await context.StreamStats.AddAsync(new(streamStart: StreamStart, streamEnd: StreamStart));
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshStreamStatsList(true);
             }
 
@@ -619,7 +619,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 currStream.Update(streamStat);
                 LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, $"Updated stream stats for stream started {streamStat.StreamStart}.");
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshStreamStatsList();
             }
         }
@@ -637,7 +637,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.Database.BeginTransactionAsync();
                 await context.CustomWelcome.AddAsync(new(userId: User.UserId, platform: User.Platform, message: WelcomeMsg));
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
                 await RefreshCustomWelcomeList(true);
             }
         }

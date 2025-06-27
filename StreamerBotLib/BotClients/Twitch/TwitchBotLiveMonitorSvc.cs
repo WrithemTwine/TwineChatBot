@@ -7,12 +7,6 @@ using TwitchLib.Api.Core.Exceptions;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
-
-    //
-    // example URL for viewing a channel with not following a raid
-    //  https://www.twitch.tv/writhemtwine?no-reload=true&referrer=raid
-    //
-
     public class TwitchBotLiveMonitorSvc : TwitchBotsBase
     {
         private readonly TwitchTokenBot tokenBot;
@@ -22,20 +16,21 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         public ExtLiveStreamMonitorService LiveStreamMonitor { get; private set; } // check for live stream activity
 
-        /// <summary>
-        /// To get MultiLive channels for monitoring live stream
-        /// </summary>
-        private static readonly IDataManagerReadOnly DataManageReadOnly = SystemsController.DataManage;
+        private Func<Platform, IEnumerable<string>> GetMultiChannelIds;
 
         internal TwitchBotLiveMonitorSvc(TwitchTokenBot TokenBot)
         {
             BotClientName = Bots.TwitchMultiBot;
             tokenBot = TokenBot;
-
-            DataManageReadOnly.UpdatedMonitoringChannels += DataManageReadOnly_UpdatedMonitoringChannels;
         }
 
-        private void DataManageReadOnly_UpdatedMonitoringChannels(object sender, EventArgs e)
+        public EventHandler SetMultiChannelIds(Func<Platform, IEnumerable<string>> GetIds)
+        {
+            GetMultiChannelIds = GetIds;
+            return DataManageReadOnly_UpdatedMonitoringChannels;
+        }
+
+        internal void DataManageReadOnly_UpdatedMonitoringChannels(object sender, EventArgs e)
         {
             SetLiveMonitorChannels();
         }
@@ -115,7 +110,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LiveStreamMonitor.ChannelsToMonitor?.Clear(); // remove any existing to avoid duplication
 
-            List<string> ReviewIds = DataManageReadOnly.GetMultiChannelIds(Platform.Twitch);
+            List<string> ReviewIds = [.. GetMultiChannelIds(Platform.Twitch)];
             if (ReviewIds != null && ReviewIds.Count > 0)
             {
                 LiveStreamMonitor.SetChannelsById(ReviewIds);

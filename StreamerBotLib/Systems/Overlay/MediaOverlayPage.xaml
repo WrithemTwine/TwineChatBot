@@ -1,9 +1,9 @@
-﻿<Page x:Class="StreamerBotLib.Overlay.MediaOverlayPage"
+﻿<Page x:Class="StreamerBotLib.Systems.Overlay.MediaOverlayPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:local="clr-namespace:StreamerBotLib.Overlay"
+    xmlns:local="clr-namespace:StreamerBotLib.Systems.Overlay"
     xmlns:Data="clr-namespace:StreamerBotLib.Systems.Overlay.GUI"
     xmlns:Prop="clr-namespace:StreamerBotLib.Properties"
     xmlns:M ="clr-namespace:StreamerBotLib.Systems.Overlay.Models"
@@ -88,7 +88,7 @@
                             </GroupBox>
                             <GroupBox Header="Animation" Width="Auto">
                                 <GroupBox.Resources>
-                                    <BitmapImage x:Key="ImageSeconds" UriSource="/StreamerBotLib;component/Overlay/img/seconds.png" />
+                                    <BitmapImage x:Key="ImageSeconds" UriSource="/StreamerBotLib;component/Systems/Overlay/img/seconds.png" />
                                 </GroupBox.Resources>
                                 <StackPanel>
                                     <RadioButton IsChecked="{Binding MediaOverlayTickerStatic}" Click="TickerSpecChanges" >

@@ -69,7 +69,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.Database.BeginTransactionAsync();
                 command.Calls++;
                 await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(true);
             }
 
             await RefreshCommandsList(true);

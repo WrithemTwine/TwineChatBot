@@ -37,7 +37,7 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckMultiStreams(TimeStream);
         }
 
-        public static void SetCategory(CategoryData categoryData)
+        public void SetCategory(CategoryData categoryData)
         {
             LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, $"Setting category to {categoryData.CategoryName}.");
             if (CurrCategory != categoryData)
@@ -273,13 +273,13 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static bool IsFollower(string User)
+        public bool IsFollower(string User)
         {
             LogWriter.DebugLog("IsFollower", DebugLogTypes.StatSystem, "Checking if the user is a follower of the channel.");
             return DataManage.CheckFollower(User, CurrStream.StreamStart);
         }
 
-        public static bool IsReturningUser(LiveUser User)
+        public bool IsReturningUser(LiveUser User)
         {
             LogWriter.DebugLog("IsReturningUser", DebugLogTypes.StatSystem, "Checking if the user is a returning user to the channel.");
             return DataManage.CheckUser(User, CurrStream.StreamStart);
@@ -329,7 +329,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
+        public void PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
             if (OptionFlags.ManageOutRaidData)
             {
@@ -340,7 +340,7 @@ namespace StreamerBotLib.Systems
 
         #endregion
 
-        public static List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
+        public List<Tuple<bool, Uri>> GetDiscordWebhooks(WebhooksKind webhooksKind)
         {
             LogWriter.DebugLog("GetDiscordWebhooks", DebugLogTypes.StatSystem, "Retrieving the Discord webhooks for posting the current stream.");
             return DataManage.GetWebhooks(WebhooksSource.Discord, webhooksKind);

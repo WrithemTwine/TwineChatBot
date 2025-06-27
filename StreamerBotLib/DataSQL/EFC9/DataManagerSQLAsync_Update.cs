@@ -41,7 +41,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshCurrencyList();
             await UpdateWatchTime(Users, dateTime);
         }
@@ -81,7 +81,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 ticker.UserName = name;
             }
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
             await RefreshOverlayTickerList(recordchange);
         }
 
@@ -103,7 +103,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 user.LastDateSeen = CurrTime;
             }
             await context.Database.CommitTransactionAsync();
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(true);
 
             RefreshUserStatsList();
             RefreshUsersList();
@@ -141,7 +141,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                             break;
                     }
                     await context.Database.CommitTransactionAsync();
-                    await context.SaveChangesAsync();
+                    await context.SaveChangesAsync(true);
                     RefreshUserStatsList();
                 }
             }

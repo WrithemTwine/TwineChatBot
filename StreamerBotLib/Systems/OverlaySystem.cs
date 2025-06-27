@@ -94,13 +94,13 @@ namespace StreamerBotLib.Systems
             NewOverlayEvent?.Invoke(this, e);
         }
 
-        private void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
             LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlaySystem, "Checking for overlay event.");
             CheckForOverlayEvent(overlayType, enumvalue.ToString(), User, UserMsg, ProvidedURL, UrlDuration);
         }
 
-        private void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
             LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"Checking for an Overlay Event with action data, {overlayType} and {Action}.");
             List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayType, Action, User?.UserName);
