@@ -1,11 +1,10 @@
-﻿
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
+
 namespace StreamerBotLib.Static.Logger
 {
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Logging.Configuration;
-
     public static class StreamLoggerExtenstions
     {
         public static ILoggingBuilder AddStreamLogger(

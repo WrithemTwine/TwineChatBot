@@ -1,14 +1,14 @@
-﻿namespace StreamerBotLib.DataSQL.SingleContext
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+
+namespace StreamerBotLib.DataSQL.SingleContext
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-
-    using System.Collections.ObjectModel;
-    using System.Collections.Specialized;
-
     internal partial class DataManagerSQLAsync
     {
         #region LocalView List

@@ -1,14 +1,13 @@
-﻿
+﻿using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
+using StreamerBotLib.Systems.Overlay.Server;
+
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+
 namespace StreamerBotLib.Systems.Overlay.GUI
 {
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Models;
-    using StreamerBotLib.Systems.Overlay.Server;
-
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-
     /// <summary>
     /// Class to report any back end to GUI data.
     /// </summary>

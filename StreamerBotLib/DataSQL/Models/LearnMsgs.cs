@@ -1,12 +1,11 @@
-﻿namespace StreamerBotLib.DataSQL.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Models.Enums;
+
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Models.Enums;
-
-    using System.ComponentModel.DataAnnotations.Schema;
-
-
     [PrimaryKey(nameof(Id))]
     [Index(nameof(MsgType))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

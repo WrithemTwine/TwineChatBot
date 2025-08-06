@@ -1,10 +1,9 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Models.Enums;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Models.Enums;
-
     [PrimaryKey(nameof(ModActionType), nameof(ModActionName))]
     [Index(nameof(ModActionType), nameof(ModActionName))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

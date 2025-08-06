@@ -1,16 +1,9 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Systems.Overlay.Enums;
+
 namespace StreamerBotLib.Models.Interfaces
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Models;
-
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Windows.Documents;
-
     public interface IActionSystem
     {
         // Events

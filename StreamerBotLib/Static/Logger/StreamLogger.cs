@@ -1,10 +1,7 @@
-﻿
+﻿using Microsoft.Extensions.Logging;
+
 namespace StreamerBotLib.Static.Logger
 {
-    using Microsoft.Extensions.Logging;
-
-    using StreamerBotLib.Static;
-
     internal class StreamLogger(string name, Func<StreamLoggerConfiguration> getCurrentConfig) : ILogger
     {
         public IDisposable BeginScope<TState>(TState state) where TState : notnull => default!;

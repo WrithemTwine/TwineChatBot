@@ -1,8 +1,8 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
     internal class MultiLiveStreams : IDatabaseTableMeta
     {
         public System.DateTime LiveDate { get => (System.DateTime)Values["LiveDate"]; set => Values["LiveDate"] = value; }

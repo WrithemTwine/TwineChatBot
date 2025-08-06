@@ -266,12 +266,10 @@ namespace StreamerBot
 
             PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
         }
-
         private void UpdateOverlays()
         {
             Controller.GetOverlayActions((actions) => PopupWindows.SetTableData(actions));
         }
-
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -298,7 +296,16 @@ namespace StreamerBot
         private void MenuItem_LiveMonitorClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
-            Controller.AddNewMonitorChannel(new List<LiveUser>(item.SelectedItems.Cast<Users>().Select(DRV => new LiveUser(DRV.UserName, DRV.Platform, DRV.UserId))));
+
+            // cast the selected items to the appropriate type based on the DataGrid
+            if (item.Name is "DG_Users")
+            {
+                Controller.AddNewMonitorChannel([.. item.SelectedItems.Cast<Users>().Select(DRV => new LiveUser(DRV.UserName, DRV.Platform, DRV.UserId))]);
+            }
+            else if (item.Name is "DG_Followers")
+            {
+                Controller.AddNewMonitorChannel([.. item.SelectedItems.Cast<Followers>().Select(DRV => new LiveUser(DRV.User.UserName, DRV.Platform, DRV.UserId))]);
+            }
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {

@@ -1,20 +1,18 @@
-﻿
+﻿using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Communication;
+using StreamerBotLib.Systems.Overlay.Control;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.GUI;
+using StreamerBotLib.Systems.Overlay.Models;
+using StreamerBotLib.Systems.Overlay.Static;
+
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+
 namespace StreamerBotLib.Systems.Overlay
 {
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Communication;
-    using StreamerBotLib.Systems.Overlay.Control;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.GUI;
-    using StreamerBotLib.Systems.Overlay.Models;
-    using StreamerBotLib.Systems.Overlay.Static;
-
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Data;
-
-
     /// <summary>
     /// Interaction logic for MediaOverlayPage.xaml
     /// </summary>

@@ -1,14 +1,18 @@
-﻿
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+
 namespace StreamerBotLib.Systems
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-
     public partial class ActionSystem
     {
         #region MultiLive 
+
+        internal void SetMultiStatusLog(string log)
+        {
+            DataManage.SetMultiLiveStatusLog(log);
+        }
 
         public void PostMultiLiveLog(string message)
         {
@@ -48,7 +52,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public IEnumerable<Tuple<WebhooksSource, Uri>> GetMultiWebHooks() 
+        public IEnumerable<Tuple<WebhooksSource, Uri>> GetMultiWebHooks()
         {
             return DataManage.GetMultiWebHooks();
         }

@@ -1,14 +1,12 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+
 namespace StreamerBotLib.DataSQL.EFC9
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-
-    using System.Linq;
     internal partial class DataManagerSQLAsync
     {
         private DateTime currtime;
@@ -101,8 +99,8 @@ namespace StreamerBotLib.DataSQL.EFC9
 
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
-            RefreshUsersList(true);
-            RefreshUserStatsList(true);
+            await RefreshUsersList(true);
+            await RefreshUserStatsList(true);
         }
 
         internal async Task UserLeft(LiveUser User, DateTime LastSeen)
@@ -138,8 +136,8 @@ namespace StreamerBotLib.DataSQL.EFC9
 
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
-            RefreshUsersList(true);
-            RefreshUserStatsList(true);
+            await RefreshUsersList(true);
+            await RefreshUserStatsList(true);
         }
 
         #endregion

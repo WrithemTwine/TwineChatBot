@@ -1,12 +1,12 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.DiscriminatorEnums;
+using StreamerBotLib.Models.Enums;
+
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.DiscriminatorEnums;
-    using StreamerBotLib.Models.Enums;
-
-    using System.ComponentModel.DataAnnotations.Schema;
     [PrimaryKey(nameof(Id))]
     [Index(nameof(WebhooksSource), nameof(Server), nameof(Kind))]
 

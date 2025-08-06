@@ -1,11 +1,10 @@
-﻿
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+
 namespace StreamerBotLib.Systems
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-
     public partial class ActionSystem
     {
         private static bool ElapsedThread;

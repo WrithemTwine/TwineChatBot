@@ -1,7 +1,7 @@
-﻿namespace StreamerBotLib.Models.Interfaces
-{
-    using TwitchLib.EventSub.Websockets.Core.Models;
+﻿using TwitchLib.EventSub.Websockets.Core.Models;
 
+namespace StreamerBotLib.Models.Interfaces
+{
     public interface IEventSubMessageIdsLogger
     {
         public static List<EventSubMetadata> MessageIdLog = [];

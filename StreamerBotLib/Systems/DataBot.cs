@@ -1,19 +1,17 @@
-﻿
+﻿using StreamerBotLib.DataSQL;
+using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.Collections.Concurrent;
+using System.Data;
+
 namespace StreamerBotLib.Systems
 {
-    using StreamerBotLib.DataSQL;
-    using StreamerBotLib.GUI.Windows;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Server;
-
-    using System.Collections.Concurrent;
-    using System.Data;
-
     public class DataBot : IActionSystem
     {
         private ActionSystem SystemAction { get; set; }
@@ -76,8 +74,15 @@ namespace StreamerBotLib.Systems
             }));
         }
 
-        public string MultiStatusLog => SystemAction.GetMultiStatusLog();
-        public List<ArchiveMultiStream> CleanupList => SystemAction.GetCleanupList();
+        public void SetCleanupList(ref List<ArchiveMultiStream> archiveMultiStreams)
+        {
+            SystemAction.SetCleanupList(ref archiveMultiStreams);
+        }
+
+        public void SetMultiStatusLog(string log)
+        {
+            SystemAction.SetMultiStatusLog(log);
+        }
 
         internal void InitializeBotControllerHandlers(
             EventHandler<PostChannelMessageEventArgs> PostChannelMessage,
@@ -126,12 +131,13 @@ namespace StreamerBotLib.Systems
 
         public void StreamOnline(DateTime startedAt, Action<bool> callback)
         {
-            ActionQueue.Enqueue(new Task(() => {
-            callback?.Invoke(SystemAction.StreamOnline(startedAt));
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                callback?.Invoke(SystemAction.StreamOnline(startedAt));
             }));
         }
 
-        public void GetDiscordWebhooks(WebhooksKind webhooksKind, Action<IEnumerable<Tuple<bool,Uri>>> callback)
+        public void GetDiscordWebhooks(WebhooksKind webhooksKind, Action<IEnumerable<Tuple<bool, Uri>>> callback)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
@@ -398,14 +404,16 @@ namespace StreamerBotLib.Systems
 
         public void GetUserId(LiveUser liveUser, Action<string> callback)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 callback?.Invoke(SystemAction.GetUserId(liveUser));
             }));
         }
 
         public void GetGameCategories(Action<IEnumerable<CategoryData>> callback)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 callback?.Invoke(SystemAction.GetGameCategories());
             }));
         }
@@ -417,14 +425,16 @@ namespace StreamerBotLib.Systems
 
         public void CheckMultiStreamDate(string userId, Platform platform, DateTime currTime, Action<bool> callback)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 callback?.Invoke(SystemAction.CheckMultiStreamDate(userId, platform, currTime));
             }));
         }
 
         public void PostMultiStreamDate(LiveUser User, DateTime currTime, Action<bool> callback)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 callback?.Invoke(SystemAction.PostMultiStreamDate(User, currTime));
             }));
         }
@@ -441,7 +451,8 @@ namespace StreamerBotLib.Systems
 
         public void GetMonitorChannels(Platform platform, Action<IEnumerable<string>> callback)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 callback?.Invoke(SystemAction.GetMonitorChannels(platform));
             }));
         }

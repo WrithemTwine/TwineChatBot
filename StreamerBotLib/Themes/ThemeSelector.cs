@@ -1,10 +1,9 @@
-﻿
+﻿using StreamerBotLib.Static;
+
+using System.Reflection;
+
 namespace StreamerBotLib.Themes
 {
-    using StreamerBotLib.Static;
-
-    using System.Reflection;
-
     /// <summary>
     /// Parses the OptionFlags properties for Theme settings, and determines which one the user selected.
     /// </summary>

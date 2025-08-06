@@ -32,6 +32,10 @@ namespace EFContextTest
             SetData();
 
             // Load user data again to show the initial state
+
+            // added a line to clear the change tracker to ensure fresh data
+            _GUIContext.ChangeTracker.Clear();
+
             _GUIContext.Users.Load();
             OutputUserData(_GUIContext.Users.ToList(), nameof(_GUIContext));
 
@@ -49,6 +53,10 @@ namespace EFContextTest
             Console.WriteLine("--------------------------------------------------");
 
             // Load user data again to show updated state
+
+            // added a line to clear the change tracker to ensure fresh data
+            _GUIContext.ChangeTracker.Clear();
+
             _GUIContext.Users.Load();
             OutputUserData(_GUIContext.Users.ToList(), nameof(_GUIContext));
 
@@ -66,6 +74,10 @@ namespace EFContextTest
             Console.WriteLine("--------------------------------------------------");
 
             // Load user data again to show updated state
+
+            // added a line to clear the change tracker to ensure fresh data
+            _GUIContext.ChangeTracker.Clear();
+
             _GUIContext.Users.Load();
             OutputUserData(_GUIContext.Users.ToList(), nameof(_GUIContext));
 

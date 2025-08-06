@@ -297,12 +297,14 @@ namespace EFEntityEntryTesting.EF
 
         private async Task RefreshUsersObsCol()
         {
+            _GUIcontext.Users.Load();
             await _GUIcontext.Users.LoadAsync();
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Users)));
         }
 
         private async Task RefreshCurrencyObsCol()
         {
+            _GUIcontext.Currency.Load();
             await _GUIcontext.Currency.LoadAsync();
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Currency)));
         }

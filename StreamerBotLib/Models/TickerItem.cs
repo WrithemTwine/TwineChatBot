@@ -1,7 +1,7 @@
-﻿namespace StreamerBotLib.Models
-{
-    using StreamerBotLib.Systems.Overlay.Enums;
+﻿using StreamerBotLib.Systems.Overlay.Enums;
 
+namespace StreamerBotLib.Models
+{
     public class TickerItem(OverlayTickerItem overlayTickerItem = default, string userName = null) : IEquatable<TickerItem>
     {
         public TickerItem() : this(default, null) { }

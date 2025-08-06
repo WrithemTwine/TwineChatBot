@@ -1,32 +1,30 @@
-﻿
+﻿using StreamerBotLib.BotClients;
+using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
+using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Properties;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
+
+using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
+using TwitchLib.Api.Services.Events.FollowerService;
+using TwitchLib.Api.Services.Events.LiveStreamMonitor;
+using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
+
 // TODO: add/verify "DataManage.UpdateStats" updates; including commands, chats, clips, channel redeems
 // TODO: Add Bot contacts users to invoke conversation; carry-on conversation with existing
 
 namespace StreamerBotLib.BotIOController
 {
-    using StreamerBotLib.BotClients;
-    using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
-    using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Properties;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-    using StreamerBotLib.Systems.Overlay.Enums;
-
-    using System.Collections.ObjectModel;
-    using System.Data;
-    using System.Diagnostics;
-    using System.Windows.Navigation;
-
-    using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
-    using TwitchLib.Api.Helix.Models.Streams.GetStreams;
-    using TwitchLib.Api.Services.Events.FollowerService;
-    using TwitchLib.Api.Services.Events.LiveStreamMonitor;
-    using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
-
     public class BotController
     {
         public event EventHandler<PostChannelMessageEventArgs> OutputSentToBots;
@@ -38,7 +36,7 @@ namespace StreamerBotLib.BotIOController
         public event EventHandler OnStreamOffline;
 
         private readonly Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
-                                                                      select new KeyValuePair<Platform, bool>(P, false));
+                                                                               select new KeyValuePair<Platform, bool>(P, false));
 
         // public SystemsController Systems { get; private set; }
         public static DataBot DataBot { get; private set; }
@@ -1141,7 +1139,7 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
-        private static void PostMultiWebHooksCallback(LiveUser User, string msg, Dictionary<string, string> dictionary, IEnumerable<Tuple<WebhooksSource, Uri>> Webhooks )
+        private static void PostMultiWebHooksCallback(LiveUser User, string msg, Dictionary<string, string> dictionary, IEnumerable<Tuple<WebhooksSource, Uri>> Webhooks)
         {
             foreach (Tuple<WebhooksSource, Uri> u in Webhooks)
             {
@@ -1220,7 +1218,7 @@ namespace StreamerBotLib.BotIOController
 
                         if (Enabled && !Debug)
                         {
-                            DataBot.GetDiscordWebhooks(WebhooksKind.Live, (Webhooks)=> PostToDiscord(ChannelName, platform, TempMsg, Webhooks) );
+                            DataBot.GetDiscordWebhooks(WebhooksKind.Live, (Webhooks) => PostToDiscord(ChannelName, platform, TempMsg, Webhooks));
                         }
                     }
                 }
@@ -1387,7 +1385,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                DataBot.GetEventAnnounce( ChannelEventActions.Resubscribe, (result) => Send(ParsedMsg, result, Multi));
+                DataBot.GetEventAnnounce(ChannelEventActions.Resubscribe, (result) => Send(ParsedMsg, result, Multi));
             }
             DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, User, UserMsg: HTMLParsedMsg);
 
@@ -1410,7 +1408,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-               DataBot.GetEventAnnounce(ChannelEventActions.GiftSub, (result)=> Send(ParsedMsg, result, Multi));
+                DataBot.GetEventAnnounce(ChannelEventActions.GiftSub, (result) => Send(ParsedMsg, result, Multi));
             }
             DataBot.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
             DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, User, UserMsg: HTMLParsedMsg);
@@ -1667,7 +1665,7 @@ namespace StreamerBotLib.BotIOController
         public IEnumerable<CategoryData> GetGameCategories()
         {
             IEnumerable<CategoryData> categories = null;
-            using(var waitHandle = new ManualResetEventSlim())
+            using (var waitHandle = new ManualResetEventSlim())
             {
                 DataBot.GetGameCategories((result) =>
                 {

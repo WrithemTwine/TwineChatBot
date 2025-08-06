@@ -1,10 +1,9 @@
-﻿
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+
 namespace StreamerBotLib.Systems.MLearning
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-
     public class LearnedMessagesPrimer
     {
         private static readonly string[] SpamBotMsgs =

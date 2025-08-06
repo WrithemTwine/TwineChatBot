@@ -1,9 +1,9 @@
-﻿namespace StreamerBotLib.Models
-{
-    using System.Globalization;
-    using System.Windows.Controls;
-    using System.Windows.Data;
+﻿using System.Globalization;
+using System.Windows.Controls;
+using System.Windows.Data;
 
+namespace StreamerBotLib.Models
+{
     public class IndexConverter : IValueConverter
     {
         public object Convert(object value, Type TargetType, object parameter, CultureInfo culture)

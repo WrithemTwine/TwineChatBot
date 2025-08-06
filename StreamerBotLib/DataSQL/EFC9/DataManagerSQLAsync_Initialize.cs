@@ -1,13 +1,12 @@
-﻿
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.MLearning;
+
 namespace StreamerBotLib.DataSQL.EFC9
 {
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-    using StreamerBotLib.Systems.MLearning;
-
     internal partial class DataManagerSQLAsync
     {
         #region Construct default items

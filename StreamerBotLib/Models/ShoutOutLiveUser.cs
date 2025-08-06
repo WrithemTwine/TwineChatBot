@@ -1,9 +1,8 @@
-﻿
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace StreamerBotLib.Models
 {
-    using System.Diagnostics;
-    using System.Diagnostics.CodeAnalysis;
-
     /// <summary>
     /// Manages the ShoutOut requested for each LiveUser.
     /// 

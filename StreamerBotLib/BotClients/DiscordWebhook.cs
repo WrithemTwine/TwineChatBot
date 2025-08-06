@@ -1,13 +1,12 @@
-﻿
+﻿using StreamerBotLib.Static;
+
+using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json.Serialization;
+
 namespace StreamerBotLib.BotClients
 {
-    using StreamerBotLib.Static;
-
-    using System.Diagnostics.CodeAnalysis;
-    using System.Net.Http;
-    using System.Net.Http.Json;
-    using System.Text.Json.Serialization;
-
     public static class DiscordWebhook
     {
         private static readonly HttpClient client = new();

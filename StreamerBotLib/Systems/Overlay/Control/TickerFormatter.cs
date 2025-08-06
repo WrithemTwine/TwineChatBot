@@ -1,13 +1,12 @@
-﻿
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Communication;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Interfaces;
+using StreamerBotLib.Systems.Overlay.Models;
+
 namespace StreamerBotLib.Systems.Overlay.Control
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Communication;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Interfaces;
-    using StreamerBotLib.Systems.Overlay.Models;
-
     /// <summary>
     /// Class to manage which Ticker Items the user wants to include in overlay
     /// display, and the data from primary bot to maintain in ticker activity. Responds to 

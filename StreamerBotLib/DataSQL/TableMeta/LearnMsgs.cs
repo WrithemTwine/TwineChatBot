@@ -1,8 +1,8 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
     internal class LearnMsgs : IDatabaseTableMeta
     {
         public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }

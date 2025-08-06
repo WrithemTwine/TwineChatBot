@@ -1,7 +1,7 @@
-﻿
+﻿using StreamerBotLib.Systems.Overlay.Enums;
+
 namespace StreamerBotLib.Models.Events
 {
-    using StreamerBotLib.Systems.Overlay.Enums;
     public class CheckOverlayEventArgs : EventArgs
     {
         public OverlayTypes OverlayType { get; set; }

@@ -1,8 +1,8 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
     internal class UserStats : IDatabaseTableMeta
     {
         public System.TimeSpan WatchTime { get => (System.TimeSpan)Values["WatchTime"]; set => Values["WatchTime"] = value; }

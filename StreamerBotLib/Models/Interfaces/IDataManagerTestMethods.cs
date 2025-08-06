@@ -1,8 +1,5 @@
-﻿
-namespace StreamerBotLib.Models.Interfaces
+﻿namespace StreamerBotLib.Models.Interfaces
 {
-    using StreamerBotLib.Models;
-
     public interface IDataManagerTestMethods : IDataManager
     {
         IEnumerable<LiveUser> TestGetRandomUsers(int count);

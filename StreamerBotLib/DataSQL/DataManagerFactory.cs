@@ -2,19 +2,18 @@
 
 #if !USE_POOLED_DBCONTEXT
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace StreamerBotLib.DataSQL
-{
+using StreamerBotLib.Static;
+
 #if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
 #endif
 
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Design;
-    using Microsoft.EntityFrameworkCore.Infrastructure;
-
-    using StreamerBotLib.Static;
-
+namespace StreamerBotLib.DataSQL
+{
     public class DataManagerFactory : IDbContextFactory<SQLDBContext>, IDesignTimeDbContextFactory<SQLDBContext>
     {
         private PooledDbContextFactory<SQLDBContext> _pooledDbContextFactory;

@@ -1,12 +1,11 @@
-﻿
+﻿using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Control;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
+using StreamerBotLib.Systems.Overlay.Static;
+
 namespace StreamerBotLib.Systems.Overlay.Server
 {
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Control;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Models;
-    using StreamerBotLib.Systems.Overlay.Static;
-
     public static class PrefixGenerator
     {
         private static string ServerAddress(int Port)

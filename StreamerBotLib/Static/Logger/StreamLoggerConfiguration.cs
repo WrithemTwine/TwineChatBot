@@ -1,8 +1,7 @@
-﻿
+﻿using Microsoft.Extensions.Logging;
+
 namespace StreamerBotLib.Static.Logger
 {
-    using Microsoft.Extensions.Logging;
-
     public class StreamLoggerConfiguration
     {
         public int EventId { get; set; }

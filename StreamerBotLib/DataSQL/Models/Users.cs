@@ -1,11 +1,11 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Models.Enums;
-
-    using System.Diagnostics;
     [PrimaryKey(nameof(UserId), nameof(Platform))]
     [DebuggerDisplay("UserId={UserId}, UserName={UserName}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

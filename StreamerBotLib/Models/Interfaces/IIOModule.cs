@@ -1,8 +1,7 @@
-﻿
+﻿using StreamerBotLib.Models.Enums;
+
 namespace StreamerBotLib.Models.Interfaces
 {
-    using StreamerBotLib.Models.Enums;
-
     public interface IIOModule
     {
         public Bots BotClientName { get; set; }

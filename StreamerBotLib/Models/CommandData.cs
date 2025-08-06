@@ -1,8 +1,8 @@
-﻿namespace StreamerBotLib.Models
-{
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models.Enums;
 
+namespace StreamerBotLib.Models
+{
     public record CommandData
     {
         public string Usage { get; }

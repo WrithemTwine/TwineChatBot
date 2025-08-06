@@ -1,13 +1,12 @@
 ﻿#define UPDATELEARN
 
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.MLearning.Accord.KNN;
 
 namespace StreamerBotLib.Systems.MLearning
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.MLearning.Accord.KNN;
-
     public static class MessageAnalysis
     {
         private static List<BotModAction> ModActions { get; set; } = [];

@@ -1,7 +1,7 @@
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Interfaces;
     internal class Clips : IDatabaseTableMeta
     {
         public System.String ClipId { get => (System.String)Values["ClipId"]; set => Values["ClipId"] = value; }

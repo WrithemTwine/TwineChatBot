@@ -1,7 +1,7 @@
-﻿namespace StreamerBotLib.DataSQL.SingleContext
-{
-    using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
 
+namespace StreamerBotLib.DataSQL.SingleContext
+{
     internal partial class DataManagerSQLAsync
     {
         #region Test Method Verification

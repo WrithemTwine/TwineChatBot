@@ -1,18 +1,16 @@
-﻿
+﻿using StreamerBotLib.BotIOController;
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.ComponentModel;
+using System.Globalization;
+
 namespace StreamerBotLib.Systems
 {
-    using StreamerBotLib.BotIOController;
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-
-    using System.ComponentModel;
-    using System.Globalization;
-
-
     public partial class ActionSystem : INotifyPropertyChanged
     {
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 

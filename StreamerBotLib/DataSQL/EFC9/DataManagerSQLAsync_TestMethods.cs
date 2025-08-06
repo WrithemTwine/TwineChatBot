@@ -1,7 +1,7 @@
-﻿
+﻿using StreamerBotLib.Models;
+
 namespace StreamerBotLib.DataSQL.EFC9
 {
-    using StreamerBotLib.Models;
     internal partial class DataManagerSQLAsync
     {
         #region Test Method Verification

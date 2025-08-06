@@ -1,15 +1,15 @@
-﻿namespace StreamerBotLib.DataSQL.SingleContext
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.Data;
+
+namespace StreamerBotLib.DataSQL.SingleContext
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-
-    using System.Data;
-
     internal partial class DataManagerSQLAsync
     {
         internal async Task UpdateCurrency(List<LiveUser> Users, DateTime dateTime)

@@ -1,10 +1,9 @@
-﻿
+﻿using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
+
 namespace StreamerBotLib.Models
 {
-    using StreamerBotLib.Models.Enums;
-
-    using System.Diagnostics;
-
     /// <summary>
     /// Data specifying details of a user joined to the live stream channel.
     /// </summary>

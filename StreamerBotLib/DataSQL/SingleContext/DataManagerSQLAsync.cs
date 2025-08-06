@@ -1,21 +1,20 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.DataSQL.SingleContext.Import;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
+
+using System.Collections.Concurrent;
+using System.Data;
+using System.Globalization;
+
 namespace StreamerBotLib.DataSQL.SingleContext
 {
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Storage;
-
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.DataSQL.SingleContext.Import;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-
-    using System.Collections.Concurrent;
-    using System.Data;
-    using System.Globalization;
-
     /*
 
   !command: <switches-optional> <message>

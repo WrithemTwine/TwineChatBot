@@ -1,10 +1,7 @@
-﻿
+﻿using System.Diagnostics.CodeAnalysis;
+
 namespace StreamerBotLib.Models.Events
 {
-    using StreamerBotLib.Models;
-
-    using System.Diagnostics.CodeAnalysis;
-
     /// <summary>
     /// Event arguments for summarizing multi live data.
     /// </summary>

@@ -1,17 +1,16 @@
-﻿
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+
 namespace StreamerBotLib.Systems.MultiLive
 {
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.GUI.Windows;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Controls.Primitives;
-
     /// <summary>
     /// Interaction logic for MultiLiveDataGrids.xaml
     /// </summary>
@@ -30,6 +29,8 @@ namespace StreamerBotLib.Systems.MultiLive
         public MultiLiveDataGrids()
         {
             InitializeComponent();
+
+            GetSummarizeData = false;
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -193,20 +194,28 @@ namespace StreamerBotLib.Systems.MultiLive
             }
         }
 
+        private bool GetSummarizeData;
+        private bool StartSummarizingLiveData = false;
+
         private void ComboBox_DropDownOpened(object sender, EventArgs e)
         {
             LogWriter.DebugLog("ComboBox_DropDownOpened", DebugLogTypes.GUIMultiLive, "Computing the date with stream count data for the combo box.");
 
-            SummarizeChannels?.Invoke(this, new()
+            if (!GetSummarizeData)
             {
-                CallbackAction = () =>
+                GetSummarizeData = true;
+                SummarizeChannels?.Invoke(this, new()
                 {
-                    Dispatcher.BeginInvoke(() =>
+                    CallbackAction = () =>
                     {
-                        ComboBox_SummarizeLive_List.Items.Refresh();
-                    });
-                }
-            });
+                        Dispatcher.Invoke(() =>
+                        {
+                            ComboBox_SummarizeLive_List.Items.Refresh();
+                            GetSummarizeData = false;
+                        });
+                    }
+                });
+            }
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -227,22 +236,28 @@ namespace StreamerBotLib.Systems.MultiLive
             TabItem_SummaryDailyData.IsEnabled = false;
             Button_StartSummarizingLiveData.IsEnabled = false;
 
-            ArchiveMultiStream selectedItem = (ArchiveMultiStream)ComboBox_SummarizeLive_List.SelectedItem;
-
-            SummarizeChannels?.Invoke(this, new()
+            if (!StartSummarizingLiveData)
             {
-                Data = selectedItem,
-                CallbackAction = () =>
+                StartSummarizingLiveData = true;
+
+                ArchiveMultiStream selectedItem = (ArchiveMultiStream)ComboBox_SummarizeLive_List.SelectedItem;
+
+                SummarizeChannels?.Invoke(this, new()
                 {
-                    Dispatcher.BeginInvoke(() =>
+                    Data = selectedItem,
+                    CallbackAction = () =>
                     {
-                        ComboBox_SummarizeLive_List.ClearValue(Selector.SelectedItemProperty);
-                        TabItem_DailyData.IsEnabled = true;
-                        TabItem_SummaryDailyData.IsEnabled = true;
-                    });
+                        Dispatcher.BeginInvoke(() =>
+                        {
+                            ComboBox_SummarizeLive_List.ClearValue(Selector.SelectedItemProperty);
+                            TabItem_DailyData.IsEnabled = true;
+                            TabItem_SummaryDailyData.IsEnabled = true;
+                            StartSummarizingLiveData = false;
+                        });
+                    }
                 }
+                                        );
             }
-                                    );
         }
 
         public void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)

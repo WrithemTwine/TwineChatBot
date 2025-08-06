@@ -1,6 +1,5 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
 using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Exceptions;
@@ -108,10 +107,10 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private bool SetLiveMonitorChannels()
         {
-            LiveStreamMonitor.ChannelsToMonitor?.Clear(); // remove any existing to avoid duplication
+            LiveStreamMonitor?.ChannelsToMonitor?.Clear(); // remove any existing to avoid duplication
 
             List<string> ReviewIds = [.. GetMultiChannelIds(Platform.Twitch)];
-            if (ReviewIds != null && ReviewIds.Count > 0)
+            if (LiveStreamMonitor != null && ReviewIds != null && ReviewIds.Count > 0)
             {
                 LiveStreamMonitor.SetChannelsById(ReviewIds);
                 return true;

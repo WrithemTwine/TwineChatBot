@@ -1,12 +1,11 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+
 namespace StreamerBotLib.DataSQL.EFC9
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-
     internal partial class DataManagerSQLAsync
     {
         #region Check_Methods

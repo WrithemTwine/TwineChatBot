@@ -1,8 +1,7 @@
-﻿
+﻿using StreamerBotLib.Systems.Overlay.Models;
+
 namespace StreamerBotLib.Models.Events
 {
-    using StreamerBotLib.Systems.Overlay.Models;
-
     /// <summary>
     /// EventArgs specifying the new Overlay Event to show
     /// </summary>

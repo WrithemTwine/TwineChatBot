@@ -1,7 +1,7 @@
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Interfaces;
     internal class Quotes : IDatabaseTableMeta
     {
         public System.Int32 Number { get => (System.Int32)Values["Number"]; set => Values["Number"] = value; }

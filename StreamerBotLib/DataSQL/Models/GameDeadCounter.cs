@@ -1,8 +1,7 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
     [PrimaryKey(nameof(CategoryId), nameof(Category))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class GameDeadCounter(string categoryId,

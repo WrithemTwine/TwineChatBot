@@ -1,12 +1,11 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Systems.Overlay.Enums;
-
-    using System.ComponentModel.DataAnnotations.Schema;
-
     [PrimaryKey(nameof(Id))]
     [Index(nameof(Id), nameof(OverlayType), nameof(OverlayAction))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

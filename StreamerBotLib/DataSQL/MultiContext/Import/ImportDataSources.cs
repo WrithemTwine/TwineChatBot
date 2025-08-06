@@ -1,21 +1,21 @@
-﻿namespace StreamerBotLib.DataSQL.MultiContext.Import
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.Data;
+using System.IO;
+using System.Xml;
+
+using static StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
+using static StreamerBotLib.DataSQL.MultiContext.Import.Multi.DataSource;
+
+using MultiDataSource = StreamerBotLib.DataSQL.MultiContext.Import.Multi.DataSource;
+
+namespace StreamerBotLib.DataSQL.MultiContext.Import
 {
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.GUI.Windows;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-
-    using System.Data;
-    using System.IO;
-    using System.Xml;
-
-    using static StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
-    using static StreamerBotLib.DataSQL.MultiContext.Import.Multi.DataSource;
-
-    using MultiDataSource = StreamerBotLib.DataSQL.MultiContext.Import.Multi.DataSource;
-
     internal class ImportDataSources : BaseDataManager
     {
         private static readonly string DataFileXML = "ChatDataStore.xml";

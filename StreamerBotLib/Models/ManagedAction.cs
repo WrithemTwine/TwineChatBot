@@ -1,7 +1,7 @@
-﻿namespace StreamerBotLib.Models
-{
-    using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace StreamerBotLib.Models
+{
     internal class ManagedAction(string taskName, Task action) : IEqualityComparer<ManagedAction>
     {
         public string TaskName { get; set; } = taskName;

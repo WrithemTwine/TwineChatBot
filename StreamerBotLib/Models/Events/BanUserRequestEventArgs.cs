@@ -1,9 +1,7 @@
-﻿
+﻿using StreamerBotLib.Models.Enums;
+
 namespace StreamerBotLib.Models.Events
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-
     public class BanUserRequestEventArgs : EventArgs
     {
         public LiveUser User { get; set; }

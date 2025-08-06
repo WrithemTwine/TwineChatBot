@@ -1,8 +1,8 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
     internal class MultiSummaryLiveStreams : IDatabaseTableMeta
     {
         public System.Int32 StreamCount { get => (System.Int32)Values["StreamCount"]; set => Values["StreamCount"] = value; }

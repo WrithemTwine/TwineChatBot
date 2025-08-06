@@ -1,10 +1,9 @@
-﻿
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+
 namespace StreamerBotLib.Systems.CurrencyGames
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-
     /// <summary>
     /// Implements the BlackJack card game, in text chat
     /// </summary>

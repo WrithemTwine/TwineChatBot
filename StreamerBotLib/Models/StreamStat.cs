@@ -1,12 +1,11 @@
+using StreamerBotLib.DataSQL.Models;
+
+using System.Diagnostics;
+
+using DataImport = StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
 
 namespace StreamerBotLib.Models
 {
-    using StreamerBotLib.DataSQL.Models;
-
-    using System.Diagnostics;
-
-    using DataImport = StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
-
     /// <summary>
     /// Properties of a live stream
     /// </summary>

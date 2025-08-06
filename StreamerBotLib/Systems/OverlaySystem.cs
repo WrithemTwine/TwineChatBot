@@ -1,4 +1,11 @@
 ﻿
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
+
 /*
  * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 
  * https://dev.twitch.tv/docs/embed
@@ -9,14 +16,6 @@
 
 namespace StreamerBotLib.Systems
 {
-
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Models;
-
     public partial class ActionSystem
     {
         /// <summary>

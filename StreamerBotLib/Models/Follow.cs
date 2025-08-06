@@ -1,7 +1,7 @@
-﻿namespace StreamerBotLib.Models
-{
-    using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Enums;
 
+namespace StreamerBotLib.Models
+{
     public record Follow
     {
         public Follow(DateTime followedAt, string fromUserId, string fromUserName, Platform platform, string category)

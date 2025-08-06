@@ -1,17 +1,16 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
+
+using System.Globalization;
+
 namespace StreamerBotLib.DataSQL.EFC9
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-
-    using System.Globalization;
-
     internal partial class DataManagerSQLAsync
     {
         #region Post_Methods
@@ -218,14 +217,14 @@ namespace StreamerBotLib.DataSQL.EFC9
                     await context.Users.AddAsync((Models.Users)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
                     await context.SaveChangesAsync(true);
-                    RefreshUsersList(true);
+                    await RefreshUsersList(true);
                 }
                 else if (tableMeta.TableName == "UserStats")
                 {
                     await context.UserStats.AddAsync((Models.UserStats)tableMeta.GetModelEntity());
                     await context.Database.CommitTransactionAsync();
                     await context.SaveChangesAsync(true);
-                    RefreshUserStatsList(true);
+                    await RefreshUserStatsList(true);
                 }
                 else if (tableMeta.TableName == "Webhooks")
                 {
@@ -450,7 +449,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.InRaidData.AddAsync(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
-            RefreshUsersList();
+            await RefreshUsersList();
             await RefreshCategoryListList(true);
             await RefreshInRaidDataList(true);
         }
@@ -522,7 +521,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
             await RefreshCurrencyList(true);
-            RefreshUsersList(true);
+            await RefreshUsersList(true);
 
             return result;
         }

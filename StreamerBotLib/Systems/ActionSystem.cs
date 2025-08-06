@@ -1,22 +1,20 @@
+using StreamerBotLib.BotClients;
+using StreamerBotLib.DataSQL;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Properties;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.Collections.ObjectModel;
+using System.Data;
+using System.Globalization;
+using System.Windows.Documents;
 
 namespace StreamerBotLib.Systems
 {
-    using StreamerBotLib.BotClients;
-    using StreamerBotLib.DataSQL;
-    using StreamerBotLib.GUI.Windows;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Properties;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-
-    using System.Collections.ObjectModel;
-    using System.Data;
-    using System.Globalization;
-    using System.Windows.Documents;
-
     /// <summary>
     /// The common shared operations class between each of the subsystems. 
     /// Should not be referenced outside of <c>StreamerBotLib.Systems</c> namespace.
@@ -103,9 +101,11 @@ namespace StreamerBotLib.Systems
             return DataManage.GetICollection(dataTable);
         }
 
-        public string GetMultiStatusLog() => DataManage.MultiLiveStatusLog;
-
-        public List<ArchiveMultiStream> GetCleanupList() => DataManage.CleanupList;
+        public void SetCleanupList(ref List<ArchiveMultiStream> archiveMultiStreams)
+        {
+            LogWriter.DebugLog("SetCleanupList", DebugLogTypes.SystemController, "Setting cleanup list for multi-live streams.");
+            DataManage.SetCleanupList(ref archiveMultiStreams);
+        }
 
         /// <summary>
         /// Closing actions when the application is exiting

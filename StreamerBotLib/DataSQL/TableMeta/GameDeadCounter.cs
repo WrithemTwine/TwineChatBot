@@ -1,7 +1,7 @@
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Interfaces;
     internal class GameDeadCounter : IDatabaseTableMeta
     {
         public System.String CategoryId { get => (System.String)Values["CategoryId"]; set => Values["CategoryId"] = value; }

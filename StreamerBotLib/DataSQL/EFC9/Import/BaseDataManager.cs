@@ -1,11 +1,10 @@
-﻿
+﻿using StreamerBotLib.Static;
+
+using System.Data;
+using System.IO;
+
 namespace StreamerBotLib.DataSQL.EFC9.Import
 {
-    using StreamerBotLib.Static;
-
-    using System.Data;
-    using System.IO;
-
     internal class BaseDataManager
     {
         protected string DataFileName;

@@ -1,11 +1,10 @@
-﻿
+﻿using StreamerBotLib.Models.Enums;
+
+using System.Collections;
+using System.Diagnostics;
+
 namespace StreamerBotLib.Models
 {
-    using StreamerBotLib.Models.Enums;
-
-    using System.Collections;
-    using System.Diagnostics;
-
     [DebuggerDisplay("{ViewerType}, {MsgType}, {ModAction}, {TimeoutSeconds}")]
     public class BanViewerRule : IEqualityComparer
     {

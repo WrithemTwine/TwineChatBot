@@ -1,10 +1,9 @@
-﻿namespace StreamerBotLib.GUI
+﻿using StreamerBotLib.BotClients;
+
+using System.ComponentModel;
+
+namespace StreamerBotLib.GUI
 {
-    using StreamerBotLib.BotClients;
-
-    using System.ComponentModel;
-
-
     public class GUIAppServices : GUIBotBase, INotifyPropertyChanged
     {
         private string _ADataDir = "";

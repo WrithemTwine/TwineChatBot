@@ -1,20 +1,19 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.EFC9.Import;
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
+
+using System.Collections.Concurrent;
+using System.Data;
+using System.Globalization;
+
 namespace StreamerBotLib.DataSQL.EFC9
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.EFC9.Import;
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-
-    using System.Collections.Concurrent;
-    using System.Data;
-    using System.Globalization;
-
     internal partial class DataManagerSQLAsync
     {
         private readonly DataManagerFactory dbContextFactory = new();
@@ -41,7 +40,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             GUIContext = BuildDataContext();
             GUIContext.Database.AutoTransactionBehavior = AutoTransactionBehavior.WhenNeeded;
-            
+
             //OnInitialize += OnInitializeHandler;
 
             //ThreadManager.CreateThreadStart(".ctor_DataManagerSQLAsync", () => { OnInitialize?.Invoke(this, EventArgs.Empty); });

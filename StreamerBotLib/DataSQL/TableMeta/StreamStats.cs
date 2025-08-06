@@ -1,7 +1,7 @@
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Interfaces;
     internal class StreamStats : IDatabaseTableMeta
     {
         public System.DateTime StreamStart { get => (System.DateTime)Values["StreamStart"]; set => Values["StreamStart"] = value; }

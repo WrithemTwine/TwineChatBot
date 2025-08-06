@@ -1,11 +1,11 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+
 namespace StreamerBotLib.DataSQL.SingleContext
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
     internal partial class DataManagerSQLAsync
     {
         #region Check_Methods

@@ -1,12 +1,11 @@
-﻿
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+
+using System.Windows.Threading;
+
 namespace StreamerBotLib.Static
 {
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-
-    using System.Windows.Threading;
-
     public static class ThreadManager
     {
         private static readonly List<ThreadData> CurrThreads = [];

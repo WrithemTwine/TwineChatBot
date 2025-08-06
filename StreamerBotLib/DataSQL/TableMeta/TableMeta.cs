@@ -1,7 +1,7 @@
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Interfaces;
     public class TableMeta
     {
         internal IDatabaseTableMeta CurrEntity;

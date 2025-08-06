@@ -1,12 +1,11 @@
 ﻿
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
 namespace StreamerBotLib.Systems
 {
-
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-
     public partial class ActionSystem
     {
         private delegate void BotOperation();

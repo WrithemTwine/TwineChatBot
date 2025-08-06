@@ -1,8 +1,7 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
     [PrimaryKey(nameof(CurrencyName))]
     [Index(nameof(CurrencyName), IsUnique = true)]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

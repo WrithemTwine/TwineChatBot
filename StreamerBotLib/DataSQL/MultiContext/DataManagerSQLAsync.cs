@@ -1,19 +1,19 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.DataSQL.MultiContext.Import;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
+
+using System.Collections.Concurrent;
+using System.Data;
+using System.Globalization;
+
 namespace StreamerBotLib.DataSQL.MultiContext
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.DataSQL.MultiContext.Import;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-
-    using System.Collections.Concurrent;
-    using System.Data;
-    using System.Globalization;
     /*
 
  !command: <switches-optional> <message>

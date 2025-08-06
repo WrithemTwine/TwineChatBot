@@ -1,8 +1,8 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
     internal class Commands : IDatabaseTableMeta
     {
         public System.String CmdName { get => (System.String)Values["CmdName"]; set => Values["CmdName"] = value; }

@@ -1,7 +1,7 @@
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Interfaces;
     internal class CurrencyType : IDatabaseTableMeta
     {
         public System.Double AccrueAmt { get => (System.Double)Values["AccrueAmt"]; set => Values["AccrueAmt"] = value; }

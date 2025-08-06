@@ -1,30 +1,29 @@
 ﻿#define USEQUEUELOGGER_NO // setup directive for "USEQUEUELOGGER": use logging, "USEQUEUELOGGER_NO": don't use logging
 
+using StreamerBotLib.BotClients.Twitch;
+using StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers;
+using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
+using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
+using StreamerBotLib.Culture;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Static;
+using StreamerBotLib.Static.Logger;
+using StreamerBotLib.Systems;
+
+using System.Net;
+using System.Web;
+using System.Windows.Threading;
+
+using TwitchLib.Api.Helix.Models.Streams.GetStreams;
+using TwitchLib.Api.Services.Events.FollowerService;
+using TwitchLib.Api.Services.Events.LiveStreamMonitor;
+using TwitchLib.EventSub.Core.Models.Chat;
 
 namespace StreamerBotLib.BotClients
 {
-    using StreamerBotLib.BotClients.Twitch;
-    using StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers;
-    using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
-    using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
-    using StreamerBotLib.Culture;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Static.Logger;
-    using StreamerBotLib.Systems;
-
-    using System.Net;
-    using System.Web;
-    using System.Windows.Threading;
-
-    using TwitchLib.Api.Helix.Models.Streams.GetStreams;
-    using TwitchLib.Api.Services.Events.FollowerService;
-    using TwitchLib.Api.Services.Events.LiveStreamMonitor;
-    using TwitchLib.EventSub.Core.Models.Chat;
-
     public class BotsTwitch : BotsBase
     {
         #region Properties-Events
@@ -146,7 +145,7 @@ namespace StreamerBotLib.BotClients
 #endif
         }
 
-        public EventHandler InitializeLiveMonitor(Func<Platform,IEnumerable<string>> GetChannelIds)
+        public EventHandler InitializeLiveMonitor(Func<Platform, IEnumerable<string>> GetChannelIds)
         {
             LogWriter.DebugLog("InitializeLiveMonitor", DebugLogTypes.TwitchBots, "Setting up the LiveMonitor service to monitor multiple channels.");
             return TwitchBotLiveMonitorSvc.SetMultiChannelIds(GetChannelIds);

@@ -1,10 +1,9 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Systems.Overlay.Enums;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Systems.Overlay.Enums;
-
     [PrimaryKey(nameof(TickerName))]
     [Index(nameof(TickerName))]
 #if DEBUG_EFMODELS_NODEFAULTPARAM

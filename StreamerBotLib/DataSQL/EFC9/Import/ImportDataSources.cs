@@ -1,22 +1,21 @@
-﻿
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+
+using System.Data;
+using System.IO;
+using System.Xml;
+
+using static StreamerBotLib.DataSQL.EFC9.Import.DataSource;
+using static StreamerBotLib.DataSQL.EFC9.Import.Multi.DataSource;
+
+using MultiDataSource = StreamerBotLib.DataSQL.EFC9.Import.Multi.DataSource;
+
 namespace StreamerBotLib.DataSQL.EFC9.Import
 {
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.GUI.Windows;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems.Overlay.Enums;
-
-    using System.Data;
-    using System.IO;
-    using System.Xml;
-
-    using static StreamerBotLib.DataSQL.EFC9.Import.DataSource;
-    using static StreamerBotLib.DataSQL.EFC9.Import.Multi.DataSource;
-
-    using MultiDataSource = StreamerBotLib.DataSQL.EFC9.Import.Multi.DataSource;
-
     internal class ImportDataSources : BaseDataManager
     {
         private static readonly string DataFileXML = "ChatDataStore.xml";

@@ -1,19 +1,19 @@
-﻿namespace StreamerBotLib.DataSQL
+﻿using StreamerBotLib.DataSQL.EFC9;
+using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.GUI;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
+
+using System.Data;
+
+namespace StreamerBotLib.DataSQL
 {
-    using StreamerBotLib.DataSQL.EFC9;
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.GUI;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Models;
-
-    using System.Data;
-
     /// <summary>
     /// A wrapper class to manage sequential DbContext access, which is not thread-safe. 
     /// https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
@@ -22,7 +22,7 @@
     {
         private readonly DataManagerSQLAsync _dataManager;
 
-        public string MultiLiveStatusLog { get; private set; }
+        private string MultiLiveStatusLog;
         private readonly List<string> MultiLiveStatusList = [];
         private const int MaxList = 50;
 
@@ -266,12 +266,21 @@
             }
         }
 
-        public List<ArchiveMultiStream> GetCleanupList()
+        public void SetCleanupList(ref List<ArchiveMultiStream> archiveMultiStreams)
         {
             LogWriter.DebugLog("GetCleanupList", DebugLogTypes.DataManager, "Getting cleanup list.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.GetCleanupList();
+                _dataManager.SetCleanupList(ref archiveMultiStreams);
+            }
+        }
+
+        public void SetMultiLiveStatusLog(string log)
+        {
+            LogWriter.DebugLog("SetMultiLiveStatusLog", DebugLogTypes.DataManager, "Setting multi-live status log.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                MultiLiveStatusLog = log;
             }
         }
 

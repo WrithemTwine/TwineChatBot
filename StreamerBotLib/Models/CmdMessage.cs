@@ -1,7 +1,7 @@
-﻿namespace StreamerBotLib.Models
-{
-    using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Enums;
 
+namespace StreamerBotLib.Models
+{
     public record CmdMessage
     {
         public string CommandText { get; set; }

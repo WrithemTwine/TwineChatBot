@@ -1,8 +1,8 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
     internal class GiveawayUserData : IDatabaseTableMeta
     {
         public System.DateTime DateTime { get => (System.DateTime)Values["DateTime"]; set => Values["DateTime"] = value; }

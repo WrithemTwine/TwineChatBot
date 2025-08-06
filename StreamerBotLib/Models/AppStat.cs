@@ -1,8 +1,7 @@
-﻿
+﻿using System.ComponentModel;
+
 namespace StreamerBotLib.Models
 {
-    using System.ComponentModel;
-
     public class AppStat<T> : INotifyPropertyChanged
     {
         public string Name { get; set; }

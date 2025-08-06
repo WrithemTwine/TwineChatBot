@@ -1,8 +1,7 @@
-﻿namespace StreamerBotLib.DataSQL.Models
+﻿using StreamerBotLib.Models.Enums;
+
+namespace StreamerBotLib.DataSQL.Models
 {
-    using StreamerBotLib.Models.Enums;
-
-
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Commands(string cmdName,
                           bool addMe,

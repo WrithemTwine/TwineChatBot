@@ -1,8 +1,8 @@
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Interfaces;
     internal class ChannelEvents : IDatabaseTableMeta
     {
         public ChannelEventActions Name { get => (ChannelEventActions)Values["Name"]; set => Values["Name"] = value; }

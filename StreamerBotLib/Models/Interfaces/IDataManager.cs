@@ -1,15 +1,13 @@
-﻿
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
+
+using System.Data;
+
 namespace StreamerBotLib.Models.Interfaces
 {
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Systems.Overlay.Enums;
-    using StreamerBotLib.Systems.Overlay.Models;
-
-    using System.Data;
-
     public interface IDataManager : IDataManagerReadOnly
     {
         event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
@@ -44,7 +42,6 @@ namespace StreamerBotLib.Models.Interfaces
         new List<CategoryData> GetGameCategories();
         new string GetKey(string Table);
         new IEnumerable<string> GetKeys(string Table);
-        new List<ArchiveMultiStream> GetCleanupList();
         string GetNewestFollower();
         Dictionary<string, List<string>> GetOverlayActions();
         List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username);
@@ -94,6 +91,8 @@ namespace StreamerBotLib.Models.Interfaces
         bool RemoveCommand(string command);
         bool RemoveQuote(int QuoteNum);
         void SetBuiltInCommandsEnabled(bool Enabled);
+        void SetCleanupList(ref List<ArchiveMultiStream> archiveMultiStreams);
+        void SetMultiLiveStatusLog(string log);
         void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false);
         void SetSystemEventsEnabled(bool Enabled);
         void SetUserDefinedCommandsEnabled(bool Enabled);

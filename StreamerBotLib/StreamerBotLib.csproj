@@ -84,16 +84,16 @@
 
 	<ItemGroup>
 		
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.7">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.7" />
 
 		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.5.1" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="9.0.6" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.6" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.6" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="9.0.7" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.7" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.7" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 
@@ -106,13 +106,13 @@
 		
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.7" />
 
-		<PackageReference Include="System.Drawing.Common" Version="9.0.6" />
-		<PackageReference Include="System.Text.Json" Version="9.0.6" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.7" />
+		<PackageReference Include="System.Text.Json" Version="9.0.7" />
 		<PackageReference Include="TwitchLib.Api" Version="3.10.0-preview-8b8899e" />
 		<PackageReference Include="TwitchLib.Api.Core" Version="3.10.0-preview-8b8899e" />
 		<PackageReference Include="TwitchLib.Api.Helix" Version="3.10.0-preview-8b8899e" />

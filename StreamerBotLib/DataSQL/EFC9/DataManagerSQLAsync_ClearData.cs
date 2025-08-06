@@ -1,10 +1,9 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.DataSQL.Models;
+
 namespace StreamerBotLib.DataSQL.EFC9
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.DataSQL.Models;
-
     internal partial class DataManagerSQLAsync
     {
         #region Clear DataBase Records 
@@ -40,7 +39,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
 
-            RefreshUsersList(true);
+            await RefreshUsersList(true);
             await RefreshFollowersList(true);
         }
 
@@ -58,7 +57,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
 
-            RefreshUserStatsList(true);
+            await RefreshUserStatsList(true);
         }
 
         /// <summary>
@@ -174,7 +173,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Users.ExecuteDeleteAsync();
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
-            RefreshUsersList(true);
+            await RefreshUsersList(true);
         }
         #endregion
 

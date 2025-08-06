@@ -1,10 +1,9 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
+
+using StreamerBotLib.Models.Enums;
+
 namespace StreamerBotLib.DataSQL.Models
 {
-    using Microsoft.EntityFrameworkCore;
-
-    using StreamerBotLib.Models.Enums;
-
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(CurrencyName))]
     [Index(nameof(UserId), nameof(CurrencyName), IsUnique = true)]
 

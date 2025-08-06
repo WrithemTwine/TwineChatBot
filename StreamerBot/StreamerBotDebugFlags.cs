@@ -43,7 +43,7 @@ namespace StreamerBot
                 string Category = "Microsoft Flight Simulator";
                 string ID = "7193";
                 string Title = "Testing a debug stream";
-                    List<CategoryData> output = [ .. Controller.GetGameCategories()];
+                List<CategoryData> output = [.. Controller.GetGameCategories()];
 
                 ThreadManager.CreateThreadStart("StartDebugStream_Click", () =>
                 {

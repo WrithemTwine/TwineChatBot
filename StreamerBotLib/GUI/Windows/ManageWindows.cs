@@ -1,10 +1,9 @@
-﻿
+﻿using StreamerBotLib.DataSQL.TableMeta;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Systems;
+
 namespace StreamerBotLib.GUI.Windows
 {
-    using StreamerBotLib.DataSQL.TableMeta;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Systems;
-
     public class ManageWindows
     {
         private EditData EditDataWindow { get; set; }

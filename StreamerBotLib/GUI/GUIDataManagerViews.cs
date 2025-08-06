@@ -1,27 +1,25 @@
-﻿#define USE_OBSERVABLECOLLECTION
+﻿using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems;
 
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+
+using BanReasons = StreamerBotLib.DataSQL.Models.BanReasons;
+using CurrencyType = StreamerBotLib.DataSQL.Models.CurrencyType;
 
 namespace StreamerBotLib.GUI
 {
-    using StreamerBotLib.DataSQL.Models;
-    using StreamerBotLib.Models;
-    using StreamerBotLib.Models.Enums;
-    using StreamerBotLib.Models.Events;
-    using StreamerBotLib.Models.Interfaces;
-    using StreamerBotLib.Static;
-    using StreamerBotLib.Systems;
-
-    using System.Collections.ObjectModel;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Globalization;
-    using System.Runtime.CompilerServices;
-    using System.Windows.Controls;
-    using System.Windows.Data;
-    using System.Windows.Documents;
-
-    using BanReasons = StreamerBotLib.DataSQL.Models.BanReasons;
-    using CurrencyType = StreamerBotLib.DataSQL.Models.CurrencyType;
     public class GUIDataManagerViews : INotifyPropertyChanged, IGUIDataManagerViews
     {
         #region DataManager TableViews
@@ -39,7 +37,6 @@ namespace StreamerBotLib.GUI
         public int CurrBuiltInComCount => Commands?.Count ?? 0;
         public int CurrUserComsCount => CommandsUser?.Count ?? 0;
 
-#if USE_OBSERVABLECOLLECTION
         public static ObservableCollection<CategoryList> CurrCategoryList { get; private set; }
         public ObservableCollection<Users> Users { get; private set; }
         public ObservableCollection<Followers> Followers { get; private set; }
@@ -75,56 +72,21 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<MultiLiveStreams> MultiLiveStreams { get; private set; }
         public ObservableCollection<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; private set; }
 
-        public List<ArchiveMultiStream> CleanupList { get; private set; }
-        public string MultiLiveStatusLog { get; private set; }
+        private List<ArchiveMultiStream> cleanupList;
+        private string multiLiveStatusLog;
+
+        public List<ArchiveMultiStream> CleanupList { get => cleanupList; }
+        public string MultiLiveStatusLog { get => multiLiveStatusLog; }
         #endregion
 
-#else
-        public static List<CategoryList> CurrCategoryList { get; private set; }
-
-        public List<Users> Users { get; private set; }
-        public List<Followers> Followers { get; private set; }
-        public List<CommandsUser> CommandsUser { get; private set; }
-        public List<Commands> Commands { get; private set; }
-
-        public List<BanRules> BanRules { get; private set; }
-        public List<BanReasons> BanReasons { get; private set; }
-        public List<CategoryList> CategoryList { get; private set; }
-        public List<ChannelEvents> ChannelEvents { get; private set; }
-        public List<Clips> Clips { get; private set; }
-        public List<Currency> Currency { get; private set; }
-        public List<CurrencyType> CurrencyType { get; private set; }
-        public List<CustomWelcome> CustomWelcome { get; private set; }
-        public List<GameDeadCounter> GameDeadCounter { get; private set; }
-        public List<GiveawayUserData> GiveawayUserData { get; private set; }
-        public List<InRaidData> InRaidData { get; private set; }
-        public List<LearnMsgs> LearnMsgs { get; private set; }
-        public List<ModeratorApprove> ModeratorApprove { get; private set; }
-        public List<OldFollowUsers> OldFollowUsers { get; private set; }
-        public List<OutRaidData> OutRaidData { get; private set; }
-        public List<OverlayServices> OverlayServices { get; private set; }
-        public List<OverlayTicker> OverlayTicker { get; private set; }
-        public List<Quotes> Quotes { get; private set; }
-        public List<ShoutOuts> ShoutOuts { get; private set; }
-        public List<StreamStats> StreamStats { get; private set; }
-        public List<UserStats> UserStats { get; private set; }
-        public List<Webhooks> Webhooks { get; private set; }
-
-        #region MultiLive Collections
-        public List<MultiWebhooks> MultiWebhooks { get; private set; }
-        public List<MultiChannels> MultiChannels { get; private set; }
-        public List<MultiLiveStreams> MultiLiveStreams { get; private set; }
-        public List<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; private set; }
-
-        public List<ArchiveMultiStream> CleanupList { get; private set; }
-        public string MultiLiveStatusLog { get => DataManager.MultiLiveStatusLog; }
-        #endregion
-#endif
         #endregion
 
         public static event EventHandler<OnDataCollectionUpdatedEventArgs> DataViewsUpdated;
 
-        public GUIDataManagerViews() { }
+        public GUIDataManagerViews()
+        {
+            cleanupList = [];
+        }
 
         public void SetSystemCollections(ActionSystem actionSystem)
         {
@@ -138,17 +100,15 @@ namespace StreamerBotLib.GUI
         {
             GetDataCommands = callback;
 
-            MultiLiveStatusLog = dataBot.MultiStatusLog;
-
             // set specific collection changed events for StatusBar data
-            dataBot.GetICollection(DataTables.Users, (source) => AssignCollection( source, nameof(Users), true)); // Users = (ObservableCollection<Users>)DataManager.GetICollection(DataTables.Users);
-            dataBot.GetICollection(DataTables.Followers, (source) => AssignCollection( source, nameof(Followers), true));
+            dataBot.GetICollection(DataTables.Users, (source) => AssignCollection(source, nameof(Users), true)); // Users = (ObservableCollection<Users>)DataManager.GetICollection(DataTables.Users);
+            dataBot.GetICollection(DataTables.Followers, (source) => AssignCollection(source, nameof(Followers), true));
             dataBot.GetICollection(DataTables.CommandsUser, (source) => AssignCollection(source, nameof(CommandsUser), true));
-            dataBot.GetICollection(DataTables.Commands, (source) => AssignCollection(   source, nameof(Commands), true));
+            dataBot.GetICollection(DataTables.Commands, (source) => AssignCollection(source, nameof(Commands), true));
 
             // continue setting collections for remaining tables
-            dataBot.GetICollection(DataTables.BanReasons, (source) => AssignCollection( source, nameof(BanReasons)));
-            dataBot.GetICollection(DataTables.BanRules, (source) => AssignCollection( source, nameof(BanRules)));
+            dataBot.GetICollection(DataTables.BanReasons, (source) => AssignCollection(source, nameof(BanReasons)));
+            dataBot.GetICollection(DataTables.BanRules, (source) => AssignCollection(source, nameof(BanRules)));
             dataBot.GetICollection(DataTables.CategoryList, (source) => AssignCollection(source, nameof(CategoryList)));
             dataBot.GetICollection(DataTables.ChannelEvents, (source) => AssignCollection(source, nameof(ChannelEvents)));
             dataBot.GetICollection(DataTables.Clips, (source) => AssignCollection(source, nameof(Clips)));
@@ -174,7 +134,8 @@ namespace StreamerBotLib.GUI
             dataBot.GetICollection(DataTables.UserStats, (source) => AssignCollection(source, nameof(UserStats)));
             dataBot.GetICollection(DataTables.Webhooks, (source) => AssignCollection(source, nameof(Webhooks)));
 
-            CleanupList = dataBot.CleanupList;
+            dataBot.SetCleanupList(ref cleanupList);
+            dataBot.SetMultiStatusLog(multiLiveStatusLog);
 
             SetCommandCollection();
 

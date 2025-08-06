@@ -1,7 +1,7 @@
-﻿
+﻿using StreamerBotLib.Models.Enums;
+
 namespace StreamerBotLib.Models
 {
-    using StreamerBotLib.Models.Enums;
     public record ArchiveMultiStream
     {
         public string UserId { get; set; }

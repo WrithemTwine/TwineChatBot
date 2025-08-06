@@ -1,7 +1,7 @@
-﻿namespace StreamerBotLib.Models
-{
-    using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Enums;
 
+namespace StreamerBotLib.Models
+{
     public class LearnedMessage(string Msg, MsgTypes msgTypes)
     {
         public string Message { get; set; } = Msg;
