@@ -2,7 +2,7 @@ using StreamerBotLib.DataSQL.Models;
 
 using System.Diagnostics;
 
-using DataImport = StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
+using DataImport = StreamerBotLib.DataSQL.EFC9.Import.DataSource;
 
 namespace StreamerBotLib.Models
 {

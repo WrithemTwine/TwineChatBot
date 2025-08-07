@@ -92,7 +92,7 @@ namespace StreamerBotLib.Models.Interfaces
         bool RemoveQuote(int QuoteNum);
         void SetBuiltInCommandsEnabled(bool Enabled);
         void SetCleanupList(ref List<ArchiveMultiStream> archiveMultiStreams);
-        void SetMultiLiveStatusLog(string log);
+        void SetMultiLiveStatusLog(List<string> log);
         void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false);
         void SetSystemEventsEnabled(bool Enabled);
         void SetUserDefinedCommandsEnabled(bool Enabled);

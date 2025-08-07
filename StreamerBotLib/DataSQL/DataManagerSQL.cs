@@ -22,8 +22,7 @@ namespace StreamerBotLib.DataSQL
     {
         private readonly DataManagerSQLAsync _dataManager;
 
-        private string MultiLiveStatusLog;
-        private readonly List<string> MultiLiveStatusList = [];
+        private List<string> MultiLiveStatusLog;
         private const int MaxList = 50;
 
         public List<ArchiveMultiStream> CleanupList { get; } = [];
@@ -275,7 +274,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void SetMultiLiveStatusLog(string log)
+        public void SetMultiLiveStatusLog(List<string> log)
         {
             LogWriter.DebugLog("SetMultiLiveStatusLog", DebugLogTypes.DataManager, "Setting multi-live status log.");
             lock (GUIDataManagerLock.Lock)
@@ -835,13 +834,14 @@ namespace StreamerBotLib.DataSQL
             {
                 ThreadManager.AddTaskToGUIDispatcher(() =>
                 {
-                    MultiLiveStatusList.Insert(0, LogItem);
+                    MultiLiveStatusLog.Insert(0, LogItem);
 
-                    if (MultiLiveStatusList.Count > MaxList)
-                    {
-                        MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
+                    if (MultiLiveStatusLog.Count > MaxList)
+                    { // limit the list to MaxList items
+                        LogWriter.DebugLog("PostMultiLiveLog", DebugLogTypes.DataManager, $"Trimming MultiLiveStatusLog to {MaxList} items.");
+                        MultiLiveStatusLog.RemoveRange(MaxList - 1, MultiLiveStatusLog.Count - MaxList);
                     }
-                    MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
+
                     _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
                 });
             }

@@ -9,7 +9,7 @@ namespace StreamerBotLib.Systems
     {
         #region MultiLive 
 
-        internal void SetMultiStatusLog(string log)
+        internal void SetMultiStatusLog(List<string> log)
         {
             DataManage.SetMultiLiveStatusLog(log);
         }

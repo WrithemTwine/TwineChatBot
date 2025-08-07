@@ -79,7 +79,7 @@ namespace StreamerBotLib.Systems
             SystemAction.SetCleanupList(ref archiveMultiStreams);
         }
 
-        public void SetMultiStatusLog(string log)
+        public void SetMultiStatusLog(List<string> log)
         {
             SystemAction.SetMultiStatusLog(log);
         }

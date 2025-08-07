@@ -195,7 +195,15 @@
 
         <DockPanel x:Name="Panel_BotActivity" Grid.Row="2" Grid.Column="0" Visibility="Visible">
             <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
-            <TextBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Visible" IsInactiveSelectionHighlightEnabled="True" TextChanged="TB_BotActivityLog_TextChanged" Text="{Binding MultiLiveStatusLog, Mode=OneWay}" />
+            <ListBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" VerticalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MultiLiveStatusLog, Mode=OneWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </DockPanel>
     </Grid>
 </Page>

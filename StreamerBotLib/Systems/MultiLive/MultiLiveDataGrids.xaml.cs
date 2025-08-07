@@ -60,7 +60,6 @@ namespace StreamerBotLib.Systems.MultiLive
             LogWriter.DebugLog("SetHandlers", DebugLogTypes.GUIMultiLive, "Setting handlers for textbox and lost focus.");
 
             m_Routed = SettingsLostFocus;
-            m_TextChanged = TextChanged;
         }
 
         //private void DG_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -104,11 +103,6 @@ namespace StreamerBotLib.Systems.MultiLive
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
             m_Routed?.Invoke(sender, e);
-        }
-
-        private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            m_TextChanged?.Invoke(sender, e);
         }
 
         private void Popup_DataEdit(DataGrid item)

@@ -134,26 +134,6 @@
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
 		</Compile>
-		<Compile Update="DataSQL\MultiContext\Import\DataSource.Designer.cs">
-		  <DependentUpon>DataSource.xsd</DependentUpon>
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		</Compile>
-		<Compile Update="DataSQL\MultiContext\Import\Multi\MultiDataSource.Designer.cs">
-		  <DependentUpon>MultiDataSource.xsd</DependentUpon>
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		</Compile>
-		<Compile Update="DataSQL\SingleContext\Import\DataSource.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>DataSource.xsd</DependentUpon>
-		</Compile>
-		<Compile Update="DataSQL\SingleContext\Import\Multi\MultiDataSource.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>MultiDataSource.xsd</DependentUpon>
-		</Compile>
 		<Compile Update="Properties\Resources.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
@@ -181,22 +161,6 @@
 		<None Update="DataSQL\EFC9\Import\Multi\MultiDataSource.xsd">
 		  <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
 		  <Generator>MSDataSetGenerator</Generator>
-		</None>
-		<None Update="DataSQL\MultiContext\Import\DataSource.xsd">
-		  <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
-		  <Generator>MSDataSetGenerator</Generator>
-		</None>
-		<None Update="DataSQL\MultiContext\Import\Multi\MultiDataSource.xsd">
-		  <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
-		  <Generator>MSDataSetGenerator</Generator>
-		</None>
-		<None Update="DataSQL\SingleContext\Import\DataSource.xsd">
-		  <Generator>MSDataSetGenerator</Generator>
-		  <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
-		</None>
-		<None Update="DataSQL\SingleContext\Import\Multi\MultiDataSource.xsd">
-		  <Generator>MSDataSetGenerator</Generator>
-		  <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
 		</None>
 		<None Update="Properties\Settings.settings">
 		  <Generator>PublicSettingsSingleFileGenerator</Generator>
