@@ -96,6 +96,7 @@ namespace StreamerBot
         /// </summary>
         private void ConstructEvents()
         {
+            // Twitch Bots focus
             GUITwitchBots.OnBotStopped += GUI_OnBotStopped;
             GUITwitchBots.OnBotStarted += GUI_OnBotStarted;
             GUITwitchBots.OnBotStarted += GuiTwitchBot_GiveawayEvents;
@@ -110,6 +111,7 @@ namespace StreamerBot
 
             GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
+            // Service bots focus - such as Media Overlay Server
             guiAppServices.AppDataDirectory = GetAppDataCWD();
             GUIAppServices.OnBotStarted += GUI_OnBotStarted;
             GUIAppServices.OnBotStopped += GUI_OnBotStopped;

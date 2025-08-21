@@ -105,7 +105,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
 
-            await RefreshUserStatsList();
+            //await RefreshUserStatsList();
             await RefreshUsersList();
         }
 

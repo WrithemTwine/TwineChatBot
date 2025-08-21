@@ -224,6 +224,8 @@ using EFEntityEntryTesting.Static;
 
 using Microsoft.EntityFrameworkCore;
 
+using StreamerBotLib.Static;
+
 using System.Collections.ObjectModel;
 
 namespace EFEntityEntryTesting.EF
@@ -233,6 +235,10 @@ namespace EFEntityEntryTesting.EF
         private readonly EFTestDataContext _GUIcontext;
 
         internal event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionChanged;
+
+        private ObservableCollection<Users> UsersList = [];
+        private ObservableCollection<Currency> CurrencyList = [];
+        private ObservableCollection<CurrencyType> CurrencyTypeList = [];
 
         public DataManager()
         {
@@ -280,32 +286,51 @@ namespace EFEntityEntryTesting.EF
         public ObservableCollection<Users> GetUsersObsCol()
         {
             _GUIcontext.Users.Load();
-            return _GUIcontext.Users.Local.ToObservableCollection();
+
+            UsersList.Clear();
+            UsersList.AddRange(_GUIcontext.Users.Local.ToList());
+            return UsersList;
         }
 
         public ObservableCollection<Currency> GetCurrObsCol()
         {
             _GUIcontext.Currency.Load();
-            return _GUIcontext.Currency.Local.ToObservableCollection();
+
+            CurrencyList.Clear();
+            CurrencyList.AddRange(_GUIcontext.Currency.Local.ToList());
+            return CurrencyList;
         }
 
         public ObservableCollection<CurrencyType> GetCurrTypeObsCol()
         {
             _GUIcontext.CurrencyType.Load();
-            return _GUIcontext.CurrencyType.Local.ToObservableCollection();
+            CurrencyTypeList.Clear();
+
+            CurrencyTypeList.AddRange(_GUIcontext.CurrencyType.Local.ToList());
+
+            return CurrencyTypeList;
         }
 
         private async Task RefreshUsersObsCol()
         {
-            _GUIcontext.Users.Load();
+            _GUIcontext.ChangeTracker.Clear();
             await _GUIcontext.Users.LoadAsync();
+            UsersList.Clear();
+
+            UsersList.AddRange(_GUIcontext.Users.Local.ToList());
+
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Users)));
         }
 
         private async Task RefreshCurrencyObsCol()
         {
-            _GUIcontext.Currency.Load();
+            _GUIcontext.ChangeTracker.Clear();
+
             await _GUIcontext.Currency.LoadAsync();
+            CurrencyList.Clear();
+
+            CurrencyList.AddRange(_GUIcontext.Currency.Local.ToList());
+
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Currency)));
         }
 

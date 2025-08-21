@@ -31,10 +31,9 @@ namespace StreamerBotLib.DataSQL.EFC9
                 .FirstOrDefaultAsync();
         }
 
-        private async Task<Users> PostNewUser(LiveUser User, DateTime FirstSeen)
+        private async Task<Users> PostNewUser(SQLDBContext context, LiveUser User, DateTime FirstSeen)
         {
-            using var context = BuildDataContext();
-
+            //using var context = BuildDataContext();
 
             Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).Include(S => S.UserStats).FirstOrDefault();
             if (newuser == default)
@@ -54,7 +53,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
             }
 
-            await context.SaveChangesAsync(true);
+            //await context.SaveChangesAsync(true);
 
             foreach (Models.CurrencyType t in context.CurrencyType)
             {
@@ -68,7 +67,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 }
             }
 
-            await context.SaveChangesAsync(true);
+            //await context.SaveChangesAsync(true);
 
             return newuser;
         }
@@ -92,7 +91,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             {
                 LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
                                 $"Updating {L.UserName} now joined to the channel.");
-                Users user = await PostNewUser(L, NowSeen);
+                Users user = await PostNewUser(context, L, NowSeen);
                 user.CurrLoginDate = NowSeen;
                 user.LastDateSeen = NowSeen;
             }
@@ -100,7 +99,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
             await RefreshUsersList(true);
-            await RefreshUserStatsList(true);
+            //await RefreshUserStatsList(true);
         }
 
         internal async Task UserLeft(LiveUser User, DateTime LastSeen)
@@ -137,7 +136,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
             await RefreshUsersList(true);
-            await RefreshUserStatsList(true);
+            //await RefreshUserStatsList(true);
         }
 
         #endregion
@@ -187,7 +186,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                         List<Followers> tempfollow = [];
                         foreach (Follow f in currUser)
                         {
-                            await PostNewUser(f.FromUser, f.FollowedAt);
+                            await PostNewUser(context, f.FromUser, f.FollowedAt);
 
                             Followers currFollow = (from UF in context.Followers
                                                     where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
@@ -212,7 +211,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     }
                     await context.SaveChangesAsync(true);
                     await RefreshFollowersList(true);
-                    RefreshUsersList(true);
+                    await RefreshUsersList(true);
 
                     ProcessFollowQueuestarted = false;
 
@@ -302,7 +301,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             OnBulkFollowersAddFinished?.Invoke(this, new(GetNewestFollower().Result));
-            RefreshUsersList(true);
+            await RefreshUsersList(true);
             await RefreshFollowersList(true);
             await RefreshOldFollowUsersList(true);
         }

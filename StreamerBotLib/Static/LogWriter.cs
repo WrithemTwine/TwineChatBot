@@ -167,6 +167,7 @@ using System.Text;
                 DebugLogTypes.SpecialPurpose => OptionFlags.EnableDebugSpecialPurpose ? line : "",
 #endif
                 DebugLogTypes.OverlayBot => OptionFlags.EnableDebugLogOverlays ? line : "",
+                DebugLogTypes.DataBot => OptionFlags.EnableDebugDataBot ? line : "",
                 DebugLogTypes.DataManager => OptionFlags.EnableDebugDataManager ? line : "",
                 DebugLogTypes.TwitchBots => OptionFlags.EnableDebugTwitchBots ? line : "",
                 DebugLogTypes.TwitchStreamerEventSubBot => OptionFlags.EnableDebugTwitchStreamerEventSubBot ? line : "",

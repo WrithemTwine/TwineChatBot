@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EFEntityEntryTesting"
         xmlns:GUI="clr-namespace:EFEntityEntryTesting.GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="MainWindow" Height="600" Width="1100" Loaded="Window_Loaded" Closed="Window_Closed">
     <Window.Resources>
         <GUI:GUIDataManager x:Key="GUIDataManager" />
     </Window.Resources>
@@ -51,7 +51,7 @@
                         <DataGridTextColumn Header="User Name" SortMemberPath="UserName" Binding="{Binding UserName}" />
                         <DataGridTextColumn Header="First Date Seen" Binding="{Binding FirstDateSeen}" />
                         <DataGridTextColumn Header="Last Date Seen" Binding="{Binding LastDateSeen}" />
-                        <DataGridTextColumn Header="Watch Time" Binding="{Binding UserStats.WatchTime}" />
+                        <DataGridTextColumn Header="Watch Time" Binding="{Binding UserStats.WatchTime}" Width="150"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </DockPanel>

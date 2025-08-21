@@ -76,7 +76,7 @@ namespace StreamerBotLib.Systems
 
             try // because this code block runs in a separate thread
             {
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
                     while (ComputeRerunLoop())
                     {
@@ -101,7 +101,7 @@ namespace StreamerBotLib.Systems
                                 if (RepeatList.UniqueAdd(item))
                                 {
                                     ChangedCommands[item.Command] = false; // adding command, already set until new command edit status
-                                    Task.Run(() => RepeatCmd(item));
+                                    await Task.Run(async () => await RepeatCmdAsync(item));
                                 }
                             }
 
@@ -110,7 +110,7 @@ namespace StreamerBotLib.Systems
 
                         RepeatList.RemoveAll((r) => r.RepeatTime == 0); // remove repeaters with 0 time
 
-                        Task.Delay(TaskDelay);
+                        await Task.Delay(TaskDelay);
                         ChangedCommands[RepeatChange] = false;
                     }
                 });
@@ -199,7 +199,7 @@ namespace StreamerBotLib.Systems
                   );
         }
 
-        private void RepeatCmd(TimerCommand cmd)
+        private async Task RepeatCmdAsync(TimerCommand cmd)
         {
             int repeat = cmd.RepeatTime;  // determined seconds for the repeat timer commands
             bool ResetLive = false; // flag to check reset when going live and going offline, to avoid continuous resets
@@ -252,7 +252,7 @@ namespace StreamerBotLib.Systems
                     cmd.UpdateTime(diluteTime);
                 }
 
-                Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
+                await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
 
                 if (OptionFlags.ActiveToken && ChangedCommands[cmd.Command])
                 {

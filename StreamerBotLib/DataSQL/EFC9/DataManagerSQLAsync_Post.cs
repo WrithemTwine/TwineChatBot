@@ -442,10 +442,10 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         internal async Task PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename)
         {
+            await PostCategory(gamename);
             using var context = BuildDataContext();
             await context.Database.BeginTransactionAsync();
-            await PostNewUser(user, time);
-            await PostCategory(gamename);
+            await PostNewUser(context, user, time);
             await context.InRaidData.AddAsync(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);

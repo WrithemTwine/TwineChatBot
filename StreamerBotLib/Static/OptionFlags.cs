@@ -837,6 +837,10 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool EnableDebugLogOverlays => Settings.Default.EnableDebugLogOverlays;
         /// <summary>
+        /// Enables the DataBot actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugDataBot => Settings.Default.EnableDebugDataBot;
+        /// <summary>
         /// Enables the DataManager actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDataManager => Settings.Default.EnableDebugDataManager;

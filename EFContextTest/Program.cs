@@ -2,6 +2,8 @@
 
 using Microsoft.EntityFrameworkCore;
 
+using System.Collections.ObjectModel;
+
 namespace EFContextTest
 {
     public static class Program
@@ -11,6 +13,8 @@ namespace EFContextTest
         private static readonly int MaxUsers = 15;
 
         private static readonly int UserUpdateCount = 5; // Number of users to update currency for - **must be less than or equal to MaxUsers**
+
+        private static ObservableCollection<Users> UserObservable;
 
         public static void Main(string[] args)
         {
@@ -26,7 +30,9 @@ namespace EFContextTest
 
             // Initialize the GUI context and load user data
             _GUIContext = new EFTestDataContext();
+            UserObservable = _GUIContext.Users.Local.ToObservableCollection();
             OutputUserData(_GUIContext.Users.ToList(), nameof(_GUIContext));
+            OutputUserData(UserObservable.ToList(), nameof(UserObservable));
 
             // Set up initial data if not already present
             SetData();
@@ -38,6 +44,7 @@ namespace EFContextTest
 
             _GUIContext.Users.Load();
             OutputUserData(_GUIContext.Users.ToList(), nameof(_GUIContext));
+            OutputUserData(UserObservable.ToList(), nameof(UserObservable));
 
             // Create a new context to demonstrate data retrieval
             var context = new EFTestDataContext();
@@ -59,6 +66,7 @@ namespace EFContextTest
 
             _GUIContext.Users.Load();
             OutputUserData(_GUIContext.Users.ToList(), nameof(_GUIContext));
+            OutputUserData(UserObservable.ToList(), nameof(UserObservable));
 
             // Create another context to demonstrate data retrieval after updates
             var context2 = new EFTestDataContext();
@@ -80,6 +88,7 @@ namespace EFContextTest
 
             _GUIContext.Users.Load();
             OutputUserData(_GUIContext.Users.ToList(), nameof(_GUIContext));
+            OutputUserData(UserObservable.ToList(), nameof(UserObservable));
 
             // Create another context to demonstrate data retrieval after updates
             var context3 = new EFTestDataContext();

@@ -9,13 +9,13 @@
 #if DEBUG
         SpecialPurpose, // used for special purpose debugging, not included in the release builds
 #endif
-
         BlackjackGame,
         BotController,
         CommandSystem,
         RepeatCommandSystem,
         CommonSystem,
         CurrencySystem,
+        DataBot,
         DataManager,
         DiscordBot,
         FormatData,
