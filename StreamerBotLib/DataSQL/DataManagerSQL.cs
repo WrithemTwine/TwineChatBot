@@ -274,7 +274,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void SetMultiLiveStatusLog(List<string> log)
+        public void SetMultiLiveStatusLog(ref List<string> log)
         {
             LogWriter.DebugLog("SetMultiLiveStatusLog", DebugLogTypes.DataManager, "Setting multi-live status log.");
             lock (GUIDataManagerLock.Lock)

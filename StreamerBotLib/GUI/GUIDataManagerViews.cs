@@ -72,8 +72,8 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<MultiLiveStreams> MultiLiveStreams { get; private set; }
         public ObservableCollection<MultiSummaryLiveStreams> MultiSummaryLiveStreams { get; private set; }
 
-        private List<ArchiveMultiStream> cleanupList;
-        private List<string> multiLiveStatusLog;
+        internal List<ArchiveMultiStream> cleanupList;
+        internal List<string> multiLiveStatusLog;
 
         public List<ArchiveMultiStream> CleanupList { get => cleanupList; }
         public List<string> MultiLiveStatusLog { get => multiLiveStatusLog; }
@@ -86,6 +86,7 @@ namespace StreamerBotLib.GUI
         public GUIDataManagerViews()
         {
             cleanupList = [];
+            multiLiveStatusLog = [];
         }
 
         public void SetSystemCollections(ActionSystem actionSystem)
@@ -135,7 +136,7 @@ namespace StreamerBotLib.GUI
             dataBot.GetICollection(DataTables.Webhooks, (source) => AssignCollection(source, nameof(Webhooks)));
 
             dataBot.SetCleanupList(ref cleanupList);
-            dataBot.SetMultiStatusLog(multiLiveStatusLog);
+            dataBot.SetMultiStatusLog(ref multiLiveStatusLog);
 
             SetCommandCollection();
 

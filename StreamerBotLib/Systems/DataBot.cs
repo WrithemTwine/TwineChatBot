@@ -79,9 +79,9 @@ namespace StreamerBotLib.Systems
             SystemAction.SetCleanupList(ref archiveMultiStreams);
         }
 
-        public void SetMultiStatusLog(List<string> log)
+        public void SetMultiStatusLog(ref List<string> log)
         {
-            SystemAction.SetMultiStatusLog(log);
+            SystemAction.SetMultiStatusLog(ref log);
         }
 
         internal void InitializeBotControllerHandlers(
