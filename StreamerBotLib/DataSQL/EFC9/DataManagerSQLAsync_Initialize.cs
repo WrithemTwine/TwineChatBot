@@ -32,11 +32,11 @@ namespace StreamerBotLib.DataSQL.EFC9
             OptionFlags.DataLoaded = true;
 
             // refresh GUI data
-            await RefreshChannelEventsList(true);
-            await RefreshCommandsList(true);
-            await RefreshLearnMsgsList(true);
-            await RefreshBanReasonsList(true);
-            await RefreshBanRulesList(true);
+            //await RefreshChannelEventsList(true);
+            //await RefreshCommandsList(true);
+            //await RefreshLearnMsgsList(true);
+            //await RefreshBanReasonsList(true);
+            //await RefreshBanRulesList(true);
         }
 
         /// <summary>
@@ -125,22 +125,20 @@ namespace StreamerBotLib.DataSQL.EFC9
             Dictionary<string, Tuple<string, string>> DefCommandsDictionary = [];
 
             // add each of the default commands with localized strings
-            foreach (DefaultCommand com in Enum.GetValues(typeof(DefaultCommand)))
+            foreach (DefaultCommand com in Enum.GetValues<DefaultCommand>())
             {
-                DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
+                if (!Refcontext.CommandsBase.Any(c => c.CmdName == com.ToString()))
+                {
+                    DefCommandsDictionary.Add(com.ToString(), new(LocalizedMsgSystem.GetDefaultComMsg(com), LocalizedMsgSystem.GetDefaultComParam(com)));
+                }
             }
 
             // add each of the social commands
             foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
             {
-                DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
-            }
-
-            if (Refcontext.CommandsBase.Any())
-            {
-                foreach (var C in from C in Refcontext.CommandsBase select C)
+                if (!Refcontext.CommandsBase.Any(c => c.CmdName == social.ToString()))
                 {
-                    DefCommandsDictionary.Remove(C.CmdName);
+                    DefCommandsDictionary.Add(social.ToString(), new(DefaulSocialMsg, LocalizedMsgSystem.GetVar("Parameachsocial")));
                 }
             }
 

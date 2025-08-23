@@ -211,7 +211,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             var socials = Enum.GetNames<DefaultSocials>();
             var result = await context.Commands
                 .Where(c => socials.Contains(c.CmdName) && c.Message != DefaulSocialMsg)
-                .Select(c => c.CmdName)
+                .Select(c => c.Message)
                 .ToListAsync();
 
             return string.Join(" ", result);

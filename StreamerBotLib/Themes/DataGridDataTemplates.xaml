@@ -451,7 +451,12 @@
             <scm:SortDescription PropertyName="UserName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>            
+            <scm:SortDescription PropertyName="LiveDate" Direction="Descending" />
+            <scm:SortDescription PropertyName="UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
 
     <CollectionViewSource x:Key="DG_MultiWebhooks_CVS" Source="{Binding MultiWebhooks, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>

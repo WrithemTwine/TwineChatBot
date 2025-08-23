@@ -214,23 +214,23 @@ namespace StreamerBotLib.DataSQL.EFC9
             });
         }
 
-        private  Task<ObservableCollection<GameDeadCounter>> GetGameDeadCounterLocalObservableAsync()
+        private Task<ObservableCollection<GameDeadCounter>> GetGameDeadCounterLocalObservableAsync()
         {
             return Task.Run(async () =>
             {
-            await GUIContext.GameDeadCounter.LoadAsync();
-            GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
-            return GameDeadCounter;
+                await GUIContext.GameDeadCounter.LoadAsync();
+                GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
+                return GameDeadCounter;
             });
         }
 
-        private  Task<ObservableCollection<GiveawayUserData>> GetGiveawayUserDataLocalObservableAsync()
+        private Task<ObservableCollection<GiveawayUserData>> GetGiveawayUserDataLocalObservableAsync()
         {
             return Task.Run(async () =>
             {
-            await GUIContext.GiveawayUserData.LoadAsync();
-            GiveawayUserData.AddRange(GUIContext.GiveawayUserData.Local.ToList());
-            return GiveawayUserData;
+                await GUIContext.GiveawayUserData.LoadAsync();
+                GiveawayUserData.AddRange(GUIContext.GiveawayUserData.Local.ToList());
+                return GiveawayUserData;
             });
         }
 
@@ -248,19 +248,19 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-            await GUIContext.LearnMsgs.LoadAsync();
-            LearnMsgs.AddRange(GUIContext.LearnMsgs.Local.ToList());
-            return LearnMsgs;
+                await GUIContext.LearnMsgs.LoadAsync();
+                LearnMsgs.AddRange(GUIContext.LearnMsgs.Local.ToList());
+                return LearnMsgs;
             });
         }
 
-        private  Task<ObservableCollection<ModeratorApprove>> GetModeratorApproveLocalObservableAsync()
+        private Task<ObservableCollection<ModeratorApprove>> GetModeratorApproveLocalObservableAsync()
         {
             return Task.Run(async () =>
             {
-            await GUIContext.ModeratorApprove.LoadAsync();
-            ModeratorApprove.AddRange(GUIContext.ModeratorApprove.Local.ToList());
-            return ModeratorApprove;
+                await GUIContext.ModeratorApprove.LoadAsync();
+                ModeratorApprove.AddRange(GUIContext.ModeratorApprove.Local.ToList());
+                return ModeratorApprove;
             });
         }
 
@@ -268,9 +268,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-            await GUIContext.MultiChannels.LoadAsync();
-            MultiChannels.AddRange(GUIContext.MultiChannels.Local.ToList());
-            return MultiChannels;
+                await GUIContext.MultiChannels.LoadAsync();
+                MultiChannels.AddRange(GUIContext.MultiChannels.Local.ToList());
+                return MultiChannels;
             });
         }
 
@@ -278,9 +278,9 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-            await GUIContext.MultiLiveStreams.LoadAsync();
-            MultiLiveStreams.AddRange(GUIContext.MultiLiveStreams.Local.ToList());
-            return MultiLiveStreams;
+                await GUIContext.MultiLiveStreams.LoadAsync();
+                MultiLiveStreams.AddRange(GUIContext.MultiLiveStreams.Local.ToList());
+                return MultiLiveStreams;
             });
         }
 
@@ -414,276 +414,456 @@ namespace StreamerBotLib.DataSQL.EFC9
         #region Refresh Collections
         private async Task RefreshBanReasonsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.BanReasons.LoadAsync();
-            BanReasons.Clear();
-            BanReasons.AddRange( GUIContext.BanReasons.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.BanReasons.LoadAsync();
+                    BanReasons.Clear();
+                    BanReasons.AddRange(GUIContext.BanReasons.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshBanRulesList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.BanRules.LoadAsync();
-            BanRules.Clear();
-            BanRules.AddRange(GUIContext.BanRules.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.BanRules.LoadAsync();
+                    BanRules.Clear();
+                    BanRules.AddRange(GUIContext.BanRules.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshCategoryListList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.CategoryList.LoadAsync();
-            CategoryList.Clear();
-            CategoryList.AddRange(GUIContext.CategoryList.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.CategoryList.LoadAsync();
+                    CategoryList.Clear();
+                    CategoryList.AddRange(GUIContext.CategoryList.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshChannelEventsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.ChannelEvents.LoadAsync();
-            ChannelEvents.Clear();
-            ChannelEvents.AddRange( GUIContext.ChannelEvents.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.ChannelEvents.LoadAsync();
+                    ChannelEvents.Clear();
+                    ChannelEvents.AddRange(GUIContext.ChannelEvents.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshClipsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.Clips.LoadAsync();
-            Clips.Clear();
-            Clips.AddRange(GUIContext.Clips.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.Clips.LoadAsync();
+                    Clips.Clear();
+                    Clips.AddRange(GUIContext.Clips.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshCommandsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.Commands.LoadAsync();
-            Commands.Clear();
-            Commands.AddRange(GUIContext.Commands.Local.ToList());
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.Commands.LoadAsync();
+                    Commands.Clear();
+                    Commands.AddRange(GUIContext.Commands.Local.ToList());
 
-            NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshCommandsUserList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.CommandsUser.LoadAsync();
-            CommandsUser.Clear();
-            CommandsUser.AddRange(GUIContext.CommandsUser.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.CommandsUser.LoadAsync();
+                    CommandsUser.Clear();
+                    CommandsUser.AddRange(GUIContext.CommandsUser.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshCurrencyList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.Currency.LoadAsync();
-            Currency.Clear();
-            Currency.AddRange(GUIContext.Currency.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.Currency.LoadAsync();
+                    Currency.Clear();
+                    Currency.AddRange(GUIContext.Currency.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshCurrencyTypeList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.CurrencyType.LoadAsync();
-            CurrencyType.Clear();
-            CurrencyType.AddRange(GUIContext.CurrencyType.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.CurrencyType.LoadAsync();
+                    CurrencyType.Clear();
+                    CurrencyType.AddRange(GUIContext.CurrencyType.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshCustomWelcomeList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.CustomWelcome.LoadAsync();
-            CustomWelcome.Clear();
-            CustomWelcome.AddRange(GUIContext.CustomWelcome.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.CustomWelcome.LoadAsync();
+                    CustomWelcome.Clear();
+                    CustomWelcome.AddRange(GUIContext.CustomWelcome.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshFollowersList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.Followers.LoadAsync();
-            Followers.Clear();
-            Followers.AddRange(GUIContext.Followers.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.Followers), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.Followers.LoadAsync();
+                    Followers.Clear();
+                    Followers.AddRange(GUIContext.Followers.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Followers), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshGameDeadCounterList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.GameDeadCounter.LoadAsync();
-            GameDeadCounter.Clear();
-            GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.GameDeadCounter.LoadAsync();
+                    GameDeadCounter.Clear();
+                    GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshGiveawayUserDataList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.GiveawayUserData.LoadAsync();
-            GiveawayUserData.Clear();
-            GiveawayUserData.AddRange(GUIContext.GiveawayUserData.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.GiveawayUserData.LoadAsync();
+                    GiveawayUserData.Clear();
+                    GiveawayUserData.AddRange(GUIContext.GiveawayUserData.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshInRaidDataList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.InRaidData.LoadAsync();
-            InRaidData.Clear();
-            InRaidData.AddRange(GUIContext.InRaidData.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.InRaidData.LoadAsync();
+                    InRaidData.Clear();
+                    InRaidData.AddRange(GUIContext.InRaidData.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshLearnMsgsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.LearnMsgs.LoadAsync();
-            LearnMsgs.Clear();
-            LearnMsgs.AddRange(GUIContext.LearnMsgs.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.LearnMsgs.LoadAsync();
+                    LearnMsgs.Clear();
+                    LearnMsgs.AddRange(GUIContext.LearnMsgs.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshModeratorApproveList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.ModeratorApprove.LoadAsync();
-            ModeratorApprove.Clear();
-            ModeratorApprove.AddRange(GUIContext.ModeratorApprove.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.ModeratorApprove.LoadAsync();
+                    ModeratorApprove.Clear();
+                    ModeratorApprove.AddRange(GUIContext.ModeratorApprove.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshMultiChannelsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.MultiChannels.LoadAsync();
-            MultiChannels.Clear();
-            MultiChannels.AddRange(GUIContext.MultiChannels.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.MultiChannels.LoadAsync();
+                    MultiChannels.Clear();
+                    MultiChannels.AddRange(GUIContext.MultiChannels.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshMultiLiveStreamsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.MultiLiveStreams.LoadAsync();
-            MultiLiveStreams.Clear();
-            MultiLiveStreams.AddRange(GUIContext.MultiLiveStreams.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.MultiLiveStreams.LoadAsync();
+                    MultiLiveStreams.Clear();
+                    MultiLiveStreams.AddRange(GUIContext.MultiLiveStreams.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshMultiSummaryLiveStreamsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.MultiSummaryLiveStreams.LoadAsync();
-            MultiSummaryLiveStreams.Clear();
-            MultiSummaryLiveStreams.AddRange(GUIContext.MultiSummaryLiveStreams.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.MultiSummaryLiveStreams.LoadAsync();
+                    MultiSummaryLiveStreams.Clear();
+                    MultiSummaryLiveStreams.AddRange(GUIContext.MultiSummaryLiveStreams.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshMultiWebhooksList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.MultiWebhooks.LoadAsync();
-            MultiWebhooks.Clear();
-            MultiWebhooks.AddRange(GUIContext.MultiWebhooks.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.MultiWebhooks.LoadAsync();
+                    MultiWebhooks.Clear();
+                    MultiWebhooks.AddRange(GUIContext.MultiWebhooks.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshOldFollowUsersList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.OldFollowUsers.LoadAsync();
-            OldFollowUsers.Clear();
-            OldFollowUsers.AddRange(GUIContext.OldFollowUsers.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.OldFollowUsers.LoadAsync();
+                    OldFollowUsers.Clear();
+                    OldFollowUsers.AddRange(GUIContext.OldFollowUsers.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshOutRaidDataList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.OutRaidData.LoadAsync();
-            OutRaidData.Clear();
-            OutRaidData.AddRange(GUIContext.OutRaidData.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.OutRaidData.LoadAsync();
+                    OutRaidData.Clear();
+                    OutRaidData.AddRange(GUIContext.OutRaidData.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshOverlayServicesList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.OverlayServices.LoadAsync();
-            OverlayServices.Clear();
-            OverlayServices.AddRange(GUIContext.OverlayServices.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.OverlayServices.LoadAsync();
+                    OverlayServices.Clear();
+                    OverlayServices.AddRange(GUIContext.OverlayServices.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshOverlayTickerList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.OverlayTicker.LoadAsync();
-            OverlayTicker.Clear();
-            OverlayTicker.AddRange(GUIContext.OverlayTicker.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.OverlayTicker.LoadAsync();
+                    OverlayTicker.Clear();
+                    OverlayTicker.AddRange(GUIContext.OverlayTicker.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshQuotesList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.Quotes.LoadAsync();
-            Quotes.Clear();
-            Quotes.AddRange(GUIContext.Quotes.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.Quotes.LoadAsync();
+                    Quotes.Clear();
+                    Quotes.AddRange(GUIContext.Quotes.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshShoutOutsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.ShoutOuts.LoadAsync();
-            ShoutOuts.Clear();
-            ShoutOuts.AddRange(GUIContext.ShoutOuts.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.ShoutOuts.LoadAsync();
+                    ShoutOuts.Clear();
+                    ShoutOuts.AddRange(GUIContext.ShoutOuts.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshStreamStatsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.StreamStats.LoadAsync();
-            StreamStats.Clear();
-            StreamStats.AddRange(GUIContext.StreamStats.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.StreamStats.LoadAsync();
+                    StreamStats.Clear();
+                    StreamStats.AddRange(GUIContext.StreamStats.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshUsersList(bool RecordCountChange = false)
         {
-            await GUIContext.UserStats.LoadAsync();
-            await GUIContext.Users.LoadAsync();
-            Users.Clear();
-            UserStats.Clear();
-            Users.AddRange(GUIContext.Users.Local.ToList());
-            UserStats.AddRange(GUIContext.UserStats.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
-            NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await GUIContext.UserStats.LoadAsync();
+                    await GUIContext.Users.LoadAsync();
+                    Users.Clear();
+                    UserStats.Clear();
+                    Users.AddRange(GUIContext.Users.Local.ToList());
+                    UserStats.AddRange(GUIContext.UserStats.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
+                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshUserStatsList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.UserStats.LoadAsync();
-            UserStats.Clear();
-            UserStats.AddRange(GUIContext.UserStats.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.UserStats.LoadAsync();
+                    UserStats.Clear();
+                    UserStats.AddRange(GUIContext.UserStats.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
+                });
+            });
         }
 
         private async Task RefreshWebhooksList(bool RecordCountChange = false)
         {
-            GUIContext.ChangeTracker.Clear();
-            await GUIContext.Webhooks.LoadAsync();
-            Webhooks.Clear();
-            Webhooks.AddRange(GUIContext.Webhooks.Local.ToList());
-            NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), RecordCountChange);
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.Webhooks.LoadAsync();
+                    Webhooks.Clear();
+                    Webhooks.AddRange(GUIContext.Webhooks.Local.ToList());
+                    NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), RecordCountChange);
+                });
+            });
         }
 
         #endregion

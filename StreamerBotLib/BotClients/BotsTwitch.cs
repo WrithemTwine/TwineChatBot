@@ -450,21 +450,20 @@ namespace StreamerBotLib.BotClients
 
         private void TwitchStreamerEventSubBot_NewStreamOnline(object sender, NewStreamOnlineEventArgs e)
         {
+            OptionFlags.IsStreamOnline = true;
+
+            InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
+            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
+            ActiveUsers();
+            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Sent the current viewership list.");
+            TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
+
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying streamer channel is now online.");
             ManageStreamOnlineOfflineStatus(true);
 
-            TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
-
             StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
-
-            InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
-
-            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
-
-            ActiveUsers();
-
-            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Sent the current viewership list.");
         }
+
         private void TwitchStreamerEventSubBot_NewChannelUpdate(object sender, NewChannelUpdateEventArgs e)
         {
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelUpdate", DebugLogTypes.TwitchBots, $"Registered a stream update, {e.ChannelUpdate.BroadcasterUserName}.");

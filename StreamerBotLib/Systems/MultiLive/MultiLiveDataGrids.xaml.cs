@@ -21,6 +21,8 @@ namespace StreamerBotLib.Systems.MultiLive
         private EventHandler<RoutedEventArgs> m_Routed;
         private EventHandler<TextChangedEventArgs> m_TextChanged;
 
+        public Action<bool> GUISaveEdits;
+
         public event EventHandler<AddNewMultiChannelUserEventArgs> FindMultiChannelUserId;
         public event EventHandler<AddNewMultiChannelUserEventArgs> AddNewMultiChannelUser;
 
@@ -279,6 +281,14 @@ namespace StreamerBotLib.Systems.MultiLive
                         break;
                 }
             }));
+        }
+
+        private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                GUISaveEdits?.Invoke((sender as DataGrid).Name is "DG_BuiltInCommands" or "DG_UserDefinedCommands");
+            }
         }
 
         private void Button_MultiUser_FindUserId_Click(object sender, RoutedEventArgs e)

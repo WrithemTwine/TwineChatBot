@@ -153,8 +153,6 @@ namespace StreamerBot
                             break;
                     }
                 }
-
-                GUIDataManagerViews?.UpdatedGUIData(e);
             });
             //}));
         }

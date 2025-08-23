@@ -184,7 +184,7 @@ namespace StreamerBotLib.DataSQL
             //modelBuilder.Entity<Users>().Navigation(u => u.CustomWelcome).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.ShoutOuts).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.UserStats).AutoInclude();
-            //modelBuilder.Entity<Users>().Navigation(u => u.Follower).AutoInclude();
+            modelBuilder.Entity<Users>().Navigation(u => u.Follower).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.GiveawayUserData).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.InRaidDataList).AutoInclude();
 

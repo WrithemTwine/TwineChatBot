@@ -13,8 +13,7 @@ namespace StreamerBot
 
         private void MultiLive_Data_Loaded(object sender, RoutedEventArgs e)
         {
-            GUIDataManagerViews.DataViewsUpdated += (MultiLive_Data.Content as MultiLiveDataGrids).DataManager_OnDataCollectionUpdated;
-
+            Controller.HandleOnDataCollectionUpdated((MultiLive_Data.Content as MultiLiveDataGrids).DataManager_OnDataCollectionUpdated);
 
             // allow edits while bot is active
             (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
@@ -22,6 +21,7 @@ namespace StreamerBot
             (MultiLive_Data.Content as MultiLiveDataGrids).SummarizeChannels += StreamerBotWindow_SummarizeChannels;
             (MultiLive_Data.Content as MultiLiveDataGrids).FindMultiChannelUserId += StreamerBotWindow_FindMultiChannelUserId;
             (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMultiChannelUser += StreamerBotWindow_AddNewMultiChannelUser;
+            (MultiLive_Data.Content as MultiLiveDataGrids).GUISaveEdits = Controller.GUISaveDataGridEdits;
             AddMultiLiveFoundUserId += (MultiLive_Data.Content as MultiLiveDataGrids).UpdateMultiChannelUserId;
         }
 

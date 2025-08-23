@@ -73,7 +73,8 @@
                   RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" 
                   ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
                   ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
-                  CanUserDeleteRows="True">
+                  CanUserDeleteRows="True"
+                  RowEditEnding="DataGrid_RowEditEnding">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
                 <DataGridCheckBoxColumn Header="IsEnabled" Binding="{Binding IsEnabled}" />
@@ -94,7 +95,8 @@
                       RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiChannelNames}" 
                       ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
                       ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
-                      CanUserDeleteRows="True">
+                      CanUserDeleteRows="True"
+                      RowEditEnding="DataGrid_RowEditEnding">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                             <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
@@ -129,7 +131,8 @@
                 <DataGrid x:Name="DG_Multi_LiveStreamStats"
                           ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}" 
                           ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
-                          CanUserDeleteRows="True">
+                          CanUserDeleteRows="True"
+                          RowEditEnding="DataGrid_RowEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                         <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
@@ -142,7 +145,8 @@
                 <DataGrid x:Name="DG_Multi_SummaryLiveStreamStats" 
                           ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiSummaryLiveStreams_CVS}}" 
                           ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
-                          CanUserDeleteRows="True">
+                          CanUserDeleteRows="True"
+                          RowEditEnding="DataGrid_RowEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="User Id" Binding="{Binding MultiChannels.UserId}" />
                         <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
@@ -199,7 +203,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}" />
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

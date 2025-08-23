@@ -81,8 +81,6 @@ namespace StreamerBotLib.GUI
 
         #endregion
 
-        public static event EventHandler<OnDataCollectionUpdatedEventArgs> DataViewsUpdated;
-
         public GUIDataManagerViews()
         {
             cleanupList = [];
@@ -246,7 +244,7 @@ namespace StreamerBotLib.GUI
 
             if (AddCollectionEvent)
             {
-                ((INotifyCollectionChanged)source).CollectionChanged += DataGrid_CollectionChanged;
+                //((INotifyCollectionChanged)source).CollectionChanged += DataGrid_CollectionChanged;
             }
 
             NotifyPropertyChanged(ChangedProperty);
@@ -264,31 +262,29 @@ namespace StreamerBotLib.GUI
             LogWriter.DebugLog("NotifyPropertyChanged", DebugLogTypes.GUIDataViews, $"Notifying GUI for updated {propertyName} property data.");
         }
 
-        public void UpdatedGUIData(OnDataCollectionUpdatedEventArgs e)
-        {
-            NotifyPropertyChanged(e.DatabaseModelName);
+        //public void UpdatedGUIData(OnDataCollectionUpdatedEventArgs e)
+        //{
+        //    NotifyPropertyChanged(e.DatabaseModelName);
 
-            // refresh the 'status bar' count items
-            if (e.DatabaseModelName is "Users")
-            {
-                NotifyPropertyChanged(nameof(CurrUserCount));
-            }
-            else if (e.DatabaseModelName is "Followers")
-            {
-                NotifyPropertyChanged(nameof(CurrFollowers));
-            }
-            else if (e.DatabaseModelName is "Commands" or "CommandsUser")
-            {
-                SetCommandCollection();
-                NotifyPropertyChanged(nameof(CurrBuiltInComCount));
-                NotifyPropertyChanged(nameof(CurrUserComsCount));
-            }
-        }
+        //    // refresh the 'status bar' count items
+        //    if (e.DatabaseModelName is "Users")
+        //    {
+        //        NotifyPropertyChanged(nameof(CurrUserCount));
+        //    }
+        //    else if (e.DatabaseModelName is "Followers")
+        //    {
+        //        NotifyPropertyChanged(nameof(CurrFollowers));
+        //    }
+        //    else if (e.DatabaseModelName is "Commands" or "CommandsUser")
+        //    {
+        //        SetCommandCollection();
+        //        NotifyPropertyChanged(nameof(CurrBuiltInComCount));
+        //        NotifyPropertyChanged(nameof(CurrUserComsCount));
+        //    }
+        //}
 
         public void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            //DataViewsUpdated?.Invoke(this, e);
-
             NotifyPropertyChanged(e.DatabaseModelName);
 
             // refresh the 'status bar' count items
@@ -308,24 +304,28 @@ namespace StreamerBotLib.GUI
             }
         }
 
-        /// <summary>
-        /// Handles when a data table view changes, to update the GUI and refresh the status bar item counts.
-        /// </summary>
-        /// <param name="sender">Object invoking the event.</param>
-        /// <param name="e">The parameters sent with the event.</param>
-        private void DataGrid_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            // refresh the 'status bar' count items
-            NotifyPropertyChanged(nameof(CurrUserCount));
-            NotifyPropertyChanged(nameof(CurrFollowers));
-            NotifyPropertyChanged(nameof(CurrBuiltInComCount));
-            NotifyPropertyChanged(nameof(CurrUserComsCount));
-
-            if (sender == Commands || sender == CommandsUser)
-            {
-                SetCommandCollection();
-            }
-        }
+        ///// <summary>
+        ///// Handles when a data table view changes, to update the GUI and refresh the status bar item counts.
+        ///// </summary>
+        ///// <param name="sender">Object invoking the event.</param>
+        ///// <param name="e">The parameters sent with the event.</param>
+        //private void DataGrid_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        //{
+        //    if (sender == Commands || sender == CommandsUser)
+        //    {
+        //        NotifyPropertyChanged(nameof(CurrBuiltInComCount));
+        //        NotifyPropertyChanged(nameof(CurrUserComsCount));
+        //        SetCommandCollection();
+        //    }
+        //    if (sender == Users)
+        //    {
+        //        NotifyPropertyChanged(nameof(CurrUserCount));
+        //    }
+        //    if (sender == Followers)
+        //    {
+        //        NotifyPropertyChanged(nameof(CurrFollowers));
+        //    }
+        //}
 
         /// <summary>
         /// Builds the list of commands to update the number of commands within the GUI
