@@ -15,7 +15,6 @@ using StreamerBotLib.Systems;
 
 using System.Net;
 using System.Web;
-using System.Windows.Threading;
 
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Services.Events.FollowerService;
@@ -292,30 +291,26 @@ namespace StreamerBotLib.BotClients
         {
             _CurrStream = null;
 
-            Dispatcher.CurrentDispatcher.Invoke(new Action(() =>
+            // the bot might start when stream is already started-not registered online, check for online and start additional subscriptions
+            if (!OptionFlags.IsStreamOnline)
             {
-                // the bot might start when stream is already started-not registered online, check for online and start additional subscriptions
-                if (!OptionFlags.IsStreamOnline)
+                ThreadManager.CreateThreadStart("TwitchEventSubStreamer_OnBotStarted", () =>
                 {
-                    ThreadManager.CreateThreadStart("TwitchEventSubStreamer_OnBotStarted", () =>
+                    var response = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
+
+                    if (response != null && response.Streams.Length > 0)
                     {
-                        var response = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
+                        LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
+                        OptionFlags.IsStreamOnline = true;
 
-                        if (response != null && response.Streams.Length > 0)
-                        {
-                            LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
-                            OptionFlags.IsStreamOnline = true;
-
-                            InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
-                            ActiveUsers();
-                            TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
-                            ManageStreamOnlineOfflineStatus(true);
-                            StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
-                        }
-                    });
-                }
-
-            }));
+                        InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
+                        ActiveUsers();
+                        TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
+                        ManageStreamOnlineOfflineStatus(true);
+                        StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+                    }
+                });
+            }
 
             if (OptionFlags.TwitchAddFollowersStart)
             {
@@ -666,8 +661,10 @@ namespace StreamerBotLib.BotClients
 
         public void SendShoutOut(LiveUser user)
         {
+            LogWriter.DebugLog("SendShoutOut", DebugLogTypes.TwitchBots, "Performing a request to send a shoutout to a user.");
             if (!ShoutOutTaskActive)
             {
+                LogWriter.DebugLog("SendShoutOut", DebugLogTypes.TwitchBots, "No shoutout task active, starting a new one.");
                 ShoutOutTaskActive = true;
                 ThreadManager.CreateThreadStart("SendShoutOut", () => EvaluateShoutOutUsers());
             }
@@ -677,6 +674,7 @@ namespace StreamerBotLib.BotClients
                 ShoutOutLiveUser shoutOutLiveUser = new(user);
                 if (!ShoutOutUsers.UniqueAdd(shoutOutLiveUser))
                 {
+                    LogWriter.DebugLog("SendShoutOut", DebugLogTypes.TwitchBots, "User already exists in shoutout list, updating last seen time.");
                     var shoutuser = ShoutOutUsers.Find(s => s.Equals(shoutOutLiveUser) && (s.LastShoutOut != null && s.LastShoutOut.Value.AddMinutes(15) < DateTime.Now));
                     if (shoutuser != null)
                     {
@@ -1306,22 +1304,29 @@ namespace StreamerBotLib.BotClients
             {
                 try
                 {
+                    LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, "Starting the shoutout evaluation thread.");
                     DateTime lastShoutOut = DateTime.MinValue;
 
                     while (OptionFlags.ActiveToken)
                     {
                         ShoutOutLiveUser nextShoutOut = null;
+                        LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shoutout users to evaluate: {ShoutOutUsers.Count}.");
                         lock (ShoutOutUsers)
                         {
                             foreach (var S in ShoutOutUsers)
                             {
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Evaluating shoutout user {S.User.UserName}, " +
+                                    $"LastShoutOut: {(S.LastShoutOut == null ? "never" : S.LastShoutOut.Value.ToString())}, " +
+                                    $"NextShoutOut: {(S.NextShoutOut == null ? "not scheduled" : S.NextShoutOut.Value.ToString())}.");
                                 if (S.LastShoutOut == null && S.NextShoutOut == null)
                                 {
+                                    LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Selected shoutout user {S.User.UserName} for immediate shoutout.");
                                     nextShoutOut ??= S;
                                     break;
                                 }
                                 else if (S.NextShoutOut != null)
                                 {
+                                    LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Selected shoutout user {S.User.UserName} for scheduled shoutout.");
                                     nextShoutOut ??= S;
                                     break;
                                 }
@@ -1331,6 +1336,7 @@ namespace StreamerBotLib.BotClients
                         DateTime Curr = DateTime.Now;
                         if (nextShoutOut != null)
                         {
+                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Preparing to shoutout user {nextShoutOut.User.UserName}.");
                             if (nextShoutOut.NextShoutOut == null && lastShoutOut.AddMinutes(2) <= Curr)
                             { // new shoutout user, allowed per Twitch API every 2 minutes
                                 TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
@@ -1344,14 +1350,17 @@ namespace StreamerBotLib.BotClients
                             }
                             else if (lastShoutOut.AddHours(1) <= Curr && nextShoutOut.NextShoutOut < Curr)
                             { // existing shoutout user, allowed per Twitch API every 60 minutes
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOut.User.UserName}.");
                                 TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
 
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Updating shoutout user {nextShoutOut.User.UserName} last and next shoutout times.");
                                 lock (ShoutOutUsers)
                                 {
                                     nextShoutOut.LastShoutOut = Curr;
                                     nextShoutOut.NextShoutOut = null;
                                 }
 
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Completed shoutout for user {nextShoutOut.User.UserName}.");
                                 lastShoutOut = Curr;
                             }
                         }

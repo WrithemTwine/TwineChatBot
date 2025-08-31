@@ -866,7 +866,7 @@
     <value>-use:!viewdeath</value>
   </data>
   <data name="Paramwatchtime" xml:space="preserve">
-    <value>-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
+    <value>-t:UserStats -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramworklurk" xml:space="preserve">

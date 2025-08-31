@@ -25,6 +25,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await SetDefaultCommandsTable(context); // check all default Commands
             await SetLearnedMessages(context);
             //CleanCategories(context);
+            CleanStreamCategories(context);
 
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
@@ -168,6 +169,18 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                                top: C.param.Top,
                                                                sort: C.param.Sort)
              );
+
+
+            // Fix default commands from prior version parameters
+
+            // Watchtime table Users->UserStats change
+
+            CommandsBase watchtime = Refcontext.CommandsBase.FirstOrDefault(c => c.CmdName == DefaultCommand.watchtime.ToString());
+            if (watchtime is not null && watchtime.Table == "Users")
+            {
+                watchtime.Table = "UserStats";
+            }
+
         }
         private async Task SetLearnedMessages(SQLDBContext Refcontext = null)
         {
@@ -235,6 +248,27 @@ namespace StreamerBotLib.DataSQL.EFC9
 
             }
             Refcontext.SaveChanges(true);
+        }
+
+        private void CleanStreamCategories(SQLDBContext Refcontext = null)
+        {
+            var StreamStats = Refcontext.StreamStats.Where(s=> s.Category.Contains("''''") || s.Category.Contains(null)).Select(s => s);
+
+            foreach (var stat in StreamStats)
+            {
+                if (stat.Category.Count == 1 && stat.Category.Contains(null) || stat.Category.Contains("''''"))
+                {
+                    stat.Category.Clear();
+                    stat.Category.Add("All");
+                }
+                else if (stat.Category.Count > 1)
+                {
+                    if (stat.Category.Contains("''''"))
+                    {
+                        stat.Category.Remove("''''");
+                    }
+                }
+            }
         }
 
         #endregion

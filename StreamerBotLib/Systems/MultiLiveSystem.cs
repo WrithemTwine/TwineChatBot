@@ -57,7 +57,6 @@ namespace StreamerBotLib.Systems
             return DataManage.GetMultiWebHooks();
         }
 
-
         public bool CheckMultiStreamDate(string userId, Platform platform, DateTime currTime)
         {
             LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.MultiLiveSystem, $"Checking multi-stream date for {userId} on {platform}.");
@@ -69,6 +68,23 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("PostMultiStreamData", DebugLogTypes.SystemController, $"Posting multi-stream data for {liveUser.UserName} on {liveUser.Platform}.");
             return DataManage.PostMultiStreamDate(liveUser, startTime);
         }
+
+#if DEBUG
+        internal void DebugAddNewMultiLiveData()
+        {
+            Random rand = new();
+            var Ids = GetMonitorChannels(Platform.Twitch).ToList();
+            DateTime now = DateTime.Now.ToLocalTime();
+
+            if (Ids.Count > 0)
+            {
+                int idx = rand.Next(0, Ids.Count - 1);
+                var userId = Ids[idx];
+                LiveUser liveUser = DataManage.GetUserById(userId, Platform.Twitch);
+                PostMultiStreamDate(liveUser, now);
+            }
+        }
+#endif
 
         #endregion
     }

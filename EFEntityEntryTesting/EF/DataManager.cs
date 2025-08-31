@@ -224,8 +224,6 @@ using EFEntityEntryTesting.Static;
 
 using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Static;
-
 using System.Collections.ObjectModel;
 
 namespace EFEntityEntryTesting.EF

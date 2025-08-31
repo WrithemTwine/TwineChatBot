@@ -85,7 +85,8 @@ namespace StreamerBotLib.Models
               streamStats.ClipsMade,
               streamStats.ChannelPtCount,
               streamStats.ChannelChallenge,
-              streamStats.MaxUsers);
+              streamStats.MaxUsers,
+              streamStats.Category);
 
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;

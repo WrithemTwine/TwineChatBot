@@ -18,6 +18,6 @@ namespace StreamerBotLib.DataSQL.Models
         : UserBase(userId, platform)
     {
         public DateTime DateTime { get; set; } = dateTime;
-        public Users Users { get; set; } = null!;
+        public Users User { get; set; } = null!;
     }
 }

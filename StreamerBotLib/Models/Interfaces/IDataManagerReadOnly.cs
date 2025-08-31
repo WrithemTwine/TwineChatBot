@@ -37,5 +37,6 @@ namespace StreamerBotLib.Models.Interfaces
         LiveUser GetUser(string UserName);
         string GetCommandString();
         IEnumerable<string> GetCommandList(bool prefix = true);
+        LiveUser GetUserById(string UserId, Platform platform);
     }
 }

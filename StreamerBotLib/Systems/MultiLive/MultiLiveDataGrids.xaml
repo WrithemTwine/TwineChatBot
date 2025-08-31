@@ -9,7 +9,7 @@
       xmlns:M="clr_namespace:StreamerBotLib.Models" 
       xmlns:gui="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib" 
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" d:DesignWidth="1000"
       Title="MultiLiveDataGrids" SnapsToDevicePixels="True" UseLayoutRounding="True" 
       DataContext="{DynamicResource DataViews}"
       Background="{DynamicResource FullBackground}"
@@ -18,8 +18,11 @@
         <ContextMenu x:Key="DataGrid_Multi_ContextMenu" Name="DataGrid_Multi_ContextMenu">
             <MenuItem x:Name="DataGridContextMenu_Multi_AddItem"  Header="Add New Row" Click="MenuItem_AddClick" />
             <MenuItem x:Name="DataGridContextMenu_Multi_EditItem" Header="Edit Selected Row" />
-            <MenuItem x:Name="DataGridContextMenu_Multi_DeleteItems" Header="Delete Selected Row(s)" 
+            <MenuItem x:Name="DataGridContextMenu_Multi_DeleteItems" Header="Delete Selected Row(s)" Click="MenuItem_DeleteClick"
                       ToolTip="Delete 1 or more rows, not for preset tables. No warning messages."/>
+            <Separator x:Name="DataGridContextMenu_Separator2" />
+            <MenuItem x:Name="DataGridContextMenu_Multi_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
+            <MenuItem x:Name="DataGridContextMenu_Multi_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
         </ContextMenu>
         <ObjectDataProvider x:Key="PlatformEnums" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
             <ObjectDataProvider.MethodParameters>
@@ -35,11 +38,11 @@
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="298*" />
+            <ColumnDefinition Width="350*" />
             <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="180*"  />
+            <ColumnDefinition Width="320"  />
             <ColumnDefinition Width="8"/>
-            <ColumnDefinition Width="320*"/>
+            <ColumnDefinition Width="430"/>
         </Grid.ColumnDefinitions>
 
         <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.ColumnSpan="2" Padding="3">
@@ -70,19 +73,22 @@
 
         <DataGrid x:Name="DG_Multi_WebHooks" Grid.Row="1" Grid.Column="0"
                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiWebhooks_CVS}}"
-                  RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiWebhooks}" 
+                  RowDetailsTemplate="{StaticResource DG_RowDetailDT_Webhooks}" 
                   ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
                   ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
                   CanUserDeleteRows="True"
                   RowEditEnding="DataGrid_RowEditEnding">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
-                <DataGridCheckBoxColumn Header="IsEnabled" Binding="{Binding IsEnabled}" />
+                <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                 <DataGridCheckBoxColumn Header="Add @Everyone" Binding="{Binding AddEveryone}" />
                 <DataGridComboBoxColumn Header="Webhook Source" SelectedItemBinding="{Binding WebhooksSource}" ItemsSource="{Binding Source={StaticResource EnumWebhooksSource}}" />
                 <DataGridComboBoxColumn Header="Kind" SelectedItemBinding="{Binding Kind}" ItemsSource="{Binding Source={StaticResource EnumWebhooksKind}}" />
                 <DataGridTextColumn Header="Server" Binding="{Binding Server}" Width="80" MaxWidth="120" />
             </DataGrid.Columns>
+            <DataGrid.GroupStyle>
+                <StaticResource ResourceKey="DataGrid_GroupStyle" />
+            </DataGrid.GroupStyle>
         </DataGrid>
 
         <DockPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" >
@@ -102,6 +108,9 @@
                             <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
                             <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                         </DataGrid.Columns>
+                        <DataGrid.GroupStyle>
+                            <StaticResource ResourceKey="DataGrid_GroupStyle" />
+                        </DataGrid.GroupStyle>
                     </DataGrid>
                 </TabItem>
                 <TabItem Header="Lookup User">
@@ -139,6 +148,9 @@
                         <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateLiveTemplate}" CellEditingTemplate="{StaticResource EditLiveDateTemplate}" SortMemberPath="LiveDate" />
                         <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
                     </DataGrid.Columns>
+                    <DataGrid.GroupStyle>
+                        <StaticResource ResourceKey="DataGrid_GroupStyle" />
+                    </DataGrid.GroupStyle>
                 </DataGrid>
             </TabItem>
             <TabItem Header="Summary" x:Name="TabItem_SummaryDailyData">
@@ -153,6 +165,9 @@
                         <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateThroughTemplate}" CellEditingTemplate="{StaticResource EditThroughDateTemplate}" SortMemberPath="ThroughDate" />
                         <DataGridTextColumn Header="Streams" Binding="{Binding StreamCount, StringFormat={}{0:N0}}" />
                     </DataGrid.Columns>
+                    <DataGrid.GroupStyle>
+                        <StaticResource ResourceKey="DataGrid_GroupStyle" />
+                    </DataGrid.GroupStyle>
                 </DataGrid>
             </TabItem>
             <TabItem Header="Archive">
@@ -199,11 +214,21 @@
 
         <DockPanel x:Name="Panel_BotActivity" Grid.Row="2" Grid.Column="0" Visibility="Visible">
             <Label DockPanel.Dock="Top" Content="Log of Bot Activity:" />
-            <ListBox DockPanel.Dock="Bottom" x:Name="TB_BotActivityLog" Margin="5" VerticalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding MultiLiveStatusLog, Mode=OneWay}">
+            <StackPanel DockPanel.Dock="Top" Name="SP_MultiLive_Debug" Orientation="Horizontal" Visibility="Collapsed">
+                <Button x:Name="Debug_Button_AddNewMultiLive" Content="Add New MultiLive Row" Margin="5" Click="Debug_Button_AddNew_Click" />
+            </StackPanel>
+            <ListBox DockPanel.Dock="Bottom" x:Name="LB_BotActivityLog" Margin="5" 
+                     VerticalContentAlignment="Stretch" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ItemsSource="{Binding MultiLiveStatusLog, Mode=OneWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Vertical">
+                            <Line Width="150" X2="150" Height="1" Stroke="{Binding Mode=OneWay, Source={StaticResource ForegroundText}}"  />
+                            <TextBlock Text="{Binding}" 
+                                       TextWrapping="Wrap"
+                                       Width="{Binding ActualWidth, ElementName=LB_BotActivityLog}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

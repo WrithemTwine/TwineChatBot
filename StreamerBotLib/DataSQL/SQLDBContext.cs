@@ -97,6 +97,12 @@ namespace StreamerBotLib.DataSQL
                 .HasPrincipalKey(c => c.Category)
                 .HasForeignKey(c => c.Category);
 
+            modelBuilder.Entity<CategoryList>()
+                .HasMany(c => c.Clips)
+                .WithOne(c => c.CategoryList)
+                .HasPrincipalKey(c => c.CategoryId)
+                .HasForeignKey(c => c.CategoryId );
+
             modelBuilder.Entity<Currency>()
                 .HasOne(c => c.CurrencyType)
                 .WithMany(c => c.Currency)
@@ -124,7 +130,7 @@ namespace StreamerBotLib.DataSQL
 
             modelBuilder.Entity<Users>()
                 .HasMany(u => u.GiveawayUserData)
-                .WithOne(g => g.Users);
+                .WithOne(g => g.User);
 
             modelBuilder.Entity<Users>()
                 .HasOne(s => s.UserStats)
@@ -184,7 +190,7 @@ namespace StreamerBotLib.DataSQL
             //modelBuilder.Entity<Users>().Navigation(u => u.CustomWelcome).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.ShoutOuts).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.UserStats).AutoInclude();
-            modelBuilder.Entity<Users>().Navigation(u => u.Follower).AutoInclude();
+            //modelBuilder.Entity<Users>().Navigation(u => u.Follower).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.GiveawayUserData).AutoInclude();
             //modelBuilder.Entity<Users>().Navigation(u => u.InRaidDataList).AutoInclude();
 

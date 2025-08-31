@@ -10,8 +10,6 @@ using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
 
-using System.Data;
-
 namespace StreamerBotLib.DataSQL
 {
     /// <summary>
@@ -239,10 +237,16 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void DeleteDataRows(IEnumerable<DataRow> dataRows)
+        public void DeleteDataRows(IEnumerable<object> dataRows, string TableName)
         {
             LogWriter.DebugLog("DeleteDataRows", DebugLogTypes.DataManager, "Deleting data rows - not available.");
-            lock (GUIDataManagerLock.Lock) { }
+            lock (GUIDataManagerLock.Lock)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.DeleteDataRows(dataRows, TableName);
+                });
+            }
         }
 
         public string EditCommand(string cmd, List<string> Arglist)
@@ -589,6 +593,15 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        public LiveUser GetUserById(string UserId, Platform platform)
+        {
+            LogWriter.DebugLog("GetUserByUserId", DebugLogTypes.DataManager, "Getting user by user ID.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.GetUserById(UserId, platform).Result;
+            }
+        }
+
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
         {
             LogWriter.DebugLog("GetWebhooks", DebugLogTypes.DataManager, "Getting webhooks.");
@@ -598,14 +611,14 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void GUIRowEditSave()
+        public void GUIRowEditSave(string TableName)
         {
             LogWriter.DebugLog("GUIRowEditSave", DebugLogTypes.DataManager, "GUI row edit save.");
             lock (GUIDataManagerLock.Lock)
             {
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
-                    await _dataManager.GUIRowEditSave();
+                    await _dataManager.GUIRowEditSave(TableName);
                 });
             }
         }
@@ -834,7 +847,7 @@ namespace StreamerBotLib.DataSQL
             {
                 ThreadManager.AddTaskToGUIDispatcher(() =>
                 {
-                    MultiLiveStatusLog.Insert(0, LogItem);
+                    MultiLiveStatusLog.Insert(0, $"{DateTime.Now.ToLocalTime():g} {LogItem}");
 
                     if (MultiLiveStatusLog.Count > MaxList)
                     { // limit the list to MaxList items
@@ -1042,12 +1055,11 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
-        public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled)
-        {
-            LogWriter.DebugLog("SetIsEnabled", DebugLogTypes.DataManager, "Setting is enabled.");
-            lock (GUIDataManagerLock.Lock) { }
-        }
+        //public void SetIsEnabled(IEnumerable<EntityBase> dataRows, string TableName, bool IsEnabled)
+        //{
+        //    LogWriter.DebugLog("SetIsEnabled", DebugLogTypes.DataManager, "Setting is enabled.");
+        //    lock (GUIDataManagerLock.Lock) { }
+        //}
 
         public void SetSystemEventsEnabled(bool Enabled)
         {

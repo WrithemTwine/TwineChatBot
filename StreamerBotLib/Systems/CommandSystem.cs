@@ -196,7 +196,7 @@ namespace StreamerBotLib.Systems
 
         private string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
         {
-            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parsing command: {command} from {User.UserName}.");
+            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parsing command: {command} for {User.UserId} : {User.UserName} : {User.Platform}.");
 
             string result = "";
             string tempHTMLResponse = "";
@@ -623,6 +623,7 @@ namespace StreamerBotLib.Systems
 
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parameter value: {paramvalue}.");
 
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Building variable dictionary for command.");
                 datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                     new(MsgVars.username, paramvalue),
@@ -633,17 +634,20 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.com, paramvalue )
                 });
 
+                string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
+
                 if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so)
-                    && !(DataManage.GetUserId(new(paramvalue, User.Platform)) != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
+                    && !(ShoutuserId != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No user found for shout-out.");
                     result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
                 }
                 else
                 {
-                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Custom command found: {command}.");
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Other command found: {command}.");
                     if (cmdrow.Lookupdata)
                     {
+                        LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Looking up additional data for command.");
                         LookupQuery(cmdrow, paramvalue, ref datavalues);
                     }
 
@@ -652,8 +656,8 @@ namespace StreamerBotLib.Systems
                     {
                         if (OptionFlags.TwitchChannelUserShoutAPI)
                         {
-                            LiveUser shoutoutUser = new(userName: paramvalue, Platform.Twitch);
-                            shoutoutUser.UserId = DataManage.GetUserId(shoutoutUser);
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Using Twitch API to shout out user.");
+                            LiveUser shoutoutUser = new(userName: paramvalue, Platform.Twitch, userId: ShoutuserId);
                             TwitchShoutOutUser?.Invoke(this, new(shoutoutUser));
                         }
                     }
@@ -662,8 +666,9 @@ namespace StreamerBotLib.Systems
                     {
                         ThreadManager.CreateThreadStart("ParseCommand", () =>
                         {
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Command contains #category, looking up category.");
                             VariableParser.AddData(ref datavalues,
-                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: ShoutuserId ?? DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
                             string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                             tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
@@ -673,6 +678,7 @@ namespace StreamerBotLib.Systems
 
                             LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
 
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking for Overlay Event.");
                             CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
                                 Action: DefaultCommand.so.ToString(),
                                 User, UserMsg: tempHTMLResponse);

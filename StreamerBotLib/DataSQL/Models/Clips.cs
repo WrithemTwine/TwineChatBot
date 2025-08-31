@@ -32,5 +32,6 @@ namespace StreamerBotLib.DataSQL.Models
         public float Duration { get; set; } = duration;
         public string Url { get; set; } = url;
 
-    }
+        public CategoryList CategoryList { get; set; } = null!;
+        }
 }

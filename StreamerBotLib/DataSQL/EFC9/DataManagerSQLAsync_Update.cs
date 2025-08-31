@@ -9,6 +9,27 @@ namespace StreamerBotLib.DataSQL.EFC9
 {
     internal partial class DataManagerSQLAsync
     {
+        //internal async Task UpdateIsEnabled(IEnumerable<EntityBase> entities, string TableName, bool isEnabled)
+        //{
+        //    if (entities != null)
+        //    {
+        //        switch (TableName)
+        //        {
+        //            case "BanReasons":
+        //                using (var context = BuildDataContext())
+        //                {
+        //                    await context.Database.BeginTransactionAsync();
+        //                    (entities.Cast<>)
+        //                    await context.Database.CommitTransactionAsync();
+        //                    await context.SaveChangesAsync(true);
+        //                    await RefreshBanReasonsList(true);
+        //                }
+        //                break;
+        //        }
+        //    }
+
+        //}
+
         internal async Task UpdateCurrency(List<LiveUser> Users, DateTime dateTime)
         {
             using var context = BuildDataContext();

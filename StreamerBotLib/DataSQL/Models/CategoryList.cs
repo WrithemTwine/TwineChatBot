@@ -31,5 +31,7 @@ namespace StreamerBotLib.DataSQL.Models
 
         public ICollection<Followers> Followers { get; } = [];
 
+        public ICollection<Clips> Clips { get; } = [];
+
     }
 }

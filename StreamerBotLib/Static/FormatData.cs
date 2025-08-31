@@ -83,7 +83,7 @@ namespace StreamerBotLib.Static
         /// <returns>a string containing the culture adjusted plurality of the supplied number</returns>
         public static string Plurality(double src, MsgVars msgVars, string Prefix = null, string Suffix = null)
         {
-            string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(',');
+            string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(", ");
 
             StringBuilder sb = new();
             sb = sb.Append(string.Format(CultureInfo.CurrentCulture, src % 1 == 0 ? "{0:N0}" : "{0:N}", src));
@@ -130,7 +130,7 @@ namespace StreamerBotLib.Static
             {
                 if (datakeys[k] != 0)
                 {
-                    output.Add(Plurality(datakeys[k], (MsgVars)Enum.Parse(typeof(MsgVars), "Plural" + k)));
+                    output.Add(Plurality(datakeys[k], Enum.Parse<MsgVars>("Plural" + k)));
                 }
             }
 

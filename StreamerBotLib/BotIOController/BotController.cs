@@ -474,6 +474,11 @@ namespace StreamerBotLib.BotIOController
             DataBot.SetUserDefinedCommandsEnabled(Enabled);
         }
 
+        public void DeleteDataRows(IEnumerable<object> dataRows, string TableName)
+        {
+            DataBot.DeleteDataRows(dataRows, TableName);
+        }
+
         /// <summary>
         /// Send a "Set WebHooks Webhooks Enabled" toggle request to the system database.
         /// </summary>
@@ -486,14 +491,14 @@ namespace StreamerBotLib.BotIOController
             DataBot.SetDiscordWebhooksEnabled(Enabled);
         }
 
-        public void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
+        public void UpdatedIsEnabledRows(string TableName)
         {
-            DataBot.UpdatedIsEnabledRows(dataRows, IsEnabled);
+            DataBot.GUISaveDataGridEdits(false, TableName);
         }
 
-        public void GUISaveDataGridEdits(bool CommandUpdate)
+        public void GUISaveDataGridEdits(bool CommandUpdate, string TableName)
         {
-            DataBot.GUISaveDataGridEdits(CommandUpdate);
+            DataBot.GUISaveDataGridEdits(CommandUpdate, TableName);
         }
 
         /// <summary>
@@ -1681,6 +1686,11 @@ namespace StreamerBotLib.BotIOController
         public void TestAddUsers()
         {
             DataBot.TestAddUsers();
+        }
+
+        public void DebugAddNewMultiLiveData()
+        {
+            DataBot.DebugAddNewMultiLiveData();
         }
 #endif
         #endregion

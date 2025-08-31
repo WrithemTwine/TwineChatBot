@@ -9,7 +9,6 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Globalization;
 using System.Windows.Documents;
 
@@ -224,22 +223,16 @@ namespace StreamerBotLib.Systems
             //DataManage.PostUpdatedDataRow(RowChanged);
         }
 
-        public void DeleteRows(IEnumerable<DataRow> dataRows)
+        public void DeleteRows(IEnumerable<object> dataRows, string TableName)
         {
             LogWriter.DebugLog("DeleteRows", DebugLogTypes.CommonSystem, $"Deleting Rows: {dataRows.Count()}");
-            DataManage.DeleteDataRows(dataRows);
+            DataManage.DeleteDataRows(dataRows, TableName);
         }
 
         public void AddNewAutoShoutUser(string UserId, Platform platform)
         {
             LogWriter.DebugLog("AddNewAutoShoutUser", DebugLogTypes.CommonSystem, $"Adding New AutoShout User: {UserId}");
             DataManage.PostNewAutoShoutUser(UserId, platform);
-        }
-
-        internal void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled = false)
-        {
-            LogWriter.DebugLog("UpdatedIsEnabledRows", DebugLogTypes.CommonSystem, $"Updating IsEnabled Rows: {dataRows.Count()}");
-            DataManage.SetIsEnabled(dataRows, IsEnabled);
         }
 
         internal bool CheckField(string dataTable, string fieldName)
@@ -674,19 +667,23 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Updating statistics.");
             if (User.UserName != OptionFlags.TwitchBotUserName)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, $"Incrementing total chat count for user {User.UserName}.");
                 UpdatedStat(StreamStatType.TotalChats);
             }
 
             if (MsgReceived.IsSubscriber)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, $"User {User.UserName} is a subscriber.");
                 SubJoined(MsgReceived.DisplayName);
             }
             if (MsgReceived.IsVip)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, $"User {User.UserName} is a VIP.");
                 VIPJoined(MsgReceived.DisplayName);
             }
             if (MsgReceived.IsModerator)
             {
+                LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, $"User {User.UserName} is a moderator.");
                 ModJoined(MsgReceived.DisplayName);
             }
 
@@ -832,10 +829,10 @@ namespace StreamerBotLib.Systems
         /// Save the data grid edits to the database. If the edit involved a command, update the repeat command list.
         /// </summary>
         /// <param name="CommandUpdate">Notification if the edit involved a command.</param>
-        public void GUISaveDataGridEdits(bool CommandUpdate)
+        public void GUISaveDataGridEdits(bool CommandUpdate, string TableName)
         {
             LogWriter.DebugLog("GUISaveDataGridEdits", DebugLogTypes.SystemController, "Saving data grid edits.");
-            DataManage.GUIRowEditSave();
+            DataManage.GUIRowEditSave(TableName);
 
             if (CommandUpdate)
             {

@@ -111,16 +111,7 @@ namespace StreamerBot
                         case "ModeratorApprove":
                             DG_ModApprove.Items.Refresh();
                             break;
-                        case "MultiChannels":
-
-                            break;
-                        case "MultiLiveStreams":
-
-                            break;
-                        case "MultiWebhooks":
-
-                            break;
-                        case "MultiSummaryLiveStreams":
+                        case "MultiChannels" or "MultiLiveStreams" or "MultiWebhooks" or "MultiSummaryLiveStreams":
 
                             break;
                         case "OutRaidData":
@@ -172,20 +163,20 @@ namespace StreamerBot
         {
             if (sender.GetType() == typeof(DataGrid))
             {
-                bool FoundAddShout = ((DataGrid)sender).Name is "DG_Users" or "DG_Followers";
-                bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "IsEnabled").Any();
+                bool FoundAddShout = ((DataGrid)sender).Name is nameof(DG_Users) or nameof(DG_Followers);
+                bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "Enabled").Any();
                 bool FoundAddItem = ((DataGrid)sender).Name is
-                       "DG_CurrencyType"
-                    or "DG_CustomWelcome"
-                    or "DG_InRaids"
-                    or "DG_Mod_LearnMsgs"
-                    or "DG_ModApprove"
-                    or "DG_OutRaids"
-                    or "DG_OverlayService_Actions"
-                    or "DG_User_Quotes"
-                    or "DG_User_Shoutouts"
-                    or "DG_UserDefinedCommands"
-                    or "DG_Webhooks";
+                       nameof(DG_CurrencyType)
+                    or nameof(DG_CustomWelcome)
+                    or nameof(DG_InRaids)
+                    or nameof(DG_OutRaids)
+                    or nameof(DG_Mod_LearnMsgs)
+                    or nameof(DG_ModApprove)
+                    or nameof(DG_OverlayService_Actions)
+                    or nameof(DG_User_Quotes)
+                    or nameof(DG_User_Shoutouts)
+                    or nameof(DG_UserDefinedCommands)
+                    or nameof(DG_Webhooks);
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
@@ -277,10 +268,7 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            foreach (object R in item.SelectedItems)
-            {
-                // TODO: fix menu delete click - item.ItemsSource.
-            }
+            Controller.DeleteDataRows((IEnumerable<object>)item.SelectedItems, GetTableName(item));
         }
         private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
         {
@@ -309,13 +297,71 @@ namespace StreamerBot
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            Controller.UpdatedIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), true);
+            var rows = item.SelectedItems;
+
+            if (rows.Count > 0 && rows[0].GetType().GetProperty("IsEnabled") is not null)
+            {
+                foreach (var row in rows)
+                {
+                    row.GetType().GetProperty("IsEnabled")?.SetValue(row, true);
+                }
+
+                Controller.UpdatedIsEnabledRows(GetTableName(item));
+            }
         }
+
+        private string GetTableName(DataGrid item)
+        {
+            return item.Name switch
+            {
+                nameof(DG_Mod_BanReasons) => "BanReasons",
+                nameof(DG_Mod_BanRules) => "BanRules",
+                nameof(DG_CategoryList) => "CategoryList",
+                nameof(DG_CommonMsgs) => "ChannelEvents",
+                nameof(DG_Clips) => "Clips",
+                nameof(DG_BuiltInCommands) => "Commands",
+                nameof(DG_UserDefinedCommands) => "CommandsUser",
+                nameof(DG_Currency) => "Currency",
+                nameof(DG_CurrencyType) => "CurrencyType",
+                nameof(DG_CustomWelcome) => "CustomWelcome",
+                nameof(DG_Followers) => "Followers",
+                nameof(DG_DeathCounter) => "GameDeadCounter",
+                nameof(DG_User_Giveaway) => "GiveawayUserData",
+                nameof(DG_InRaids) => "InRaidData",
+                nameof(DG_Mod_LearnMsgs) => "LearnMsgs",
+                nameof(DG_ModApprove) => "ModeratorApprove",
+                nameof(DG_OutRaids) => "OutRaidData",
+                nameof(DG_OverlayService_Actions) => "OverlayServices",
+                nameof(DG_OverlayService_Ticker) => "OverlayTicker",
+                nameof(DG_User_Quotes) => "Quotes",
+                nameof(DG_User_Shoutouts) => "ShoutOuts",
+                nameof(DG_StreamData_Stats) => "StreamStats",
+                nameof(DG_Users) => "Users",
+                nameof(DG_Webhooks) => "Webhooks",
+                // specific to MultiLiveDataGrids.xaml, also routed through here
+                "DG_Multi_ChannelNames" => "MultiChannels",
+                "DG_Multi_LiveStreams" => "MultiLiveStreams",
+                "DG_Multi_WebHooks" => "MultiWebhooks",
+                "DG_Multi_SummaryLiveStreams" => "MultiSummaryLiveStreams",
+                _ => ""
+            };
+        }
+
         private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            Controller.UpdatedIsEnabledRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)), false);
+            var rows = item.SelectedItems;
+
+            if (rows.Count > 0 && rows[0].GetType().GetProperty("IsEnabled") is not null)
+            {
+                foreach (var row in rows)
+                {
+                    row.GetType().GetProperty("IsEnabled")?.SetValue(row, false);
+                }
+
+                Controller.UpdatedIsEnabledRows(GetTableName(item));
+            }
         }
 
         #endregion
@@ -325,7 +371,7 @@ namespace StreamerBot
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
-                Controller.GUISaveDataGridEdits((sender as DataGrid).Name is "DG_BuiltInCommands" or "DG_UserDefinedCommands");
+                Controller.GUISaveDataGridEdits((sender as DataGrid).Name is "DG_BuiltInCommands" or "DG_UserDefinedCommands", GetTableName(sender as DataGrid));
             }
         }
 

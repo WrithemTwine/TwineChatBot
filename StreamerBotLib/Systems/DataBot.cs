@@ -142,8 +142,7 @@ namespace StreamerBotLib.Systems
             {
                 LogWriter.DebugLog("ActivateRepeatTimers", DebugLogTypes.DataBot, "Activating repeat timers.");
                 SystemAction.ActivateRepeatTimers();
-            }
-                ));
+            }));
         }
 
         public void StreamOnline(DateTime startedAt, Action<bool> callback)
@@ -220,51 +219,65 @@ namespace StreamerBotLib.Systems
 
         public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> overlayHandler, EventHandler<UpdatedTickerItemsEventArgs> tickerHandler)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("SetNewOverlayEventHandler", DebugLogTypes.DataBot, "Setting new overlay event handler.");
-                SystemAction.SetNewOverlayEventHandler(overlayHandler, tickerHandler); }));
+                SystemAction.SetNewOverlayEventHandler(overlayHandler, tickerHandler);
+            }));
         }
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, ChannelEventActions eventAction, LiveUser user, string UserMsg = null)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.DataBot, $"Checking for overlay event: {overlayType} with action: {eventAction} for user: {user?.UserName}.");
-                SystemAction.CheckForOverlayEvent(overlayType, eventAction, user, UserMsg); }));
+                SystemAction.CheckForOverlayEvent(overlayType, eventAction, user, UserMsg);
+            }));
         }
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, string eventAction, LiveUser user, string UserMsg = null)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.DataBot, $"Checking for overlay event: {overlayType} with action: {eventAction} for user: {user?.UserName}.");
-                SystemAction.CheckForOverlayEvent(overlayType, eventAction, user, UserMsg); }));
+                SystemAction.CheckForOverlayEvent(overlayType, eventAction, user, UserMsg);
+            }));
         }
 
         public void SendInitialTickerItems()
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("SendInitialTickerItems", DebugLogTypes.DataBot, "Sending initial ticker items.");
-                SystemAction.SendInitialTickerItems(); }));
+                SystemAction.SendInitialTickerItems();
+            }));
         }
 
         public void ClipHelper(List<Clip> clips)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("ClipHelper", DebugLogTypes.DataBot, $"Processing clips count: {clips?.Count ?? 0}.");
-                SystemAction.ClipHelper(clips); }));
+                SystemAction.ClipHelper(clips);
+            }));
         }
 
         public void UpdatedStat(params StreamStatType[] statTypes)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("UpdatedStat", DebugLogTypes.DataBot, $"Updating stats: {string.Join(", ", statTypes)}.");
-                SystemAction.UpdatedStat(statTypes); }));
+                SystemAction.UpdatedStat(statTypes);
+            }));
         }
 
         public void UpdatedStat(StreamStatType statType, int value)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("UpdatedStat", DebugLogTypes.DataBot, $"Updating stat: {statType} with value: {value}.");
-                SystemAction.UpdatedStat(statType, value); }));
+                SystemAction.UpdatedStat(statType, value);
+            }));
         }
 
         #region Debug and Test Methods
@@ -289,140 +302,187 @@ namespace StreamerBotLib.Systems
                 SystemAction.TestAddUsers();
             }));
         }
+
+        public void DebugAddNewMultiLiveData()
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("DebugAddNewMultiLiveData", DebugLogTypes.DataBot, "Debugging adding new multi live data.");
+                SystemAction.DebugAddNewMultiLiveData();
+            }));
+        }
 #endif
         #endregion
 
         public void UserJoined(List<LiveUser> users)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("UserJoined", DebugLogTypes.DataBot, $"Users joined: {string.Join(", ", users.Select(u => u.UserName))}.");
-                SystemAction.UserJoined(users); }));
+                SystemAction.UserJoined(users);
+            }));
         }
 
         public void UserLeft(LiveUser user)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("UserLeft", DebugLogTypes.DataBot, $"User left: {user.UserName}.");
-                SystemAction.UserLeft(user); }));
+                SystemAction.UserLeft(user);
+            }));
         }
 
         public void MessageReceived(CmdMessage msg, LiveUser user)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("MessageReceived", DebugLogTypes.DataBot, $"Message received from user: {user.UserName}, message: {msg.Message}.");
-                SystemAction.MessageReceived(msg, user); }));
+                SystemAction.MessageReceived(msg, user);
+            }));
         }
 
         public void ManageGiveaway(LiveUser user)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.DataBot, $"Managing giveaway for user: {user.UserName}.");
-                SystemAction.ManageGiveaway(user); }));
+                SystemAction.ManageGiveaway(user);
+            }));
         }
 
         public void BeginGiveaway()
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("BeginGiveaway", DebugLogTypes.DataBot, "Beginning giveaway.");
-                SystemAction.BeginGiveaway(); }));
+                SystemAction.BeginGiveaway();
+            }));
         }
 
         public void EndGiveaway()
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("EndGiveaway", DebugLogTypes.DataBot, "Ending giveaway.");
-                SystemAction.EndGiveaway(); }));
+                SystemAction.EndGiveaway();
+            }));
         }
 
         public void PostGiveawayResult()
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("PostGiveawayResult", DebugLogTypes.DataBot, "Posting giveaway result.");
-                SystemAction.PostGiveawayResult(); }));
+                SystemAction.PostGiveawayResult();
+            }));
         }
 
         public void UserCheered(LiveUser user, int bits)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("UserCheered", DebugLogTypes.DataBot, $"User cheered: {user.UserName} with bits: {bits}.");
-                SystemAction.UserCheered(user, bits); }));
+                SystemAction.UserCheered(user, bits);
+            }));
         }
 
         public void AddNewAutoShoutUser(string userId, Platform platform)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("AddNewAutoShoutUser", DebugLogTypes.DataBot, $"Adding new auto shout user: {userId} on platform: {platform}.");
-                SystemAction.AddNewAutoShoutUser(userId, platform); }));
+                SystemAction.AddNewAutoShoutUser(userId, platform);
+            }));
         }
 
         public void StartBulkFollowers()
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("StartBulkFollowers", DebugLogTypes.DataBot, "Starting bulk followers process.");
-                SystemAction.StartBulkFollowers(); }));
+                SystemAction.StartBulkFollowers();
+            }));
         }
 
         public void UpdateFollowers(List<Follow> follows)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("UpdateFollowers", DebugLogTypes.DataBot, $"Updating followers count: {follows?.Count ?? 0}.");
-                SystemAction.UpdateFollowers(follows); }));
+                SystemAction.UpdateFollowers(follows);
+            }));
         }
 
         public void StopBulkFollowers()
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("StopBulkFollowers", DebugLogTypes.DataBot, "Stopping bulk followers process.");
-                SystemAction.StopBulkFollowers(); }));
+                SystemAction.StopBulkFollowers();
+            }));
         }
 
         public void PostOutgoingRaid(string hostedChannel, DateTime currTime)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("PostOutgoingRaid", DebugLogTypes.DataBot, $"Posting outgoing raid to channel: {hostedChannel} at time: {currTime}.");
-                SystemAction.PostOutgoingRaid(hostedChannel, currTime); }));
+                SystemAction.PostOutgoingRaid(hostedChannel, currTime);
+            }));
         }
 
         public void ProcessCommand(CmdMessage commandmsg, Platform source)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("ProcessCommand", DebugLogTypes.DataBot, $"Processing command: {commandmsg.CommandText} from source: {source}.");
-                SystemAction.ProcessCommand(commandmsg, source); }));
+                SystemAction.ProcessCommand(commandmsg, source);
+            }));
         }
 
         public void AddNewFollowers(List<Follow> follows)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("AddNewFollowers", DebugLogTypes.DataBot, $"Adding new followers count: {follows?.Count ?? 0}.");
-                SystemAction.AddNewFollowers(follows); }));
+                SystemAction.AddNewFollowers(follows);
+            }));
         }
 
         public void PostApproval(string message, Task action)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("PostApproval", DebugLogTypes.DataBot, $"Posting approval message: {message} with action: {action?.Id}.");
-                SystemAction.PostApproval(message, action); }));
+                SystemAction.PostApproval(message, action);
+            }));
         }
 
         public void AddNewOverlayTickerItem(OverlayTickerItem item, string value)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("AddNewOverlayTickerItem", DebugLogTypes.DataBot, $"Adding new overlay ticker item: {item} with value: {value}.");
-                SystemAction.AddNewOverlayTickerItem(item, value); }));
+                SystemAction.AddNewOverlayTickerItem(item, value);
+            }));
         }
 
         public void PostIncomingRaid(LiveUser user, DateTime raidTime, int viewerCount, CategoryData category)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.DataBot, $"Posting incoming raid from user: {user?.UserName} at time: {raidTime}, viewer count: {viewerCount}, category: {category?.CategoryName}.");
-                SystemAction.PostIncomingRaid(user, raidTime, viewerCount, category); }));
+                SystemAction.PostIncomingRaid(user, raidTime, viewerCount, category);
+            }));
         }
 
         public void SetSystemEventsEnabled(bool enabled)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("SetSystemEventsEnabled", DebugLogTypes.DataBot, $"Setting system events enabled: {enabled}.");
-                SystemAction.SetSystemEventsEnabled(enabled); }));
+                SystemAction.SetSystemEventsEnabled(enabled);
+            }));
         }
 
         public void GetMultiWebHooks(Action<IEnumerable<Tuple<WebhooksSource, Uri>>> callback)
@@ -444,74 +504,94 @@ namespace StreamerBotLib.Systems
             }));
         }
 
-        public void GUISaveDataGridEdits(bool CommandUpdate)
+        public void DeleteDataRows(IEnumerable<object> entities, string TableName)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("DeleteDataRows", DebugLogTypes.DataBot, "Deleting data rows.");
+                SystemAction.DeleteRows(entities, TableName);
+            }));
+        }
+
+        public void GUISaveDataGridEdits(bool CommandUpdate, string TableName)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("GUISaveDataGridEdits", DebugLogTypes.DataBot, $"Saving data grid edits with command update: {CommandUpdate}.");
-                SystemAction.GUISaveDataGridEdits(CommandUpdate); }));
+                SystemAction.GUISaveDataGridEdits(CommandUpdate, TableName);
+            }));
         }
 
         public void ManageDatabase()
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("ManageDatabase", DebugLogTypes.DataBot, "Managing database.");
-                SystemAction.ManageDatabase(); }));
+                SystemAction.ManageDatabase();
+            }));
         }
 
         internal void DataGridUpdatedRow(object sender, AddNewRowEventArgs e)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("DataGridUpdatedRow", DebugLogTypes.DataBot, $"Updating data grid row: {e.NewRow?.TableName}.");
-                SystemAction.PostDataGridGUIAddRow(e.NewRow); }));
+                SystemAction.PostDataGridGUIAddRow(e.NewRow);
+            }));
         }
 
         public void ClearWatchTime()
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("ClearWatchTime", DebugLogTypes.DataBot, "Clearing watch time.");
-                SystemAction.ClearWatchTime(); }));
+                SystemAction.ClearWatchTime();
+            }));
         }
 
         public void ClearAllCurrenciesValues()
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("ClearAllCurrenciesValues", DebugLogTypes.DataBot, "Clearing all currencies values.");
-                SystemAction.ClearAllCurrenciesValues(); }));
+                SystemAction.ClearAllCurrenciesValues();
+            }));
         }
 
         public void ClearUsersNonFollowers()
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("ClearUsersNonFollowers", DebugLogTypes.DataBot, "Clearing users who are not followers.");
-                SystemAction.ClearUsersNonFollowers(); }));
+                SystemAction.ClearUsersNonFollowers();
+            }));
         }
 
         public void SetBuiltInCommandsEnabled(bool enabled)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("SetBuiltInCommandsEnabled", DebugLogTypes.DataBot, $"Setting built-in commands enabled: {enabled}.");
-                SystemAction.SetBuiltInCommandsEnabled(enabled); }));
+                SystemAction.SetBuiltInCommandsEnabled(enabled);
+            }));
         }
 
         public void SetUserDefinedCommandsEnabled(bool enabled)
         {
-            ActionQueue.Enqueue(new Task(() => { 
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("SetUserDefinedCommandsEnabled", DebugLogTypes.DataBot, $"Setting user-defined commands enabled: {enabled}.");
-                SystemAction.SetUserDefinedCommandsEnabled(enabled); }));
+                SystemAction.SetUserDefinedCommandsEnabled(enabled);
+            }));
         }
 
         public void SetDiscordWebhooksEnabled(bool enabled)
         {
-            ActionQueue.Enqueue(new Task(() => {
-               LogWriter.DebugLog("SetDiscordWebhooksEnabled", DebugLogTypes.DataBot, $"Setting Discord webhooks enabled: {enabled}.");
-                SystemAction.SetDiscordWebhooksEnabled(enabled); }));
-        }
-
-        public void UpdatedIsEnabledRows(IEnumerable<DataRow> dataRows, bool IsEnabled)
-        {
-            ActionQueue.Enqueue(new Task(() => {
-                LogWriter.DebugLog("UpdatedIsEnabledRows", DebugLogTypes.DataBot, $"Updating IsEnabled rows: {dataRows?.Count() ?? 0} with value: {IsEnabled}.");
-                SystemAction.UpdatedIsEnabledRows(dataRows, IsEnabled); }));
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("SetDiscordWebhooksEnabled", DebugLogTypes.DataBot, $"Setting Discord webhooks enabled: {enabled}.");
+                SystemAction.SetDiscordWebhooksEnabled(enabled);
+            }));
         }
 
         public void GetUserId(LiveUser liveUser, Action<string> callback)
@@ -534,9 +614,11 @@ namespace StreamerBotLib.Systems
 
         public void PostMultiLiveLog(string message)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("PostMultiLiveLog", DebugLogTypes.DataBot, $"Posting multi live log: {message}.");
-                SystemAction.PostMultiLiveLog(message); }));
+                SystemAction.PostMultiLiveLog(message);
+            }));
         }
 
         public void CheckMultiStreamDate(string userId, Platform platform, DateTime currTime, Action<bool> callback)
@@ -559,16 +641,20 @@ namespace StreamerBotLib.Systems
 
         public void MultiSummarize(MultiLiveSummarizeEventArgs multiLiveSummarizeEventArgs)
         {
-            ActionQueue.Enqueue(new Task(() => {
-                LogWriter.DebugLog("MultiSummarize", DebugLogTypes.DataBot, $"Summarizing multi live data for user: {multiLiveSummarizeEventArgs.Data.UserId}.");
-                SystemAction.MultiSummarize(multiLiveSummarizeEventArgs); }));
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("MultiSummarize", DebugLogTypes.DataBot, $"Summarizing multi live data for users.");
+                SystemAction.MultiSummarize(multiLiveSummarizeEventArgs);
+            }));
         }
 
         public void AddNewMonitorChannel(List<LiveUser> users)
         {
-            ActionQueue.Enqueue(new Task(() => {
+            ActionQueue.Enqueue(new Task(() =>
+            {
                 LogWriter.DebugLog("AddNewMonitorChannel", DebugLogTypes.DataBot, $"Adding new monitor channel for users: {string.Join(", ", users.Select(u => u.UserName))}.");
-                SystemAction.AddNewMonitorChannel(users); }));
+                SystemAction.AddNewMonitorChannel(users);
+            }));
         }
 
         public void GetMonitorChannels(Platform platform, Action<IEnumerable<string>> callback)

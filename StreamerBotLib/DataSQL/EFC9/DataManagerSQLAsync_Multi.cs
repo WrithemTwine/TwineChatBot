@@ -111,6 +111,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     LiveDate = onDate
                 });
                 await context.SaveChangesAsync();
+                await RefreshMultiLiveStreamsList(true);
                 return true; // New stream date added
             }
 

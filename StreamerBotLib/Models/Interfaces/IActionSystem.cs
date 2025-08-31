@@ -83,5 +83,7 @@ namespace StreamerBotLib.Models.Interfaces
         void GetEventAnnounce(ChannelEventActions channelEventActions, Action<bool> callback);
         void CheckForOverlayEvent(OverlayTypes overlayType, string eventAction, LiveUser user, string UserMsg = null);
         void PostMultiStreamDate(LiveUser User, DateTime currTime, Action<bool> callback);
+        void DeleteDataRows(IEnumerable<object> dataRows, string TableName);
+        void GUISaveDataGridEdits(bool CommandUpdate, string TableName);
     }
 }

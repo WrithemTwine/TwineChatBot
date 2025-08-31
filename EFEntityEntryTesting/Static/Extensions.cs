@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace StreamerBotLib.Static
+namespace EFEntityEntryTesting.Static
 {
     public static class Extensions
     {
@@ -57,7 +57,7 @@ namespace StreamerBotLib.Static
         {
             foreach (T item in ItemEnumerable)
             {
-                UniqueAdd(List, item);
+                List.UniqueAdd(item);
             }
         }
 
@@ -111,7 +111,7 @@ namespace StreamerBotLib.Static
         {
             foreach (T item in ItemEnumerable)
             {
-                UniqueAdd(ICollection, item);
+                ICollection.UniqueAdd(item);
             }
         }
 

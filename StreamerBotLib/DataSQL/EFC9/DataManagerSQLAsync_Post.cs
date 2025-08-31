@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
+
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Interfaces;
@@ -13,6 +14,323 @@ namespace StreamerBotLib.DataSQL.EFC9
 {
     internal partial class DataManagerSQLAsync
     {
+        #region Delete Records
+
+        internal async Task DeleteDataRows(IEnumerable<object> entities, string TableName)
+        {
+            if (entities != null)
+            {
+                switch (TableName)
+                {
+                    case "BanReasons":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.BanReasons.RemoveRange(entities.Cast<Models.BanReasons>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshBanReasonsList(true);
+                        }
+                        break;
+                    case "BanRules":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.BanRules.RemoveRange(entities.Cast<Models.BanRules>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshBanRulesList(true);
+                        }
+                        break;
+                    case "CategoryList":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.CategoryList.RemoveRange(entities.Cast<Models.CategoryList>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshCategoryListList(true);
+                        }
+                        break;
+                    case "ChannelEvents":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.ChannelEvents.RemoveRange(entities.Cast<Models.ChannelEvents>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshChannelEventsList(true);
+                        }
+                        break;
+                    case "Clips":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.Clips.RemoveRange(entities.Cast<Models.Clips>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshClipsList(true);
+                        }
+                        break;
+                    case "Commands":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.Commands.RemoveRange(entities.Cast<Models.Commands>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshCommandsList(true);
+                        }
+                        break;
+                    case "CommandsUser":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.CommandsUser.RemoveRange(entities.Cast<Models.CommandsUser>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshCommandsUserList(true);
+                        }
+                        break;
+                    case "Currency":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.Currency.RemoveRange(entities.Cast<Models.Currency>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshCurrencyList(true);
+                        }
+                        break;
+                    case "CurrencyType":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.CurrencyType.RemoveRange(entities.Cast<Models.CurrencyType>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshCurrencyTypeList(true);
+                        }
+                        break;
+                    case "CustomWelcome":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.CustomWelcome.RemoveRange(entities.Cast<Models.CustomWelcome>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshCustomWelcomeList(true);
+                        }
+                        break;
+                    case "Followers":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.Followers.RemoveRange(entities.Cast<Models.Followers>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshFollowersList(true);
+                        }
+                        break;
+                    case "GameDeadCounter":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.GameDeadCounter.RemoveRange(entities.Cast<Models.GameDeadCounter>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshGameDeadCounterList(true);
+                        }
+                        break;
+                    case "GiveawayUserData":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.GiveawayUserData.RemoveRange(entities.Cast<Models.GiveawayUserData>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshGiveawayUserDataList(true);
+                        }
+                        break;
+                    case "InRaidData":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.InRaidData.RemoveRange(entities.Cast<Models.InRaidData>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshInRaidDataList(true);
+                        }
+                        break;
+                    case "LearnMsgs":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.LearnMsgs.RemoveRange(entities.Cast<Models.LearnMsgs>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshLearnMsgsList(true);
+                        }
+                        break;
+                    case "ModeratorApprove":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.ModeratorApprove.RemoveRange(entities.Cast<Models.ModeratorApprove>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshModeratorApproveList(true);
+                        }
+                        break;
+                    case "MultiChannels":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.MultiChannels.RemoveRange(entities.Cast<Models.MultiChannels>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshMultiChannelsList(true);
+                        }
+                        break;
+                    case "MultiLiveStreams":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.MultiLiveStreams.RemoveRange(entities.Cast<Models.MultiLiveStreams>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshMultiLiveStreamsList(true);
+                        }
+                        break;
+                    case "MultiSummaryLiveStreams":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.MultiSummaryLiveStreams.RemoveRange(entities.Cast<Models.MultiSummaryLiveStreams>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshMultiSummaryLiveStreamsList(true);
+                        }
+                        break;
+                    case "MultiWebhooks":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.MultiWebhooks.RemoveRange(entities.Cast<Models.MultiWebhooks>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshMultiWebhooksList(true);
+                        }
+                        break;
+                    case "OldFollowUsers":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.OldFollowUsers.RemoveRange(entities.Cast<Models.OldFollowUsers>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshOldFollowUsersList(true);
+                        }
+                        break;
+                    case "OutRaidData":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.OutRaidData.RemoveRange(entities.Cast<Models.OutRaidData>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshOutRaidDataList(true);
+                        }
+                        break;
+                    case "OverlayServices":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.OverlayServices.RemoveRange(entities.Cast<Models.OverlayServices>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshOverlayServicesList(true);
+                        }
+                        break;
+                    case "OverlayTicker":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.OverlayTicker.RemoveRange(entities.Cast<Models.OverlayTicker>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshOverlayTickerList(true);
+                        }
+                        break;
+                    case "Quotes":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.Quotes.RemoveRange(entities.Cast<Models.Quotes>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshQuotesList(true);
+                        }
+                        break;
+                    case "ShoutOuts":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.ShoutOuts.RemoveRange(entities.Cast<Models.ShoutOuts>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshShoutOutsList(true);
+                        }
+                        break;
+                    case "StreamStats":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.StreamStats.RemoveRange(entities.Cast<Models.StreamStats>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshStreamStatsList(true);
+                        }
+                        break;
+                    case "Users":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.Users.RemoveRange(entities.Cast<Models.Users>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshUsersList(true);
+                        }
+                        break;
+                    case "UserStats":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.UserStats.RemoveRange(entities.Cast<Models.UserStats>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshUserStatsList(true);
+                        }
+                        break;
+                    case "Webhooks":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.Webhooks.RemoveRange(entities.Cast<Models.Webhooks>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshWebhooksList(true);
+                        }
+                        break;
+                    default:
+                        LogWriter.DebugLog("DeleteDataRows", DebugLogTypes.DataManager, $"Table '{TableName}' not found.");
+                        break;
+                }
+            }
+        }
+
+        #endregion
+
         #region Post_Methods
 
         internal async Task PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta)
@@ -276,6 +594,15 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                      .Where(CL => (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName)) || CL.CategoryId == categoryData.CategoryId)
                                                      .Select(CL => CL).FirstOrDefaultAsync();
                 category.StreamCount++;
+                StreamStats currStream = await context.StreamStats
+                          .Where(S => S.StreamStart == CurrStreamStart)
+                          .Select(S => S)
+                          .FirstOrDefaultAsync();
+                if (currStream != default)
+                {
+                    currStream.Category.UniqueAdd(categoryData.CategoryName);
+                }
+
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);
                 await RefreshCategoryListList(true);
@@ -594,7 +921,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             if (addstream)
             {
                 await context.Database.BeginTransactionAsync();
-                await context.StreamStats.AddAsync(new(streamStart: StreamStart, streamEnd: StreamStart));
+                await context.StreamStats.AddAsync(new(streamStart: StreamStart, streamEnd: StreamStart, category: [Category]));
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);
                 await RefreshStreamStatsList(true);

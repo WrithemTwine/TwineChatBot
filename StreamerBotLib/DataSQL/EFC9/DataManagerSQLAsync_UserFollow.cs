@@ -26,9 +26,19 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             using var context = BuildDataContext();
             return await context.Users
-                .Where(U => U.UserName.Equals(User.UserName, StringComparison.OrdinalIgnoreCase))
+                .Where(U => U.UserName == User.UserName || U.UserName.ToLower() == User.UserName.ToLower())
                 .Select(U => U.UserId)
                 .FirstOrDefaultAsync();
+        }
+
+        internal async Task<LiveUser> GetUserById(string UserId, Platform Platform)
+        {
+            using var context = BuildDataContext();
+            var user = await context.Users
+                .Where(U => U.UserId == UserId && U.Platform == Platform)
+                .Select(U => new LiveUser(U.UserName, U.Platform, U.UserId))
+                .FirstOrDefaultAsync();
+            return user ?? new LiveUser("Unknown", Platform, UserId);
         }
 
         private async Task<Users> PostNewUser(SQLDBContext context, LiveUser User, DateTime FirstSeen)

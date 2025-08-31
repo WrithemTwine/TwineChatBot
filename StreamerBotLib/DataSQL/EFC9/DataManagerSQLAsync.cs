@@ -322,9 +322,100 @@ namespace StreamerBotLib.DataSQL.EFC9
             LearnMsgChanged = true;
         }
 
-        internal async Task GUIRowEditSave()
+        internal async Task GUIRowEditSave(string TableName)
         {
             await GUIContext.SaveChangesAsync(); // tracked entities displayed in GUI DataGrid; user performed an edit, need to save any changes
+
+            switch (TableName)
+            {
+                case "BanReasons":
+                    await RefreshBanReasonsList();
+                    break;
+                case "BanRules":
+                    await RefreshBanRulesList();
+                    break;
+                case "CategoryList":
+                    await RefreshCategoryListList();
+                    break;
+                case "ChannelEvents":
+                    await RefreshChannelEventsList();
+                    break;
+                case "Clips":
+                    await RefreshClipsList();
+                    break;
+                case "Commands":
+                    await RefreshCommandsList();
+                    break;
+                case "CommandsUser":
+                    await RefreshCommandsUserList();
+                    break;
+                case "Currency":
+                    await RefreshCurrencyList();
+                    break;
+                case "CurrencyType":
+                    await RefreshCurrencyTypeList();
+                    break;
+                case "CustomWelcome":
+                    await RefreshCustomWelcomeList();
+                    break;
+                case "Followers":
+                    await RefreshFollowersList();
+                    break;
+                case "GameDeadCounter":
+                    await RefreshGameDeadCounterList();
+                    break;
+                case "GiveawayUserData":
+                    await RefreshGiveawayUserDataList();
+                    break;
+                case "InRaidData":
+                    await RefreshInRaidDataList();
+                    break;
+                case "LearnMsgs":
+                    await RefreshLearnMsgsList();
+                    break;
+                case "ModeratorApprove":
+                    await RefreshModeratorApproveList();
+                    break;
+                case "OutRaidData":
+                    await RefreshOutRaidDataList();
+                    break;
+                case "OverlayServices":
+                    await RefreshOverlayServicesList();
+                    break;
+                case "OverlayTicker":
+                    await RefreshOverlayTickerList();
+                    break;
+                case "Quotes":
+                    await RefreshQuotesList();
+                    break;
+                case "ShoutOuts":
+                    await RefreshShoutOutsList();
+                    break;
+                case "StreamStats":
+                    await RefreshStreamStatsList();
+                    break;
+                case "Users":
+                    await RefreshUsersList();
+                    break;
+                case "Webhooks":
+                    await RefreshWebhooksList();
+                    break;
+                case "MultiChannels":
+                    await RefreshMultiChannelsList();
+                    break;
+                case "MultiLiveStreams":
+                    await RefreshMultiLiveStreamsList();
+                    break;
+                case "MultiWebhooks":
+                    await RefreshMultiWebhooksList();
+                    break;
+                case "MultiSummaryLiveStreams":
+                    await RefreshMultiSummaryLiveStreamsList();
+                    break;
+                default:
+                    // Optionally handle unknown table names
+                    break;
+            }
         }
 
 

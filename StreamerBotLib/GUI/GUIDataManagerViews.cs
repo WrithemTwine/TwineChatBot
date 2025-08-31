@@ -7,7 +7,6 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -85,6 +84,11 @@ namespace StreamerBotLib.GUI
         {
             cleanupList = [];
             multiLiveStatusLog = [];
+
+#if DEBUG
+            multiLiveStatusLog.Add("Debug Mode: MultiLiveStatusLog initialized.");
+            multiLiveStatusLog.Add("A streamer now went online and they have an informative title to show here and can be very long.");
+#endif
         }
 
         public void SetSystemCollections(ActionSystem actionSystem)
@@ -354,12 +358,23 @@ namespace StreamerBotLib.GUI
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         { // source data requires SQL-safe escaping, ' , due to SQL queries using source text and mismatching- ' -in the where clause
-            return FormatData.RemoveEscapeFormat((value as string) ?? "All");
+            var cats = (value as List<string>);
+
+            if (cats == null || cats.Count == 0)
+            {
+                cats = ["All"];
+            }
+            else if (cats[0] == "")
+            {
+                cats[0] = "All";
+            }
+
+            return FormatData.RemoveEscapeFormat(string.Join(",",cats));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         { // source data requires SQL-safe escaping, ' , due to SQL queries using source text and mismatching- ' -in the where clause
-            return FormatData.AddEscapeFormat((string)value);
+            return FormatData.AddEscapeFormat((string)value).Split(",").ToList();
         }
     }
 
@@ -369,6 +384,10 @@ namespace StreamerBotLib.GUI
         {
             List<CheckBox> checkBoxes = [];
             List<string> categories = (value as List<string>);
+            if(categories.Count == 1 && categories[0] is null or "")
+            {
+                categories[0] = "All";
+            }
             categories.ForEach((c) => c = FormatData.RemoveEscapeFormat(c));
 
             if (categories.Contains("All"))

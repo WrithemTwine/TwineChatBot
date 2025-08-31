@@ -4,8 +4,6 @@ using StreamerBotLib.Models.Events;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
 
-using System.Data;
-
 namespace StreamerBotLib.Models.Interfaces
 {
     public interface IDataManager : IDataManagerReadOnly
@@ -29,7 +27,7 @@ namespace StreamerBotLib.Models.Interfaces
         void ClearAllCurrencyValues();
         void ClearUsersNotFollowers();
         void ClearWatchTime();
-        void DeleteDataRows(IEnumerable<DataRow> dataRows);
+        void DeleteDataRows(IEnumerable<object> dataRows, string TableName);
         string EditCommand(string cmd, List<string> Arglist);
         Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes);
         new CommandData GetCommand(string cmd);
@@ -93,7 +91,6 @@ namespace StreamerBotLib.Models.Interfaces
         void SetBuiltInCommandsEnabled(bool Enabled);
         void SetCleanupList(ref List<ArchiveMultiStream> archiveMultiStreams);
         void SetMultiLiveStatusLog(ref List<string> log);
-        void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled = false);
         void SetSystemEventsEnabled(bool Enabled);
         void SetUserDefinedCommandsEnabled(bool Enabled);
         void SetWebhooksEnabled(bool Enabled);
@@ -110,7 +107,6 @@ namespace StreamerBotLib.Models.Interfaces
         void UserLeft(LiveUser User, DateTime LastSeen);
         void NotifyStopBulkFollowers();
         IEnumerable<Follow> PostFollowers(IEnumerable<Follow> follows);
-        void GUIRowEditSave();
         bool PostStream(DateTime StreamStart, string Category);
 
         void PostDataGridGUIAddRow(IDatabaseTableMeta tableMeta);
@@ -118,5 +114,6 @@ namespace StreamerBotLib.Models.Interfaces
         void PostCurrencyUpdate(List<PlayGameUserWager<PlayingCardFrench, PlayingCardSuit>> Updates, string CurrencyName);
         object GetICollection(DataTables dataTable);
         void Exit();
+        void GUIRowEditSave(string TableName);
     }
 }
