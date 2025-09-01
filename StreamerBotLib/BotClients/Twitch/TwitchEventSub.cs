@@ -1,6 +1,4 @@
-﻿#define BROKEN_EVENTSUB
-
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Interfaces;
@@ -25,60 +23,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private bool ErrorFound { get; set; } = false;
 
-#if BROKEN_EVENTSUB
-        internal TwitchEventSub(TwitchTokenBot TokenBot, Bots ClientName)
-        {
-            BotClientName = ClientName;
-            tokenBot = TokenBot;
-
-            if (ClientName == Bots.TwitchEventSubBot)
-            {
-                tokenBot.BotAccessTokenChanged += TokenBot_BotAccessTokenChanged;
-            }
-
-            if (ClientName == Bots.TwitchEventSubStreamer)
-            {
-                tokenBot.StreamerAccessTokenChanged += TokenBot_StreamerAccessTokenChanged;
-                tokenBot.StreamerNoScopesAccessTokenChanged += TokenBot_StreamerNoScopesAccessTokenChanged;
-            }
-        }
-
-        private void BuildClient()
-        {
-            ILoggerFactory StreamLoggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddStreamLogger();
-            });
-
-            _EventSubMessageIdsLogger = new EventSubMessageIdsLogger();
-            _EventSubWebsocketClient = new(StreamLoggerFactory);
-
-            _EventSubWebsocketClient.WebsocketConnected += OnWebsocketConnected;
-            _EventSubWebsocketClient.WebsocketDisconnected += OnWebsocketDisconnected;
-            _EventSubWebsocketClient.WebsocketReconnected += OnWebsocketReconnected;
-            _EventSubWebsocketClient.ErrorOccurred += OnErrorOccurred;
-        }
-
-        private void DisposeClient()
-        {
-            if (_EventSubWebsocketClient != null)
-            {
-                _EventSubWebsocketClient.WebsocketConnected -= OnWebsocketConnected;
-                _EventSubWebsocketClient.WebsocketDisconnected -= OnWebsocketDisconnected;
-                _EventSubWebsocketClient.WebsocketReconnected -= OnWebsocketReconnected;
-                _EventSubWebsocketClient.ErrorOccurred -= OnErrorOccurred;
-                _EventSubWebsocketClient = null;
-            }
-
-            foreach (var sub in SubscriptionHandlers)
-            {
-                sub.RemoveSubscriptions();
-            }
-
-            SubscriptionHandlers.Clear();
-        }
-#else
         internal TwitchEventSub(TwitchTokenBot TokenBot, Bots ClientName)
         {
             BotClientName = ClientName;
@@ -109,7 +53,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 tokenBot.StreamerNoScopesAccessTokenChanged += TokenBot_StreamerNoScopesAccessTokenChanged;
             }
         }        
-#endif
 
         private void TokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
         {
@@ -137,16 +80,20 @@ namespace StreamerBotLib.BotClients.Twitch
             if (subscriptions != null && IsActive == true)
             {
                 LogWriter.DebugLog("RefreshSubscriptions", DebugLogTypes.TwitchEventSub, "Refreshing EventSub subscriptions due to access token change.");
+
+                LogWriter.DebugLog("RefreshSubscriptions", DebugLogTypes.TwitchEventSub, "Removing all EventSub subscriptions to prepare for refresh.");
                 subscriptions.RemoveSubscriptions();
                 subscriptions.ClearSubscriptions();
 
 
                 if (OptionFlags.IsStreamOnline) // restore subscriptions based on if stream is online
                 {
+                    LogWriter.DebugLog("RefreshSubscriptions", DebugLogTypes.TwitchEventSub, "Stream is online, adding online EventSub subscriptions.");
                     subscriptions.AddSubscriptions();
                 }
                 else
                 { // restore stream offline, EventSub connected, subscriptions
+                    LogWriter.DebugLog("RefreshSubscriptions", DebugLogTypes.TwitchEventSub, "Stream is offline, adding offline EventSub subscriptions.");
                     subscriptions.AddConnectionSubscriptions();
                 }
             }
@@ -163,8 +110,10 @@ namespace StreamerBotLib.BotClients.Twitch
                     if (IsActive != true)
                     {
                         IsActive = true;
+                        LogWriter.DebugLog("OnWebsocketConnected", DebugLogTypes.TwitchEventSub, $"Adding immediately connected subscriptions.");
                         AddConnectedSubscriptions();
 
+                        LogWriter.DebugLog("OnWebsocketConnected", DebugLogTypes.TwitchEventSub, $"Notifying the bot is active.");
                         InvokeBotStarted();
                         _EventSubMessageIdsLogger.MsgLogging |= IsActive == true;
                         _EventSubMessageIdsLogger.MsgLogCleanup();
@@ -204,15 +153,17 @@ namespace StreamerBotLib.BotClients.Twitch
 
                     if (IsActive == true && !ErrorFound)
                     {
+                        LogWriter.DebugLog("OnWebsocketDisconnected", DebugLogTypes.TwitchEventSub, $"Websocket disconnected unexpectedly, restarting bot.");
                         await StopBot();
-                        Thread.Sleep(1000);
+                        await Task.Delay(1000);
                         await StartBot();
                     }
-                    else
-                    {
-                        ErrorFound = false; // stopping bot, clear the error-found
-                        await StopBot();
-                    }
+                    //else
+                    //{
+                    //    LogWriter.DebugLog("OnWebsocketDisconnected", DebugLogTypes.TwitchEventSub, $"Websocket disconnected, bot stopping the bot.");
+                    //    ErrorFound = false; // stopping bot, clear the error-found
+                    //    await StopBot();
+                    //}
                 }
                 catch (TokenExpiredException ex)
                 {
@@ -249,13 +200,6 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     try
                     {
-#if BROKEN_EVENTSUB
-                        if (IsActive != true)
-                        {
-                            BuildClient();
-
-                            OnInitialBotStartupSubHandlers?.Invoke(this, new());
-#else
                     if (IsActive == null)
                     {
                         OnInitialBotStartupSubHandlers?.Invoke(this, new());
@@ -263,7 +207,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
                     if (IsActive != true)
                     {
-#endif
                             if (BotClientName == Bots.TwitchEventSubBot)
                             {
                                 tokenBot.UpdateActiveTokens(BotType.BotAccount, true);
@@ -304,10 +247,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            if (_EventSubWebsocketClient == null)
-            {
-                BuildClient();
-            }
             await _EventSubWebsocketClient.ConnectAsync();
         }
 
@@ -319,16 +258,14 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     if (IsActive == true)
                     {
+                        RemoveClearSubscriptions();
 
-#if BROKEN_EVENTSUB
-                        DisposeClient();
-                        LogWriter.DebugLog("StopBot", DebugLogTypes.TwitchEventSub, "Stopping EventSub bot.");
-#else
                         LogWriter.DebugLog("StopBot", DebugLogTypes.TwitchEventSub, "Stopping EventSub bot.");
                         await StopAsync(new());
-#endif
 
                         IsActive = false;
+
+                        LogWriter.DebugLog("StopBot", DebugLogTypes.TwitchEventSub, "Notifying the GUI the bot stopped.");
                         InvokeBotStopped();
                     }
                 }
@@ -341,11 +278,14 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
+            LogWriter.DebugLog("StopAsync", DebugLogTypes.TwitchEventSub, "Disconnecting EventSub websocket client.");
+
             await _EventSubWebsocketClient?.DisconnectAsync();
         }
 
         internal void AddSubscriptionHandler(ITwitchBotEventSubSubscriptions twitchBotEventSubSubscription)
         {
+            LogWriter.DebugLog("AddSubscriptionHandler", DebugLogTypes.TwitchEventSub, $"Adding EventSub subscription handler for {twitchBotEventSubSubscription.CurrBot}.");
             twitchBotEventSubSubscription
                 .AddEventHandlers(_EventSubWebsocketClient)
                 .ConfigureMessageLogger(_EventSubMessageIdsLogger)
@@ -371,6 +311,16 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 subscription.RemoveSubscriptions(); // remove any active offline subscriptions before online mode subscriptions
                 subscription.AddSubscriptions();
+            }
+        }
+
+        private void RemoveClearSubscriptions()
+        {
+            LogWriter.DebugLog("RemoveClearSubscriptions", DebugLogTypes.TwitchEventSub, "Removing all EventSub subscriptions.");
+            foreach (var subscription in SubscriptionHandlers)
+            {
+                subscription.RemoveSubscriptions();
+                subscription.ClearSubscriptions();
             }
         }
     }

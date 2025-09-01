@@ -303,9 +303,11 @@ namespace StreamerBot
                     // use Auth code tokens, check on using the streamer token
                     (OptionFlags.TwitchTokenUseAuth &&
                         (AuthBotTokenData && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)) &&
-                        (AuthStreamerTokenData && (!OptionFlags.TwitchStreamerUseToken || !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode)))
+                        (AuthStreamerTokenData && (!OptionFlags.TwitchStreamerUseToken 
+                                                    || (!string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode) 
+                                                        && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerNoScopesAuthCode)
+                                                   )))
                     )
-
                     )
                 {
                     await BotController.TwitchInitializeHelix();

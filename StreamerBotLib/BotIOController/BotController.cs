@@ -72,40 +72,45 @@ namespace StreamerBotLib.BotIOController
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
             OutputSentToBots += DataBot.GetPostChannelMessageHandler();
-            DataBot.InitializeLiveMonitorUpdateChannels(
-                TwitchBots.InitializeLiveMonitor(
-                   (platform) =>
-                   {
-                       IEnumerable<string> result = null;
-                       using (var waitHandle = new ManualResetEventSlim())
+
+            ThreadManager.CreateThreadStart(".ctor_BotController", () =>
+            {
+                DataBot.InitializeLiveMonitorUpdateChannels(
+                    TwitchBots.InitializeLiveMonitor(
+                       (platform) =>
                        {
-                           DataBot.GetMonitorChannels(platform, ids =>
+                           IEnumerable<string> result = null;
+                           using (var waitHandle = new ManualResetEventSlim())
                            {
-                               result = ids;
-                               waitHandle.Set();
-                           });
-                           waitHandle.Wait();
+                               DataBot.GetMonitorChannels(platform, ids =>
+                               {
+                                   result = ids;
+                                   waitHandle.Set();
+                               });
+                               waitHandle.Wait();
+                           }
+                           return result ?? Enumerable.Empty<string>();
                        }
-                       return result ?? Enumerable.Empty<string>();
-                   }
+                       )
+                    );
 
-                   ));
-
-            TwitchBots.InitializeGetIds(
-                (liveUser) =>
-                {
-                    string result = null;
-                    using (var waitHandle = new ManualResetEventSlim())
+                TwitchBots.InitializeGetIds(
+                    (liveUser) =>
                     {
-                        DataBot.GetUserId(liveUser, id =>
+                        string result = null;
+                        using (var waitHandle = new ManualResetEventSlim())
                         {
-                            result = id;
-                            waitHandle.Set();
-                        });
-                        waitHandle.Wait();
+                            DataBot.GetUserId(liveUser, id =>
+                            {
+                                result = id;
+                                waitHandle.Set();
+                            });
+                            waitHandle.Wait();
+                        }
+                        return result;
                     }
-                    return result;
-                });
+                    );
+            });
 
             SetNewOverlayEventHandler();
 

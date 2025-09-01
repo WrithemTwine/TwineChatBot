@@ -400,25 +400,34 @@ namespace StreamerBotLib.BotClients.Twitch
                             }
                         }
 
-                        BotApiSettings ??= new()
+                        if (BotApiSettings == null)
                         {
-                            ClientId = OptionFlags.TwitchAuthBotClientId,
-                            AccessToken = OptionFlags.TwitchAuthBotAccessToken,
-                        };
+                            BotApiSettings = new()
+                            {
+                                ClientId = OptionFlags.TwitchAuthBotClientId,
+                                AccessToken = OptionFlags.TwitchAuthBotAccessToken,
+                            };
+                        }
 
-                        StreamerApiSettings ??= OptionFlags.TwitchStreamerUseToken
+                        if (StreamerApiSettings == null)
+                        {
+                            StreamerApiSettings = OptionFlags.TwitchStreamerUseToken
                                 ? new ApiSettings()
                                 {
                                     ClientId = OptionFlags.TwitchAuthStreamerClientId,
                                     AccessToken = OptionFlags.TwitchAuthStreamerAccessToken
                                 }
                                 : BotApiSettings;
+                        }
 
-                        StreamerNoScopesApiSettings ??= new ApiSettings()
+                        if (StreamerNoScopesApiSettings == null)
                         {
-                            ClientId = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId,
-                            AccessToken = OptionFlags.TwitchAuthStreamerNoScopesAccessToken
-                        };
+                            StreamerNoScopesApiSettings = new ApiSettings()
+                            {
+                                ClientId = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId,
+                                AccessToken = OptionFlags.TwitchAuthStreamerNoScopesAccessToken
+                            };
+                        }
 
                         SetTwitchApis();
                         SetIds();

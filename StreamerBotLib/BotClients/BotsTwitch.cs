@@ -266,6 +266,7 @@ namespace StreamerBotLib.BotClients
         #region Started-Stopped EventSub Bots
         private void TwitchEventSubBot_OnInitialBotStartupSubHandlers(object sender, EventArgs e)
         {
+            LogWriter.DebugLog("TwitchEventSubBot_OnInitialBotStartupSubHandlers", DebugLogTypes.TwitchBots, "Adding EventSub subscription handlers to the bot.");
             List<ITwitchBotEventSubSubscriptions> managers = [TwitchBotEventSubChatClient];
 
             if (!OptionFlags.TwitchStreamerUseToken)
