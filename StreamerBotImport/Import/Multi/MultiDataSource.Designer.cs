@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace StreamerBotLib.DataSQL.EFC9.Import.Multi {
+namespace StreamerBotImport.Import.Multi {
     
     
     /// <summary>

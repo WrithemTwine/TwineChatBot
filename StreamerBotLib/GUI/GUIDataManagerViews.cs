@@ -23,12 +23,14 @@ namespace StreamerBotLib.GUI
     {
         #region DataManager TableViews
         private Action<bool, Action<IEnumerable<string>>> GetDataCommands { get; set; }
+        private Action<bool, Action<IEnumerable<string>>> GetDataCommandsNoParams { get; set; }
 
         public FlowDocument ChatData { get; private set; }
         public ObservableCollection<string> CurrUserList { get; private set; }
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = [];
+        public ObservableCollection<string> CommandNoParamsCollection { get; set; } = [];
         public ObservableCollection<LiveUser> GiveawayCollection { get; set; }
 
         public int CurrFollowers => Followers?.Count(f => f.IsFollower) ?? 0;
@@ -99,9 +101,10 @@ namespace StreamerBotLib.GUI
             CurrUserList = actionSystem.CurrUserJoin;
         }
 
-        public void SetDataManagerViews(DataBot dataBot, Action<bool, Action<IEnumerable<string>>> callback)
+        public void SetDataManagerViews(DataBot dataBot, Action<bool, Action<IEnumerable<string>>> GetCommands, Action<bool, Action<IEnumerable<string>>> GetCommandsNoParams)
         {
-            GetDataCommands = callback;
+            GetDataCommands = GetCommands;
+            GetDataCommandsNoParams = GetCommandsNoParams;
 
             // set specific collection changed events for StatusBar data
             dataBot.GetICollection(DataTables.Users, (source) => AssignCollection(source, nameof(Users), true)); // Users = (ObservableCollection<Users>)DataManager.GetICollection(DataTables.Users);
@@ -337,6 +340,7 @@ namespace StreamerBotLib.GUI
         private void SetCommandCollection()
         {
             GetDataCommands.Invoke(false, BuildCommandList);
+            GetDataCommandsNoParams.Invoke(false, BuildCommandListNoParams);
         }
 
         private void BuildCommandList(IEnumerable<string> commands)
@@ -347,6 +351,18 @@ namespace StreamerBotLib.GUI
                 foreach (var command in commands)
                 {
                     CommandCollection.Add(command);
+                }
+            });
+        }
+
+        private void BuildCommandListNoParams(IEnumerable<string> commands)
+        {
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                CommandNoParamsCollection.Clear();
+                foreach (var command in commands)
+                {
+                    CommandNoParamsCollection.Add(command);
                 }
             });
         }

@@ -1585,128 +1585,192 @@
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Automatic Commands by Timer">
-                                        <StackPanel Margin="5">
-                                            <CheckBox x:Name="CheckBox_RepeatCommands_Enable" 
+                                    <GroupBox x:Name="GroupBox_Options_RepeatCommands" Header="Automatic Commands by Timer">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                            <StackPanel Margin="5">
+                                                <CheckBox x:Name="CheckBox_RepeatCommands_Enable" 
                                                       IsChecked="{Binding RepeatTimerCommands, Mode=TwoWay}" 
                                                       Checked="CheckBox_Checked_PanelVisibility" 
                                                       Unchecked="CheckBox_Checked_PanelVisibility">
-                                                <CheckBox.ToolTip>
-                                                    <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command 
+                                                    <CheckBox.ToolTip>
+                                                        <TextBlock>Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command 
                                                         list. Timer updates after the command runs.</TextBlock>
-                                                </CheckBox.ToolTip>
-                                                <TextBlock>Enable repeating commands.</TextBlock>
-                                            </CheckBox>
-                                            <StackPanel x:Name="StackPanel_RepeatCommands_RepeatOptions" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility">
-                                                <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" >
-                                                    <TextBlock>Perform Repeat commands only when live.</TextBlock>
+                                                    </CheckBox.ToolTip>
+                                                    <TextBlock>Enable repeating commands.</TextBlock>
                                                 </CheckBox>
+                                                <StackPanel x:Name="StackPanel_RepeatCommands_RepeatOptions" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility">
+                                                    <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" >
+                                                        <TextBlock>Perform Repeat commands only when live.</TextBlock>
+                                                    </CheckBox>
 
-                                                <GroupBox Header="Choose Repeater adjustment" Width="auto">
-                                                    <StackPanel>
-                                                        <RadioButton Name="RadioButton_RepeatTimer_NoAdjustment" Margin="1,4" 
+                                                    <GroupBox Header="Choose Repeat Mode" Width="Auto">
+                                                        <StackPanel>
+                                                            <TextBlock>Ensure Command is Enabled or command will not perform.</TextBlock>
+                                                            <RadioButton IsChecked="{Binding RepeatParallelMode, Mode=TwoWay}">
+                                                                <TextBlock>Independent Timing - Specify in Data->Commands->column Repeat Timer, the seconds to repeat that command.</TextBlock>
+                                                            </RadioButton>
+                                                            <RadioButton x:Name="RadioButton_RepeatCommand_SerialMode" IsChecked="{Binding RepeatSerialMode, Mode=TwoWay}"
+                                                                         Loaded="RadioButton_RepeatCommand_SerialMode_Loaded"
+                                                                  Checked="RadioButton_RepeatCommand_SerialMode_Checked"
+                                                                  Unchecked="RadioButton_RepeatCommand_SerialMode_Unchecked">
+                                                                <TextBlock>Selection Order - Choose the order of commands to repeat at specific intervals, restart after last command.</TextBlock>
+                                                            </RadioButton>
+                                                        </StackPanel>
+                                                    </GroupBox>
+
+                                                    <GroupBox x:Name="GroupBox_Options_RepeatSerialModeSettings" 
+                                                          Header="Selection Order Settings" 
+                                                          Visibility="Collapsed"
+                                                          Width="Auto">
+                                                        <StackPanel>
+                                                            
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock>Interval Seconds:</TextBlock>
+                                                                <TextBox Width="50" Height="20" 
+                                                                     Text="{Binding RepeatSerialIntervalSeconds}" 
+                                                                     PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
+                                                                    <TextBox.ToolTip>
+                                                                        <TextBlock>When using Selection Order mode, specify the interval in whole seconds (yes 1, 2, 3, no 5.5) to 
+                                                                            repeat the each command.<LineBreak />
+                                                                            600 seconds = 10 minutes, 1800 seconds = 30 minutes, 3600 seconds = 1 hour, etc.</TextBlock>
+                                                                    </TextBox.ToolTip>
+                                                                </TextBox>
+                                                            </StackPanel>
+                                                            <TextBlock>Select the order of commands to repeat. The selected command list repeats indefinitely.</TextBlock>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <StackPanel.ToolTip>
+                                                                    <TextBlock>The command list items are those commands not accepting parameters. Except some default commands are 
+                                                                        marked to not accept params and can be invoked with parameters, e.g. !raid 'username'.<LineBreak />
+                                                                Select from the following list and click 'Add'.<LineBreak />
+                                                                (Duplicates are permitted, e.g. to repeat a command more often than others.) <LineBreak />
+                                                                Click 'Remove' next to the command to remove from the list. <LineBreak />
+                                                                    </TextBlock>
+                                                                </StackPanel.ToolTip>
+                                                                <Button Content="Add" Margin="0,0,5,0" Click="Button_Options_RepeatSerialCommandList_Add_Click"/>
+                                                                <ComboBox Width="150" ItemsSource="{Binding CommandNoParamsCollection, Source={StaticResource DataViews}}" />
+                                                            </StackPanel>
+
+                                                            <ListBox x:Name="ListBox_Options_RepeatSerialCommandList"
+                                                                 ItemsSource="{Binding RepeatSerialSaveData}"
+                                                                 MinHeight="20">
+                                                                <ListBox.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <StackPanel Orientation="Horizontal">
+                                                                            <Button Content="Remove" Click="Button_Options_RepeatSeralCommandList_Remove_Click" />
+                                                                            <TextBlock Text="{Binding}" Margin="5,0,0,0"/>
+                                                                        </StackPanel>
+                                                                    </DataTemplate>
+                                                                </ListBox.ItemTemplate>
+                                                            </ListBox>
+                                                        </StackPanel>
+                                                    </GroupBox>
+
+                                                    <GroupBox Header="Choose Repeater adjustment" Width="auto">
+                                                        <StackPanel>
+                                                            <RadioButton Name="RadioButton_RepeatTimer_NoAdjustment" Margin="1,4" 
                                                                      IsChecked="{Binding RepeatNoAdjustment, Mode=TwoWay}" 
                                                                      Checked="CheckBox_Checked_PanelVisibility" 
                                                                      Unchecked="CheckBox_Checked_PanelVisibility">
-                                                            <RadioButton.ToolTip>
-                                                                <TextBlock>This option provides no restrictions to repeat timers, they run as is.</TextBlock>
-                                                            </RadioButton.ToolTip>
-                                                            <TextBlock>No adjustment to repeat timers.</TextBlock>
-                                                        </RadioButton>
-                                                        <RadioButton Name="RadioButton_RepeatTimer_SlowDownOption" Margin="1,4"
+                                                                <RadioButton.ToolTip>
+                                                                    <TextBlock>This option provides no restrictions to repeat timers, they run as is.</TextBlock>
+                                                                </RadioButton.ToolTip>
+                                                                <TextBlock>No adjustment to repeat timers.</TextBlock>
+                                                            </RadioButton>
+                                                            <RadioButton Name="RadioButton_RepeatTimer_SlowDownOption" Margin="1,4"
                                                                      IsChecked="{Binding RepeatTimerComSlowdown, Mode=TwoWay}" 
                                                                      Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
-                                                            <RadioButton.ToolTip>
-                                                                <TextBlock>The repeating commands will slow down by up to 2x the specified time. The 
+                                                                <RadioButton.ToolTip>
+                                                                    <TextBlock>The repeating commands will slow down by up to 2x the specified time. The 
                                                                     commands will return/unwind to normal speed when chat is very active. The specs 
                                                                     for normal operation speed are about: at least 15+ viewers per half hour or over 
                                                                     20 viewer chats in 15 minutes.</TextBlock>
-                                                            </RadioButton.ToolTip>
-                                                            <TextBlock>Enable smart slow-down repeating commands</TextBlock>
-                                                        </RadioButton>
-                                                        <RadioButton x:Name="RadioButton_RepeatTimer_ThresholdOption" Margin="1,4" 
+                                                                </RadioButton.ToolTip>
+                                                                <TextBlock>Enable smart slow-down repeating commands</TextBlock>
+                                                            </RadioButton>
+                                                            <RadioButton x:Name="RadioButton_RepeatTimer_ThresholdOption" Margin="1,4" 
                                                                      IsChecked="{Binding RepeatUseThresholds, Mode=TwoWay}" 
                                                                      Checked="CheckBox_Checked_PanelVisibility" Unchecked="CheckBox_Checked_PanelVisibility">
-                                                            <RadioButton.ToolTip>
-                                                                <TextBlock>
+                                                                <RadioButton.ToolTip>
+                                                                    <TextBlock>
                                                                         Select this option to prevent messages from sending if the stream doesn't meet the specified thresholds.
-                                                                </TextBlock>
-                                                            </RadioButton.ToolTip>
-                                                            <StackPanel Margin="0">
-                                                                <TextBlock>Use thresholds to only send messages when exceeding the criteria.</TextBlock>
-                                                                <StackPanel Orientation="Vertical" Visibility="Collapsed" 
+                                                                    </TextBlock>
+                                                                </RadioButton.ToolTip>
+                                                                <StackPanel Margin="0">
+                                                                    <TextBlock>Use thresholds to only send messages when exceeding the criteria.</TextBlock>
+                                                                    <StackPanel Orientation="Horizontal" Visibility="Collapsed" 
                                                                             Name="StackPanel_Repeat_ThresholdsOptions" Loaded="CheckBox_Checked_PanelVisibility">
-                                                                    <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveChatCount, Mode=TwoWay}">
-                                                                        <CheckBox.ToolTip>Select to prevent messages when below chat count threshold.</CheckBox.ToolTip>
-                                                                        <TextBlock>Chat Count</TextBlock>
-                                                                    </CheckBox>
-                                                                    <Label Margin="0">Inclusive Or</Label>
-                                                                    <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveUserCount, Mode=TwoWay}">
-                                                                        <CheckBox.ToolTip>Select to prevent messages when below user count threshold.</CheckBox.ToolTip>
-                                                                        <TextBlock>User Count</TextBlock>
-                                                                    </CheckBox>
+                                                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveChatCount, Mode=TwoWay}">
+                                                                            <CheckBox.ToolTip>Select to prevent messages when below chat count threshold.</CheckBox.ToolTip>
+                                                                            <TextBlock>Chat Count</TextBlock>
+                                                                        </CheckBox>
+                                                                        <Label Margin="0">Inclusive Or</Label>
+                                                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveUserCount, Mode=TwoWay}">
+                                                                            <CheckBox.ToolTip>Select to prevent messages when below user count threshold.</CheckBox.ToolTip>
+                                                                            <TextBlock>User Count</TextBlock>
+                                                                        </CheckBox>
+                                                                    </StackPanel>
                                                                 </StackPanel>
-                                                            </StackPanel>
-                                                        </RadioButton>
-                                                    </StackPanel>
-                                                </GroupBox>
-                                                <GroupBox x:Name="GroupBox_RepeatTimer_ThresholdOptions" Width="auto" Header="Adjustment Thresholds" Padding="0" Loaded="CheckBox_Checked_PanelVisibility" Visibility="Collapsed">
-                                                    <StackPanel>
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="40" />
-                                                                <ColumnDefinition Width="65" />
-                                                                <ColumnDefinition Width="65" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="25" />
-                                                                <RowDefinition Height="25" />
-                                                                <RowDefinition Height="25" />
-                                                            </Grid.RowDefinitions>
-                                                            <Label Grid.Row="0" Grid.Column="1">
-                                                                <TextBlock>Minutes</TextBlock>
-                                                            </Label>
-                                                            <Label Grid.Row="0" Grid.Column="2">
-                                                                <TextBlock>Count</TextBlock>
-                                                            </Label>
-                                                            <Label Grid.Row="1" Grid.Column="0">
-                                                                <TextBlock Padding="0">Chat</TextBlock>
-                                                            </Label>
-                                                            <Label Grid.Row="2" Grid.Column="0">
-                                                                <TextBlock Padding="0">User</TextBlock>
-                                                            </Label>
-                                                            <TextBox Grid.Row="1" Grid.Column="1" Height="20" Width="50" 
+                                                            </RadioButton>
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                    <GroupBox x:Name="GroupBox_RepeatTimer_ThresholdOptions" Width="auto" Header="Adjustment Thresholds" Padding="0" Loaded="CheckBox_Checked_PanelVisibility" Visibility="Collapsed">
+                                                        <StackPanel>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="40" />
+                                                                    <ColumnDefinition Width="65" />
+                                                                    <ColumnDefinition Width="65" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="25" />
+                                                                    <RowDefinition Height="25" />
+                                                                    <RowDefinition Height="25" />
+                                                                </Grid.RowDefinitions>
+                                                                <Label Grid.Row="0" Grid.Column="1">
+                                                                    <TextBlock>Minutes</TextBlock>
+                                                                </Label>
+                                                                <Label Grid.Row="0" Grid.Column="2">
+                                                                    <TextBlock>Count</TextBlock>
+                                                                </Label>
+                                                                <Label Grid.Row="1" Grid.Column="0">
+                                                                    <TextBlock Padding="0">Chat</TextBlock>
+                                                                </Label>
+                                                                <Label Grid.Row="2" Grid.Column="0">
+                                                                    <TextBlock Padding="0">User</TextBlock>
+                                                                </Label>
+                                                                <TextBox Grid.Row="1" Grid.Column="1" Height="20" Width="50" 
                                                                      Text="{Binding RepeatChatMinutes}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
-                                                            <TextBox Grid.Row="1" Grid.Column="2" Height="20" Width="50" 
+                                                                <TextBox Grid.Row="1" Grid.Column="2" Height="20" Width="50" 
                                                                      Text="{Binding RepeatChatCount}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
-                                                            <TextBox Grid.Row="2" Grid.Column="1" Height="20" Width="50"  
+                                                                <TextBox Grid.Row="2" Grid.Column="1" Height="20" Width="50"  
                                                                      Text="{Binding RepeatUserMinutes}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
-                                                            <TextBox Grid.Row="2" Grid.Column="2" Height="20" Width="50" 
+                                                                <TextBox Grid.Row="2" Grid.Column="2" Height="20" Width="50" 
                                                                      Text="{Binding RepeatUserCount}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
-                                                        </Grid>
-                                                    </StackPanel>
-                                                </GroupBox>
-                                                <CheckBox IsChecked="{Binding RepeatLiveReset, Mode=TwoWay}" >
-                                                    <CheckBox.ToolTip>
-                                                        <TextBlock Width="200">The repeating commands continually run while the chat bot is active. The 
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                    <CheckBox IsChecked="{Binding RepeatLiveReset, Mode=TwoWay}" >
+                                                        <CheckBox.ToolTip>
+                                                            <TextBlock Width="200">The repeating commands continually run while the chat bot is active. The 
                                                             repeat timers will fire at their designated time as indicated by the 'repeat timer' and 
                                                             'category' (of the stream - repeat commands can be specific to certain categories or 'All' 
                                                             for any stream). This setting resets the next fire event to the current time when the bot 
                                                             detects the stream is online.</TextBlock>
-                                                    </CheckBox.ToolTip>
-                                                    <TextBlock>Enable reset repeat timers when stream is online</TextBlock>
-                                                </CheckBox>
-                                                <CheckBox IsChecked="{Binding RepeatLiveResetShow, Mode=TwoWay}" >
-                                                    <CheckBox.ToolTip>
-                                                        <TextBlock>Coupled with the above 'Enable reset repeat timers when stream is online' option, this 
+                                                        </CheckBox.ToolTip>
+                                                        <TextBlock>Enable reset repeat timers when stream is online</TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox IsChecked="{Binding RepeatLiveResetShow, Mode=TwoWay}" >
+                                                        <CheckBox.ToolTip>
+                                                            <TextBlock>Coupled with the above 'Enable reset repeat timers when stream is online' option, this 
                                                             option permits whether the commands will perform upon the timer reset or not.</TextBlock>
-                                                    </CheckBox.ToolTip>
-                                                    <TextBlock>Enable showing repeat timer command when timers reset and stream is online.</TextBlock>
-                                                </CheckBox>
-                                                <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when 
+                                                        </CheckBox.ToolTip>
+                                                        <TextBlock>Enable showing repeat timer command when timers reset and stream is online.</TextBlock>
+                                                    </CheckBox>
+                                                    <TextBlock Visibility="Collapsed">TODO: add option spot for bot AI responses to encourage streamer when 
                                                     chatting is slow, and back away when stream has faster chatting.</TextBlock>
+                                                </StackPanel>
                                             </StackPanel>
-                                        </StackPanel>
+                                        </ScrollViewer>
                                     </GroupBox>
                                     <GroupBox x:Name="GroupBox_ManageDataOptions" Header="Data Management">
                                         <StackPanel>

@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace StreamerBot
@@ -144,7 +145,7 @@ namespace StreamerBot
         /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
         private void UpdateData(Button targetclick, Action<string> InvokeMethod)
         {
-            if (!OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName), OptionFlags.TwitchChannelName)) // prevent operation if default value
+            if (!OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName))) // prevent operation if default value
             {
                 targetclick.IsEnabled = false;
 
@@ -393,6 +394,10 @@ namespace StreamerBot
             if (TBSource?.Name == CheckBox_RepeatCommands_Enable?.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions?.Name)
             {
                 SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
+                if(GroupBox_Options_RepeatCommands != null)
+                {
+                    GroupBox_Options_RepeatCommands.Width = CheckBox_RepeatCommands_Enable.IsChecked == true ? 460 : 230;
+                }
                 Controller.ActivateRepeatTimers();
             }
             else if (TBSource?.Name == RadioButton_RepeatTimer_NoAdjustment.Name || TBSource?.Name == RadioButton_RepeatTimer_SlowDownOption.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption.Name || GBSource?.Name == GroupBox_RepeatTimer_ThresholdOptions.Name)
@@ -428,6 +433,68 @@ namespace StreamerBot
             {
                 SetVisibility(CheckBox_TwitchFollower_AutoRefresh, StackPanel_TwitchFollows_RefreshHrs);
             }
+        }
+
+
+        private void RadioButton_RepeatCommand_SerialMode_Loaded(object sender, RoutedEventArgs e)
+        {
+            switch (RadioButton_RepeatCommand_SerialMode?.IsChecked) 
+            {
+                case true:
+                    GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Visible;
+                    break;
+                case false or null:
+                    GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Collapsed;
+                    break;
+            }
+        }
+
+        private void RadioButton_RepeatCommand_SerialMode_Checked(object sender, RoutedEventArgs e)
+        {
+            if (GroupBox_Options_RepeatSerialModeSettings != null)
+            {
+                GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void Button_Options_RepeatSerialCommandList_Add_Click(object sender, RoutedEventArgs e)
+        {
+            ComboBox selectedCommand = ((ComboBox)(((StackPanel)((Button)sender).Parent).Children[1]));
+
+            if (selectedCommand.SelectedItem != null)
+            {
+                OptionFlags.RepeatSerialSaveData.Add((string)selectedCommand.SelectedItem);
+                ListBox_Options_RepeatSerialCommandList.Items.Refresh();
+                selectedCommand.SelectedItem = null;
+                OptionFlags.SaveRepeatSerialSaveData();
+            }
+        }
+
+        private void Button_Options_RepeatSeralCommandList_Remove_Click(object sender, RoutedEventArgs e)
+        {
+            var currRow = ((StackPanel)((Button)sender).Parent);
+            TextBlock selectedCommand = ((TextBlock)(((StackPanel)((Button)sender).Parent).Children[1]));
+
+            for(int i = 0; i < ListBox_Options_RepeatSerialCommandList.Items.Count; i++)
+            {
+                if (ReferenceEquals((string)ListBox_Options_RepeatSerialCommandList.Items[i], selectedCommand.Text))
+                {
+                    ListBox_Options_RepeatSerialCommandList.SelectedIndex = i;
+                    break;
+                }
+            }
+
+            if (ListBox_Options_RepeatSerialCommandList.SelectedIndex >= 0 && ListBox_Options_RepeatSerialCommandList.SelectedIndex < OptionFlags.RepeatSerialSaveData.Count)
+            {
+                OptionFlags.RepeatSerialSaveData.RemoveAt(ListBox_Options_RepeatSerialCommandList.SelectedIndex);
+                ListBox_Options_RepeatSerialCommandList.Items.Refresh();
+                OptionFlags.SaveRepeatSerialSaveData();
+            }
+        }
+
+        private void RadioButton_RepeatCommand_SerialMode_Unchecked(object sender, RoutedEventArgs e)
+        {
+            GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Collapsed;
         }
 
         private void TextBox_Follower_LostFocus(object sender, RoutedEventArgs e)
@@ -512,7 +579,9 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -536,21 +605,27 @@ namespace StreamerBot
         {
             Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private void RefreshButtonNoScopes_Click(object sender, RoutedEventArgs e)
         {
             Label_Twitch_RefreshDate_NoScopes.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
         {
             Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         #endregion
@@ -566,7 +641,9 @@ namespace StreamerBot
                 OptionFlags.TwitchPriorChannelName = TextBox_TwitchChannelUserName.Text;
             }
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
     }

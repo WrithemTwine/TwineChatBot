@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.Properties;
 
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Reflection;
 
@@ -196,6 +197,27 @@ namespace StreamerBotLib.Static
         /// Enables whether the bot should shout out all users who raid the given channel.
         /// </summary>
         public static bool TwitchRaidShoutOut => Settings.Default.TwitchRaidShoutOut;
+
+        public static bool RepeatParallelMode => Settings.Default.RepeatParallelMode;
+        public static bool RepeatSerialMode => Settings.Default.RepeatSerialMode;
+        public static StringCollection RepeatSerialSaveData
+        {
+            get
+            {
+                return Settings.Default.RepeatSerialSaveData;
+            }
+        }
+
+        /// <summary>
+        /// The RepeatSerialSaveData is a StringCollection, and changes to it do not auto-save to the user settings file.
+        /// This method saves the current RepeatSerialSaveData to the user settings file.
+        /// </summary>
+        public static void SaveRepeatSerialSaveData()
+        {
+            Settings.Default.Save();
+        }
+
+        public static int RepeatSerialTime => Settings.Default.RepeatSerialTime;
         /// <summary>
         /// Enables repeat timer commands.
         /// </summary>
@@ -1032,14 +1054,19 @@ namespace StreamerBotLib.Static
         /// <param name="SettingName">The name in the "Settings.Default" to check.</param>
         /// <param name="CheckSettingValue">The value to compare to the default settings.</param>
         /// <returns>DefaultValue(SettingName).Value == CheckSettingValue; true if value is default</returns>
-        public static bool CheckSettingIsDefault(string SettingName, string CheckSettingValue)
+        public static bool CheckSettingIsDefault(string SettingName)
         {
-            return ((DefaultSettingValueAttribute)(from MemberInfo m in typeof(Settings).GetProperties()
-                                                   where m.Name == SettingName
-                                                   select m)
-                                                   .FirstOrDefault()?
-                                                   .GetCustomAttribute(typeof(DefaultSettingValueAttribute)))
-                                                   ?.Value == CheckSettingValue;
+            var prop = typeof(Settings).GetProperty(SettingName);
+            if (prop != null)
+            {
+                var defaultValue = Settings.Default.Properties[SettingName]?.DefaultValue;
+                var currentValue = prop.GetValue(Settings.Default);
+                return Equals(defaultValue, currentValue);
+            }
+            else
+            {
+                throw new ArgumentException($"Setting '{SettingName}' not found in Settings.Default.");
+            }
         }
     }
 }

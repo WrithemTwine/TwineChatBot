@@ -590,11 +590,6 @@
         </CollectionViewSource.SortDescriptions>
         <CollectionViewSource.GroupDescriptions>
             <PropertyGroupDescription PropertyName="CurrencyName" />
-            <PropertyGroupDescription PropertyName="User.Follower.IsFollower">
-                <PropertyGroupDescription.GroupNames>
-                    <TextBlock>Follower</TextBlock>
-                </PropertyGroupDescription.GroupNames>
-            </PropertyGroupDescription>
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />

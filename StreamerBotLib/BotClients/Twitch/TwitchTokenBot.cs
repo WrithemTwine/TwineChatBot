@@ -171,6 +171,8 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 if (!InitializeTokens)
                 {
+                    SetIds();
+
                     InitializeTokens = true;
                     AccessTokensInitialized?.Invoke(this, new());
                 }
@@ -181,15 +183,19 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             if (string.IsNullOrEmpty(OptionFlags.TwitchBotUserId))
             {
-                OptionFlags.TwitchBotUserId = GetUserId(new(OptionFlags.TwitchBotUserName, Platform.Twitch)) ?? StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchBotUserName]).Result.Users[0].Id;
+                LogWriter.DebugLog("SetIds", DebugLogTypes.TwitchTokenBot, "Setting bot user ID.");
+                string botuserId = GetUserId(new(OptionFlags.TwitchBotUserName, Platform.Twitch));
+                OptionFlags.TwitchBotUserId = botuserId != default ? botuserId : StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchBotUserName]).Result.Users[0].Id;
             }
 
             if (string.IsNullOrEmpty(OptionFlags.TwitchStreamerUserId))
             {
+                LogWriter.DebugLog("SetIds", DebugLogTypes.TwitchTokenBot, "Setting streamer user ID.");
+                string streameruserId = GetUserId(new(OptionFlags.TwitchChannelName, Platform.Twitch));
                 OptionFlags.TwitchStreamerUserId =
                     OptionFlags.TwitchChannelName == OptionFlags.TwitchBotUserName ?
                         OptionFlags.TwitchBotUserId
-                        : GetUserId(new(OptionFlags.TwitchChannelName, Platform.Twitch)) ?? StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchChannelName]).Result.Users[0].Id;
+                        : streameruserId != default ? streameruserId : StreamerHelixApi.Helix.Users.GetUsersAsync(logins: [OptionFlags.TwitchChannelName]).Result.Users[0].Id;
             }
         }
 
@@ -430,9 +436,7 @@ namespace StreamerBotLib.BotClients.Twitch
                         }
 
                         SetTwitchApis();
-                        SetIds();
-                        //BotAccessTokenChanged?.Invoke(this, EventArgs.Empty);
-                        //StreamerAccessTokenChanged?.Invoke(this, EventArgs.Empty);
+                        //SetIds();
                     }
                 }
             }

@@ -94,6 +94,17 @@ namespace StreamerBotLib.DataSQL.EFC9
                 .ToListAsync();
         }
 
+        internal async Task<List<string>> GetCommandListNoParams(bool prefix = true)
+        {
+            using var context = BuildDataContext();
+
+            return await context.CommandsBase
+                .Where(Com => Com.Message != DefaulSocialMsg && Com.IsEnabled && !Com.AllowParam)
+                .OrderBy(Com => Com.CmdName)
+                .Select(Com => $"{(prefix ? "!" : "")}{Com.CmdName}")
+                .ToListAsync();
+        }
+
         internal async Task<List<string>> GetCurrencyNames()
         {
             using var context = BuildDataContext();

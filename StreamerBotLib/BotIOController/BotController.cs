@@ -75,6 +75,23 @@ namespace StreamerBotLib.BotIOController
 
             ThreadManager.CreateThreadStart(".ctor_BotController", () =>
             {
+                TwitchBots.InitializeGetIds(
+                  (liveUser) =>
+                  {
+                      string result = null;
+                      using (var waitHandle = new ManualResetEventSlim())
+                      {
+                          DataBot.GetUserId(liveUser, id =>
+                          {
+                              result = id;
+                              waitHandle.Set();
+                          });
+                          waitHandle.Wait();
+                      }
+                      return result;
+                  }
+                  );
+
                 DataBot.InitializeLiveMonitorUpdateChannels(
                     TwitchBots.InitializeLiveMonitor(
                        (platform) =>
@@ -92,23 +109,6 @@ namespace StreamerBotLib.BotIOController
                            return result ?? Enumerable.Empty<string>();
                        }
                        )
-                    );
-
-                TwitchBots.InitializeGetIds(
-                    (liveUser) =>
-                    {
-                        string result = null;
-                        using (var waitHandle = new ManualResetEventSlim())
-                        {
-                            DataBot.GetUserId(liveUser, id =>
-                            {
-                                result = id;
-                                waitHandle.Set();
-                            });
-                            waitHandle.Wait();
-                        }
-                        return result;
-                    }
                     );
             });
 

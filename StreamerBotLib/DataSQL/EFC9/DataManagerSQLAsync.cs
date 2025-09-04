@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.DataSQL.EFC9.Import;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
@@ -58,21 +57,6 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         public async Task InitializeDataBaseAsync()
         {
-            if (!OptionFlags.EFCDataImportedDataGram)
-            {
-                bool LogStatus = OptionFlags.LogBotStatus;  // save current logging status
-
-                OptionFlags.LogBotStatus = true; // force logging operations to status during import
-
-                using var context = BuildDataContext();
-
-                ImportDataSources importDataSources = new(); // load the primary database data
-                await importDataSources.ConvertData(context, this); // convert data loaded from main and multilive data files
-
-                OptionFlags.LogBotStatus = LogStatus; // restore preferred log status after import
-                OptionFlags.EFCDataImportedDataGram = true;
-            }
-
             var initialcontext = BuildDataContext();
             initialcontext.Database.EnsureCreated();
             await initialcontext.SaveChangesAsync(true);

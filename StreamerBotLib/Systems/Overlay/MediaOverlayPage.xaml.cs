@@ -144,9 +144,10 @@ namespace StreamerBotLib.Systems.Overlay
             if (!OptionFlags.MediaOverlayTickerMulti)
             {
                 GUIData.AddEditPage(new List<OverlayTickerItem>(from SelectedTickerItem S in TickerFormatter.selectedTickerItems
+                                                                where S.IsSelected
                                                                 select (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)).ToArray());
             }
-            else
+            else if(TickerFormatter.selectedTickerItems.Where(s=>s.IsSelected).Select(s=>s).Any())
             {
                 // if multi, just send 1 item and the style is set
                 GUIData.AddEditPage(OverlayTickerItem.LastFollower);

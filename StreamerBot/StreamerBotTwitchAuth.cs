@@ -294,20 +294,21 @@ namespace StreamerBot
                     "None Valid";
 
                 if (
-
-                    // OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) <= new TimeSpan(0, 5, sleep / 1000)
-
-                    // use User set tokens, check on using the streamer token
-                    (!OptionFlags.TwitchTokenUseAuth && UserBotTokenData && UserStreamerTokenData && RefreshTokenDateExpiry.Count == (OptionFlags.TwitchStreamerUseToken ? 2 : 1))
-                    ||
-                    // use Auth code tokens, check on using the streamer token
-                    (OptionFlags.TwitchTokenUseAuth &&
-                        (AuthBotTokenData && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)) &&
-                        (AuthStreamerTokenData && (!OptionFlags.TwitchStreamerUseToken 
-                                                    || (!string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode) 
-                                                        && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerNoScopesAuthCode)
-                                                   )))
-                    )
+                    !OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName)) 
+                    && !OptionFlags.CheckSettingIsDefault(nameof( OptionFlags.TwitchBotUserName)) 
+                    && (
+                        // use User set tokens, check on using the streamer token
+                            (!OptionFlags.TwitchTokenUseAuth && UserBotTokenData && UserStreamerTokenData && RefreshTokenDateExpiry.Count == (OptionFlags.TwitchStreamerUseToken ? 2 : 1))
+                        ||
+                        // use Auth code tokens, check on using the streamer token
+                            (OptionFlags.TwitchTokenUseAuth &&
+                                (AuthBotTokenData && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)) &&
+                                (AuthStreamerTokenData && (!OptionFlags.TwitchStreamerUseToken 
+                                                            || (!string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode) 
+                                                                && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerNoScopesAuthCode)
+                                                           )))
+                            )
+                        )
                     )
                 {
                     await BotController.TwitchInitializeHelix();

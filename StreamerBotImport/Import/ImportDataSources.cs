@@ -1,4 +1,7 @@
-﻿using StreamerBotLib.DataSQL.Models;
+﻿using StreamerBotImport.Import;
+
+using StreamerBotLib.DataSQL;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
@@ -9,12 +12,12 @@ using System.Data;
 using System.IO;
 using System.Xml;
 
-using static StreamerBotLib.DataSQL.EFC9.Import.DataSource;
-using static StreamerBotLib.DataSQL.EFC9.Import.Multi.DataSource;
+using static StreamerBotImport.Import.DataSource;
+using static StreamerBotImport.Import.Multi.DataSource;
 
-using MultiDataSource = StreamerBotLib.DataSQL.EFC9.Import.Multi.DataSource;
+using MultiDataSource = StreamerBotImport.Import.Multi.DataSource;
 
-namespace StreamerBotLib.DataSQL.EFC9.Import
+namespace StreamerBotImport.Import
 {
     internal class ImportDataSources : BaseDataManager
     {
@@ -135,14 +138,14 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
         }
 
         private event EventHandler<ImportDataProgressUpdateEventArgs> ProgressUpdate;
-        private event EventHandler<EventArgs> ImportCompleted;
+        public event EventHandler<EventArgs> ImportCompleted;
 
         /// <summary>
         /// Converts data from the primary database or the multilive database files from the XML Datagram used in the prior bot version
         /// </summary>
         /// <param name="context">The new Database context to use for importing data.</param>
         /// <param name="dataManagerSQL">To access already built methods for entering data into the database using the application data flow.</param>
-        public async Task ConvertData(SQLDBContext context, DataManagerSQLAsync dataManagerSQL)
+        public void ConvertData(SQLDBContext context, DataManagerSQLAsync dataManagerSQL)
         {
             int totalTables = _DataSource?.Tables.Count ?? 0 + _MultiDataSource?.Tables.Count ?? 0;
             int totalRows = 0;
@@ -238,7 +241,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.ChannelEvents.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding OutRaid data.");
             if (_DataSource.OutRaidData.Count > 0)
@@ -256,7 +259,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.OutRaidData.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
 
             LogWriter.WriteLog("Adding clips data.");
@@ -281,7 +284,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.Clips.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
 
             LogWriter.WriteLog("Adding OverlayServices data.");
@@ -309,7 +312,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.OverlayServices.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding OverlayTicker data.");
             if (_DataSource.OverlayTicker.Count > 0)
@@ -327,7 +330,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.OverlayTicker.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding Quotes data.");
             if (_DataSource.Quotes.Count > 0)
@@ -346,7 +349,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.Quotes.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding Webhooks data.");
             if (_DataSource.Discord.Count > 0)
@@ -368,7 +371,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.Discord.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding BanReasons data.");
             if (_DataSource.BanReasons.Count > 0)
@@ -379,7 +382,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
                           where Enum.Parse<MsgTypes>(BR.MsgType) == B.MsgType && Enum.Parse<StreamerBotLib.Models.Enums.BanReasons>(BR.BanReason) == B.BanReason
                           select B).Any())
                     {
-                        context.BanReasons.Add(new Models.BanReasons(
+                        context.BanReasons.Add(new StreamerBotLib.DataSQL.Models.BanReasons(
                                                         msgType: Enum.Parse<MsgTypes>(BR.MsgType),
                                                         banReason: Enum.Parse<StreamerBotLib.Models.Enums.BanReasons>(BR.BanReason)));
                     }
@@ -387,7 +390,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.BanReasons.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding BanRules data.");
             if (_DataSource.BanRules.Count > 0)
@@ -411,7 +414,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.BanRules.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding ModeratorApprove data.");
             if (_DataSource.ModeratorApprove.Count > 0)
@@ -437,7 +440,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.ModeratorApprove.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding LearnMsgs data.");
             if (_DataSource.LearnMsgs.Count > 0)
@@ -454,7 +457,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.LearnMsgs.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
 #if DEBUG
             StreamWriter DebugCom = new("debug_commands.txt") { AutoFlush = true };
@@ -539,7 +542,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
 
 
             CurrentTotalProgress += _DataSource.Commands.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             #endregion
 
@@ -573,7 +576,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _MultiDataSource.Channels.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding Multilive SummaryStream data.");
 
@@ -603,7 +606,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _MultiDataSource.SummaryLiveStream.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             // post multilive stream data
 
@@ -636,7 +639,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
                             {
                                 channelsRow.UserName = L.ChannelName;
                             }
-                            await dataManagerSQL.PostMultiStreamDate(liveUser: new(userId: channelsRow.UserId, userName: channelsRow.UserName, botSource: Platform.Twitch), onDate: L.LiveDate);
+                            dataManagerSQL.PostMultiStreamDate(liveUser: new(userId: channelsRow.UserId, userName: channelsRow.UserName, botSource: Platform.Twitch), onDate: L.LiveDate);
                         }
                         else
                         {
@@ -648,7 +651,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _MultiDataSource.LiveStream.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding Multilive Webhook data.");
 
@@ -679,7 +682,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _MultiDataSource.MsgEndPoints.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             #endregion
 
@@ -749,16 +752,16 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
                     }
                     else if (!(from I in context.InRaidData where I.UserId == uId && I.RaidDate == A.DateTime select I).Any())
                     {
-                        await dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category));
+                        dataManagerSQL.PostInRaidData(new(A.UserName, Platform.Twitch, uId), A.DateTime, Convert.ToInt32(A.ViewerCount), new(categoryId, A.Category));
                     }
                 }
             }
 
             CurrentTotalProgress += _DataSource.InRaidData.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             CurrentTotalProgress += _DataSource.Users.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding CustomWelcome data.");
 
@@ -782,7 +785,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.CustomWelcome.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             #region Currency
 
@@ -794,7 +797,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
                 {
                     if (!(from C in context.CurrencyType where C.CurrencyName == CT.CurrencyName select C).Any())
                     {
-                        context.CurrencyType.Add(new Models.CurrencyType(
+                        context.CurrencyType.Add(new StreamerBotLib.DataSQL.Models.CurrencyType(
                                                         accrueAmt: CT.AccrueAmt,
                                                         seconds: (int)CT.Seconds,
                                                         maxValue: CT.MaxValue,
@@ -805,7 +808,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.CurrencyType.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding user Currency data.");
 
@@ -836,7 +839,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.Currency.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             #endregion
 
@@ -864,7 +867,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.CategoryList.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding GameDeadCounter data.");
 
@@ -886,7 +889,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.GameDeadCounter.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding StreamStats data.");
 
@@ -925,7 +928,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.StreamStats.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             #endregion
 
@@ -995,7 +998,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             context.SaveChanges(true);
 
             CurrentTotalProgress += _DataSource.Followers.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding GiveawayUser data.");
 
@@ -1016,7 +1019,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.GiveawayUserData.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             LogWriter.WriteLog("Adding ShoutOuts data.");
 
@@ -1038,7 +1041,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
                                              select U).FirstOrDefault();
                         if (currUser != null)
                         {
-                            await dataManagerSQL.PostNewAutoShoutUser(currUser.UserId, Platform.Twitch);
+                            dataManagerSQL.PostNewAutoShoutUser(currUser.UserId, Platform.Twitch);
                         }
                         else
                         {
@@ -1049,7 +1052,7 @@ namespace StreamerBotLib.DataSQL.EFC9.Import
             }
 
             CurrentTotalProgress += _DataSource.ShoutOuts.Rows.Count;
-            ProgressUpdate?.BeginInvoke(this, new(CurrentTotalProgress), null, null);
+            ProgressUpdate?.Invoke(this, new(CurrentTotalProgress));
 
             #endregion
 

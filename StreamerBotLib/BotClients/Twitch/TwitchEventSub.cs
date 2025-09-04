@@ -151,7 +151,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     LogWriter.DebugLog("OnWebsocketDisconnected", DebugLogTypes.TwitchEventSub, $"Websocket session {_EventSubWebsocketClient.SessionId} disconnected.");
 
-                    if (IsActive == true && !ErrorFound)
+                    if (IsActive == true && !ErrorFound && OptionFlags.ActiveToken)
                     {
                         LogWriter.DebugLog("OnWebsocketDisconnected", DebugLogTypes.TwitchEventSub, $"Websocket disconnected unexpectedly, restarting bot.");
                         await StopBot();

@@ -107,12 +107,12 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
                 if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
-                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"Adding new subscription for {SubscriptionType}.");
 
                     var SubResponse = tokenBot.BotHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
                     SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
 
-                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
 
                     SubscriptionIdKeys.Add(KeyOverride ?? SubResponse.Type, SubResponse.Id);
                 }
@@ -141,7 +141,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                         SubscriptionIdKeys.Remove(key);
                     }
                     LogWriter.DebugLog("DeleteEventSubSubscription",
-                       DebugLogTypes.TwitchStreamerEventSubBot,
+                       DebugLogTypes.TwitchBotEventSubBot,
                        $"Deleted the {key} subscription.");
                 }
             }
@@ -153,7 +153,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         public void ClearSubscriptions()
         {
-            LogWriter.DebugLog("ClearEventSubSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Clearing all subscriptions.");
+            LogWriter.DebugLog("ClearEventSubSubscriptions", DebugLogTypes.TwitchBotEventSubBot, "Clearing all subscriptions.");
 
             SubscriptionIdKeys.Clear();
         }

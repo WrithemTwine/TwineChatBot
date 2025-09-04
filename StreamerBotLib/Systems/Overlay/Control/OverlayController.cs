@@ -109,7 +109,11 @@ namespace StreamerBotLib.Systems.Overlay.Control
         public void SetTickerData(IEnumerable<TickerItem> data, IEnumerable<OverlayStyle> overlayStyles)
         {
             tickerFormatter.SetTickerData(data);
-            UpdateTicker(overlayStyles);
+
+            if (TickerFormatter.selectedTickerItems.Where(s=>s.IsSelected).Select(s=>s).Any())
+            {
+                UpdateTicker(overlayStyles);
+            }
         }
 
         /// <summary>

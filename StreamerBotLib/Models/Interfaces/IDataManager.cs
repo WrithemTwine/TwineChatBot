@@ -32,6 +32,7 @@ namespace StreamerBotLib.Models.Interfaces
         Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes);
         new CommandData GetCommand(string cmd);
         new IEnumerable<string> GetCommandList(bool prefix = true);
+        IEnumerable<string> GetCommandListNoParams(bool prefix = true);
         new string GetCommandString();
         new List<string> GetCurrencyNames();
         int GetDeathCounter(string currCategory);

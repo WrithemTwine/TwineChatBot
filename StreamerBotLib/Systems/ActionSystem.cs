@@ -124,30 +124,6 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("ManageDatabase", DebugLogTypes.CommonSystem, "Managing Database.");
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
-            if (!OptionFlags.ManageUsers)
-            {
-                // if ManageUsers is False, then remove users!
-                DataManage.RemoveAllUsers();
-            }
-
-            // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
-            if (!OptionFlags.ManageFollowers)
-            {
-                DataManage.RemoveAllFollowers();
-            }
-
-            // when management resumes, code upstream enables the startbot process
-
-            //  if ManageStreamStats is False, then remove all Stream Statistics!
-
-            if (!OptionFlags.ManageStreamStats)
-            {
-                // when the LiveStream Online event fires again, the datacollection will restart
-                //  if ManageStreamStats is False, then remove all Stream Statistics!
-                DataManage.RemoveAllStreamStats();
-                // when the LiveStream Online event fires again, the datacollection will restart
-            }
-
             if (!OptionFlags.ManageRaidData)
             {
                 DataManage.RemoveAllInRaidData();
@@ -161,6 +137,30 @@ namespace StreamerBotLib.Systems
             if (!OptionFlags.ManageGiveawayUsers)
             {
                 DataManage.RemoveAllGiveawayData();
+            }
+            
+            // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
+            if (!OptionFlags.ManageFollowers)
+            {
+                DataManage.RemoveAllFollowers();
+            }
+
+            if (!OptionFlags.ManageUsers)
+            {
+                // if ManageUsers is False, then remove users!
+                DataManage.RemoveAllUsers();
+            }
+
+            // when management resumes, code upstream enables the startbot process
+
+            //  if ManageStreamStats is False, then remove all Stream Statistics!
+
+            if (!OptionFlags.ManageStreamStats)
+            {
+                // when the LiveStream Online event fires again, the datacollection will restart
+                //  if ManageStreamStats is False, then remove all Stream Statistics!
+                DataManage.RemoveAllStreamStats();
+                // when the LiveStream Online event fires again, the datacollection will restart
             }
 
             if (!OptionFlags.ManageOverlayTicker)

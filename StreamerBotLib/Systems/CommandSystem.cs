@@ -35,6 +35,12 @@ namespace StreamerBotLib.Systems
             return DataManage.GetCommandList(prefix);
         }
 
+        public IEnumerable<string> GetCommandListNoParams(bool prefix = true)
+        {
+            LogWriter.DebugLog("GetCommandList", DebugLogTypes.CommandSystem, "Getting command list.");
+            return DataManage.GetCommandListNoParams(prefix);
+        }
+
         /// <summary>
         /// Establishes the permission level for the user who sends the message.
         /// </summary>

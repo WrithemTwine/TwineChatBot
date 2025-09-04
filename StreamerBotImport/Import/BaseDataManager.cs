@@ -3,7 +3,7 @@
 using System.Data;
 using System.IO;
 
-namespace StreamerBotLib.DataSQL.EFC9.Import
+namespace StreamerBotImport.Import
 {
     internal class BaseDataManager
     {

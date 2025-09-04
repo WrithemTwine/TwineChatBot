@@ -334,6 +334,17 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        public IEnumerable<string> GetCommandListNoParams(bool prefix)
+        {
+            LogWriter.DebugLog("GetCommandList", DebugLogTypes.DataManager, "Getting command list.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                var Commands = _dataManager.GetCommandListNoParams(prefix).Result;
+
+                return Commands.Count == 0 ? [LocalizedMsgSystem.GetVar("MsgNoCommands")] : Commands;
+            }
+        }
+
         public string GetCommandString()
         {
             LogWriter.DebugLog("GetCommandString", DebugLogTypes.DataManager, "Getting command string.");

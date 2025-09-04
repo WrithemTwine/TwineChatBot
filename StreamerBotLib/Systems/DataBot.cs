@@ -61,7 +61,7 @@ namespace StreamerBotLib.Systems
 
         public void InitializeDataManagerViews(IGUIDataManagerViews GUIDataManagerViews)
         {
-            GUIDataManagerViews.SetDataManagerViews(this, GetCommandList);
+            GUIDataManagerViews.SetDataManagerViews(this, GetCommandList, GetCommandListNoParams);
             GUIDataManagerViews.SetSystemCollections(SystemAction);
         }
 
@@ -187,6 +187,14 @@ namespace StreamerBotLib.Systems
             {
                 LogWriter.DebugLog("GetCommandList", DebugLogTypes.DataBot, $"Getting command list with prefix: {prefix}.");
                 callback?.Invoke(SystemAction.GetCommandList(prefix));
+            }));
+        }
+        public void GetCommandListNoParams(bool prefix, Action<IEnumerable<string>> callback)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("GetCommandList", DebugLogTypes.DataBot, $"Getting command list with prefix: {prefix}.");
+                callback?.Invoke(SystemAction.GetCommandListNoParams(prefix));
             }));
         }
 

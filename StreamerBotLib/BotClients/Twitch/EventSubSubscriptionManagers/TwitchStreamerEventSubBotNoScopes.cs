@@ -66,9 +66,9 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             LogWriter.DebugLog("AddSubscriptions", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Adding subscriptions.");
 
-            CreateEventSubSubscription(
-                "stream.online", "1",
-                new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchBotUserId } });
+            //CreateEventSubSubscription(
+            //    "stream.online", "1",
+            //    new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchBotUserId } });
 
             CreateEventSubSubscription("channel.update", "2", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
             CreateEventSubSubscription("channel.raid", "1", new() { { "to_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } }, "ChannelRaidTo");

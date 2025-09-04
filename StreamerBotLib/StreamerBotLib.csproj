@@ -5,7 +5,7 @@
 		<Nullable>disable</Nullable>
 		<UseWPF>true</UseWPF>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>1.3.1.12</Version>
+		<Version>1.3.1.13</Version>
 		<PackageId>StreamerBotLib</PackageId>
 		<AssemblyName>StreamerBotLib</AssemblyName>
 		<Authors>WrithemTwine</Authors>
@@ -125,16 +125,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="DataSQL\EFC9\Import\DataSource.Designer.cs">
-		  <DependentUpon>DataSource.xsd</DependentUpon>
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		</Compile>
-		<Compile Update="DataSQL\EFC9\Import\Multi\MultiDataSource.Designer.cs">
-		  <DependentUpon>MultiDataSource.xsd</DependentUpon>
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		</Compile>
 		<Compile Update="Properties\Resources.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
@@ -155,14 +145,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="DataSQL\EFC9\Import\DataSource.xsd">
-		  <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
-		  <Generator>MSDataSetGenerator</Generator>
-		</None>
-		<None Update="DataSQL\EFC9\Import\Multi\MultiDataSource.xsd">
-		  <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
-		  <Generator>MSDataSetGenerator</Generator>
-		</None>
 		<None Update="Properties\Settings.settings">
 		  <Generator>PublicSettingsSingleFileGenerator</Generator>
 		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
