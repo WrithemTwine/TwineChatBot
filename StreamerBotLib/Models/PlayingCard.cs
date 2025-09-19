@@ -1,7 +1,10 @@
 ﻿using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.Models
 {
+    [DebuggerDisplay("PlayingCardValue={PlayingCardValue}, Suit={Suit}, Used={Used}")]
     public class PlayingCard<T, S>
         where T : Enum
         where S : Enum

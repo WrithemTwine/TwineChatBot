@@ -101,7 +101,7 @@ namespace StreamerBotLib.DataSQL
                 .HasMany(c => c.Clips)
                 .WithOne(c => c.CategoryList)
                 .HasPrincipalKey(c => c.CategoryId)
-                .HasForeignKey(c => c.CategoryId );
+                .HasForeignKey(c => c.CategoryId);
 
             modelBuilder.Entity<Currency>()
                 .HasOne(c => c.CurrencyType)

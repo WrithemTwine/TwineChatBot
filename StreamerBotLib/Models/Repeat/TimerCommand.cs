@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace StreamerBotLib.Models
+namespace StreamerBotLib.Models.Repeat
 {
     [DebuggerDisplay("Command={Command}, RepeatTime={RepeatTime}, NextRun={NextRun}")]
     public class TimerCommand : IComparable<TimerCommand>, IEquatable<TimerCommand>
@@ -30,6 +30,11 @@ namespace StreamerBotLib.Models
         /// </summary>
         public List<string> CategoryList { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ComRepeat">A tuple specifying (Command, RepeatTime, CategoryList)</param>
+        /// <param name="TimeDilute">Specifies the initial dilute time to modify the run time.</param>
         public TimerCommand(Tuple<string, int, List<string>> ComRepeat, double TimeDilute)
         {
             Command = ComRepeat.Item1.ToLower();
@@ -62,6 +67,11 @@ namespace StreamerBotLib.Models
             LastRun = NextRun;
         }
 
+        public void ResetLive(DateTime now, double dilute)
+        {
+            NextRun = now.Add((new TimeSpan(0, 0, RepeatTime)).Multiply(dilute));
+        }
+
         /// <summary>
         /// Recompute the NextRun based on the LastRun plus (repeat_time * TimeDilute) seconds.
         /// </summary>
@@ -76,24 +86,25 @@ namespace StreamerBotLib.Models
         /// LastRun is reset to Now.
         /// </summary>
         /// <returns>Whether Now is after the NextRun time.</returns>
-        public bool CheckFireTime()
+        public bool CheckFireTime(double diluteTime)
         {
             bool result = DateTime.Now > NextRun;
             if (result)
             {
-                LastRun = DateTime.Now;
+                LastRun = NextRun;
+                NextRun = LastRun.AddSeconds(RepeatTime * diluteTime);
             }
             return result;
         }
 
         public int CompareTo(TimerCommand obj)
         {
-            return this.Command.CompareTo(obj.Command);
+            return Command.CompareTo(obj.Command);
         }
 
         public bool Equals(TimerCommand other)
         {
-            return this.Command == other.Command;
+            return Command == other.Command;
         }
 
         public override bool Equals(object obj)
@@ -103,7 +114,7 @@ namespace StreamerBotLib.Models
 
         public override int GetHashCode()
         {
-            return (this.Command + RepeatTime.ToString()).GetHashCode();
+            return (Command + RepeatTime.ToString()).GetHashCode();
         }
     }
 }

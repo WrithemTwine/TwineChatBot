@@ -2,10 +2,13 @@
 
 using StreamerBotLib.Static;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(StreamStart))]
     [Index(nameof(StreamStart), IsDescending = [true])]
+    [DebuggerDisplay("Stream from {StreamStart} to {StreamEnd}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class StreamStats(
         DateTime streamStart,

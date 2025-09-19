@@ -2,10 +2,13 @@
 
 using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(RaidDate))]
     [Index(nameof(RaidDate), IsDescending = [true])]
+    [DebuggerDisplay("UserId={UserId}, Platform={Platform}, RaidDate={RaidDate}, ViewerCount={ViewerCount}, Category={Category}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class InRaidData(int viewerCount,
                             DateTime raidDate,

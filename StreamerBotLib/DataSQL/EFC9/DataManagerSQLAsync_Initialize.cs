@@ -252,7 +252,7 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         private void CleanStreamCategories(SQLDBContext Refcontext = null)
         {
-            var StreamStats = Refcontext.StreamStats.Where(s=> s.Category.Contains("''''") || s.Category.Contains(null)).Select(s => s);
+            var StreamStats = Refcontext.StreamStats.Where(s => s.Category.Contains("''''") || s.Category.Contains(null)).Select(s => s);
 
             foreach (var stat in StreamStats)
             {

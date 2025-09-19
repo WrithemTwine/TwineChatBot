@@ -145,11 +145,21 @@ namespace StreamerBotLib.Systems
             }));
         }
 
-        public void StreamOnline(DateTime startedAt, Action<bool> callback)
+        public void ResetRepeatTimerMode()
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("ActivateRepeatTimers", DebugLogTypes.DataBot, "Activating repeat timers.");
+                SystemAction.ResetRepeatTimerMode();
+            }));
+        }
+
+        public void StreamOnline(DateTime startedAt, CategoryData category, Action<bool> callback)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("StreamOnline", DebugLogTypes.DataBot, "Setting stream online.");
+                SetCategory(category);
                 callback?.Invoke(SystemAction.StreamOnline(startedAt));
             }));
         }
@@ -530,6 +540,15 @@ namespace StreamerBotLib.Systems
             }));
         }
 
+        public void UpdateRepeatCommands()
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("UpdateRepeatCommands", DebugLogTypes.DataBot, "Updating repeat commands.");
+                SystemAction.UpdateRepeatCommands();
+            }));
+        }
+
         public void ManageDatabase()
         {
             ActionQueue.Enqueue(new Task(() =>
@@ -629,12 +648,12 @@ namespace StreamerBotLib.Systems
             }));
         }
 
-        public void CheckMultiStreamDate(string userId, Platform platform, DateTime currTime, Action<bool> callback)
+        public void CheckMultiLiveStreamDate(string userId, Platform platform, DateTime currTime, Action<bool> callback)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.DataBot, $"Checking multi stream date for userId: {userId}, platform: {platform}, current time: {currTime}.");
-                callback?.Invoke(SystemAction.CheckMultiStreamDate(userId, platform, currTime));
+                callback?.Invoke(SystemAction.CheckMultiLiveStreamDate(userId, platform, currTime));
             }));
         }
 
@@ -674,5 +693,13 @@ namespace StreamerBotLib.Systems
             }));
         }
 
+        public void ResetCategoryStreamCount()
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("ResetCategoryStreamCount", DebugLogTypes.DataBot, "Resetting stream counts for all categories.");
+                SystemAction.ResetCategoryStreamCount();
+            }));
+        }
     }
 }

@@ -1,8 +1,7 @@
-﻿using StreamerBotLib.Properties;
+﻿using StreamerBotLib.Models.Repeat;
+using StreamerBotLib.Properties;
 
 using System.Collections.Specialized;
-using System.Configuration;
-using System.Reflection;
 
 namespace StreamerBotLib.Static
 {
@@ -200,21 +199,26 @@ namespace StreamerBotLib.Static
 
         public static bool RepeatParallelMode => Settings.Default.RepeatParallelMode;
         public static bool RepeatSerialMode => Settings.Default.RepeatSerialMode;
-        public static StringCollection RepeatSerialSaveData
+        public static List<RepeatCommandGUISelect> RepeatSerialSaveData
+        {
+            get
+            {
+                return [.. Settings.Default.RepeatSerialSaveData.Cast<string>().Select(R => new RepeatCommandGUISelect() { Command = R, IsSelected = false })];
+            }
+
+            set
+            {
+                Settings.Default.RepeatSerialSaveData.Clear();
+                Settings.Default.RepeatSerialSaveData.AddRange([.. value.Where(C => !C.IsSelected).Select(C => C.Command)]);
+                Settings.Default.Save();
+            }
+        }
+        public static StringCollection RepeatSerialSaveDataString
         {
             get
             {
                 return Settings.Default.RepeatSerialSaveData;
             }
-        }
-
-        /// <summary>
-        /// The RepeatSerialSaveData is a StringCollection, and changes to it do not auto-save to the user settings file.
-        /// This method saves the current RepeatSerialSaveData to the user settings file.
-        /// </summary>
-        public static void SaveRepeatSerialSaveData()
-        {
-            Settings.Default.Save();
         }
 
         public static int RepeatSerialTime => Settings.Default.RepeatSerialTime;

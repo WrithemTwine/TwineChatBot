@@ -114,7 +114,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         /// <param name="streamStart">The stream start date and time to check.</param>
         /// <returns><code>true</code> if there are multiple streams on the same day
         /// <code>false</code> if there is no more than one stream for the current day.</returns>
-        internal async Task<bool> CheckMultiStreams(DateTime streamStart)
+        internal async Task<bool> CheckStreamDate(DateTime streamStart)
         {
             using var context = BuildDataContext();
             return await context.StreamStats

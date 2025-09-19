@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace StreamerBotLib.Models
+namespace StreamerBotLib.Models.Converters
 {
     public class IndexConverter : IValueConverter
     {

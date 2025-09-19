@@ -52,7 +52,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 tokenBot.StreamerAccessTokenChanged += TokenBot_StreamerAccessTokenChanged;
                 tokenBot.StreamerNoScopesAccessTokenChanged += TokenBot_StreamerNoScopesAccessTokenChanged;
             }
-        }        
+        }
 
         private void TokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
         {
@@ -200,13 +200,13 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     try
                     {
-                    if (IsActive == null)
-                    {
-                        OnInitialBotStartupSubHandlers?.Invoke(this, new());
-                    }
+                        if (IsActive == null)
+                        {
+                            OnInitialBotStartupSubHandlers?.Invoke(this, new());
+                        }
 
-                    if (IsActive != true)
-                    {
+                        if (IsActive != true)
+                        {
                             if (BotClientName == Bots.TwitchEventSubBot)
                             {
                                 tokenBot.UpdateActiveTokens(BotType.BotAccount, true);

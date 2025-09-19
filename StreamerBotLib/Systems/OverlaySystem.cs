@@ -7,7 +7,7 @@ using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
 
 /*
- * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 
+ * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL or http://localhost. 
  * https://dev.twitch.tv/docs/embed
  * 
  * For this reason, currently disabling the Clips features - either showing the clip someone made of the current channel and shoutout random clip for a user.
@@ -163,6 +163,7 @@ namespace StreamerBotLib.Systems
         private void OnGetChannelClipsEvent(GetChannelClipsEventArgs e)
         {
             LogWriter.DebugLog("OnGetChannelClipsEvent", DebugLogTypes.OverlayBot, $"Requesting Channel Clips for {e.ChannelName}.");
+            // TODO: handle this event back to Helix for "get Clips" for a channel name, FoundChannelClips callback would process the clip for overlay
             GetChannelClipsEvent?.Invoke(this, e);
         }
 

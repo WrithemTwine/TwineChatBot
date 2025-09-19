@@ -1,7 +1,10 @@
 ﻿using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.Models
 {
+    [DebuggerDisplay("CommandText={CommandText}, Channel={Channel}, UserId={UserId}, DisplayName={DisplayName}")]
     public record CmdMessage
     {
         public string CommandText { get; set; }

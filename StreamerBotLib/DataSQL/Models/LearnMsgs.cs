@@ -3,11 +3,13 @@
 using StreamerBotLib.Models.Enums;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(MsgType))]
+    [DebuggerDisplay("Id={Id}, MsgType={MsgType}, TeachingMsg={TeachingMsg}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class LearnMsgs(int id,
                            MsgTypes msgType,

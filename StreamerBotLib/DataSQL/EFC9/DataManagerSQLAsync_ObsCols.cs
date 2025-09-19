@@ -146,7 +146,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-                await GUIContext.Clips.LoadAsync();
+                await GUIContext.Clips.Include(c => c.CategoryList).LoadAsync();
                 Clips.AddRange(GUIContext.Clips.Local.ToList());
                 return Clips;
             });
@@ -196,7 +196,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-                await GUIContext.CustomWelcome.Include(u => u.User).ThenInclude(f=>f.Follower).LoadAsync();
+                await GUIContext.CustomWelcome.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
                 CustomWelcome.AddRange(GUIContext.CustomWelcome.Local.ToList());
                 return CustomWelcome;
             });
@@ -216,7 +216,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-                await GUIContext.GameDeadCounter.Include(c=>c.CategoryList).LoadAsync();
+                await GUIContext.GameDeadCounter.Include(c => c.CategoryList).LoadAsync();
                 GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
                 return GameDeadCounter;
             });
@@ -276,7 +276,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-                await GUIContext.MultiLiveStreams.Include(M=>M.MultiChannels).LoadAsync();
+                await GUIContext.MultiLiveStreams.Include(M => M.MultiChannels).LoadAsync();
                 MultiLiveStreams.AddRange(GUIContext.MultiLiveStreams.Local.ToList());
                 return MultiLiveStreams;
             });
@@ -356,7 +356,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             return Task.Run(async () =>
             {
-                await GUIContext.ShoutOuts.Include(u => u.User).ThenInclude(f=>f.Follower).LoadAsync();
+                await GUIContext.ShoutOuts.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
                 ShoutOuts.AddRange(GUIContext.ShoutOuts.Local.ToList());
                 return ShoutOuts;
             });
@@ -477,7 +477,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     GUIContext.ChangeTracker.Clear();
-                    await GUIContext.Clips.LoadAsync();
+                    await GUIContext.Clips.Include(c => c.CategoryList).LoadAsync();
                     Clips.Clear();
                     Clips.AddRange(GUIContext.Clips.Local.ToList());
                     NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
@@ -553,7 +553,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     GUIContext.ChangeTracker.Clear();
-                    await GUIContext.CustomWelcome.Include(u => u.User).ThenInclude(f=>f.Follower).LoadAsync();
+                    await GUIContext.CustomWelcome.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
                     CustomWelcome.Clear();
                     CustomWelcome.AddRange(GUIContext.CustomWelcome.Local.ToList());
                     NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
@@ -583,7 +583,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     GUIContext.ChangeTracker.Clear();
-                    await GUIContext.GameDeadCounter.Include(c=>c.CategoryList).LoadAsync();
+                    await GUIContext.GameDeadCounter.Include(c => c.CategoryList).LoadAsync();
                     GameDeadCounter.Clear();
                     GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
                     NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);

@@ -1,5 +1,8 @@
-﻿namespace StreamerBotLib.Models
+﻿using System.Diagnostics;
+
+namespace StreamerBotLib.Models
 {
+    [DebuggerDisplay("CategoryId={CategoryId}, CategoryName={CategoryName}")]
     public class CategoryData(string categoryId, string categoryName) : IEquatable<CategoryData>
     {
         public string CategoryId { get; set; } = categoryId;

@@ -163,7 +163,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void SetTwitchApis()
         {
-            if (BotHelixApi == null && StreamerHelixApi == null)
+            if (BotHelixApi == null && StreamerHelixApi == null && BotApiSettings != null && StreamerApiSettings != null && StreamerNoScopesApiSettings != null)
             {
                 BotHelixApi = new(settings: BotApiSettings);
                 StreamerHelixApi = new(settings: StreamerApiSettings);
@@ -243,6 +243,7 @@ namespace StreamerBotLib.BotClients.Twitch
         /// </summary>
         private void BuildAuthTokens()
         {
+            CheckToken(true); // force check all tokens, this will build the ApiSettings if successful
             StartRenewToken();
         }
 

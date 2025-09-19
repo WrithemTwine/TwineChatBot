@@ -234,6 +234,22 @@ namespace StreamerBotLib.DataSQL.EFC9
             return found;
         }
 
+        internal async Task ResetCategoryStreamCount()
+        {
+            using var context = BuildDataContext();
+
+            await context.Database.BeginTransactionAsync();
+
+            foreach(var category in context.CategoryList)
+            {
+                category.StreamCount = 0;
+            }
+
+            await context.Database.CommitTransactionAsync();
+            await context.SaveChangesAsync(true);
+            await RefreshCategoryListList();
+        }
+
         #endregion
 
     }

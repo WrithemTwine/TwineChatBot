@@ -2,11 +2,13 @@
 
 using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
+    [DebuggerDisplay("UserId={UserId}, UserName={UserName}, MultiLiveStreams.Count={MultiLiveStreams.Count}, MultiSummaryLiveStreams={MultiSummaryLiveStreams}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class MultiChannels(string userId,
                                string userName,

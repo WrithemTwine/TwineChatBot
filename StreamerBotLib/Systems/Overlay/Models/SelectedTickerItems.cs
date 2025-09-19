@@ -18,12 +18,12 @@ namespace StreamerBotLib.Systems.Overlay.Models
 
         public SelectedTickerItems()
         {
-            TickerItems = new(from string ticker in Enum.GetNames(typeof(OverlayTickerItem))
+            TickerItems = [.. from string ticker in Enum.GetNames(typeof(OverlayTickerItem))
                               select new SelectedTickerItem()
                               {
                                   IsSelected = new List<string>(OptionFlags.MediaOverlayTickerSelected).Contains(ticker),
                                   OverlayTickerItem = ticker
-                              });
+                              }];
         }
 
         public void SaveSelections()

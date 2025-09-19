@@ -10,6 +10,8 @@ using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
 
+using TwitchLib.Api.Helix.Models.Schedule;
+
 namespace StreamerBotLib.DataSQL
 {
     /// <summary>
@@ -129,21 +131,21 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
+        public bool CheckMultiLiveStreamDate(string UserId, Platform platform, DateTime dateTime)
         {
-            LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.DataManager, "Checking multi-stream date.");
+            LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.DataManager, "Checking multi-channel live stream date.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.CheckMultiStreamDate(UserId, platform, dateTime).Result;
+                return _dataManager.CheckMultiLiveStreamDate(UserId, platform, dateTime).Result;
             }
         }
 
-        public bool CheckMultiStreams(DateTime streamStart)
+        public bool CheckStreamDate(DateTime streamStart)
         {
             LogWriter.DebugLog("CheckMultiStreams", DebugLogTypes.DataManager, "Checking multi-streams.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.CheckMultiStreams(streamStart).Result;
+                return _dataManager.CheckStreamDate(streamStart).Result;
             }
         }
 
@@ -694,12 +696,24 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName)
+        public void ResetCategoryStreamCount()
+        {
+            LogWriter.DebugLog("ResetCategoryStreamCount", DebugLogTypes.DataManager, "Resetting all category stream counts.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.ResetCategoryStreamCount();
+                });
+            }
+        }
+
+        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip)
         {
             LogWriter.DebugLog("PostClip", DebugLogTypes.DataManager, "Posting clip.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.PostClip(ClipId, CreatedAt, Duration, GameId, Language, Title, Url, fromUserId, fromUserName).Result;
+                return _dataManager.PostClip(ClipId, CreatedAt, Duration, GameId, Language, Title, Url, fromUserId, fromUserName, LastClip).Result;
             }
         }
 

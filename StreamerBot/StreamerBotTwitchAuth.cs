@@ -20,6 +20,7 @@ namespace StreamerBot
     {
         private async void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            LogWriter.DebugLog("TextBox_TextChanged", DebugLogTypes.GUIBotComs, "Twitch Auth TextBox changed.");
             if (Twitch_AuthCode_Button_AuthorizeBot != null)
             {
                 await TwitchCheckFocusAsync();
@@ -27,6 +28,7 @@ namespace StreamerBot
         }
         private async void TextBox_TextChanged(object sender, TextCompositionEventArgs e)
         {
+            LogWriter.DebugLog("TextBox_TextChanged", DebugLogTypes.GUIBotComs, "Twitch Auth TextBox changed.");
             if (Twitch_AuthCode_Button_AuthorizeBot != null)
             {
                 await TwitchCheckFocusAsync();
@@ -34,6 +36,7 @@ namespace StreamerBot
         }
         private async void TextBox_TextChanged(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog("TextBox_TextChanged", DebugLogTypes.GUIBotComs, "Twitch Auth TextBox changed.");
             if (Twitch_AuthCode_Button_AuthorizeBot != null)
             {
                 await TwitchCheckFocusAsync();
@@ -42,13 +45,15 @@ namespace StreamerBot
 
         private async void Button_TwitchAuthToken_ReAuthorize(object sender, RoutedEventArgs e)
         {
-            BotController.ForceTwitchAuthReauthorization();
+            LogWriter.DebugLog("Button_TwitchAuthToken_ReAuthorize", DebugLogTypes.GUIBotComs, "Twitch Auth Re-Authorization requested.");
             GUIStopBots_Click(this, new());
+            BotController.ForceTwitchAuthReauthorization();
             await TwitchCheckFocusAsync();
         }
 
         private async void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog("ToggleButton_ChooseTwitchAuth_Click", DebugLogTypes.GUIBotComs, $"Twitch Auth Code flow chosen {OptionFlags.TwitchTokenUseAuth}.");
             GUIStopBots_Click(this, new()); // stop the bots to use the new tokens
 
             if (OptionFlags.TwitchTokenUseAuth)
@@ -105,6 +110,8 @@ namespace StreamerBot
         {
             Task.Run(async () =>
             {
+                LogWriter.DebugLog("TwitchAuth_PopupURLAuth", DebugLogTypes.GUIBotComs, $"Twitch Auth URL: {URL}");
+
                 if (URL == LocalizedMsgSystem.GetVar(Msg.MsgTwitchAuthFailedAuthentication))
                 {
                     MessageBox.Show($"Twitch Authentication Code", LocalizedMsgSystem.GetVar(Msg.MsgTwitchAuthFailedAuthentication));
@@ -143,6 +150,7 @@ namespace StreamerBot
         /// </summary>
         private async Task AuthenticatedAttemptToStartBotsAsync()
         {
+            LogWriter.DebugLog("AuthenticatedAttemptToStartBotsAsync", DebugLogTypes.GUIBotComs, "Twitch Auth completed, attempting to start bots.");
             await TwitchCheckFocusAsync();
         }
 
@@ -155,6 +163,7 @@ namespace StreamerBot
         {
             Dispatcher.BeginInvoke(async () =>
             {
+                LogWriter.DebugLog("Controller_InvalidAuthorizationToken", DebugLogTypes.GUIBotComs, $"Twitch Auth invalid token for {e.BotType}, notifying user.");
                 switch (e.Platform)
                 {
                     case Platform.Default:
@@ -294,17 +303,17 @@ namespace StreamerBot
                     "None Valid";
 
                 if (
-                    !OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName)) 
-                    && !OptionFlags.CheckSettingIsDefault(nameof( OptionFlags.TwitchBotUserName)) 
+                    !OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName))
+                    && !OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchBotUserName))
                     && (
-                        // use User set tokens, check on using the streamer token
+                            // use User set tokens, check on using the streamer token
                             (!OptionFlags.TwitchTokenUseAuth && UserBotTokenData && UserStreamerTokenData && RefreshTokenDateExpiry.Count == (OptionFlags.TwitchStreamerUseToken ? 2 : 1))
                         ||
-                        // use Auth code tokens, check on using the streamer token
+                            // use Auth code tokens, check on using the streamer token
                             (OptionFlags.TwitchTokenUseAuth &&
                                 (AuthBotTokenData && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode)) &&
-                                (AuthStreamerTokenData && (!OptionFlags.TwitchStreamerUseToken 
-                                                            || (!string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode) 
+                                (AuthStreamerTokenData && (!OptionFlags.TwitchStreamerUseToken
+                                                            || (!string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode)
                                                                 && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerNoScopesAuthCode)
                                                            )))
                             )
@@ -312,6 +321,7 @@ namespace StreamerBot
                     )
                 {
                     await BotController.TwitchInitializeHelix();
+                    SetBotRadioButtons(true, Platform.Twitch); // event handler from Twitch bots, at this point the tokens are authorized
                 }
                 else
                 {

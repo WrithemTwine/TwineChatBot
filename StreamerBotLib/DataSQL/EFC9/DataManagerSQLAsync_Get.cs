@@ -29,7 +29,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 .FirstOrDefaultAsync();
 
             // Return the result as a tuple
-            return new Tuple<ModActions, StreamerBotLib.Models.Enums.BanReasons, int>(
+            return new Tuple<ModActions, BanReasons, int>(
                 banRules?.ModAction ?? ModActions.Allow,
                 banReasons,
                 banRules?.TimeoutSeconds ?? 0
@@ -206,10 +206,10 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task<List<string>> GetSocialComs()
         {
             using var context = BuildDataContext();
-            var Socials = Enum.GetValues<DefaultSocials>().Cast<DefaultSocials>();
+            var Socials = Enum.GetNames<DefaultSocials>();
 
             return await context.Commands
-                              .Where(c => Socials.Any(s => s.ToString() == c.CmdName))
+                              .Where(c => Socials.Any(s => s == c.CmdName) && c.Message != DefaulSocialMsg)
                               .Select(c => c.CmdName)
                               .ToListAsync();
         }

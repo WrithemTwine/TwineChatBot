@@ -591,7 +591,8 @@ namespace StreamerBotLib.DataSQL.EFC9
             {
                 await context.Database.BeginTransactionAsync();
                 CategoryList category = await context.CategoryList
-                                                     .Where(CL => (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName)) || CL.CategoryId == categoryData.CategoryId)
+                                                     .Where(CL => (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName))
+                                                                    || CL.CategoryId == categoryData.CategoryId)
                                                      .Select(CL => CL).FirstOrDefaultAsync();
                 category.StreamCount++;
                 StreamStats currStream = await context.StreamStats
@@ -606,25 +607,39 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);
                 await RefreshCategoryListList(true);
+                await RefreshStreamStatsList(true);
             }
         }
 
-        internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName)
+        internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip)
         {
             bool result;
             using var context = BuildDataContext();
-            if (!await context.Clips
+
+            var found = await context.Clips
                   .Where(C => C.ClipId == ClipId)
-                  .Select(C => C).AnyAsync())
+                  .Select(C => C).AnyAsync();
+
+            if (!found)
             {
                 await context.Database.BeginTransactionAsync();
                 await context.Clips.AddAsync(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, language: Language, duration: (float)Duration, url: Url));
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);
-                await RefreshClipsList(true);
                 result = true;
             }
-            result = false;
+            else
+            {
+                result = false;
+            }
+
+            if (LastClip)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await RefreshClipsList(true);
+                });
+            }
 
             return result;
         }
@@ -917,7 +932,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task<bool> PostStream(DateTime StreamStart, string Category)
         {
             using var context = BuildDataContext();
-            bool addstream = !await context.StreamStats.Where(S => S.StreamStart == StreamStart).Select(S => S).AnyAsync();
+            bool addstream = !(await context.StreamStats.Where(S => S.StreamStart == StreamStart).Select(S => S).AnyAsync());
             if (addstream)
             {
                 await context.Database.BeginTransactionAsync();

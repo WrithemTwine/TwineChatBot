@@ -112,7 +112,7 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                     OverlayHyperText = ProcessPage(
                         style + (from OverlayStyle O in overlayStyles
                                  where O.OverlayType == tickerItem.OverlayTickerItem.ToString()
-                                 select O).First().OverlayStyleText,
+                                 select O).FirstOrDefault()?.OverlayStyleText ?? "",
                         ProcessTicker(tickerItem.OverlayTickerItem, tickerItem.UserName).ToString()
                         , 5)
                 };
@@ -211,9 +211,9 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                 {
                     OverlayType = "All",
                     OverlayHyperText = ProcessPage(
-                        style + (from OverlayStyle O in overlayStyles
+                        style + ((from OverlayStyle O in overlayStyles
                                  where O.OverlayType == PublicConstants.OverlayAllTickers
-                                 select O).First().OverlayStyleText + marqueeStyle,
+                                 select O).FirstOrDefault()?.OverlayStyleText ?? "") + marqueeStyle,
                         body
                         , reloadtime, false, "", "")
                 };
@@ -490,9 +490,10 @@ body {
 
             if (TagClassName == PublicConstants.OverlayAllTickers)
             {
-                foreach (SelectedTickerItem S in TickerFormatter.selectedTickerItems)
+                // since "All tickers" CSS is generated once, add all items if user changes which ticker items are added - the CSS tags are in the file.
+                foreach (var S in Enum.GetNames<OverlayTickerItem>())
                 {
-                    style += TickerStyle(S.OverlayTickerItem);
+                    style += TickerStyle(S);
                 }
             }
             else

@@ -3,7 +3,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace StreamerBotLib.Models
+namespace StreamerBotLib.Models.Converters
 {
     public class StatValueConverter : IValueConverter
     {

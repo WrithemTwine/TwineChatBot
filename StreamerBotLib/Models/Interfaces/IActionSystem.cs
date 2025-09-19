@@ -17,7 +17,7 @@ namespace StreamerBotLib.Models.Interfaces
         void Exit();
 
         // Stream events
-        void StreamOnline(DateTime startedAt, Action<bool> callback);
+        void StreamOnline(DateTime startedAt, CategoryData category, Action<bool> callback);
         void SetCategory(CategoryData categoryData);
         void StreamOffline(DateTime currTime);
 
@@ -66,7 +66,7 @@ namespace StreamerBotLib.Models.Interfaces
         void PostIncomingRaid(LiveUser user, DateTime raidTime, int viewerCount, CategoryData category);
 
         // Misc
-        void CheckMultiStreamDate(string userId, Platform platform, DateTime currTime, Action<bool> callback);
+        void CheckMultiLiveStreamDate(string userId, Platform platform, DateTime currTime, Action<bool> callback);
 
         void ManageDatabase();
         void ClearWatchTime();
@@ -85,5 +85,8 @@ namespace StreamerBotLib.Models.Interfaces
         void PostMultiStreamDate(LiveUser User, DateTime currTime, Action<bool> callback);
         void DeleteDataRows(IEnumerable<object> dataRows, string TableName);
         void GUISaveDataGridEdits(bool CommandUpdate, string TableName);
+        void UpdateRepeatCommands();
+        void ResetRepeatTimerMode();
+        void ResetCategoryStreamCount();
     }
 }

@@ -14,10 +14,12 @@ namespace StreamerBotLib.Systems
     public partial class ActionSystem : INotifyPropertyChanged
     {
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
-        public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
         public event EventHandler<TwitchShoutOutUsersEventArgs> TwitchShoutOutUser;
+
+        internal static int LastLiveViewerCount = 0;
+
 
         /// <summary>
         /// Informs the GUI of updated info.
@@ -200,7 +202,7 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckWelcomeUser(UserId);
         }
 
-        private string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
+        internal string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
         {
             LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parsing command: {command} for {User.UserId} : {User.UserName} : {User.Platform}.");
 

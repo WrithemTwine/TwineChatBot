@@ -57,10 +57,10 @@ namespace StreamerBotLib.Systems
             return DataManage.GetMultiWebHooks();
         }
 
-        public bool CheckMultiStreamDate(string userId, Platform platform, DateTime currTime)
+        public bool CheckMultiLiveStreamDate(string userId, Platform platform, DateTime currTime)
         {
             LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.MultiLiveSystem, $"Checking multi-stream date for {userId} on {platform}.");
-            return DataManage.CheckMultiStreamDate(userId, platform, currTime);
+            return DataManage.CheckMultiLiveStreamDate(userId, platform, currTime);
         }
 
         public bool PostMultiStreamDate(LiveUser liveUser, DateTime startTime)

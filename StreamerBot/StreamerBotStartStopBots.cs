@@ -145,6 +145,8 @@ namespace StreamerBot
         /// <param name="rb">The radio button of the started bot.</param>
         private static void HelperStartBot(RadioButton rb)
         {
+            LogWriter.DebugLog("HelperStartBot", DebugLogTypes.GUIEvents, $"GUI updates for {rb.Name} - StartBot buttons.");
+
             rb.IsChecked = true;
 
             foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)
@@ -178,6 +180,8 @@ namespace StreamerBot
         /// <param name="rb">The radio button of the stopped bot.</param>
         private static void HelperStopBot(RadioButton rb)
         {
+            LogWriter.DebugLog("HelperStopBot", DebugLogTypes.GUIEvents, $"GUI updates for {rb.Name} - StopBot buttons.");
+
             rb.IsChecked = true;
 
             foreach (UIElement child in (VisualTreeHelper.GetParent(rb) as WrapPanel).Children)

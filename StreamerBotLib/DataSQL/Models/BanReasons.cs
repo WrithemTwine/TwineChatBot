@@ -2,10 +2,13 @@
 
 using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(MsgType), nameof(BanReason))]
+    [DebuggerDisplay("Id={Id}, MsgType={MsgType}, BanReason={BanReason}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class BanReasons(
                             int id,

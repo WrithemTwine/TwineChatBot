@@ -20,7 +20,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             CleanupList = archiveMultiStreams;
         }
 
-        internal async Task<bool> CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
+        internal async Task<bool> CheckMultiLiveStreamDate(string UserId, Platform platform, DateTime dateTime)
         {
             using var context = BuildDataContext();
             var result = await (from P in context.MultiLiveStreams

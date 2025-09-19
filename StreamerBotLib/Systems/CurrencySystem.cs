@@ -7,6 +7,8 @@ namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem
     {
+        private const int TaskDelay = 5000;
+
         private bool CurAccrualStarted;
         private bool WatchStarted;
 

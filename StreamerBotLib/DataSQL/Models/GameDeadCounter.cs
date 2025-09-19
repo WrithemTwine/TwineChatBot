@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CategoryId), nameof(Category))]
+    [DebuggerDisplay("CategoryId={CategoryId}, Category={Category}, Counter={Counter}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class GameDeadCounter(string categoryId,
                                  string category,

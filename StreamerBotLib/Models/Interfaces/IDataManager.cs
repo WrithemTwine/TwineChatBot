@@ -17,7 +17,7 @@ namespace StreamerBotLib.Models.Interfaces
         new bool CheckFollower(string User);
         new bool CheckFollower(string User, DateTime ToDateTime);
         Tuple<string, string> CheckModApprovalRule(ModActionType modActionType, string ModAction);
-        bool CheckMultiStreams(DateTime streamStart);
+        bool CheckStreamDate(DateTime streamStart);
         new bool CheckPermission(string cmd, ViewerTypes permission);
         new bool CheckShoutName(string UserId);
         bool CheckStreamTime(DateTime CurrTime);
@@ -63,7 +63,7 @@ namespace StreamerBotLib.Models.Interfaces
         object PerformQuery(CommandsBase row, string ParamValue);
         bool PostCategory(CategoryData categoryData);
         public void PostCategoryStream(CategoryData category, int StreamCount = 0);
-        bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName);
+        bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip);
         string PostCommand(string cmd, CommandParams Params);
         void PostCurrencyType(DataSQL.Models.CurrencyType currencyType);
         void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName);
@@ -116,5 +116,6 @@ namespace StreamerBotLib.Models.Interfaces
         object GetICollection(DataTables dataTable);
         void Exit();
         void GUIRowEditSave(string TableName);
+        void ResetCategoryStreamCount();
     }
 }

@@ -30,10 +30,10 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public static bool CheckStreamTime(DateTime TimeStream)
+        public static bool CheckStreamDate(DateTime TimeStream)
         {
             LogWriter.DebugLog("CheckStreamTime", DebugLogTypes.StatSystem, "Checking if the stream time is already in the database.");
-            return DataManage.CheckMultiStreams(TimeStream);
+            return DataManage.CheckStreamDate(TimeStream);
         }
 
         public void SetCategory(CategoryData categoryData)
@@ -44,6 +44,7 @@ namespace StreamerBotLib.Systems
                 LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, "Updating category.");
                 CurrCategory = categoryData;
                 Category = categoryData.CategoryName;
+                UpdateCategory();
                 if (OptionFlags.ManageStreamStats)
                 {
                     DataManage.PostCategoryStream(categoryData);
@@ -378,6 +379,7 @@ namespace StreamerBotLib.Systems
                     DataManage.PostStream(CurrStream.StreamStart, Category);
 
                     found = false;
+                    NotifyRepeatManager_StreamOnline();
                 }
             }
             MonitorWatchTime();
@@ -446,6 +448,11 @@ namespace StreamerBotLib.Systems
             // updates - a streamer may have consecutive streams with same category,
             // not doing this locks the counter from incrementing each stream
             CurrCategory = new("", "");
+        }
+
+        public void ResetCategoryStreamCount()
+        {
+            DataManage.ResetCategoryStreamCount();
         }
 
         #region Stream Stat Methods

@@ -93,10 +93,10 @@ namespace StreamerBotLib.BotClients.Twitch
                         {
                             try
                             {
-                                string firstmsg = newSendMsg.FirstOrDefault();
-                                if (firstmsg != default && tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg).Result.Data[0].IsSent)
+                                newSendMsg.TryDequeue(out string firstmsg);
+                                if (firstmsg != default 
+                                && tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg).Result.Data[0].IsSent)
                                 {
-                                    _ = newSendMsg.Dequeue(); // dequeue first item when sent
                                     x = 0;
                                 }
                             }

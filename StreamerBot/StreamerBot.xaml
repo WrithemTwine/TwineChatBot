@@ -1,5 +1,5 @@
 ﻿<Window 
-        x:Class="StreamerBot.StreamerBotWindow"
+    x:Class="StreamerBot.StreamerBotWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -19,7 +19,7 @@
         MinHeight="800"
         Loaded="Window_Loaded" Closing="OnWindowClosing" UseLayoutRounding="True" SnapsToDevicePixels="True"
         Background="{DynamicResource FullBackground}"
-    >
+        >
     <Window.Resources>
         <ResourceDictionary>
             <GUI:GUITwitchBots x:Name="TwitchBot" x:Key="TwitchBot" />
@@ -1599,14 +1599,15 @@
                                                     <TextBlock>Enable repeating commands.</TextBlock>
                                                 </CheckBox>
                                                 <StackPanel x:Name="StackPanel_RepeatCommands_RepeatOptions" Visibility="Collapsed" Loaded="CheckBox_Checked_PanelVisibility">
-                                                    <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" >
+                                                    <CheckBox IsChecked="{Binding RepeatWhenLive, Mode=TwoWay}" Unchecked="CheckBox_RepeatWhenLive_UnChecked">
                                                         <TextBlock>Perform Repeat commands only when live.</TextBlock>
                                                     </CheckBox>
 
                                                     <GroupBox Header="Choose Repeat Mode" Width="Auto">
                                                         <StackPanel>
                                                             <TextBlock>Ensure Command is Enabled or command will not perform.</TextBlock>
-                                                            <RadioButton IsChecked="{Binding RepeatParallelMode, Mode=TwoWay}">
+                                                            <RadioButton IsChecked="{Binding RepeatParallelMode, Mode=TwoWay}" 
+                                                                         Checked="RadioButton_RepeatCommand_ParallelMode_Checked">
                                                                 <TextBlock>Independent Timing - Specify in Data->Commands->column Repeat Timer, the seconds to repeat that command.</TextBlock>
                                                             </RadioButton>
                                                             <RadioButton x:Name="RadioButton_RepeatCommand_SerialMode" IsChecked="{Binding RepeatSerialMode, Mode=TwoWay}"
@@ -1622,47 +1623,63 @@
                                                           Header="Selection Order Settings" 
                                                           Visibility="Collapsed"
                                                           Width="Auto">
-                                                        <StackPanel>
-                                                            
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock>Interval Seconds:</TextBlock>
-                                                                <TextBox Width="50" Height="20" 
-                                                                     Text="{Binding RepeatSerialIntervalSeconds}" 
-                                                                     PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
-                                                                    <TextBox.ToolTip>
-                                                                        <TextBlock>When using Selection Order mode, specify the interval in whole seconds (yes 1, 2, 3, no 5.5) to 
-                                                                            repeat the each command.<LineBreak />
-                                                                            600 seconds = 10 minutes, 1800 seconds = 30 minutes, 3600 seconds = 1 hour, etc.</TextBlock>
-                                                                    </TextBox.ToolTip>
-                                                                </TextBox>
-                                                            </StackPanel>
-                                                            <TextBlock>Select the order of commands to repeat. The selected command list repeats indefinitely.</TextBlock>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <StackPanel.ToolTip>
-                                                                    <TextBlock>The command list items are those commands not accepting parameters. Except some default commands are 
-                                                                        marked to not accept params and can be invoked with parameters, e.g. !raid 'username'.<LineBreak />
-                                                                Select from the following list and click 'Add'.<LineBreak />
-                                                                (Duplicates are permitted, e.g. to repeat a command more often than others.) <LineBreak />
-                                                                Click 'Remove' next to the command to remove from the list. <LineBreak />
-                                                                    </TextBlock>
-                                                                </StackPanel.ToolTip>
-                                                                <Button Content="Add" Margin="0,0,5,0" Click="Button_Options_RepeatSerialCommandList_Add_Click"/>
-                                                                <ComboBox Width="150" ItemsSource="{Binding CommandNoParamsCollection, Source={StaticResource DataViews}}" />
-                                                            </StackPanel>
-
-                                                            <ListBox x:Name="ListBox_Options_RepeatSerialCommandList"
-                                                                 ItemsSource="{Binding RepeatSerialSaveData}"
-                                                                 MinHeight="20">
+                                                        <DockPanel>
+                                                            <ListBox 
+                                                                x:Name="ListBox_Options_RepeatSerialCommandList"
+                                                                DockPanel.Dock="Right"
+                                                                ItemsSource="{Binding Source={x:Static StaticLib:OptionFlags.RepeatSerialSaveData}}"
+                                                                MinHeight="20">
                                                                 <ListBox.ItemTemplate>
                                                                     <DataTemplate>
                                                                         <StackPanel Orientation="Horizontal">
-                                                                            <Button Content="Remove" Click="Button_Options_RepeatSeralCommandList_Remove_Click" />
-                                                                            <TextBlock Text="{Binding}" Margin="5,0,0,0"/>
+                                                                            <CheckBox IsChecked="{Binding IsSelected}">
+                                                                                <TextBlock Text="{Binding Command}" Margin="5,0,0,0"/>
+                                                                            </CheckBox>
                                                                         </StackPanel>
                                                                     </DataTemplate>
                                                                 </ListBox.ItemTemplate>
                                                             </ListBox>
-                                                        </StackPanel>
+
+                                                            <StackPanel DockPanel.Dock="Left">
+                                                                <StackPanel Orientation="Horizontal" >
+                                                                    <TextBlock>Interval Seconds:</TextBlock>
+                                                                    <TextBox Width="50" Height="20" 
+                                                                     Text="{Binding RepeatSerialTime}" 
+                                                                     PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
+                                                                        <TextBox.ToolTip>
+                                                                            <TextBlock>When using Selection Order mode, specify the interval in whole seconds (yes 1, 2, 3, no 5.5) to 
+                                                                            repeat the each command.<LineBreak />
+                                                                            600 seconds = 10 minutes, 1800 seconds = 30 minutes, 3600 seconds = 1 hour, etc.</TextBlock>
+                                                                        </TextBox.ToolTip>
+                                                                    </TextBox>
+                                                                </StackPanel>
+                                                                <TextBlock>
+                                                                Select the order of commands to repeat. The selected command list repeats indefinitely.
+                                                                </TextBlock>
+                                                                <StackPanel Orientation="Vertical">
+                                                                    <TextBlock>
+                                                                Select from the following command list and click 'Add'.
+                                                                    </TextBlock>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <Button Content="Add" Margin="0,0,5,0" Click="Button_Options_RepeatSerialCommandList_Add_Click"/>
+                                                                        <ComboBox Width="150" ItemsSource="{Binding CommandNoParamsCollection, Source={StaticResource DataViews}}">
+                                                                            <ComboBox.ToolTip>
+                                                                                <TextBlock>
+                                                                                    The command list items are those commands not accepting parameters. Except some default commands are 
+                                                                        marked to not accept params and can be invoked with parameters, e.g. !raid 'username'.
+                                                                                </TextBlock>
+                                                                            </ComboBox.ToolTip>
+                                                                        </ComboBox>
+                                                                    </StackPanel>
+                                                                    <TextBlock>
+                                                                    (Duplicates are permitted, e.g. to repeat a command more often than others.) <LineBreak />
+                                                                    Click the checkbox next to the command and click 'Remove' to remove from the list.
+                                                                    </TextBlock>
+                                                                    <Button Content="Remove" Width="80" Click="Button_Options_RepeatSeralCommandList_Remove_Click" />
+                                                                </StackPanel>
+                                                            </StackPanel>
+
+                                                        </DockPanel>
                                                     </GroupBox>
 
                                                     <GroupBox Header="Choose Repeater adjustment" Width="auto">
@@ -1697,54 +1714,59 @@
                                                                 </RadioButton.ToolTip>
                                                                 <StackPanel Margin="0">
                                                                     <TextBlock>Use thresholds to only send messages when exceeding the criteria.</TextBlock>
-                                                                    <StackPanel Orientation="Horizontal" Visibility="Collapsed" 
-                                                                            Name="StackPanel_Repeat_ThresholdsOptions" Loaded="CheckBox_Checked_PanelVisibility">
-                                                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveChatCount, Mode=TwoWay}">
-                                                                            <CheckBox.ToolTip>Select to prevent messages when below chat count threshold.</CheckBox.ToolTip>
-                                                                            <TextBlock>Chat Count</TextBlock>
-                                                                        </CheckBox>
-                                                                        <Label Margin="0">Inclusive Or</Label>
-                                                                        <CheckBox Padding="0" Margin="0" IsChecked="{Binding RepeatAboveUserCount, Mode=TwoWay}">
-                                                                            <CheckBox.ToolTip>Select to prevent messages when below user count threshold.</CheckBox.ToolTip>
-                                                                            <TextBlock>User Count</TextBlock>
-                                                                        </CheckBox>
-                                                                    </StackPanel>
                                                                 </StackPanel>
                                                             </RadioButton>
                                                         </StackPanel>
                                                     </GroupBox>
-                                                    <GroupBox x:Name="GroupBox_RepeatTimer_ThresholdOptions" Width="auto" Header="Adjustment Thresholds" Padding="0" Loaded="CheckBox_Checked_PanelVisibility" Visibility="Collapsed">
+                                                    <GroupBox x:Name="GroupBox_RepeatTimer_ThresholdOptions" Width="auto" Header="Adjustment Thresholds" 
+                                                              Padding="0" Loaded="CheckBox_Checked_PanelVisibility" Visibility="Collapsed">
                                                         <StackPanel>
                                                             <Grid>
                                                                 <Grid.ColumnDefinitions>
                                                                     <ColumnDefinition Width="40" />
                                                                     <ColumnDefinition Width="65" />
                                                                     <ColumnDefinition Width="65" />
+                                                                    <ColumnDefinition Width="65*" />
                                                                 </Grid.ColumnDefinitions>
                                                                 <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="25*" />
                                                                     <RowDefinition Height="25" />
                                                                     <RowDefinition Height="25" />
                                                                     <RowDefinition Height="25" />
                                                                 </Grid.RowDefinitions>
-                                                                <Label Grid.Row="0" Grid.Column="1">
+                                                                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" 
+                                                                            Name="StackPanel_Repeat_ThresholdsOptions" Loaded="CheckBox_Checked_PanelVisibility"
+                                                                            Margin="0">
+                                                                    <CheckBox VerticalAlignment="Top" IsChecked="{Binding RepeatAboveChatCount, Mode=TwoWay}">
+                                                                        <CheckBox.ToolTip>Select to prevent messages when below chat count threshold.</CheckBox.ToolTip>
+                                                                        <TextBlock>Chat Count</TextBlock>
+                                                                    </CheckBox>
+                                                                    <Label VerticalAlignment="Top">Inclusive Or</Label>
+                                                                    <CheckBox VerticalAlignment="Top" IsChecked="{Binding RepeatAboveUserCount, Mode=TwoWay}">
+                                                                        <CheckBox.ToolTip>Select to prevent messages when below user count threshold.</CheckBox.ToolTip>
+                                                                        <TextBlock>User Count</TextBlock>
+                                                                    </CheckBox>
+                                                                </StackPanel>
+
+                                                                <Label Grid.Row="1" Grid.Column="1">
                                                                     <TextBlock>Minutes</TextBlock>
                                                                 </Label>
-                                                                <Label Grid.Row="0" Grid.Column="2">
+                                                                <Label Grid.Row="1" Grid.Column="2">
                                                                     <TextBlock>Count</TextBlock>
                                                                 </Label>
-                                                                <Label Grid.Row="1" Grid.Column="0">
+                                                                <Label Grid.Row="2" Grid.Column="0">
                                                                     <TextBlock Padding="0">Chat</TextBlock>
                                                                 </Label>
-                                                                <Label Grid.Row="2" Grid.Column="0">
+                                                                <Label Grid.Row="3" Grid.Column="0">
                                                                     <TextBlock Padding="0">User</TextBlock>
                                                                 </Label>
-                                                                <TextBox Grid.Row="1" Grid.Column="1" Height="20" Width="50" 
+                                                                <TextBox Grid.Row="2" Grid.Column="1" Height="20" Width="50" 
                                                                      Text="{Binding RepeatChatMinutes}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
-                                                                <TextBox Grid.Row="1" Grid.Column="2" Height="20" Width="50" 
-                                                                     Text="{Binding RepeatChatCount}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
-                                                                <TextBox Grid.Row="2" Grid.Column="1" Height="20" Width="50"  
-                                                                     Text="{Binding RepeatUserMinutes}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
                                                                 <TextBox Grid.Row="2" Grid.Column="2" Height="20" Width="50" 
+                                                                     Text="{Binding RepeatChatCount}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                                <TextBox Grid.Row="3" Grid.Column="1" Height="20" Width="50"  
+                                                                     Text="{Binding RepeatUserMinutes}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                                <TextBox Grid.Row="3" Grid.Column="2" Height="20" Width="50" 
                                                                      Text="{Binding RepeatUserCount}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
                                                             </Grid>
                                                         </StackPanel>
@@ -2970,10 +2992,108 @@
                             <TabControl TabStripPlacement="Left">
                                 <TabItem x:Name="TabItem_StreamData_Stats" Header="Stats">
                                     <Grid>
+                                        <Grid.Resources>
+                                            <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
+                                                <Border BorderThickness="2">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="10" />
+                                                            <RowDefinition Height="25" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
+                                                            <RowDefinition Height="10" />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="150" />
+                                                            <ColumnDefinition Width="30" />
+                                                            <ColumnDefinition Width="150" />
+                                                            <ColumnDefinition Width="30" />
+                                                            <ColumnDefinition Width="10" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- #region Basic Stream Info Statistics -->
+                                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" />
+                                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
+
+                                                        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
+
+                                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Users" />
+                                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MaxUsers, StringFormat={}{0:N0}}"/>
+                                                        <TextBlock Grid.Row="3" Grid.Column="2" Text="Total Chats" />
+                                                        <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding TotalChats, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Commands" />
+                                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CommandMsgs, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="4" Grid.Column="2" Text="Auto Commands" />
+                                                        <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding AutomatedCommands, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Channel Points Redeemed" />
+                                                        <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ChannelPtCount, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="5" Grid.Column="2" Text="Channel Challenges" />
+                                                        <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding ChannelChallenge, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Webhook Messages" />
+                                                        <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WebhookMsgs, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="6" Grid.Column="2" Text="Clips Made" />
+                                                        <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding ClipsMade, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="7" Grid.Column="0" Text="New Follows"/>
+                                                        <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding NewFollows, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="7" Grid.Column="2" Text="Mods Present" />
+                                                        <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding ModeratorsPresent, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="8" Grid.Column="0" Text="VIPs Present" />
+                                                        <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding VIPsPresent, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="8" Grid.Column="2" Text="Subs Present" />
+                                                        <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SubsPresent, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="9" Grid.Column="0" Text="New Subs" />
+                                                        <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding NewSubscribers, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="9" Grid.Column="2" Text="Gift Subs" />
+                                                        <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding GiftSubs, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Events" />
+                                                        <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding AutomatedEvents, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="10" Grid.Column="2" Text="Bits" />
+                                                        <TextBlock Grid.Row="10" Grid.Column="3" Text="{Binding Bits, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Raids" />
+                                                        <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Raids, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="11" Grid.Column="2" Text="Hosted" />
+                                                        <TextBlock Grid.Row="11" Grid.Column="3" Text="{Binding Hosted, StringFormat={}{0:N0}}" />
+
+                                                        <TextBlock Grid.Row="12" Grid.Column="0" Text="Users TimedOut"/>
+                                                        <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UsersTimedOut, StringFormat={}{0:N0}}" />
+                                                        <TextBlock Grid.Row="12" Grid.Column="2" Text="Users Banned" />
+                                                        <TextBlock Grid.Row="12" Grid.Column="3" Text="{Binding UsersBanned, StringFormat={}{0:N0}}" />
+                                                        <!-- #endregion Basic Stream Info Statistics -->
+
+                                                        <TextBlock Grid.Row="0" Grid.Column="5" Text="Stream Categories" HorizontalAlignment="Left" />
+                                                        <ListBox Grid.Row="1" Grid.RowSpan="13" 
+                                                                 Grid.Column="5" 
+                                                                 MaxHeight="200" MinWidth="350" MaxWidth="350"
+                                                                 HorizontalAlignment="Left"
+                                                                 ItemsSource="{Binding Category}"
+                                                                 />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </Grid.Resources>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="25" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
+                                        
                                         <StackPanel x:Name="StackPanel_DebugLivestream" Orientation="Horizontal" Grid.Row="0">
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" 
                                                     ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>
@@ -3006,9 +3126,8 @@
 
                                         <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" 
-                                                 
                                                   RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}" 
-                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Stream Start" 
                                                                         CellTemplate="{StaticResource DateStreamStartTemplate}" 
@@ -3021,13 +3140,8 @@
                                                 <DataGridTemplateColumn Header="Duration" CellTemplate="{StaticResource StreamDurationTemplate}" SortMemberPath="Duration" />
                                                 <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
                                                 <DataGridTextColumn Header="New Follows" Binding="{Binding NewFollows, StringFormat={}{0:N0}}" />
-
                                                 <DataGridTextColumn Header="Max Users" Binding="{Binding MaxUsers, StringFormat={}{0:N0}}" />
-
-                                                <DataGridTemplateColumn Header="Category" 
-                                                                        CellTemplate="{Binding Mode=OneWay, Source={StaticResource CategoryDataTemplate}}"
-                                                                        CellEditingTemplate="{Binding Mode=OneWay, 
-                                                                                            Source={StaticResource EditCategoryDataTemplate}}"/>
+                                                <DataGridTextColumn Header="Category" Binding="{Binding Category, Converter={StaticResource ConvertCategory}}" IsReadOnly="True" />
                                             </DataGrid.Columns>
                                             <DataGrid.GroupStyle>
                                                 <StaticResource ResourceKey="DataGrid_GroupStyle" />
@@ -3113,16 +3227,21 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="410"/>
+                                            <ColumnDefinition Width="500"/>
                                             <ColumnDefinition Width="5"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <Label Grid.Row="0" Grid.Column="0">
-                                            <TextBlock>Streaming Categories (Deleting categories may delete related data)<LineBreak />
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                                            <Label>
+                                                <TextBlock>Streaming Categories (Deleting categories may delete related data)<LineBreak />
                                                        Categories with (') are adjusted for data storage and query reasons
-                                            </TextBlock>
-                                        </Label>
+                                                </TextBlock>
+                                            </Label>
+                                            <Button Grid.Row="1" Height="25" Content="Reset Stream Count" Click="Button_ResetStreamCount_Click" />
+                                        </StackPanel>
+
+
                                         <DataGrid x:Name="DG_CategoryList" Grid.Row="1" Grid.Column="0" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" 
                                                   IsReadOnly="True" 
@@ -3131,8 +3250,7 @@
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category Id" Binding="{Binding CategoryId}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Category"
-                                                                    Binding="{Binding Category, 
-                                                                            Converter={StaticResource ConvertCategory}}" 
+                                                                    Binding="{Binding Category, Converter={StaticResource ConvertCategory}}" 
                                                                     IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Stream Count" Binding="{Binding StreamCount}" />
                                             </DataGrid.Columns>
@@ -3145,7 +3263,6 @@
                                         </Label>
                                         <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" 
-                                                  
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>

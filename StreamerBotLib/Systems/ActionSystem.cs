@@ -49,6 +49,8 @@ namespace StreamerBotLib.Systems
         protected const int SecondsDelay = 4000;
         private const int SleepWait = 6000;
 
+        private bool ChatBotStarted;
+
         private Queue<Task> ProcMsgQueue { get; set; } = new();
         private Thread ProcessMsgs;
 
@@ -73,8 +75,10 @@ namespace StreamerBotLib.Systems
             DataManage = new DataManagerSQL();
             LocalizedMsgSystem.SetDataManager(DataManage);
 
-            OnRepeatEventOccured += ProcessCommands_OnRepeatEventOccured;
             ProcessedCommand += Command_ProcessedCommand;
+
+            RepeatManager = new(this);
+            RepeatManager.OnRepeatCheckStopped += RepeatManager_OnRepeatCheckStopped;
 
             DataManage.OnBulkFollowersAddFinished += DataManage_OnBulkFollowersAddFinished;
         }
@@ -138,7 +142,7 @@ namespace StreamerBotLib.Systems
             {
                 DataManage.RemoveAllGiveawayData();
             }
-            
+
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
             if (!OptionFlags.ManageFollowers)
             {
@@ -272,15 +276,10 @@ namespace StreamerBotLib.Systems
 
         #endregion
 
-        public bool AddClip(Clip c)
+        public bool AddClip(Clip c, bool LastClip)
         {
             LogWriter.DebugLog("AddClip", DebugLogTypes.CommonSystem, $"Adding Clip: {c.Title}");
-            bool success = false;
-            ThreadManager.AddTaskToGUIDispatcher(() =>
-            {
-                success = DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName);
-            });
-            return success;
+            return DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName, LastClip);
         }
 
         /// <summary>
@@ -398,12 +397,6 @@ namespace StreamerBotLib.Systems
             }
         }
 
-
-        public void ActivateRepeatTimers()
-        {
-            LogWriter.DebugLog("ActivateRepeatTimers", DebugLogTypes.SystemController, "Activating repeat timers.");
-            StartElapsedTimerThread();
-        }
 
         public void NotifyBotStart()
         {
@@ -840,6 +833,11 @@ namespace StreamerBotLib.Systems
             }
         }
 
+        public void UpdateRepeatCommands()
+        {
+            UpdateCommandsChanged();
+        }
+
         #endregion
 
         #region Clips
@@ -848,7 +846,7 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Processing clips.");
             foreach (Clip c in Clips)
             {
-                if (AddClip(c))
+                if (AddClip(c, Clips.Last() == c))
                 {
                     if (OptionFlags.TwitchClipPostChat)
                     {

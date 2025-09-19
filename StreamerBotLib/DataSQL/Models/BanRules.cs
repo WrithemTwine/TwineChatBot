@@ -2,10 +2,13 @@
 
 using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(MsgType), nameof(ViewerTypes), nameof(ModAction))]
+    [DebuggerDisplay("Id={Id}, ViewerTypes={ViewerTypes}, MsgType={MsgType}, ModAction={ModAction}, TimeoutSeconds={TimeoutSeconds}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class BanRules(int id,
                           ViewerTypes viewerTypes,

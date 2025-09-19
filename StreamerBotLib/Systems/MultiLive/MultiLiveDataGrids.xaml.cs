@@ -86,7 +86,7 @@ namespace StreamerBotLib.Systems.MultiLive
         {
             if (sender.GetType() == typeof(DataGrid))
             {
-                bool FoundAddEdit = ((DataGrid)sender).Name is nameof(DG_Multi_WebHooks) 
+                bool FoundAddEdit = ((DataGrid)sender).Name is nameof(DG_Multi_WebHooks)
                                                             or nameof(DG_Multi_ChannelNames);
                 bool FoundIsEnabled = nameof(DG_Multi_WebHooks) == (sender as DataGrid).Name;
 
@@ -283,11 +283,11 @@ namespace StreamerBotLib.Systems.MultiLive
                 }
             }));
         }
-        
+
         private string GetTableName(DataGrid item)
         {
             return item.Name switch
-            {                
+            {
                 "DG_Multi_ChannelNames" => "MultiChannels",
                 "DG_Multi_LiveStreams" => "MultiLiveStreams",
                 "DG_Multi_Webhooks" => "MultiWebhooks",

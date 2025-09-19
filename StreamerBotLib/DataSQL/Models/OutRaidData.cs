@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(Id), nameof(ChannelRaided))]
+    [DebuggerDisplay("Id={Id}, ChannelRaided={ChannelRaided}, RaidDate={RaidDate}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class OutRaidData(int id,
                              string channelRaided,

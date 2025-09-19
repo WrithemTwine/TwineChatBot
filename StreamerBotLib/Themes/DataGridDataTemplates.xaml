@@ -5,17 +5,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:SqlModels="clr-namespace:StreamerBotLib.DataSQL.Models"
     xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
+    xmlns:SqlModelConverters="clr-namespace:StreamerBotLib.DataSQL.Models.Converters"
+    xmlns:Converter="clr-namespace:StreamerBotLib.Models.Converters"
     xmlns:Models="clr-namespace:StreamerBotLib.Models"
     xmlns:StaticLib="clr-namespace:StreamerBotLib.Static"
     xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     mc:Ignorable="d">
 
-    <SqlModels:IntConvert x:Name="IntConverter" x:Key="IntConverter" />
-    <SqlModels:TimeoutSecondsConverter x:Name="TimeoutSecConvert" x:Key="TimeoutSecConvert" />
+    <SqlModelConverters:IntConvert x:Name="IntConverter" x:Key="IntConverter" />
+    <SqlModelConverters:TimeoutSecondsConverter x:Name="TimeoutSecConvert" x:Key="TimeoutSecConvert" />
     <StaticLib:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
-    <Models:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
-    <Models:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
-
+    <Converter:ConvertCategory x:Name="ConvertCategory" x:Key="ConvertCategory" />
+    <Converter:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
+    <Converter:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
+    <Converter:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
+ 
     <GroupStyle x:Key="DataGrid_GroupStyle">
         <GroupStyle.HeaderTemplate>
             <DataTemplate>
@@ -71,18 +75,19 @@
 
     </Style>
 
-    <GUI:ConvertCategory x:Name="ConvertCategory" x:Key="ConvertCategory" />
-    <GUI:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
 
     <DataTemplate x:Key="CategoryDataTemplate">
         <StackPanel>
-            <TextBlock Text="{Binding Category, Converter={StaticResource ConvertCategory}}" TextWrapping="Wrap" Width="250" />
+            <TextBlock Text="{Binding Category, Mode=TwoWay, Converter={StaticResource ConvertCategory}}" TextWrapping="Wrap" Width="250" />
         </StackPanel>
     </DataTemplate>
 
     <DataTemplate x:Key="EditCategoryDataTemplate">
         <StackPanel>
-            <ComboBox ItemsSource="{Binding Category, Converter={StaticResource EditConvertCategory}}" />
+            <ListBox
+                x:Name="ComboBox_EditCategoryDataTemplate" 
+                MinHeight="50" MaxHeight="200"
+                ItemsSource="{Binding Category, Mode=TwoWay, Converter={StaticResource EditConvertCategory}}" />
         </StackPanel>
     </DataTemplate>
 
@@ -375,91 +380,6 @@
                     <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
                 </StackPanel>
             </DockPanel>
-        </Border>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
-        <Border BorderThickness="2">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="25" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="10" />
-
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="30" />
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
-
-                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
-
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Users" />
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MaxUsers, StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="3" Grid.Column="2" Text="Total Chats" />
-                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding TotalChats, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Commands" />
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CommandMsgs, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="4" Grid.Column="2" Text="Auto Commands" />
-                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding AutomatedCommands, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Channel Points Redeemed" />
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ChannelPtCount, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="5" Grid.Column="2" Text="Channel Challenges" />
-                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding ChannelChallenge, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="6" Grid.Column="0" Text="Webhook Messages" />
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WebhookMsgs, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="6" Grid.Column="2" Text="Clips Made" />
-                <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding ClipsMade, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="7" Grid.Column="0" Text="New Follows"/>
-                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding NewFollows, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="7" Grid.Column="2" Text="Mods Present" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding ModeratorsPresent, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="8" Grid.Column="0" Text="VIPs Present" />
-                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding VIPsPresent, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="8" Grid.Column="2" Text="Subs Present" />
-                <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SubsPresent, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="9" Grid.Column="0" Text="New Subs" />
-                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding NewSubscribers, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="9" Grid.Column="2" Text="Gift Subs" />
-                <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding GiftSubs, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Events" />
-                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding AutomatedEvents, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="10" Grid.Column="2" Text="Bits" />
-                <TextBlock Grid.Row="10" Grid.Column="3" Text="{Binding Bits, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="11" Grid.Column="0" Text="Raids" />
-                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Raids, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="11" Grid.Column="2" Text="Hosted" />
-                <TextBlock Grid.Row="11" Grid.Column="3" Text="{Binding Hosted, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="12" Grid.Column="0" Text="Users TimedOut"/>
-                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UsersTimedOut, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="12" Grid.Column="2" Text="Users Banned" />
-                <TextBlock Grid.Row="12" Grid.Column="3" Text="{Binding UsersBanned, StringFormat={}{0:N0}}" />
-            </Grid>
         </Border>
     </DataTemplate>
 

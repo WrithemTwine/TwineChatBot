@@ -1,7 +1,10 @@
 ﻿using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.Models
 {
+    [DebuggerDisplay("UserId={UserId}, Platform={Platform}, StreamCount={StreamCount}, ThroughDate={ThroughDate}")]
     public record ArchiveMultiStream
     {
         public string UserId { get; set; }

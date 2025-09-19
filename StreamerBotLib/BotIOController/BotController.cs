@@ -506,6 +506,11 @@ namespace StreamerBotLib.BotIOController
             DataBot.GUISaveDataGridEdits(CommandUpdate, TableName);
         }
 
+        public void UpdateRepeatCommands()
+        {
+            DataBot.UpdateRepeatCommands();
+        }
+
         /// <summary>
         /// Insert a new AutoShoutUser entry into the database.
         /// </summary>
@@ -526,6 +531,11 @@ namespace StreamerBotLib.BotIOController
         public void AddNewMonitorChannel(List<LiveUser> monitorChannels)
         {
             DataBot.AddNewMonitorChannel(monitorChannels);
+        }
+
+        public void ResetCategoryStreamCount()
+        {
+            DataBot.ResetCategoryStreamCount();
         }
 
         #endregion
@@ -1103,7 +1113,7 @@ namespace StreamerBotLib.BotIOController
 
             ThreadManager.AddTaskToGUIDispatcher(() =>
             {
-                DataBot.PostMultiStreamDate(User, CurrTime, (PostedLive) => PostMultiStreamDateCallBack(User, Title, Category, CurrTime, PostedLive));
+                DataBot.PostMultiStreamDate(User, CurrTime, (PostedLive) => PostMultiLiveStreamDateCallBack(User, Title, Category, CurrTime, PostedLive));
 
                 if (User.Platform == Platform.Twitch)
                 {
@@ -1120,11 +1130,11 @@ namespace StreamerBotLib.BotIOController
             });
         }
 
-        private static void PostMultiStreamDateCallBack(LiveUser User, string Title, string Category, DateTime CurrTime, bool PostedLive)
+        private static void PostMultiLiveStreamDateCallBack(LiveUser User, string Title, string Category, DateTime CurrTime, bool PostedLive)
         {
             if (PostedLive)
             {
-                DataBot.CheckMultiStreamDate(User.UserId, User.Platform, CurrTime, (MultiLive) => MultiStreamDateCallback(User, Title, Category, MultiLive));
+                DataBot.CheckMultiLiveStreamDate(User.UserId, User.Platform, CurrTime, (MultiLive) => MultiStreamDateCallback(User, Title, Category, MultiLive));
             }
         }
 
@@ -1192,7 +1202,7 @@ namespace StreamerBotLib.BotIOController
 
                 ManageBotsStreamStatusChanged(true);
 
-                DataBot.StreamOnline(StartedAt, (isOnline) => callbackHandleOnStreamOnline(isOnline, ChannelName, Title, StartedAt, Category, platform, Debug)); // a callback to finish the stream online process
+                DataBot.StreamOnline(StartedAt, Category, (isOnline) => callbackHandleOnStreamOnline(isOnline, ChannelName, Title, StartedAt, Category, platform, Debug)); // a callback to finish the stream online process
             }
             catch (Exception ex)
             {
@@ -1206,8 +1216,7 @@ namespace StreamerBotLib.BotIOController
             {
                 if (Started)
                 {
-                    bool MultiLive = ActionSystem.CheckStreamTime(StartedAt);
-                    DataBot.SetCategory(Category);
+                    bool MultiLive = ActionSystem.CheckStreamDate(StartedAt);
                     PostGameCategoryEvent(Category);
 
                     if (OptionFlags.PostMultiLive && MultiLive || !MultiLive)
@@ -1625,6 +1634,11 @@ namespace StreamerBotLib.BotIOController
         public void ActivateRepeatTimers()
         {
             DataBot.ActivateRepeatTimers();
+        }
+
+        public void ResetRepeatTimerMode()
+        {
+            DataBot.ResetRepeatTimerMode();
         }
 
         #endregion

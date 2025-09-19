@@ -1,7 +1,10 @@
 ﻿using StreamerBotLib.Systems.Overlay.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.Models
 {
+    [DebuggerDisplay("OverlayTickerItem={OverlayTickerItem}, UserName={UserName}")]
     public class TickerItem(OverlayTickerItem overlayTickerItem = default, string userName = null) : IEquatable<TickerItem>
     {
         public TickerItem() : this(default, null) { }

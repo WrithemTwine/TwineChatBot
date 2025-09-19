@@ -2,9 +2,12 @@
 
 using StreamerBotLib.Models.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
+    [DebuggerDisplay("UserId={UserId}, Platform={Platform}, WatchTime={WatchTime}, ChannelChat={ChannelChat}, CallCommands={CallCommands}")]
 
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class UserStats(

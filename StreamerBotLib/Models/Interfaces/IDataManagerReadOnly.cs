@@ -33,7 +33,7 @@ namespace StreamerBotLib.Models.Interfaces
         bool CheckMultiChannelName(string UserName, Platform platform);
         List<string> GetMultiChannelIds(Platform platform);
         List<Tuple<WebhooksSource, Uri>> GetMultiWebHooks();
-        bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime);
+        bool CheckMultiLiveStreamDate(string UserId, Platform platform, DateTime dateTime);
         LiveUser GetUser(string UserName);
         string GetCommandString();
         IEnumerable<string> GetCommandList(bool prefix = true);
