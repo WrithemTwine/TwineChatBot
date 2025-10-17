@@ -31,6 +31,11 @@ namespace StreamerBotLib.Systems
             ActionSystem.DataManage.OnLoadCompleted += handler;
         }
 
+        public void SetGetClipsHandler(EventHandler<GetChannelClipsEventArgs> handler)
+        {
+            SystemAction.GetChannelClipsEvent += handler;
+        }
+
         public void Initialize()
         {
             ActionQueue.Enqueue(new Task(async () => await SystemAction.InitializeDataManager()));

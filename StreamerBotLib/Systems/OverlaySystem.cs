@@ -73,13 +73,13 @@ namespace StreamerBotLib.Systems
             return OverlayActionPairs;
         }
 
-        private static void CheckURL(string ProvidedURL, float UrlDuration, ref OverlayActionType data)
+        private static void CheckURL(string ProvidedURL, float UrlDuration, ref OverlayActionType data, bool Clip = false)
         {
             LogWriter.DebugLog("CheckURL", DebugLogTypes.OverlayBot, $"Checking the provided URL {ProvidedURL} and Duration {UrlDuration}.");
             if (ProvidedURL != null && UrlDuration != 0)
             {
                 data.MediaFile = ProvidedURL;
-                data.Duration = Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
+                data.Duration = Clip ? (int)Math.Ceiling(UrlDuration) : Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
 
                 LogWriter.DebugLog("CheckURL", DebugLogTypes.OverlayBot, $"The provided URL {ProvidedURL} and Duration {data.Duration} check out, and are added to data.");
 
@@ -139,7 +139,7 @@ namespace StreamerBotLib.Systems
                         ThreadManager.CreateThreadStart("CheckForOverlayEvent", () =>
                         {
                             ShoutOutOverlayAction UserShout = new(FoundAction, OnNewOverlayEvent);
-                            OnGetChannelClipsEvent(new() { ChannelName = User.UserName, CallBackResult = UserShout.FoundChannelClips });
+                            OnGetChannelClipsEvent(new() { Platform = User.Platform, ChannelName = User.UserName, CallBackResult = UserShout.FoundChannelClips });
 
                             while (!UserShout.Finish) // keep thread open until Clips bot gives a response
                             {
@@ -183,7 +183,7 @@ namespace StreamerBotLib.Systems
                     int found = random.Next(clips.Count);
                     Clip resultClip = clips[found];
 
-                    CheckURL(resultClip.Url, (int)Math.Ceiling(resultClip.Duration), ref ShoutOut);
+                    CheckURL(resultClip.EmbedUrl, (int)Math.Ceiling(resultClip.Duration), ref ShoutOut, true);
                 }
 
                 PerformShoutOut(new() { OverlayAction = ShoutOut });

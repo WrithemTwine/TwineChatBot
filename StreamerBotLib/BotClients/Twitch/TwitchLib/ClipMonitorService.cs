@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 using System.Diagnostics.CodeAnalysis;
@@ -31,7 +32,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         public int CacheSize { get; }
 
         public event EventHandler<OnNewClipsDetectedArgs> OnNewClipFound;
-        public event EventHandler AccessTokenUnauthorized;
+        public event EventHandler<ExpiredTokenEventArgs> AccessTokenUnauthorized;
 
         public ClipMonitorService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 1000) : base(api, checkIntervalInSeconds)
         {
@@ -141,7 +142,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (BadScopeException)
             {
-                AccessTokenUnauthorized?.Invoke(this, new());
+                AccessTokenUnauthorized?.Invoke(this, new(null)); // ignore perform action, service tick calls this again later
                 return null;
             }
             catch (Exception ex)
@@ -160,7 +161,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (BadScopeException)
             {
-                AccessTokenUnauthorized?.Invoke(this, new());
+                AccessTokenUnauthorized?.Invoke(this, new(null));
             }
             catch (Exception ex)
             {
@@ -184,7 +185,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (BadScopeException)
             {
-                AccessTokenUnauthorized?.Invoke(this, new());
+                AccessTokenUnauthorized?.Invoke(this, new(() => _api.Helix.Clips.CreateClipAsync(channelId)));
                 return null;
             }
             catch (Exception ex)

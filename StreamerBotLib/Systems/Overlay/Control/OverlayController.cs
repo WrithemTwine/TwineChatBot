@@ -60,6 +60,19 @@ namespace StreamerBotLib.Systems.Overlay.Control
             LogWriter.DebugLog("SendAlert", DebugLogTypes.OverlayBot, $"Sending alert, {overlayPage.OverlayType}, for display.");
 
         }
+
+        public static void SendVideo(OverlayPage overlayVideo)
+        {
+            TwineBotWebServer.SendVideo(overlayVideo);
+            LogWriter.DebugLog("SendVideoAlert", DebugLogTypes.OverlayBot, $"Sending video alert, {overlayVideo.OverlayType}, for display.");
+        }
+
+        public static void SendImage(OverlayPage overlayImage)
+        {
+            TwineBotWebServer.SendImage(overlayImage);
+            LogWriter.DebugLog("SendImageAlert", DebugLogTypes.OverlayBot, $"Sending image alert, {overlayImage.OverlayType}, for display.");
+        }
+
 #endif
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using StreamerBotLib.DataSQL;
+
+using System.Windows;
 
 namespace StreamerBotImport
 {
@@ -7,9 +9,13 @@ namespace StreamerBotImport
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DataManagerSQL dataManagagerSQL;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            dataManagagerSQL = new();
         }
     }
 }

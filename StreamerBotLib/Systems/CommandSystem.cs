@@ -239,8 +239,11 @@ namespace StreamerBotLib.Systems
                 if (arglist.Count > 0)
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Channel provided, {arglist[0]}.");
-                    BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Platform);
+                    BotController.RaidChannel(arglist[0].Replace("@", ""), User.Platform);
                     result = cmdrow.Message;
+
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Output message: {result}.");
+
                 }
                 else
                 {
@@ -676,7 +679,7 @@ namespace StreamerBotLib.Systems
                         {
                             LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Command contains #category, looking up category.");
                             VariableParser.AddData(ref datavalues,
-                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: ShoutuserId ?? DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: ShoutuserId, bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
                             string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                             tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
@@ -689,7 +692,7 @@ namespace StreamerBotLib.Systems
                             LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking for Overlay Event.");
                             CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
                                 Action: DefaultCommand.so.ToString(),
-                                User, UserMsg: tempHTMLResponse);
+                                new(userName: paramvalue, Platform.Twitch, userId: ShoutuserId), UserMsg: tempHTMLResponse);
                         });
 
                         result = "";
@@ -710,7 +713,14 @@ namespace StreamerBotLib.Systems
             if (result != "")
             {
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Command performed, resulting message: {result}. Checking for Overlay Event.");
-                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, User, UserMsg: tempHTMLResponse);
+                string paramvalue = cmdrow.AllowParam
+                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                        ? User.UserName
+                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                    : User.UserName;
+                string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
+
+                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, new(userName: paramvalue, Platform.Twitch, userId: ShoutuserId), UserMsg: tempHTMLResponse);
             }
 
             result ??= "";

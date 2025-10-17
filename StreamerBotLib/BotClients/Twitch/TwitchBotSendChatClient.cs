@@ -94,7 +94,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             try
                             {
                                 newSendMsg.TryDequeue(out string firstmsg);
-                                if (firstmsg != default 
+                                if (firstmsg != default
                                 && tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg).Result.Data[0].IsSent)
                                 {
                                     x = 0;

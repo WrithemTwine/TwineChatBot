@@ -734,6 +734,15 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
+
+        public static int MediaOverlayClipWidth
+        {
+            get => Settings.Default.MediaOverlayClipWidth; set => Settings.Default.MediaOverlayClipWidth = value;
+        }
+        public static int MediaOverlayClipHeight
+        {
+            get => Settings.Default.MediaOverlayClipHeight; set => Settings.Default.MediaOverlayClipHeight = value;
+        }
         /// <summary>
         /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>

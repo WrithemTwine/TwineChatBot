@@ -1,10 +1,16 @@
-﻿namespace StreamerBotLib.Models.Events
+﻿using StreamerBotLib.Models.Enums;
+
+namespace StreamerBotLib.Models.Events
 {
     /// <summary>
     /// The EventArgs for the GetChannelClips event.
     /// </summary>
     public class GetChannelClipsEventArgs : EventArgs
     {
+        /// <summary>
+        /// The Platform to request.
+        /// </summary>
+        public Platform Platform { get; set; }
         /// <summary>
         /// The ChannelName to request.
         /// </summary>

@@ -41,6 +41,9 @@ namespace StreamerBotLib.Systems.Overlay.Server
                 }
             }
 
+            Links.Add(new() { OverlayType = "Overlay Video", OverlayHyperText = $"{ActionServerAddress}{PublicConstants.OverlayVideoName}" });
+            Links.Add(new() { OverlayType = "Overlay Image", OverlayHyperText = $"{ActionServerAddress}{PublicConstants.OverlayImageName}" });
+
             string TickerServerAddress = ServerAddress(OptionFlags.MediaOverlayMediaTickerPort);
             Prefixes.Add($"{TickerServerAddress}ticker/");
             if (OptionFlags.MediaOverlayTickerMulti)

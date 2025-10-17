@@ -68,8 +68,29 @@ namespace StreamerBotLib.Systems.Overlay
                         GUIData.OverlayEditStyles.Find((f) =>
                             f.OverlayType == e.OverlayType.ToString()
                         || f.OverlayType == PublicConstants.OverlayAllActions
-                    ))
+                    ),
+                        out string ImageHyperText,
+                        out string VideoHyperText)
             });
+
+            if (!string.IsNullOrEmpty(ImageHyperText))
+            {
+                OverlayController.SendImage(new OverlayPage()
+                {
+                    OverlayType = e.OverlayType.ToString(),
+                    OverlayHyperText = ImageHyperText
+                });
+            }
+
+            if (!string.IsNullOrEmpty(VideoHyperText))
+            {
+                OverlayController.SendVideo(new OverlayPage()
+                {
+                    OverlayType = e.OverlayType.ToString(),
+                    OverlayHyperText = VideoHyperText
+                });
+            }
+
             GUIData.UpdateStat(e.OverlayType.ToString());
         }
 
@@ -277,21 +298,8 @@ namespace StreamerBotLib.Systems.Overlay
 
         private void OverlayLink_Click(object sender, RoutedEventArgs e)
         {
-            int x = 0;
-            int max = 2;
-            while (x < max)
-            {
-                try
-                {
-                    Clipboard.SetText(((Button)sender).Content.ToString());
-                    x = max;
-                }
-                catch
-                {
-                    x++;
-                    Thread.Sleep(2);
-                }
-            }
+            Clipboard.SetText(((Button)sender).Content.ToString());
+
             TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
         }
 

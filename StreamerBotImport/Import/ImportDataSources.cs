@@ -142,7 +142,7 @@ namespace StreamerBotImport.Import
         /// </summary>
         /// <param name="context">The new Database context to use for importing data.</param>
         /// <param name="dataManagerSQL">To access already built methods for entering data into the database using the application data flow.</param>
-        public void ConvertData(SQLDBContext context, DataManagerSQLAsync dataManagerSQL)
+        public void ConvertData(SQLDBContext context, DataManagerSQL dataManagerSQL)
         {
             int totalTables = _DataSource?.Tables.Count ?? 0 + _MultiDataSource?.Tables.Count ?? 0;
             int totalRows = 0;

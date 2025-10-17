@@ -1122,7 +1122,7 @@ namespace StreamerBotLib.BotClients
 
         #endregion
 
-        #region Token Clip Service
+        #region Clip Service
         private void TwitchBotClipSvc_OnBotStarted(object sender, EventArgs e)
         {
             LogWriter.DebugLog("TwitchBotClipSvc_OnBotStarted", DebugLogTypes.TwitchBots, "Found clip bot started, now adding handlers.");
@@ -1158,6 +1158,12 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog("GetChannelClips", DebugLogTypes.TwitchBots, "Performing a request to get channel clips.");
             ThreadManager.CreateThreadStart("GetChannelClips", () => ProcessChannelClipsAsync(ReturnData));
+        }
+
+        public void GetUserChannelClips(string UserName, Action<List<Clip>> callback)
+        {
+            LogWriter.DebugLog("GetUserChannelClips", DebugLogTypes.TwitchBots, "Performing a request to get user channel clips.");
+            ThreadManager.CreateThreadStart("GetUserChannelClips", () => callback(BotIOController.BotController.ConvertClips(TwitchHelixBot.GetChannelClips(UserName: UserName))));
         }
 
         /// <summary>

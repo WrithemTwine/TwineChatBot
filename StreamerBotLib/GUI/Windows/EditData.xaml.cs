@@ -156,7 +156,12 @@ namespace StreamerBotLib.GUI.Windows
                             MinWidth = 200
                         };
 
-                        Binding filepath = new() { Path = new(Data), Mode = BindingMode.OneWayToSource, FallbackValue = FilePathInfo };
+                        Binding filepath = new()
+                        {
+                            Path = new(Data),
+                            Mode = BindingMode.OneWayToSource,
+                            FallbackValue = FilePathInfo
+                        };
                         ((TextBox)valueElement).SetBinding(TextBox.TextProperty, filepath);
 
                         ((TextBox)valueElement).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;

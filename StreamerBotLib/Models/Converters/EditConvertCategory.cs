@@ -29,9 +29,9 @@ namespace StreamerBotLib.Models.Converters
             {
                 checkBoxes.Add(new() { Content = "All", IsChecked = true });
                 checkBoxes.AddRange(from C in GUIDataManagerViews.CurrCategoryList
-                                     where C.Category != "All"
-                                     orderby C.Category
-                                     select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Category), IsChecked = false });
+                                    where C.Category != "All"
+                                    orderby C.Category
+                                    select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Category), IsChecked = false });
             }
             else
             {
@@ -86,10 +86,11 @@ namespace StreamerBotLib.Models.Converters
                 {
                     allItem.IsChecked = false;
                 }
-            } else if (AllCategory)
+            }
+            else if (AllCategory)
             {
                 // user clicked the "All" category, uncheck everything else
-                foreach(CheckBox cb in items)
+                foreach (CheckBox cb in items)
                 {
                     if ((string)cb.Content != "All")
                     {

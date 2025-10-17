@@ -1,5 +1,6 @@
 ﻿using StreamerBotLib.DataSQL.TableMeta;
 using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
 namespace StreamerBotLib.GUI.Windows
@@ -11,6 +12,9 @@ namespace StreamerBotLib.GUI.Windows
         private Dictionary<string, List<string>> TableDataPairs { get; } = [];
 
         private TableMeta CurrTableRow { get; set; }
+
+        private bool _openNewWindow, _setTableData;
+        private Action _OpenGridWindow;
 
         internal static EventHandler<AddNewRowEventArgs> DataGridUpdatedRowHandler { get; set; }
 
@@ -30,16 +34,24 @@ namespace StreamerBotLib.GUI.Windows
 
         private void OpenDataGridRowWindow(bool NewRow)
         {
-            EditDataWindow = new(ActionSystem.DataManage);
-            EditDataWindow.AddNewRow += DataGridUpdatedRowHandler; // hookup adding a new row to a table
-
-            if (CurrTableRow.CurrEntity.TableName is "OverlayServices" or "ModeratorApprove")
+            if (!_setTableData)
             {
-                EditDataWindow.SetOverlayActions(TableDataPairs);
+                _OpenGridWindow = () => ThreadManager.AddTaskToGUIDispatcher(() => OpenDataGridRowWindow(NewRow));
+                _openNewWindow = true;
             }
+            else
+            {
+                EditDataWindow = new(ActionSystem.DataManage);
+                EditDataWindow.AddNewRow += DataGridUpdatedRowHandler; // hookup adding a new row to a table
 
-            EditDataWindow.LoadData(CurrTableRow.CurrEntity, NewRow);
-            EditDataWindow.Show();
+                if (CurrTableRow.CurrEntity.TableName is "OverlayServices" or "ModeratorApprove")
+                {
+                    EditDataWindow.SetOverlayActions(TableDataPairs);
+                }
+
+                EditDataWindow.LoadData(CurrTableRow.CurrEntity, NewRow);
+                EditDataWindow.Show();
+            }
         }
 
         public void SetTableData(Dictionary<string, List<string>> SourceData)
@@ -48,6 +60,13 @@ namespace StreamerBotLib.GUI.Windows
             foreach (var D in SourceData)
             {
                 TableDataPairs.Add(D.Key, D.Value);
+            }
+            _setTableData = true;
+
+            if (_openNewWindow)
+            {
+                _openNewWindow = false;
+                _OpenGridWindow();
             }
         }
     }

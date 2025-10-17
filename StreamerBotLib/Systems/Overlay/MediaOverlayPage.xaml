@@ -153,8 +153,8 @@
                     <TextBlock DockPanel.Dock="Top">Use these links in the Streaming Software to display alerts. Available after starting server. (Click link button to copy.)</TextBlock>
                     <TextBlock x:Name="TextBlock_OverlayLink_Msg_Copied" DockPanel.Dock="Top" Foreground="{DynamicResource BrightGo}" Visibility="Hidden">Link copied!</TextBlock>
                     <ListView x:Name="ListView_OverlayLink_List" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
-                              ItemsSource="{Binding OverlayLinks}"
-                              ContextMenu="{StaticResource OverlayLink_Menu}" SelectionMode="Single">
+                              ItemsSource="{Binding OverlayLinks}">
+                              <!--ContextMenu="{StaticResource OverlayLink_Menu}" SelectionMode="Single"-->
                         <ListView.Resources>
                             <DataTemplate x:Key="OverlayLink">
                                 <Button Content="{Binding OverlayHyperText}" Click="OverlayLink_Click" />

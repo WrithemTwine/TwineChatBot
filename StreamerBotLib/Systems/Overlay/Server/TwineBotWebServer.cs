@@ -3,6 +3,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Communication;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Interfaces;
+using StreamerBotLib.Systems.Overlay.Static;
 
 using System.IO;
 using System.Net;
@@ -23,6 +24,14 @@ namespace StreamerBotLib.Systems.Overlay.Server
         /// The alert pages collection.
         /// </summary>
         private static List<IOverlayPageReadOnly> OverlayPages { get; set; } = [];
+        /// <summary>
+        /// The alert video collection.
+        /// </summary>
+        private static List<IOverlayPageReadOnly> OverlayVideo { get; set; } = [];
+        /// <summary>
+        /// The alert images collection.
+        /// </summary>
+        private static List<IOverlayPageReadOnly> OverlayImages { get; set; } = [];
         /// <summary>
         /// The ticker pages collection.
         /// </summary>
@@ -126,6 +135,30 @@ namespace StreamerBotLib.Systems.Overlay.Server
             }
         }
 
+        public static void SendVideo(IOverlayPageReadOnly overlayPage)
+        {
+            if (HTTPListenServer.IsListening)
+            {
+                lock (OverlayVideo)
+                {
+                    OverlayVideo.Add(overlayPage);
+                    LogWriter.DebugLog("SendVideo", DebugLogTypes.OverlayBot, $"http server - Overlay video, {overlayPage.OverlayType}, added and awaiting to be served.");
+                }
+            }
+        }
+
+        public static void SendImage(IOverlayPageReadOnly overlayPage)
+        {
+            if (HTTPListenServer.IsListening)
+            {
+                lock (OverlayImages)
+                {
+                    OverlayImages.Add(overlayPage);
+                    LogWriter.DebugLog("SendImage", DebugLogTypes.OverlayBot, $"http server - Overlay image, {overlayPage.OverlayType}, added and awaiting to be served.");
+                }
+            }
+        }
+
         /// <summary>
         /// Clear and replace all TickerPages when the user changes the visual ticker appearance.
         /// </summary>
@@ -184,9 +217,9 @@ namespace StreamerBotLib.Systems.Overlay.Server
 
                         byte[] buffer;
 
-                        if (request.RawUrl.Contains("ticker"))
+                        if (request.RawUrl.Contains(PublicConstants.TickerPageName))
                         {
-                            string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
 
                             lock (TickerPages)
                             {
@@ -207,7 +240,7 @@ namespace StreamerBotLib.Systems.Overlay.Server
 
                             buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                         }
-                        else if (request.RawUrl.Contains("index.html"))
+                        else if (request.RawUrl.Contains(PublicConstants.OverlayPageName))
                         {
                             string RequestType = OverlayTypes.None.ToString();
                             if (!OptionFlags.MediaOverlayUseSameStyle)
@@ -215,7 +248,7 @@ namespace StreamerBotLib.Systems.Overlay.Server
                                 RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
                             }
 
-                            string responseString = ProcessHyperText.DefaultPage; // "<HTML><BODY> Hello world!</BODY></HTML>";
+                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
 
                             lock (OverlayPages)
                             {
@@ -234,6 +267,40 @@ namespace StreamerBotLib.Systems.Overlay.Server
                                     if (found != null)
                                     {
                                         OverlayPages.Remove(found);
+                                        responseString = found.OverlayHyperText;
+                                    }
+                                }
+                            }
+                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                        }
+                        else if (request.RawUrl.Contains(PublicConstants.OverlayVideoName))
+                        {
+                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
+                            lock (OverlayVideo)
+                            {
+                                if (OverlayVideo.Count > 0)
+                                {
+                                    IOverlayPageReadOnly found = OverlayVideo.FirstOrDefault();
+                                    if (found != default)
+                                    {
+                                        OverlayVideo.Remove(found);
+                                        responseString = found.OverlayHyperText;
+                                    }
+                                }
+                            }
+                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                        }
+                        else if (request.RawUrl.Contains(PublicConstants.OverlayImageName))
+                        {
+                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
+                            lock (OverlayImages)
+                            {
+                                if (OverlayImages.Count > 0)
+                                {
+                                    IOverlayPageReadOnly found = OverlayImages.FirstOrDefault();
+                                    if (found != default)
+                                    {
+                                        OverlayImages.Remove(found);
                                         responseString = found.OverlayHyperText;
                                     }
                                 }

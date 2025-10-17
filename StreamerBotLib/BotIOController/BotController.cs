@@ -69,6 +69,8 @@ namespace StreamerBotLib.BotIOController
                 BanUserRequest: Systems_BanUserRequest,
                 TwitchShoutOutUser: Systems_TwitchShoutOutUser);
 
+            DataBot.SetGetClipsHandler(HandleGetUserClips);
+
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
             OutputSentToBots += DataBot.GetPostChannelMessageHandler();
@@ -119,6 +121,7 @@ namespace StreamerBotLib.BotIOController
 
             TwitchBots.InvalidTwitchAccess += TwitchBots_InvalidTwitchAccess;
             TwitchBots.OnTwitchTokensInitialized += TwitchBots_OnTwitchTokensInitialized;
+
         }
 
         public IEnumerable<string> PostIds(IEnumerable<string> Ids)
@@ -835,6 +838,7 @@ namespace StreamerBotLib.BotIOController
                     Language = SrcClip.Language,
                     Title = SrcClip.Title,
                     Url = SrcClip.Url,
+                    EmbedUrl = SrcClip.EmbedUrl,
                     FromUserId = SrcClip.CreatorId,
                     FromUserName = SrcClip.CreatorName
                 };
@@ -1094,6 +1098,14 @@ namespace StreamerBotLib.BotIOController
         public void HandleBotEventPostNewClip(List<Models.Clip> clips)
         {
             DataBot.ClipHelper(clips);
+        }
+
+        public void HandleGetUserClips(object sender, GetChannelClipsEventArgs e)
+        {
+            if (e.Platform == Platform.Twitch)
+            {
+                TwitchBots.GetUserChannelClips(e.ChannelName, e.CallBackResult);
+            }
         }
 
         #endregion

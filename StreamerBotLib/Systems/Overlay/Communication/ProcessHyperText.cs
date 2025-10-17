@@ -50,11 +50,12 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                 $"</html>\n";
         }
 
-        public static string ProcessOverlay(OverlayActionType overlayActionType, OverlayStyle overlayStyle)
+        public static string ProcessOverlay(OverlayActionType overlayActionType, OverlayStyle overlayStyle, out string ImageHyperText, out string VideoHyperText)
         {
             // LogWriter.DebugLog("ProcessOverlay", DebugLogTypes.OverlaySystem, $"Overlay type {overlayActionType}, Overlay style {overlayStyle}.");
 
-            string Img = "";
+            string Img = string.Empty;
+            bool ShoutClip = false; // flag to set the refresh element of a clip page, due to not having the handlers for when the video finishes
 
             if (overlayActionType.ImageFile != "" && File.Exists(overlayActionType.ImageFile))
             {
@@ -67,7 +68,7 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                 Img = SVGClock();
             }
 
-            string Media = "";
+            string Media = string.Empty;
 
             Dictionary<string, string> audio = new() { { ".mp3", "audio/mpeg" }, { ".wav", "audio/wav" } };
             Dictionary<string, string> video = new() { { ".mp4", "video/mp4" }, { ".webm", "video/webm" }, { ".ogg", "video/ogg" } };
@@ -78,7 +79,16 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                 return new XElement($"{tag}", new XAttribute("id", "myalert"), new XAttribute("onended", "window.location.reload();"), new XElement("source", new XAttribute("src", overlayActionType.MediaFile), new XAttribute("type", MediaTypes[Extension]))).ToString().Replace($"<{tag}", $"<{tag} autoplay");
             }
 
-            if (overlayActionType.MediaFile.Contains("http"))
+            if (overlayActionType.OverlayType == OverlayTypes.Commands && overlayActionType.ActionValue == DefaultCommand.so.ToString())
+            {
+                ShoutClip = true;
+                Media = new XElement("iframe",
+                            new XAttribute("src", overlayActionType.MediaFile + $"&muted=false&parent=localhost&autoplay=true"),
+                            new XAttribute("height", OptionFlags.MediaOverlayClipHeight),
+                            new XAttribute("width", OptionFlags.MediaOverlayClipWidth)
+                    ).ToString();
+            }
+            else if (overlayActionType.MediaFile.Contains("http"))
             {
                 Media = new XElement("iframe", new XAttribute("id", "myalert"), new XElement("src", overlayActionType.MediaFile)).ToString();
             }
@@ -93,7 +103,10 @@ namespace StreamerBotLib.Systems.Overlay.Communication
 
             string Msg = $"<div class=\"message\">{overlayActionType.Message}</div>";
 
-            return ProcessPage(overlayStyle.OverlayStyleText, Img + Media + Msg, overlayActionType.Duration, Media != "");
+            ImageHyperText = ProcessPage(overlayStyle.OverlayStyleText, Img, overlayActionType.Duration);
+            VideoHyperText = ProcessPage(overlayStyle.OverlayStyleText, Media, overlayActionType.Duration, Media != "" && !ShoutClip);
+
+            return ProcessPage(overlayStyle.OverlayStyleText, Msg, overlayActionType.Duration);
         }
 
         public static OverlayPage ProcessTicker(TickerItem tickerItem, IEnumerable<OverlayStyle> overlayStyles)
@@ -212,8 +225,8 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                     OverlayType = "All",
                     OverlayHyperText = ProcessPage(
                         style + ((from OverlayStyle O in overlayStyles
-                                 where O.OverlayType == PublicConstants.OverlayAllTickers
-                                 select O).FirstOrDefault()?.OverlayStyleText ?? "") + marqueeStyle,
+                                  where O.OverlayType == PublicConstants.OverlayAllTickers
+                                  select O).FirstOrDefault()?.OverlayStyleText ?? "") + marqueeStyle,
                         body
                         , reloadtime, false, "", "")
                 };

@@ -2621,5 +2621,29 @@ namespace StreamerBotLib.Properties {
                 this["RepeatSerialTime"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        public int MediaOverlayClipWidth {
+            get {
+                return ((int)(this["MediaOverlayClipWidth"]));
+            }
+            set {
+                this["MediaOverlayClipWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public int MediaOverlayClipHeight {
+            get {
+                return ((int)(this["MediaOverlayClipHeight"]));
+            }
+            set {
+                this["MediaOverlayClipHeight"] = value;
+            }
+        }
     }
 }

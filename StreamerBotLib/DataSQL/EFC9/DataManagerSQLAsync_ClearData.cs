@@ -240,7 +240,7 @@ namespace StreamerBotLib.DataSQL.EFC9
 
             await context.Database.BeginTransactionAsync();
 
-            foreach(var category in context.CategoryList)
+            foreach (var category in context.CategoryList)
             {
                 category.StreamCount = 0;
             }

@@ -10,8 +10,6 @@ using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
 
-using TwitchLib.Api.Helix.Models.Schedule;
-
 namespace StreamerBotLib.DataSQL
 {
     /// <summary>

@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamerBotImport"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Import &amp; Migrate Database" Height="450" Width="800">
     <Grid>
-
+        <Frame Grid.Row="0" Grid.Column="0" Name="MainFrame" Source="pack://application:,,,/StreamerBotImport;component/ImportUpdate.xaml"/>
     </Grid>
 </Window>

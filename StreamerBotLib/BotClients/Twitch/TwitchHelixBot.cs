@@ -11,12 +11,15 @@ using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
 using TwitchLib.Api.Helix.Models.Chat.GetChatters;
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Api.Services.Events.FollowerService;
+
+using HelixClips = TwitchLib.Api.Helix.Models.Clips.GetClips.Clip;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -98,6 +101,30 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 return await tokenBot.StreamerHelixApi.Helix.ChannelPoints.GetCustomRewardAsync(Id);
             }
+            return null;
+        }
+
+        private async Task<List<HelixClips>> GetChannelClipsAsync(string UserId = null, string UserName = null)
+        {
+            string Id = UserId ?? await HelixGetUserId(UserName);
+            if (Id != null)
+            {
+                List<HelixClips> clips = [];
+                string after = null;
+
+                do
+                {
+                    GetClipsResponse curr = await tokenBot.StreamerHelixApi.Helix.Clips.GetClipsAsync(broadcasterId: Id,
+                                                                                                    first: 100,
+                                                                                                   after: after);
+                    after = curr.Pagination.Cursor;
+                    clips.AddRange(curr.Clips);
+                } while (after != null);
+
+                return clips;
+
+            }
+
             return null;
         }
 
@@ -556,6 +583,14 @@ namespace StreamerBotLib.BotClients.Twitch
                     })
                 );
             }
+        }
+
+        public List<HelixClips> GetChannelClips(string UserId = null, string UserName = null)
+        {
+            return PerformAction("GetChannelClips", () =>
+            {
+                return GetChannelClipsAsync(UserId: UserId, UserName: UserName);
+            }).Result;
         }
 
         #region process events

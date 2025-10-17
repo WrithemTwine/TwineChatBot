@@ -14,7 +14,7 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageTags>Twitch, bot, twitchlib, streamer</PackageTags>
 		<SignAssembly>false</SignAssembly>
-		<Version>1.3.1.14</Version>
+		<Version>1.3.1.15</Version>
 		<Copyright>2025</Copyright>
 		<PackageReleaseNotes>Updated to Entity Framework Core</PackageReleaseNotes>
 		<Authors>WrithemTwine</Authors>
@@ -32,7 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3405.78" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3537.50" />
 	</ItemGroup>
 
 	<PropertyGroup Label="Globals">
