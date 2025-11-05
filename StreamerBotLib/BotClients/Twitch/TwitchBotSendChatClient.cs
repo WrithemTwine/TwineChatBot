@@ -1,6 +1,9 @@
 ﻿using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+
 using TwitchLib.Api.Core.Exceptions;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -13,7 +16,10 @@ namespace StreamerBotLib.BotClients.Twitch
         private readonly TwitchTokenBot tokenBot;
 
         private const int SingleChatLength = 500;
-        private readonly Queue<string> newSendMsg = [];
+
+        private List<string> newSendMsg = [];
+
+        private bool CurrAnnouncement = false;
 
         internal TwitchBotSendChatClient(TwitchTokenBot TokenBot)
         {
@@ -24,101 +30,138 @@ namespace StreamerBotLib.BotClients.Twitch
         }
 
         /// <summary>
-        /// Send message to Twitch Streamer's channel
+        /// Wait until the EventSub subscriptions are refreshed before trying to send queued messages.
         /// </summary>
-        /// <param name="message">Message to send to the channel. Can be over 500 long, code 
-        /// will word break the message to fit within 500 and send as many messages as needed.</param>
+        /// <param name="sender">Unused</param>
+        /// <param name="e">Unused</param>
+        public void TokenUpdatedEventSubUpdated(object sender, EventArgs e)
+        {
+            ThreadManager.CreateThreadStart("TokenUpdatedEventSubUpdated", async () =>
+            {
+                LogWriter.DebugLog("TokenUpdatedEventSubUpdated", DebugLogTypes.TwitchBotSendChat, "Token updated event received, waiting 5 seconds before sending queued messages.");
+                await Task.Delay(5000); // wait 5 seconds to ensure EventSub is updated
+
+            IsActive = true;
+            while (newSendMsg.Count > 0)
+            {
+                string firstmsg = newSendMsg[0]; // refer to first message without dequeuing, due to potential exceptions
+                LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Message retrieved from queue and ready to send.");
+
+                try
+                {
+                    if (CurrAnnouncement)
+                    {
+                        LogWriter.DebugLog("Send-Announcement", DebugLogTypes.TwitchBotSendChat, "Sending announcement.");
+
+                        await tokenBot.BotHelixApi.Helix.Chat.SendChatAnnouncementAsync(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
+                        await Task.Delay(2000);
+                    }
+                    else
+                    {
+                        await tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
+                        await Task.Delay(500);
+                    }
+                }
+
+                catch (TokenExpiredException ex)
+                {
+                    LogWriter.LogException(ex, "Send");
+                    ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                }
+                catch (BadScopeException ex)
+                {
+                    LogWriter.LogException(ex, "Send");
+                    ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, "Send");
+                }
+
+                newSendMsg.Remove(firstmsg); // remove the message after successful send & no exceptions
+            }
+            IsActive = false;
+
+            });
+        }
+
         public override Task Send(string message, bool Announcement = false)
         {
             return Task.Run(async () =>
             {
+                CurrAnnouncement = Announcement;
                 tokenBot.UpdateActiveTokens(BotType.BotAccount, true);
 
                 LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Sending a message.");
 
+                #region tokenize the message, max send length of 500 total characters, including switches & whitespace
+                // Clear any previous messages
                 newSendMsg.Clear();
 
-                string prefix = (message.StartsWith("/me ") && !Announcement ? "/me " : ""); // exclude prefix if announcement
+                string prefix = (message.StartsWith("/me ") && !CurrAnnouncement ? "/me " : ""); // exclude prefix if announcement
                 string tempSend = message.Replace("/me ", "");
 
                 while (tempSend.Length > SingleChatLength)
                 {
                     string temp = tempSend[..SingleChatLength];
                     string AddSend = temp[..(temp.LastIndexOf(' '))];
-                    newSendMsg.Enqueue(AddSend);
+                    newSendMsg.Add(AddSend);
                     tempSend = prefix + tempSend.Replace(AddSend, "").Trim();
                 }
 
                 if (tempSend.Length > 0)
                 {
-                    newSendMsg.Enqueue(tempSend);
+                    newSendMsg.Add(tempSend);
                 }
+                #endregion end tokenize
 
-                if (Announcement)
+                bool clean = false;
+
+                IsActive = true;
+                while (newSendMsg.Count > 0)
                 {
-                    await Task.Run(async () =>
-                    {
-                        while (newSendMsg.TryDequeue(out string Msg))
-                        { // TODO: correct desync from awaiting the send announcement and the loop continuing as it waits for the removed message to send count to 0
-                            Action send = new(async () =>
-                            {
-                                await Task.Delay(2000);
-                                await tokenBot.BotHelixApi.Helix.Chat.SendChatAnnouncementAsync(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, Msg);
-                            });
+                    string firstmsg = newSendMsg[0]; // refer to first message without dequeuing, due to potential exceptions
+                    LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Message retrieved from queue and ready to send.");
 
-                            try
-                            {
-                                LogWriter.DebugLog("Send-Announcement", DebugLogTypes.TwitchBotSendChat, "Sending announcement.");
-                                send.Invoke();
-                            }
-                            catch (Exception ex)
-                            {
-                                LogWriter.DebugLog("Send-Announcement", DebugLogTypes.TwitchBotSendChat, "Found exception. Checking the access token.");
-                                tokenBot.CheckToken();
-                                LogWriter.LogException(ex, "Send-Announcement");
-                                await Task.Delay(1000);
-                                send.Invoke();
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    await Task.Run(() =>
+                    try
                     {
-                        int x = 0; // loop x times and stop, to prevent infinite loop
-                        const int MaxTime = 5; // try this many times and stop the loop
-
-                        while (newSendMsg.Count > 0 && x < MaxTime)
+                        if (CurrAnnouncement)
                         {
-                            try
-                            {
-                                newSendMsg.TryDequeue(out string firstmsg);
-                                if (firstmsg != default
-                                && tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg).Result.Data[0].IsSent)
-                                {
-                                    x = 0;
-                                }
-                            }
-                            catch (TokenExpiredException ex)
-                            {
-                                LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Found exception. Checking the access token.");
-                                LogWriter.LogException(ex, "Send");
-                                tokenBot.CheckToken();
-                                Task.Delay(500 * (x + 1));
-                                x++;
-                            }
-                            catch (Exception ex)
-                            {
-                                LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Found exception. Checking the access token.");
-                                tokenBot.CheckToken();
-                                LogWriter.LogException(ex, "Send");
-                                Task.Delay(500 * (x + 1));
-                                x++;
-                            }
+                            LogWriter.DebugLog("Send-Announcement", DebugLogTypes.TwitchBotSendChat, "Sending announcement.");
+
+                            await tokenBot.BotHelixApi.Helix.Chat.SendChatAnnouncementAsync(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
+                            await Task.Delay(2000);
                         }
-                    });
+                        else
+                        {
+                            await tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
+                            await Task.Delay(500);
+                        }
+                        clean = true;
+                    }
+
+                    catch (TokenExpiredException ex)
+                    {
+                        LogWriter.LogException(ex, "Send");
+                        ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                    }
+                    catch (BadScopeException ex)
+                    {
+                        LogWriter.LogException(ex, "Send");
+                        ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, "Send");
+                    }
+
+                    if (clean)
+                    {
+                        newSendMsg.Remove(firstmsg); // remove the message after successful send & no exceptions
+                    }
+                    clean = false;
                 }
+                IsActive = false;
             });
         }
     }

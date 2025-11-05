@@ -7,6 +7,7 @@ using StreamerBotLib.Systems.Overlay.GUI;
 using StreamerBotLib.Systems.Overlay.Models;
 using StreamerBotLib.Systems.Overlay.Static;
 
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -298,9 +299,16 @@ namespace StreamerBotLib.Systems.Overlay
 
         private void OverlayLink_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(((Button)sender).Content.ToString());
+            try
+            {
+                Clipboard.SetText(((Button)sender).Content.ToString());
 
-            TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
+                TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
+            }
+            catch (COMException ex)
+            {
+                LogWriter.LogException(ex, "OverlayLink_Click");
+            }
         }
 
         private void TabItem_Links_LostFocus(object sender, RoutedEventArgs e)

@@ -13,12 +13,13 @@ namespace StreamerBotLib.Systems.Overlay.Server
 {
     public class TwineBotWebServer
     {
-        private static bool ServerStarted;
-
         /// <summary>
         /// Server maintained in this class.
         /// </summary>
         private static HttpListener HTTPListenServer { get; set; } = new();
+
+        private const int MinPort = 1024;
+        private const int MaxPort = 65535;
 
         /// <summary>
         /// The alert pages collection.
@@ -52,7 +53,7 @@ namespace StreamerBotLib.Systems.Overlay.Server
                 if (CheckPort == 0)
                 {
                     Random random = new();
-                    return ValidatePort(random.Next(1024, 65536));
+                    return ValidatePort(random.Next(MinPort, MaxPort));
                 }
                 else
                 {
@@ -60,7 +61,6 @@ namespace StreamerBotLib.Systems.Overlay.Server
                 }
             }
 
-            ServerStarted = false;
             OptionFlags.MediaOverlayMediaActionPort = Assign(OptionFlags.MediaOverlayMediaActionPort);
             OptionFlags.MediaOverlayMediaTickerPort = Assign(OptionFlags.MediaOverlayMediaTickerPort);
         }
@@ -74,7 +74,14 @@ namespace StreamerBotLib.Systems.Overlay.Server
         {
             while (!IsFree(port))
             {
-                port++;
+                if (port == MaxPort)
+                {
+                    port = MinPort; // wrap around
+                }
+                else
+                {
+                    port++;
+                }
             }
 
             return port;
@@ -86,7 +93,7 @@ namespace StreamerBotLib.Systems.Overlay.Server
         /// </summary>
         /// <param name="port">The port to check within the system.</param>
         /// <returns>False if the port is already in use, true if port is free.</returns>
-        // ports: 1 - 65535
+        // ports: 1024 - 65535
         private static bool IsFree(int port)
         {
             IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
@@ -113,7 +120,6 @@ namespace StreamerBotLib.Systems.Overlay.Server
                     HTTPListenServer.Start();
 
                     ServerSendAlerts();
-                    ServerStarted = true;
                 });
                 ServerAlertThreadStarted = true;
             }
@@ -125,38 +131,38 @@ namespace StreamerBotLib.Systems.Overlay.Server
         /// <param name="overlayPage">Contains the type of alert and the html text to send.</param>
         public static void SendAlert(IOverlayPageReadOnly overlayPage)
         {
-            if (HTTPListenServer.IsListening)
-            {
+            //if (HTTPListenServer.IsListening)
+            //{
                 lock (OverlayPages)
                 {
                     OverlayPages.Add(overlayPage);
                     LogWriter.DebugLog("SendAlert", DebugLogTypes.OverlayBot, $"http server - Overlay alert, {overlayPage.OverlayType}, added and awaiting to be served.");
                 }
-            }
+            //}
         }
 
         public static void SendVideo(IOverlayPageReadOnly overlayPage)
         {
-            if (HTTPListenServer.IsListening)
-            {
+            //if (HTTPListenServer.IsListening)
+            //{
                 lock (OverlayVideo)
                 {
                     OverlayVideo.Add(overlayPage);
                     LogWriter.DebugLog("SendVideo", DebugLogTypes.OverlayBot, $"http server - Overlay video, {overlayPage.OverlayType}, added and awaiting to be served.");
                 }
-            }
+            //}
         }
 
         public static void SendImage(IOverlayPageReadOnly overlayPage)
         {
-            if (HTTPListenServer.IsListening)
-            {
+            //if (HTTPListenServer.IsListening)
+            //{
                 lock (OverlayImages)
                 {
                     OverlayImages.Add(overlayPage);
                     LogWriter.DebugLog("SendImage", DebugLogTypes.OverlayBot, $"http server - Overlay image, {overlayPage.OverlayType}, added and awaiting to be served.");
                 }
-            }
+            //}
         }
 
         /// <summary>
@@ -361,13 +367,12 @@ namespace StreamerBotLib.Systems.Overlay.Server
         /// </summary>
         public static void StopServer()
         {
-            if (ServerStarted)
+            if (HTTPListenServer.IsListening)
             {
                 LogWriter.DebugLog("StopServer", DebugLogTypes.OverlayBot, $"http server - Overlay http server stopping.");
 
                 HTTPListenServer.Stop();
                 ServerAlertThreadStarted = false;
-                ServerStarted = false;
             }
         }
 

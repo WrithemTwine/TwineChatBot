@@ -126,6 +126,8 @@ namespace StreamerBotLib.BotClients
             TwitchEventSubStreamer = new(TwitchTokenBot, Bots.TwitchEventSubStreamer);
 
             TwitchBotSendChatClient = new(TwitchTokenBot);
+            TwitchEventSubBot.TokenUpdatedEventSubUpdated += TwitchBotSendChatClient.TokenUpdatedEventSubUpdated;
+
             ActiveUserThread = false;
 
             AddBot(TwitchBotClipSvc);
@@ -826,21 +828,17 @@ namespace StreamerBotLib.BotClients
 
             foreach (var bot in BotsList)
             {
-                if (bot.BotClientName == Bots.TwitchClipBot)
+                if (bot.BotClientName is Bots.TwitchClipBot or Bots.TwitchMultiBot)
                 {
-                    streamertoken |= ((TwitchBotClipSvc)bot).IsActive == true;
+                    streamertoken |= ((IOModule)bot).IsActive == true;
                 }
-                else if (bot.BotClientName == Bots.TwitchMultiBot)
-                {
-                    streamertoken |= ((TwitchBotLiveMonitorSvc)bot).IsActive == true;
-                }
-                else if (bot.BotClientName == Bots.TwitchEventSubBot)
+                else if (bot.BotClientName is Bots.TwitchEventSubBot or Bots.TwitchBotSendChatClient)
                 { // includes TiwtchBotSendChatClient - need to receive chat to send chat
-                    bottoken |= ((TwitchEventSub)bot).IsActive == true;
+                    bottoken |= ((IOModule)bot).IsActive == true;
                 }
                 else if (bot.BotClientName == Bots.TwitchEventSubStreamer)
                 {
-                    bool curr = ((TwitchEventSub)bot).IsActive == true;
+                    bool curr = ((IOModule)bot).IsActive == true;
                     streamertoken |= curr;
                     streamernoscopestoken |= curr;
                 }
@@ -849,7 +847,6 @@ namespace StreamerBotLib.BotClients
             TwitchTokenBot.UpdateActiveTokens(BotType.BotAccount, bottoken);
             TwitchTokenBot.UpdateActiveTokens(BotType.StreamerAccount, streamertoken);
             TwitchTokenBot.UpdateActiveTokens(BotType.StreamerNoScopes, streamernoscopestoken);
-
         }
 
         public static void TwitchActivateAuthCode(string clientId, bool NoScopes, Action<string> OpenBrowser, Action AuthenticationFinished)

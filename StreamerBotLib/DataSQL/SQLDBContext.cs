@@ -120,17 +120,20 @@ namespace StreamerBotLib.DataSQL
                 .HasOne(u => u.CustomWelcome)
                 .WithOne(w => w.User)
                 .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.ShoutOuts)
                 .WithOne(u => u.User)
                 .HasForeignKey<ShoutOuts>(u => new { u.UserId, u.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             modelBuilder.Entity<Users>()
                 .HasMany(u => u.GiveawayUserData)
-                .WithOne(g => g.User);
+                .WithOne(g => g.User)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Users>()
                 .HasOne(s => s.UserStats)
@@ -159,12 +162,14 @@ namespace StreamerBotLib.DataSQL
                 .HasMany(m => m.MultiLiveStreams)
                 .WithOne(m => m.MultiChannels)
                 .HasForeignKey(m => new { m.UserId, m.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             modelBuilder.Entity<MultiChannels>()
                 .HasOne(m => m.MultiSummaryLiveStreams)
                 .WithOne(m => m.MultiChannels)
                 .HasForeignKey<MultiSummaryLiveStreams>(m => new { m.UserId, m.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             modelBuilder.Entity<LearnMsgs>()

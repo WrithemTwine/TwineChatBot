@@ -24,9 +24,12 @@ namespace StreamerBotLib.Systems.Overlay.Server
             Links.Clear();
 
             string ActionServerAddress = ServerAddress(OptionFlags.MediaOverlayMediaActionPort);
+
+            // add base action server address - specifically for image & video alerts
+            Prefixes.Add(ActionServerAddress);
+
             if (OptionFlags.MediaOverlayUseSameStyle)
             {
-                Prefixes.Add(ActionServerAddress);
                 Links.Add(new() { OverlayType = "All", OverlayHyperText = $"{ActionServerAddress}{PublicConstants.OverlayPageName}" });
             }
             else
@@ -48,7 +51,7 @@ namespace StreamerBotLib.Systems.Overlay.Server
             Prefixes.Add($"{TickerServerAddress}ticker/");
             if (OptionFlags.MediaOverlayTickerMulti)
             {
-                Links.Add(new() { OverlayType = "All Tickers", OverlayHyperText = $"{TickerServerAddress}ticker/{PublicConstants.OverlayPageName}" });
+                Links.Add(new() { OverlayType = "All Tickers", OverlayHyperText = $"{TickerServerAddress}ticker/{PublicConstants.TickerPageName}" });
             }
             else
             {

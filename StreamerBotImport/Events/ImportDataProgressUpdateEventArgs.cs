@@ -1,4 +1,4 @@
-﻿namespace StreamerBotLib.Models.Events
+﻿namespace StreamerBotImport.Events
 {
     public class ImportDataProgressUpdateEventArgs(int currentProgressAmount) : EventArgs
     {

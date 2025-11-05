@@ -1,7 +1,8 @@
-﻿using StreamerBotLib.DataSQL;
+﻿using StreamerBotImport.Events;
+
+using StreamerBotLib.DataSQL;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
 
@@ -134,8 +135,9 @@ namespace StreamerBotImport.Import
             }
         }
 
-        private event EventHandler<ImportDataProgressUpdateEventArgs> ProgressUpdate;
-        public event EventHandler<EventArgs> ImportCompleted;
+        public event EventHandler<ImportDataProgressUpdateEventArgs>? ProgressUpdate;
+        public event EventHandler<EventArgs>? ImportCompleted;
+        public event EventHandler<UpdatedTableDataEventArgs>? UpdatedTableData;
 
         /// <summary>
         /// Converts data from the primary database or the multilive database files from the XML Datagram used in the prior bot version
@@ -159,11 +161,7 @@ namespace StreamerBotImport.Import
                 totalRows -= t.Rows.Count;
             }
 
-            ImportUpdate progressWindow = new(totalTables, totalRows);
-            ProgressUpdate += progressWindow.HandleImplementProgressUpdate;
-            ImportCompleted += progressWindow.HandleImportCompleted;
-            progressWindow.Show();
-
+            UpdatedTableData?.Invoke(this, new(totalTables, totalRows));
 
             LogWriter.WriteLog($"Starting datagram import into database.");
             LogWriter.WriteLog("This log messaging will note each table, regardless if it actually contains any data.");

@@ -142,13 +142,13 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Calculates difference between a past date and DateTime.Now.ToLocalTime().
         /// </summary>
-        /// <param name="pastdate">the historic date of some activity</param>
+        /// <param name="pastdate">the historic date of some activity converted to local time.</param>
         /// <returns>the elapsed time since the historic date to now</returns>
         public static string FormatTimes(DateTime pastdate)
         {
             DateTime Curr = DateTime.Now.ToLocalTime();
-            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Computing the difference between now: {Curr.ToLocalTime()} and past date: {pastdate.ToLocalTime()}.");
-            return FormatTimes(Curr - pastdate.ToLocalTime());
+            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Computing the difference between now: {Curr.ToLocalTime()} and past date: {pastdate}.");
+            return FormatTimes(Curr - pastdate);
         }
 
         public static string AddEscapeFormat(string SrcText)

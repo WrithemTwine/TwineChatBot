@@ -244,20 +244,6 @@ namespace StreamerBot
 
                 Settings.Default.ManageDataArchiveMsg = false;
             }
-
-
-            if (Settings.Default.AppCurrWorkingPopup)
-            {
-                Settings.Default.AppCurrWorkingPopup = false;
-                string SaveCWDPath = GetAppDataCWD();
-
-                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application'AppVersion current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
-
-                if (boxResult == MessageBoxResult.Yes)
-                {
-                    Settings.Default.AppCurrWorkingAppData = true;
-                }
-            }
         }
 
         private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)

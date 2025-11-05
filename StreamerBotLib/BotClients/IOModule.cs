@@ -12,7 +12,7 @@ namespace StreamerBotLib.BotClients
 
         /// <summary>
         /// Flag for bot activity:
-        /// <code>null - first time bot active</code>
+        /// <code>null - first time bot has never started</code>
         /// <code>true - bot is started</code>
         /// <code>false - bot is stopped</code>
         /// </summary>

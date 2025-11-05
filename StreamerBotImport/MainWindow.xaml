@@ -5,8 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamerBotImport"
         mc:Ignorable="d"
-        Title="Import &amp; Migrate Database" Height="450" Width="800">
-    <Grid>
-        <Frame Grid.Row="0" Grid.Column="0" Name="MainFrame" Source="pack://application:,,,/StreamerBotImport;component/ImportUpdate.xaml"/>
-    </Grid>
+        Title="Import &amp; Migrate Database" Height="300" Width="500"
+        Background="{DynamicResource FullBackground}">
+    <DockPanel>
+        <Frame DockPanel.Dock="Top"
+               LoadCompleted="ImportFrame_LoadCompleted"
+               Name="ImportFrame" 
+               Source="pack://application:,,,/StreamerBotImport;component/ImportUpdate.xaml"
+               />
+
+        <StackPanel DockPanel.Dock="Top">
+            <Label Name="Label_BeginMigration" Content="Beginning Migrations" Visibility="Collapsed" />
+            <Label Name="Label_EndMigration" Content="Migrations Complete" Visibility="Collapsed"/>
+            <Button Name="Button_Close" Content="Close" Width="100" Height="30" Click="Button_Close_Click" Visibility="Collapsed" />
+        </StackPanel>
+    </DockPanel>
 </Window>

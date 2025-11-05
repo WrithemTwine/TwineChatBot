@@ -8,6 +8,7 @@ using StreamerBotLib.Static;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace StreamerBotLib.Systems.MultiLive
 {
@@ -25,10 +26,12 @@ namespace StreamerBotLib.Systems.MultiLive
 
         public event EventHandler<AddNewMultiChannelUserEventArgs> FindMultiChannelUserId;
         public event EventHandler<AddNewMultiChannelUserEventArgs> AddNewMultiChannelUser;
-        public event EventHandler<EventArgs> DebugAddNewMultiLiveData;
         public event EventHandler<RoutedEventArgs> MenuItemDeleteClick;
         public event EventHandler<RoutedEventArgs> MenuItemEnabledClick;
         public event EventHandler<RoutedEventArgs> MenuItemDisabledClick;
+        public event EventHandler<PreviewKeyDownDeleteRowsEventArgs> PreviewKeyDownDeleteRows;
+
+        public event EventHandler<EventArgs> DebugAddNewMultiLiveData;
 
         private ManageWindows PopupWindows { get; set; } = new();
 
@@ -341,13 +344,17 @@ namespace StreamerBotLib.Systems.MultiLive
         {
             DebugAddNewMultiLiveData?.Invoke(this, EventArgs.Empty);
         }
-
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource is MenuItem)
             {
                 MenuItemDeleteClick?.Invoke(sender, e);
             }
+        }
+
+        private void DG_PreviewKeyDown_Click(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            PreviewKeyDownDeleteRows?.Invoke(this, new(sender, e));
         }
     }
 }

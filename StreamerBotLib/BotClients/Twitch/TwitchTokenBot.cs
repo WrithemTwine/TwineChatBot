@@ -274,12 +274,16 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 DateTime Current = DateTime.Now;
 
+                // check every couple seconds until it's time to check a token sometime every hour or a token is expiring
                 while ((Current < wakeup
                         || BotAccessTokenExpireDate > Current
                         || StreamerAccessTokenExpireDate > Current
-                        || StreamerNoScopesAccessTokenExpireDate > Current) && OptionFlags.ActiveToken && IsActive == true)
+                        || StreamerNoScopesAccessTokenExpireDate > Current) 
+                        && OptionFlags.ActiveToken 
+                        && IsActive == true)
                 {
                     Thread.Sleep(2000);
+                    Current = DateTime.Now;  // refresh current time for loop check
                 }
             }
         }

@@ -170,9 +170,17 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             using var context = BuildDataContext();
             await context.Database.BeginTransactionAsync();
+            await context.ShoutOuts.ExecuteDeleteAsync();
+            await context.CustomWelcome.ExecuteDeleteAsync();
+            await context.Currency.ExecuteDeleteAsync();
+            await context.GiveawayUserData.ExecuteDeleteAsync();
             await context.Users.ExecuteDeleteAsync();
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
+            await RefreshShoutOutsList(true);
+            await RefreshCustomWelcomeList(true);
+            await RefreshCurrencyList(true);
+            await RefreshGiveawayUserDataList(true);
             await RefreshUsersList(true);
         }
         #endregion

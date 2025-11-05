@@ -23,24 +23,40 @@ namespace StreamerBot
             {
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
-                Version thisversion = this.GetType().Assembly.GetName().Version;
 
-                if (thisversion.Major == 1 && thisversion.MajorRevision == 3 && thisversion.Minor == 1 && thisversion.MinorRevision == 3)
-                { // reset the credentials, new access scopes for each token
-                    Settings.Default.TwitchAuthBotClientId = (string)Settings.Default.GetPreviousVersion("TwitchAuthClientId"); ;
+                // reserved for clearing tokens when there is an access scope change
 
-                    Settings.Default.TwitchAuthBotAccessToken = null;
-                    Settings.Default.TwitchAuthBotAuthCode = null;
-                    Settings.Default.TwitchAuthBotRefreshToken = null;
-                    Settings.Default.TwitchAuthStreamerAccessToken = null;
-                    Settings.Default.TwitchAuthStreamerAuthCode = null;
-                    Settings.Default.TwitchAuthStreamerRefreshToken = null;
+                //Version thisversion = this.GetType().Assembly.GetName().Version;
 
-                    Settings.Default.TwitchBotAccessToken = null;
-                    Settings.Default.TwitchStreamerAccessToken = null;
-                }
+                //if (thisversion.Major == 1 && thisversion.MajorRevision == 3 && thisversion.Minor == 1 && thisversion.MinorRevision == 3)
+                //{ // reset the credentials, new access scopes for each token
+                //    Settings.Default.TwitchAuthBotClientId = (string)Settings.Default.GetPreviousVersion("TwitchAuthClientId"); ;
+
+                //    Settings.Default.TwitchAuthBotAccessToken = null;
+                //    Settings.Default.TwitchAuthBotAuthCode = null;
+                //    Settings.Default.TwitchAuthBotRefreshToken = null;
+                //    Settings.Default.TwitchAuthStreamerAccessToken = null;
+                //    Settings.Default.TwitchAuthStreamerAuthCode = null;
+                //    Settings.Default.TwitchAuthStreamerRefreshToken = null;
+
+                //    Settings.Default.TwitchBotAccessToken = null;
+                //    Settings.Default.TwitchStreamerAccessToken = null;
+                //}
 
                 Settings.Default.Save();
+            }
+
+            if (Settings.Default.AppCurrWorkingPopup)
+            {
+                Settings.Default.AppCurrWorkingPopup = false;
+                string SaveCWDPath = GetAppDataCWD();
+
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application'AppVersion current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+
+                if (boxResult == MessageBoxResult.Yes)
+                {
+                    Settings.Default.AppCurrWorkingAppData = true;
+                }
             }
 
             if (Settings.Default.AppCurrWorkingAppData)

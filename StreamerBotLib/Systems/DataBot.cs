@@ -164,7 +164,7 @@ namespace StreamerBotLib.Systems
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("StreamOnline", DebugLogTypes.DataBot, "Setting stream online.");
-                SetCategory(category);
+                SystemAction.SetCategory(category);
                 callback?.Invoke(SystemAction.StreamOnline(startedAt));
             }));
         }

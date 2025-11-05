@@ -190,6 +190,8 @@ namespace StreamerBotLib.DataSQL.EFC9
                             await context.Database.CommitTransactionAsync();
                             await context.SaveChangesAsync(true);
                             await RefreshMultiChannelsList(true);
+                            await RefreshMultiLiveStreamsList(true);
+                            await RefreshMultiSummaryLiveStreamsList(true);
                         }
                         break;
                     case "MultiLiveStreams":

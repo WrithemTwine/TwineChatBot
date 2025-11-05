@@ -1228,7 +1228,7 @@ namespace StreamerBotLib.BotIOController
             {
                 if (Started)
                 {
-                    bool MultiLive = ActionSystem.CheckStreamDate(StartedAt);
+                    bool MultiLive = ActionSystem.CheckStreamDate(StartedAt); // since this call is within another callback through DataBot, we don't need to use DataBot
                     PostGameCategoryEvent(Category);
 
                     if (OptionFlags.PostMultiLive && MultiLive || !MultiLive)

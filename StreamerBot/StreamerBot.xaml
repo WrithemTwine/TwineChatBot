@@ -1374,9 +1374,10 @@
                                                 <Button Content="Enable All" Margin="3,0" Click="Button_OptionsDebugLog_EnableAll_Click" />
                                                 <Button Content="Disable All" Margin="3,0" Click="Button_OptionsDebugLog_DisableAll_Click" />
                                             </StackPanel>
-                                            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Width="220" Foreground="{StaticResource BrightStop}"
-                                                       Text="Caution-logging with these options can create a significant log file, and should be used 
-                                                       sparingly or to track issues. Useful to include in debug/issue reports." />
+                                            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Width="220" Foreground="{StaticResource BrightStop}" 
+                                              >
+                                                Caution-logging with these options can create a significant log file, and should be used sparingly or to track issues. Useful to include in debug/issue reports.
+                                            </TextBlock>
                                             <ListBox DataContext="{StaticResource DebugFlags}" ItemsSource="{Binding DebugFlagsList}" />
                                         </DockPanel>
                                     </GroupBox>
@@ -2133,6 +2134,7 @@
                                           ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Webhooks_CVS}}"
                                           RowDetailsTemplate="{StaticResource DG_RowDetailDT_Webhooks}"
                                           CanUserDeleteRows="True" IsReadOnly="False" 
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                           ContextMenuOpening="DG_Edit_ContextMenuOpening" RowEditEnding="DataGrid_RowEditEnding">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
@@ -2167,7 +2169,7 @@
                                         </TextBlock>
                                         <DataGrid x:Name="DG_ModApprove" DockPanel.Dock="Top"
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ModeratorApprove_CVS}}" 
-                               
+                                                                         PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening"
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                      >
@@ -2209,7 +2211,7 @@
 
                                         <DataGrid x:Name="DG_Mod_BanReasons" Grid.Row="1" Grid.Column="0"  Margin="5,5,5,5" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_BanReasons_CVS}}" 
-                                                
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   CanUserDeleteRows="False" CanUserAddRows="False" 
                                                   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening"  >
@@ -2236,7 +2238,7 @@
 
                                         <DataGrid x:Name="DG_Mod_BanRules" Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" Margin="5" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_BanRules_CVS}}" 
-                                               
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   CanUserDeleteRows="True" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   RowEditEnding="DataGrid_RowEditEnding" Grid.ColumnSpan="2" >
                                             <DataGrid.Columns>
@@ -2258,7 +2260,7 @@
 
                                         <DataGrid x:Name="DG_Mod_LearnMsgs" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,5,5,5" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_LearnMsgs_CVS}}" 
-                                                 
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
@@ -2312,7 +2314,8 @@
                                             </StackPanel>
                                             <DataGrid x:Name="DG_Users" 
                                                       ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Users_CVS}}" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False" CanUserDeleteRows="True" 
-                                                      RowDetailsTemplate="{StaticResource DG_RowDetailDT_Users}" RowEditEnding="DataGrid_RowEditEnding" >
+                                                                                               PreviewKeyDown="DG_PreviewKeyDown_Click"
+ RowDetailsTemplate="{StaticResource DG_RowDetailDT_Users}" RowEditEnding="DataGrid_RowEditEnding" >
                                                 <DataGrid.Columns>
                                                     <DataGridComboBoxColumn Header="Platform" SelectedValueBinding="{Binding Platform}" 
                                                                             ItemsSource="{Binding Source={StaticResource EnumPlatform}}" />
@@ -2336,7 +2339,7 @@
                                             <Label Content="Follower List - Bot Account Needs to be a Moderator To View this List" DockPanel.Dock="Top" />
                                             <DataGrid x:Name="DG_Followers" 
                                                       ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Follows_CVS}}" 
-                                                     
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                       CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="True" 
                                                       RowDetailsTemplate="{StaticResource DG_RowDetailDT_Followers}" 
@@ -2360,10 +2363,10 @@
 
                                         <DataGrid x:Name="DG_OldFollowUsers" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OldFollowUsers_CVS}}" 
-                                                 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
-                                                  AutoGenerateColumns="True" IsReadOnly="True" RowEditEnding="DataGrid_RowEditEnding" >
+                                                                PreviewKeyDown="DG_PreviewKeyDown_Click"
+                            AutoGenerateColumns="True" RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.GroupStyle>
                                                 <StaticResource ResourceKey="DataGrid_GroupStyle" />
                                             </DataGrid.GroupStyle>
@@ -2389,7 +2392,7 @@
 
                                         <DataGrid x:Name="DG_User_Shoutouts" Grid.Row="1" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ShoutOuts_CVS}}"
-                                                
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   CanUserDeleteRows="True" 
                                                   RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening" IsSynchronizedWithCurrentItem="True" >
                                             <DataGrid.Columns>
@@ -2408,7 +2411,7 @@
                                                    options - first appearance or first message. Otherwise, system falls back onto default." />
                                         <DataGrid x:Name="DG_CustomWelcome" Grid.Row="1" Grid.Column="2" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CustomWelcome_CVS}}"
-                                               
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening"  >
                                             <DataGrid.Columns>
                                                 <DataGridComboBoxColumn Header="Platform" SelectedItemBinding="{Binding Platform}" 
@@ -2446,7 +2449,7 @@
                                                         HorizontalAlignment="Right" Click="Button_ClearCurrencyAccrlValues_Click" />
                                                 <DataGrid x:Name="DG_CurrencyType"
                                                           ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CurrencyType_CVS}}"
-                                                    
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                           Grid.Row="1" Grid.Column="0" ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                           CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
                                                       >
@@ -2463,7 +2466,7 @@
                                                 <DataGrid x:Name="DG_Currency" 
                                                           ItemsSource="{Binding Mode=OneWay, 
                                                     Source={StaticResource DG_Currency_CVS}}" 
-                                                        
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                           Grid.Row="1" Grid.Column="2"  RowEditEnding="DataGrid_RowEditEnding" 
                                                           ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                                     <DataGrid.Columns>
@@ -2689,7 +2692,7 @@
                                             enabled or disabled in the Options tab.</TextBlock>
                                         <DataGrid x:Name="DG_User_Giveaway" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GiveawayUserData_CVS}}" 
-                                                
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   IsReadOnly="False"  CanUserDeleteRows="True"  
                                                   RowEditEnding="DataGrid_RowEditEnding" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" >
@@ -2718,7 +2721,7 @@
                                             When adding a new row, ensure "Number" doesn't duplicate in the list.</TextBlock>
                                             <DataGrid x:Name="DG_User_Quotes" 
                                                       ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Quotes_CVS}}" 
-                                                        
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                    IsReadOnly="False"  
                                                       CanUserDeleteRows="True" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening"
@@ -2756,7 +2759,12 @@
                                 </StackPanel>
                                 <DataGrid x:Name="DG_CommonMsgs" 
                                           ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_ChannelEvents_CVS}}"  
-                                          Grid.Row="1" Grid.Column="1" CanUserAddRows="False" CanUserDeleteRows="False" ContextMenuOpening="DG_Edit_ContextMenuOpening"  RowEditEnding="DataGrid_RowEditEnding" >
+                                          Grid.Row="1" Grid.Column="1"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          ContextMenuOpening="DG_Edit_ContextMenuOpening" 
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
+RowEditEnding="DataGrid_RowEditEnding" >
                                     <DataGrid.ToolTip>
                                         <TextBlock TextWrapping="Wrap" Width="500"><Run Text="The name column is readonly. These are for channel events the bot recognizes and responds with the specified message."/><LineBreak /><LineBreak /><Run Text="You can edit the message to customize a response fitting your channel!"/><LineBreak /><Run Text="Please see the parameters to the right to use in each message, not all will be applicable. Ensure a space before the parameter, e.g. &quot;the #user followed&quot;."/></TextBlock>
                                     </DataGrid.ToolTip>
@@ -2901,7 +2909,8 @@
                                                       FrozenColumnCount="4" 
                                                       IsSynchronizedWithCurrentItem="True"
                                                       CanUserDeleteRows="True"
-                                                        RowEditEnding="DataGrid_RowEditEnding" 
+                                                                                         PreviewKeyDown="DG_PreviewKeyDown_Click"
+         RowEditEnding="DataGrid_RowEditEnding" 
                                                       >
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Command" Binding="{Binding CmdName}" SortDirection="Ascending" IsReadOnly="True" />
@@ -2970,7 +2979,7 @@
                                         </WrapPanel>
                                         <DataGrid x:Name="DG_OverlayService_Actions" DockPanel.Dock="Top" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayServices_CVS}}"
-                                                  
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   CanUserDeleteRows="True"  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
@@ -2993,7 +3002,7 @@
                                     <DockPanel>
                                         <TextBlock DockPanel.Dock="Top">This tab displays the data used in the 'Last User' ticker.</TextBlock>
                                         <DataGrid x:Name="DG_OverlayService_Ticker" DockPanel.Dock="Top" ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayTicker_CVS}}"
-                                                  
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   CanUserDeleteRows="False" 
                                                   ContextMenuOpening="DG_Edit_ContextMenuOpening" 
                                                   RowEditEnding="DataGrid_RowEditEnding" >
@@ -3148,7 +3157,8 @@
                                         <DataGrid x:Name="DG_StreamData_Stats" Grid.Row="1" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_StreamStats_CVS}}" 
                                                   RowDetailsTemplate="{StaticResource DG_RowDetailDT_StreamStats}" 
-                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                              PreviewKeyDown="DG_PreviewKeyDown_Click"
+                                              ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTemplateColumn Header="Stream Start" 
                                                                         CellTemplate="{StaticResource DateStreamStartTemplate}" 
@@ -3196,7 +3206,7 @@
                                                 them any additional appreciation after your stream. Category indicates what they were streaming.</TextBlock>
                                             <DataGrid x:Name="DG_InRaids"
                                                       ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_InRaidData_CVS}}"
-                                                      
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                       IsReadOnly="False"   CanUserDeleteRows="True" 
                                                       RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                                 <DataGrid.Columns>
@@ -3222,7 +3232,7 @@
                                                 channels you've raided and can spread the love.</TextBlock>
                                             <DataGrid x:Name="DG_OutRaids" 
                                                       ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OutRaidData_CVS}}" 
-                                                    
+                                          PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                       CanUserDeleteRows="True" 
                                                       IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" 
                                                       ContextMenuOpening="DG_Edit_ContextMenuOpening">
@@ -3267,7 +3277,8 @@
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_CategoryList_CVS}}" 
                                                   IsReadOnly="True" 
                                                   CanUserDeleteRows="True" RowEditEnding="DataGrid_RowEditEnding" 
-                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                                              PreviewKeyDown="DG_PreviewKeyDown_Click"
+                              ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category Id" Binding="{Binding CategoryId}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Category"
@@ -3285,7 +3296,8 @@
                                         <DataGrid x:Name="DG_DeathCounter" Grid.Row="1" Grid.Column="2" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_GameDeadCounter_CVS}}" 
                                                   CanUserAddRows="False" CanUserDeleteRows="True" 
-                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                                           PreviewKeyDown="DG_PreviewKeyDown_Click"
+                                 RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Category" Binding="{Binding Category}" IsReadOnly="True" />
                                                 <DataGridTextColumn Header="Counter" Binding="{Binding Counter}" />
@@ -3311,7 +3323,8 @@
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_Clips_CVS}}" 
                                                   RowDetailsTemplate="{StaticResource DG_RowDetailDT_Clips}"
                                                   Grid.Row="1" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True" 
-                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
+                                                                               PreviewKeyDown="DG_PreviewKeyDown_Click"
+             RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="ClipId" Binding="{Binding ClipId}" />
                                                 <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" />

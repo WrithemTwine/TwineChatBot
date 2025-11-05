@@ -4,6 +4,14 @@
              xmlns:local="clr-namespace:StreamerBotImport"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary  x:Name="ResourceThemeDictionary" 
+                        Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
+                <ResourceDictionary x:Name="ResourceStyleDictionary" 
+                        Source="pack://application:,,,/StreamerBotLib;component/Themes/BaseStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

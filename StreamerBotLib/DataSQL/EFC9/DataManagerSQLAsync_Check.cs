@@ -119,7 +119,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             using var context = BuildDataContext();
             return await context.StreamStats
                                 .Where(s => s.StreamStart.Date == streamStart.Date)
-                                .CountAsync() > 1;
+                                .CountAsync() > 0; // found at least one matching date, time independent
         }
 
         /// <summary>

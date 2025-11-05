@@ -20,6 +20,7 @@ namespace StreamerBotLib.BotClients.Twitch
         private List<ITwitchBotEventSubSubscriptions> SubscriptionHandlers = [];
 
         internal event EventHandler OnInitialBotStartupSubHandlers;
+        public event EventHandler TokenUpdatedEventSubUpdated;
 
         private bool ErrorFound { get; set; } = false;
 
@@ -59,6 +60,7 @@ namespace StreamerBotLib.BotClients.Twitch
             LogWriter.DebugLog("TokenBot_StreamerAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
             ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerAccount);
             RefreshSubscriptions(subscription);
+            TokenUpdatedEventSubUpdated?.Invoke(this, new());
         }
 
         private void TokenBot_StreamerNoScopesAccessTokenChanged(object sender, EventArgs e)
@@ -66,6 +68,7 @@ namespace StreamerBotLib.BotClients.Twitch
             LogWriter.DebugLog("TokenBot_StreamerNoScopesAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
             ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerNoScopes);
             RefreshSubscriptions(subscription);
+            TokenUpdatedEventSubUpdated?.Invoke(this, new());
         }
 
         private void TokenBot_BotAccessTokenChanged(object sender, EventArgs e)
@@ -73,6 +76,7 @@ namespace StreamerBotLib.BotClients.Twitch
             LogWriter.DebugLog("TokenBot_BotAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
             ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.BotAccount);
             RefreshSubscriptions(subscription);
+            TokenUpdatedEventSubUpdated?.Invoke(this, new());
         }
 
         private void RefreshSubscriptions(ITwitchBotEventSubSubscriptions subscriptions)

@@ -96,6 +96,9 @@ namespace StreamerBot
                         case "Followers":
                             DG_Followers.Items.Refresh();
                             break;
+                        case "OldFollowUsers":
+                            DG_OldFollowUsers.Items.Refresh();
+                            break;
                         case "GameDeadCounter":
                             DG_DeathCounter.Items.Refresh();
                             break;
@@ -270,6 +273,21 @@ namespace StreamerBot
 
             Controller.DeleteDataRows((IEnumerable<object>)item.SelectedItems, GetTableName(item));
         }
+
+        private void DG_PreviewKeyDown_Click(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            DataGrid item = sender as DataGrid;
+            if (e.Key == System.Windows.Input.Key.Delete && item.SelectedItems.Count > 0 && item.CanUserDeleteRows)
+            {
+                Controller.DeleteDataRows((IEnumerable<object>)item.SelectedItems, GetTableName(item));
+            }
+        }
+
+        private void MultiLive_DG_PreviewKeyDown_Click(object sender, PreviewKeyDownDeleteRowsEventArgs e)
+        {
+            DG_PreviewKeyDown_Click(e.DataGridSender, e.e);
+        }
+
         private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -325,6 +343,7 @@ namespace StreamerBot
                 nameof(DG_CurrencyType) => "CurrencyType",
                 nameof(DG_CustomWelcome) => "CustomWelcome",
                 nameof(DG_Followers) => "Followers",
+                nameof(DG_OldFollowUsers) => "OldFollowUsers",
                 nameof(DG_DeathCounter) => "GameDeadCounter",
                 nameof(DG_User_Giveaway) => "GiveawayUserData",
                 nameof(DG_InRaids) => "InRaidData",

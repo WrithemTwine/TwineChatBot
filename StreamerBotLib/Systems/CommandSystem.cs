@@ -415,7 +415,7 @@ namespace StreamerBotLib.Systems
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.user,ParamUser),
-                        new(MsgVars.date, created == DateTime.MinValue ? "not found" : FormatData.FormatTimes(created))
+                        new(MsgVars.date, created == DateTime.MinValue ? "not found" : FormatData.FormatTimes(created.ToLocalTime()))
                     });
 
                     OnProcessCommand(VariableParser.ParseReplace(cmdrow.Message, datavalues));

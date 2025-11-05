@@ -77,6 +77,7 @@
                   ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
                   ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
                   CanUserDeleteRows="True"
+                  PreviewKeyDown="DG_PreviewKeyDown_Click"
                   RowEditEnding="DataGrid_RowEditEnding">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
@@ -96,13 +97,14 @@
 
             <TabControl>
                 <TabItem Header="Channels">
-                    <DataGrid x:Name="DG_Multi_ChannelNames" DockPanel.Dock="Top"
-                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiChannels_CVS}}" 
-                      RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiChannelNames}" 
-                      ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
-                      ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
-                      CanUserDeleteRows="True"
-                      RowEditEnding="DataGrid_RowEditEnding">
+                    <DataGrid x:Name="DG_Multi_ChannelNames" DockPanel.Dock="Top" 
+                            ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiChannels_CVS}}" 
+                            RowDetailsTemplate="{StaticResource DG_RowDetailDT_MultiChannelNames}" 
+                            ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                            ContextMenuOpening="DG_MultiEdit_ContextMenuOpening" 
+                            CanUserDeleteRows="True"
+                            PreviewKeyDown="DG_PreviewKeyDown_Click"
+                            RowEditEnding="DataGrid_RowEditEnding">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                             <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
@@ -138,10 +140,11 @@
         <TabControl Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" >
             <TabItem Header="Daily Data" x:Name="TabItem_DailyData">
                 <DataGrid x:Name="DG_Multi_LiveStreamStats"
-                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}" 
-                          ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
-                          CanUserDeleteRows="True"
-                          RowEditEnding="DataGrid_RowEditEnding">
+                        ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}" 
+                        ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                        CanUserDeleteRows="True"
+                        PreviewKeyDown="DG_PreviewKeyDown_Click"
+                        RowEditEnding="DataGrid_RowEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
                         <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
@@ -155,10 +158,11 @@
             </TabItem>
             <TabItem Header="Summary" x:Name="TabItem_SummaryDailyData">
                 <DataGrid x:Name="DG_Multi_SummaryLiveStreamStats" 
-                          ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiSummaryLiveStreams_CVS}}" 
-                          ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
-                          CanUserDeleteRows="True"
-                          RowEditEnding="DataGrid_RowEditEnding">
+                        ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiSummaryLiveStreams_CVS}}" 
+                        ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                        CanUserDeleteRows="True"
+                        PreviewKeyDown="DG_PreviewKeyDown_Click"
+                        RowEditEnding="DataGrid_RowEditEnding">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="User Id" Binding="{Binding MultiChannels.UserId}" />
                         <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
@@ -183,7 +187,8 @@
                             <TextBlock Padding="5">1) Select Date and how many stream notifications to archive.</TextBlock>
                             <TextBlock Visibility="Visible" Foreground="Red" TextWrapping="Wrap">
                                 Clicking the pull-down box loads available selection 
-                                data. Large sets may take a while. Please wait.
+                                data. Large sets may take a while. Please wait. Might have to
+                                click the drop-down more than once to view the data (it's in process to load).
                             </TextBlock>
                             <ComboBox x:Name="ComboBox_SummarizeLive_List" Height="32"
                                       MaxDropDownHeight="400" VerticalAlignment="Top" VerticalContentAlignment="Center" 
