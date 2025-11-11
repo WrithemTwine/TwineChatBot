@@ -1311,7 +1311,7 @@ namespace StreamerBotLib.BotClients
                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, "Starting the shoutout evaluation thread.");
                     DateTime lastShoutOut = DateTime.MinValue;
 
-                    while (OptionFlags.ActiveToken)
+                    while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline)
                     {
                         ShoutOutLiveUser nextShoutOut = null;
                         LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shoutout users to evaluate: {ShoutOutUsers.Count}.");
@@ -1370,6 +1370,8 @@ namespace StreamerBotLib.BotClients
                         }
                         await Task.Delay(5000);
                     }
+
+                    ShoutOutTaskActive = false;
                 }
                 catch (Exception ex)
                 {

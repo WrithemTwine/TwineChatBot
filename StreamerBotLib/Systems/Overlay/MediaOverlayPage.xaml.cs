@@ -49,7 +49,10 @@ namespace StreamerBotLib.Systems.Overlay
 
         public void StopController()
         {
-            Controller.StopServer();
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                RadioButton_OverlayServer_Stop.IsChecked = true;
+            });
         }
 
         #region Connect to Main App

@@ -133,6 +133,7 @@ namespace StreamerBotLib.DataSQL
             modelBuilder.Entity<Users>()
                 .HasMany(u => u.GiveawayUserData)
                 .WithOne(g => g.User)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Users>()

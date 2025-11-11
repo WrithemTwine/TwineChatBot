@@ -65,17 +65,17 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 catch (TokenExpiredException ex)
                 {
-                    LogWriter.LogException(ex, "Send");
-                    ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                    LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
+                    ThreadManager.CreateThreadStart("Send_TokenUpdatedEventSubUpdated", () => { tokenBot.CheckToken(); });
                 }
                 catch (BadScopeException ex)
                 {
-                    LogWriter.LogException(ex, "Send");
-                    ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                    LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
+                    ThreadManager.CreateThreadStart("Send_TokenUpdatedEventSubUpdated", () => { tokenBot.CheckToken(); });
                 }
                 catch (Exception ex)
                 {
-                    LogWriter.LogException(ex, "Send");
+                    LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
                 }
 
                 newSendMsg.Remove(firstmsg); // remove the message after successful send & no exceptions

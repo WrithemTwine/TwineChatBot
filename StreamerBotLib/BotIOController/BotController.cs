@@ -594,7 +594,11 @@ namespace StreamerBotLib.BotIOController
                 LogWriter.DebugLog("GetUserCategory", DebugLogTypes.BotController, $"Received request to provide the " +
                     $"streaming category for the channel named: {ChannelName}, with {UserId} userId.");
 
-                return BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName).CategoryName;
+                CategoryData categoryData = BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName);
+
+                DataBot.SetCategory(categoryData);
+
+                return categoryData.CategoryName;
             }
             else
             {

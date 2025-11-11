@@ -43,27 +43,19 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         private async Task<Users> PostNewUser(SQLDBContext context, LiveUser User, DateTime FirstSeen)
         {
-            //using var context = BuildDataContext();
-
             Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).Include(S => S.UserStats).FirstOrDefault();
             if (newuser == default)
             {
                 newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,
                                                 platform: User.Platform, firstDateSeen: FirstSeen,
                                                 currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
+                await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
             }
             else
             {
                 if (newuser.Platform == default) { newuser.Platform = User.Platform; }
                 if (newuser.UserName != User.UserName && newuser.UserId == User.UserId) { newuser.UserName = User.UserName; }
             }
-
-            if (newuser.UserStats == null)
-            {
-                await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
-            }
-
-            //await context.SaveChangesAsync(true);
 
             foreach (Models.CurrencyType t in context.CurrencyType)
             {
@@ -76,8 +68,6 @@ namespace StreamerBotLib.DataSQL.EFC9
                     await context.Currency.AddAsync(new(userId: newuser.UserId, platform: newuser.Platform, value: 0, currencyName: t.CurrencyName));
                 }
             }
-
-            //await context.SaveChangesAsync(true);
 
             return newuser;
         }
@@ -174,11 +164,14 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal Task<List<Follow>> PostFollowers(IEnumerable<Follow> follows)
         {
             currtime = DateTime.Now.ToLocalTime();
-            using var context = BuildDataContext();
-            List<Follow> ReturnList = [.. follows.Where(F => !context.Followers.Any(DF => DF.UserId == F.FromUserId))];
-            followsQueue.Enqueue(follows);
-            PostFollowsQueue();
-            return Task.FromResult(ReturnList);
+
+            return Task.Run(() =>
+            {
+                followsQueue.Enqueue(follows);
+                PostFollowsQueue();
+                using var context = BuildDataContext();
+                return (List<Follow>)[.. follows.Where(F => !context.Followers.Any(DF => DF.UserId == F.FromUserId))];
+            });
         }
 
         private void PostFollowsQueue()
@@ -193,10 +186,11 @@ namespace StreamerBotLib.DataSQL.EFC9
 
                     while (followsQueue.TryDequeue(out IEnumerable<Follow> currUser))
                     {
-                        List<Followers> tempfollow = [];
+                        //List<Followers> tempfollow = [];
                         foreach (Follow f in currUser)
                         {
                             await PostNewUser(context, f.FromUser, f.FollowedAt);
+                            await context.SaveChangesAsync();
 
                             Followers currFollow = (from UF in context.Followers
                                                     where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
@@ -210,14 +204,15 @@ namespace StreamerBotLib.DataSQL.EFC9
                             }
                             else
                             {
-                                tempfollow.Add(new Followers(userId: f.FromUser.UserId,
+                                var newFollow = new Followers(userId: f.FromUser.UserId,
                                                                      platform: f.FromUser.Platform,
                                                                      isFollower: true, followedDate: f.FollowedAt,
                                                                      statusChangeDate: f.FollowedAt, addDate: currtime,
-                                                                     category: f.Category));
+                                                                     category: f.Category);
+                                //tempfollow.Add(newFollow);
+                                await context.Followers.AddAsync(newFollow);
                             }
                         }
-                        await context.Followers.AddRangeAsync(tempfollow);
                     }
                     await context.SaveChangesAsync(true);
                     await RefreshFollowersList(true);
@@ -240,11 +235,8 @@ namespace StreamerBotLib.DataSQL.EFC9
             {
                 if (follows.Any())
                 {
-                    lock (followsQueue)
-                    {
-                        followsQueue.Enqueue(follows);
-                        PostFollowsQueue();
-                    }
+                    followsQueue.Enqueue(follows);
+                    PostFollowsQueue();
                 }
             });
         }
