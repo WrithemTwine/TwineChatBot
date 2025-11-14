@@ -30,7 +30,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Reports Game Category Name from querying a channel
         /// </summary>
-        public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
         public event EventHandler<OnStreamRaidResponseEventArgs> StartRaidEventResponse;
         public event EventHandler<GetStreamsEventArgs> GetStreamsViewerCount;
@@ -38,6 +37,9 @@ namespace StreamerBotLib.BotClients.Twitch
         public event EventHandler<OnNewFollowersDetectedArgs> OnBulkFollowsUpdate;
         public event EventHandler BulkFollowsCompleted;
         public event EventHandler AccessTokenUnauthorized;
+
+        public event EventHandler<FindChannelCategoryEventArgs> FoundStreamerCategory;
+        public event EventHandler<FindChannelCategoryEventArgs> FoundViewerCategory;
 
         internal TwitchHelixBot(TwitchTokenBot TokenBot)
         {
@@ -316,7 +318,11 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 if (UserName == OptionFlags.TwitchChannelName)
                 {
-                    PostEvent_GetChannelGameName(gameName, gameId);
+                    PostEvent_GetStreamerCategory(gameName, gameId);
+                }
+                else
+                {
+                    PostEvent_GetViewerCategory(gameName, gameId);
                 }
 
                 return new(gameId, gameName);
@@ -595,11 +601,18 @@ namespace StreamerBotLib.BotClients.Twitch
 
         #region process events
 
-        private void PostEvent_GetChannelGameName(string foundGameName, string foundGameId)
+        private void PostEvent_GetStreamerCategory(string foundGameName, string foundGameId)
         {
             LogWriter.DebugLog("PostEvent_GetChannelGameName", DebugLogTypes.TwitchHelixBot, "Posting game category update through 'GetChannelGameName' event.");
 
-            GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName, GameId = foundGameId });
+            FoundStreamerCategory?.Invoke(this, new FindChannelCategoryEventArgs() { GameName = foundGameName, GameId = foundGameId });
+        }
+
+        private void PostEvent_GetViewerCategory(string foundGameName, string foundGameId)
+        {
+            LogWriter.DebugLog("PostEvent_GetChannelGameName", DebugLogTypes.TwitchHelixBot, "Posting game category update through 'GetChannelGameName' event.");
+
+            FoundViewerCategory?.Invoke(this, new FindChannelCategoryEventArgs() { GameName = foundGameName, GameId = foundGameId });
         }
 
         private void PostEvent_GetCustomRewards(List<string> CustomRewardsList)

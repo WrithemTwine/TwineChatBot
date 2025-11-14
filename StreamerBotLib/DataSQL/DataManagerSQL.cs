@@ -673,6 +673,13 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        /// <summary>
+        /// Posts a new category to the data manager.
+        /// </summary>
+        /// <remarks>This method is thread-safe and ensures that the operation is synchronized using a
+        /// lock. The method waits for the result of the asynchronous operation and returns the outcome.</remarks>
+        /// <param name="categoryData">The data representing the category to be posted. Cannot be null.</param>
+        /// <returns><see langword="true"/> if the category was successfully posted; otherwise, <see langword="false"/>.</returns>
         public bool PostCategory(CategoryData categoryData)
         {
             LogWriter.DebugLog("PostCategory", DebugLogTypes.DataManager, "Posting category.");
@@ -682,6 +689,13 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        /// <summary>
+        /// Posts a category stream to the data manager for processing.
+        /// </summary>
+        /// <remarks>This method schedules the posting operation on the GUI dispatcher thread to ensure
+        /// thread safety.</remarks>
+        /// <param name="category">The category data to be posted. Cannot be null.</param>
+        /// <param name="StreamCount">The number of streams to be associated with the category. Must be a non-negative integer.</param>
         public void PostCategoryStream(CategoryData category, int StreamCount)
         {
             LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.DataManager, "Posting category stream.");
@@ -706,7 +720,11 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip)
+        public bool PostClip
+            (
+            string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, 
+            string Title, string Url, string fromUserId, string fromUserName, bool LastClip
+            )
         {
             LogWriter.DebugLog("PostClip", DebugLogTypes.DataManager, "Posting clip.");
             lock (GUIDataManagerLock.Lock)

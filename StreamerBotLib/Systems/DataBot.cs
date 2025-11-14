@@ -424,6 +424,28 @@ namespace StreamerBotLib.Systems
             }));
         }
 
+        /// <summary>
+        /// Used only for stream online updates to increment category stream count
+        /// </summary>
+        /// <param name="categoryData">The category to update.</param>
+        public void PostCategoryStream(CategoryData categoryData)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("PostCategoryStreamCount", DebugLogTypes.DataBot, $"Posting category stream count for: {categoryData.CategoryName}.");
+                SystemAction.PostCategoryStream(categoryData);
+            }));
+        }
+
+        public void PostViewerCategory(CategoryData CategoryData)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("PostViewerCategory", DebugLogTypes.DataBot, $"Posting viewer category: {CategoryData.CategoryName}.");
+                SystemAction.PostViewerCategory(CategoryData);
+            }));
+        }
+
         public void SetSystemEventsEnabled(bool enabled)
         {
             ActionQueue.Enqueue(new Task(() =>

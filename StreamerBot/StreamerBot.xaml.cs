@@ -184,7 +184,7 @@ namespace StreamerBot
 
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => BotController.GetUserCategory()));
         }
-        private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
+        private void BotEvents_GetChannelGameName(object sender, FindChannelCategoryEventArgs e)
         {
             LogWriter.DebugLog("BotEvents_GetChannelGameName", DebugLogTypes.GUIEvents, "Received update to the channel game category.");
 

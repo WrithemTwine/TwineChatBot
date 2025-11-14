@@ -65,6 +65,8 @@ namespace StreamerBotLib.BotClients
         public static event EventHandler<TwitchAuthCodeExpiredEventArgs> BotAuthCodeExpired;
         public static event EventHandler<TwitchAuthCodeExpiredEventArgs> StreamerAuthCodeExpired;
 
+
+
         /// <summary>
         /// This event relates to app starting up and notifies when the Helix apis 
         /// are constructed with existing tokens-or authcode access tokens are refreshed upon startup.
@@ -195,7 +197,8 @@ namespace StreamerBotLib.BotClients
             TwitchBotClipSvc.OnBotStarted += TwitchBotClipSvc_OnBotStarted;
             TwitchBotClipSvc.OnBotStopped += TwitchBotClipSvc_OnBotStopped;
 
-            TwitchHelixBot.GetChannelGameName += TwitchHelixBot_GetChannelGameName;
+            TwitchHelixBot.FoundStreamerCategory += TwitchHelixBot_FoundStreamerCategory;
+            TwitchHelixBot.FoundViewerCategory += TwitchHelixBot_FoundViewerCategory;
             //TwitchHelixBot.StartRaidEventResponse += TwitchBotUserSvc_StartRaidEventResponse;
             //TwitchHelixBot.CancelRaidEvent += TwitchBotUserSvc_CancelRaidEvent;
             TwitchHelixBot.GetStreamsViewerCount += TwitchBotUserSvc_OnGetStreamsViewerCount;
@@ -799,12 +802,20 @@ namespace StreamerBotLib.BotClients
             });
         }
 
-        private void TwitchHelixBot_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
+        private void TwitchHelixBot_FoundViewerCategory(object sender, FindChannelCategoryEventArgs e)
+        {
+            LogWriter.DebugLog("TwitchHelixBot_FoundViewerCategory", DebugLogTypes.TwitchBots, "Updating channel category game name.");
+
+            InvokeBotEvent(this, BotEvents.TwitchFoundViewerCategory, e);
+        }
+
+        private void TwitchHelixBot_FoundStreamerCategory(object sender, FindChannelCategoryEventArgs e)
         {
             LogWriter.DebugLog("TwitchHelixBot_GetChannelGameName", DebugLogTypes.TwitchBots, "Updating channel category game name.");
 
             InvokeBotEvent(this, BotEvents.TwitchCategoryUpdate, e);
         }
+
 
         #endregion
 

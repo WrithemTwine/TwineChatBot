@@ -36,6 +36,7 @@
         HandleBotEventEmpty,
         TwitchCurrentUsers,
         TwitchChannelCheer,
-        TwitchResumeStreamOnline
+        TwitchResumeStreamOnline,
+        TwitchFoundViewerCategory
     }
 }

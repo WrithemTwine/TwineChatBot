@@ -214,11 +214,6 @@ namespace StreamerBot
                     CheckBox_TabifySettings_Clicked(this, new());
                     CheckDebug(this, new());
                     SetVisibility(this, new());
-
-#if DEBUG
-                    Controller.HandleBotEventNewFollowers(new StreamerBotLib.Models.Follow(DateTime.Now, "1234567", "TestName", Platform.Twitch, "Skull and Bones"));
-#endif
-
                 });
             });
         }

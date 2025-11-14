@@ -45,12 +45,21 @@ namespace StreamerBotLib.Systems
                 CurrCategory = categoryData;
                 Category = categoryData.CategoryName;
                 UpdateCategory();
-                if (OptionFlags.ManageStreamStats)
-                {
-                    DataManage.PostCategoryStream(categoryData);
-                }
             }
             LogWriter.DebugLog("SetCategory", DebugLogTypes.StatSystem, $"Current category is {CurrCategory.CategoryName}.");
+        }
+
+        public void PostCategoryStream(CategoryData categoryData)
+        {
+            LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.StatSystem, "Posting category stream data to the database.");
+            DataManage.PostCategoryStream(categoryData);
+        }
+
+        public void PostViewerCategory(CategoryData categoryData)
+        {
+            LogWriter.DebugLog("PostViewerCategory", DebugLogTypes.StatSystem, "Posting viewer category data to the database.");
+
+            DataManage.PostCategory(categoryData);
         }
 
         public void UserJoined(List<LiveUser> UserNames)
@@ -300,7 +309,8 @@ namespace StreamerBotLib.Systems
                         LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.SystemController, "Sending message about incoming raid.");
                         Dictionary<string, string> dictionary = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] {
                             new(MsgVars.user, User.UserName ),
-                            new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers))
+                            new(MsgVars.viewers, FormatData.Plurality(Viewers, MsgVars.Pluralviewers)),
+                            new(MsgVars.category, GameName.CategoryName )
                             });
 
                         SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Raid), Multi);
@@ -320,6 +330,7 @@ namespace StreamerBotLib.Systems
             if (OptionFlags.ManageRaidData)
             {
                 LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.StatSystem, "Posting the incoming raid data to the database.");
+                DataManage.PostCategory(GameName); // ensure category exists
                 DataManage.PostInRaidData(User, RaidTime, Viewers, GameName);
             }
             if (OptionFlags.ManageOverlayTicker)
@@ -377,6 +388,7 @@ namespace StreamerBotLib.Systems
                 {
                     LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Posting the stream data to the database.");
                     DataManage.PostStream(CurrStream.StreamStart, Category);
+                    DataManage.PostCategoryStream(CurrCategory); // new stream, update category stream count
 
                     found = false;
                     NotifyRepeatManager_StreamOnline();
@@ -443,11 +455,6 @@ namespace StreamerBotLib.Systems
             SubUsers.Clear();
             VIPUsers.Clear();
             StreamViewers.EndStreamResetList();
-
-            // reset category to empty, so next time stream starts, the "streamed category" counter
-            // updates - a streamer may have consecutive streams with same category,
-            // not doing this locks the counter from incrementing each stream
-            CurrCategory = new("", "");
         }
 
         public void ResetCategoryStreamCount()

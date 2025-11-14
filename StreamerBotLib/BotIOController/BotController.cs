@@ -32,7 +32,7 @@ namespace StreamerBotLib.BotIOController
         public event EventHandler TokensInitialized;
 
         public event EventHandler OnStreamOnline;
-        public event EventHandler<OnGetChannelGameNameEventArgs> OnStreamCategoryChanged;
+        public event EventHandler<FindChannelCategoryEventArgs> OnStreamCategoryChanged;
         public event EventHandler OnStreamOffline;
 
         private readonly Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
@@ -249,7 +249,10 @@ namespace StreamerBotLib.BotIOController
                             TwitchStreamUpdate((NewChannelUpdateEventArgs)e.e);
                             break;
                         case BotEvents.TwitchCategoryUpdate:
-                            TwitchCategoryUpdate((OnGetChannelGameNameEventArgs)e.e);
+                            TwitchCategoryUpdate((FindChannelCategoryEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchFoundViewerCategory:
+                            TwitchFoundViewerCategory((FindChannelCategoryEventArgs)e.e);
                             break;
                         case BotEvents.TwitchNowHosting:
                             break;
@@ -596,8 +599,6 @@ namespace StreamerBotLib.BotIOController
 
                 CategoryData categoryData = BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName);
 
-                DataBot.SetCategory(categoryData);
-
                 return categoryData.CategoryName;
             }
             else
@@ -891,9 +892,14 @@ namespace StreamerBotLib.BotIOController
             HandleOnStreamUpdate(new(e.ChannelUpdate.CategoryId, e.ChannelUpdate.CategoryName));
         }
 
-        public void TwitchCategoryUpdate(OnGetChannelGameNameEventArgs e)
+        public void TwitchCategoryUpdate(FindChannelCategoryEventArgs e)
         {
             HandleOnStreamUpdate(new(e.GameId, e.GameName));
+        }
+
+        public void TwitchFoundViewerCategory(FindChannelCategoryEventArgs e)
+        {
+            HandleFoundViewerCategory(new(e.GameId, e.GameName));
         }
 
         internal void TwitchStreamOffline(NewStreamOfflineEventArgs e)
@@ -1116,11 +1122,6 @@ namespace StreamerBotLib.BotIOController
 
         #region LiveStream
 
-        private void PostGameCategoryEvent(CategoryData categoryData)
-        {
-            OnStreamCategoryChanged?.Invoke(this, new() { GameId = categoryData.CategoryId, GameName = categoryData.CategoryName });
-        }
-
         private void HandleMultiLiveOnStreamOnline(LiveUser User, string Title, DateTime StartedAt, string Category)
         {
             DateTime CurrTime = StartedAt.ToLocalTime();
@@ -1233,9 +1234,8 @@ namespace StreamerBotLib.BotIOController
                 if (Started)
                 {
                     bool MultiLive = ActionSystem.CheckStreamDate(StartedAt); // since this call is within another callback through DataBot, we don't need to use DataBot
-                    PostGameCategoryEvent(Category);
 
-                    if (OptionFlags.PostMultiLive && MultiLive || !MultiLive)
+                    if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
                         // get message, set a default if otherwise deleted/unavailable
                         string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out bool Enabled, out _);
@@ -1280,10 +1280,21 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
+        public void HandleFoundViewerCategory(CategoryData categoryData)
+        {
+            DataBot.PostViewerCategory(categoryData);
+        }
+
         public void HandleOnStreamUpdate(CategoryData categoryData)
         {
             DataBot.SetCategory(categoryData);
-            PostGameCategoryEvent(categoryData);
+
+            if (OptionFlags.IsStreamOnline)
+            {
+                DataBot.PostCategoryStream(categoryData);
+            }
+
+            OnStreamCategoryChanged?.Invoke(this, new() { GameId = categoryData.CategoryId, GameName = categoryData.CategoryName });
         }
 
         public void HandleOnStreamOffline(Platform platform, string HostedChannel = null, DateTime? RaidTime = null)

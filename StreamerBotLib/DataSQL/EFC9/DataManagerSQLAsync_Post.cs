@@ -560,6 +560,11 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
         }
 
+        /// <summary>
+        /// Add a category to the CategoryList table if it does not already exist.
+        /// </summary>
+        /// <param name="categoryData">Category data - game Id and game Name</param>
+        /// <returns>true - if category added to the category list</returns>
         internal async Task<bool> PostCategory(CategoryData categoryData)
         {
             if (string.IsNullOrEmpty(categoryData.CategoryId) && string.IsNullOrEmpty(categoryData.CategoryName))
@@ -584,13 +589,17 @@ namespace StreamerBotLib.DataSQL.EFC9
             return false;
         }
 
+        /// <summary>
+        /// Specifically post a category count update, increment the count by 1 or the provided count update.
+        /// </summary>
+        /// <param name="categoryData">Game Id and game name.</param>
+        /// <param name="StreamCount">Updated stream count, or default 0 means increment by 1.</param>
+        /// <returns>Async Task.</returns>
         internal async Task PostCategoryStream(CategoryData categoryData, int StreamCount = 0)
         {
             using var context = BuildDataContext();
             await PostCategory(categoryData);
 
-            if (OptionFlags.IsStreamOnline)
-            {
                 await context.Database.BeginTransactionAsync();
                 CategoryList category = await context.CategoryList
                                                      .Where(CL => (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName))
@@ -610,7 +619,6 @@ namespace StreamerBotLib.DataSQL.EFC9
                 await context.SaveChangesAsync(true);
                 await RefreshCategoryListList(true);
                 await RefreshStreamStatsList(true);
-            }
         }
 
         internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip)

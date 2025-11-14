@@ -75,7 +75,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     },
                     {
                         ChannelEventActions.Raid,
-                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.viewers]))
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Raid, out _, out _), VariableParser.ConvertVars([MsgVars.user, MsgVars.viewers, MsgVars.category]))
                     },
                     {
                         ChannelEventActions.Resubscribe,
@@ -107,6 +107,17 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                                     let values = dictionary[E.Key]
                                                                     select (E.Key, values)
                                                          select new ChannelEvents(name: CE.Key, repeatMsg: 0, addMe: false, isEnabled: true, message: CE.values.Item1, commands: CE.values.Item2));
+
+            /* Update Event fields */
+
+            // New 'InRaid' message variables (commands)
+            var raidDefault = dictionary[ChannelEventActions.Raid];
+            var raidEvent = Refcontext.ChannelEvents.FirstOrDefault(c => c.Name == ChannelEventActions.Raid);
+            if (raidEvent is not null && raidEvent.Commands != raidDefault.Item2)
+            {
+                raidEvent.Commands = raidDefault.Item2;
+            }
+
         }
 
         /// <summary>

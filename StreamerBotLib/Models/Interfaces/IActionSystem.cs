@@ -19,6 +19,7 @@ namespace StreamerBotLib.Models.Interfaces
         // Stream events
         void StreamOnline(DateTime startedAt, CategoryData category, Action<bool> callback);
         void SetCategory(CategoryData categoryData);
+        void PostViewerCategory(CategoryData CategoryData);
         void StreamOffline(DateTime currTime);
 
         // Overlay
@@ -88,5 +89,6 @@ namespace StreamerBotLib.Models.Interfaces
         void UpdateRepeatCommands();
         void ResetRepeatTimerMode();
         void ResetCategoryStreamCount();
+        void PostCategoryStream(CategoryData categoryData);
     }
 }

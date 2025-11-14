@@ -735,7 +735,7 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("AddNewFollowers", DebugLogTypes.SystemController, "Adding new followers.");
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled, out _);
-            FollowList.ForEach((f) => { f.Category = f.Category ?? CurrCategory.CategoryName; }); // add category into follow object(s)
+            FollowList.ForEach((f) => { f.Category = Category; }); // add category into follow object(s)
             ProcessFollow(FollowList, msg, FollowEnabled);
         }
 
