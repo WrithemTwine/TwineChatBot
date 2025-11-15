@@ -1,14 +1,17 @@
-﻿using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.Models
 {
-    internal class PlayingCard<T, S>
+    [DebuggerDisplay("PlayingCardValue={PlayingCardValue}, Suit={Suit}, Used={Used}")]
+    public class PlayingCard<T, S>
         where T : Enum
         where S : Enum
     {
-        internal T PlayingCardValue { get; set; }
-        internal S Suit { get; set; }
-        internal bool Used { get; set; }
+        public T PlayingCardValue { get; set; }
+        public S Suit { get; set; }
+        public bool Used { get; set; }
 
         public override string ToString()
         {

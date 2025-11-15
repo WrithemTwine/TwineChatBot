@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.BotClients
 {
@@ -10,10 +10,14 @@ namespace StreamerBotLib.BotClients
     {
         public Bots BotClientName { get; set; }
 
-        public bool IsInitialStart { get; set; }
-        public bool IsStarted { get; set; }
+        /// <summary>
+        /// Flag for bot activity:
+        /// <code>null - first time bot has never started</code>
+        /// <code>true - bot is started</code>
+        /// <code>false - bot is stopped</code>
+        /// </summary>
+        public bool? IsActive { get; set; }
         public bool HandlersAdded { get; set; }
-        public bool IsStopped { get; set; } = true;
 
         public event EventHandler OnBotStarted;
         public event EventHandler OnBotStopped;
@@ -47,14 +51,20 @@ namespace StreamerBotLib.BotClients
 
         #region interface
 
-        public virtual bool Connect()
+        public virtual async Task<bool> Connect()
         {
-            return false;
+            return await Task.Run(() =>
+            {
+                return false;
+            });
         }
 
-        public virtual bool Disconnect()
+        public virtual async Task<bool> Disconnect()
         {
-            return false;
+            return await Task.Run(() =>
+            {
+                return false;
+            });
         }
 
         public virtual bool ReceiveWhisper(Action<string> ReceiveWhisperCallback)
@@ -62,9 +72,9 @@ namespace StreamerBotLib.BotClients
             throw new NotImplementedException();
         }
 
-        public virtual bool Send(string s)
+        public virtual async Task Send(string s, bool Announcement = false)
         {
-            return false;
+            await Task.Run(() => { });
         }
 
         public virtual bool SendWhisper(string user, string s)
@@ -72,19 +82,22 @@ namespace StreamerBotLib.BotClients
             throw new NotImplementedException();
         }
 
-        public virtual bool StartBot()
+        public virtual Task StartBot()
         {
-            return true;
+            return Task.Run(() => { });
         }
 
-        public virtual bool StopBot()
+        public virtual Task StopBot()
         {
-            return true;
+            return Task.Run(() => { });
         }
 
-        public virtual bool ExitBot()
+        public virtual async Task<bool> ExitBot()
         {
-            return true;
+            return await Task.Run(() =>
+            {
+                return true;
+            });
         }
         #endregion
     }

@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Properties;
+﻿using StreamerBotLib.Models.Repeat;
+using StreamerBotLib.Properties;
 
-using System.Configuration;
-using System.Reflection;
+using System.Collections.Specialized;
 
 namespace StreamerBotLib.Static
 {
@@ -18,6 +18,16 @@ namespace StreamerBotLib.Static
         /// Indicates database xml file successfully loaded.
         /// </summary>
         public static bool MultiDataLoaded { get; set; } = false;
+
+        /// <summary>
+        /// Flag to specify the prior XML Datagram file imported into the database
+        /// </summary>
+        public static bool EFCDataImportedDataGram
+        {
+            get => Settings.Default.EFCDataImportedDataGram;
+            set => Settings.Default.EFCDataImportedDataGram = value;
+        }
+
         /// <summary>
         /// The app-wide token to keep threads running, setting it false indicates it's all shut down to close the application.
         /// </summary>
@@ -36,7 +46,8 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchStreamerValidToken => CurrentToTwitchRefreshDate(TwitchStreamerTokenDate) > new TimeSpan(0, 0, 0);
         /// <summary>
-        /// Flag to indicate whether the API should use Streamer Client Id credentials per Twitch requirements.
+        /// Flag to indicate bot account and streamer account are different, and flag for which credential to use.
+        /// <code>true - bot account != streamer account</code>
         /// </summary>
         public static bool TwitchStreamerUseToken => Settings.Default.TwitchBotUserName != Settings.Default.TwitchChannelName;
 
@@ -68,15 +79,16 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies whether to record bot status messages in the log file.
         /// </summary>
-        public static bool LogBotStatus => Settings.Default.LogBotStatus;
+        public static bool LogBotStatus
+        {
+            get => Settings.Default.LogBotStatus;
+            set => Settings.Default.LogBotStatus = value;
+        }
+
         /// <summary>
         /// Specifies whether to record exceptions during bot operation.
         /// </summary>
         public static bool LogExceptions => Settings.Default.LogExceptions;
-        /// <summary>
-        /// Specifies to add Twitch followers for the given channel upon starting the bot.
-        /// </summary>
-        public static bool TwitchAddFollowersStart => Settings.Default.TwitchAddFollowersStart;
         /// <summary>
         /// Specifies to clear Twitch followers in the database if they are no longer followers.
         /// </summary>
@@ -88,6 +100,10 @@ namespace StreamerBotLib.Static
         /// Turns off notification during the bulk follower add operation, prevents sending chats to the channel.
         /// </summary>
         public static bool TwitchAddFollowerNotification => Settings.Default.TwitchAddFollowerNotification;
+        /// <summary>
+        /// Specifies to add Twitch followers for the given channel upon starting the bot.
+        /// </summary>
+        public static bool TwitchAddFollowersStart => Settings.Default.TwitchAddFollowersStart;
         /// <summary>
         /// Enables an auto refresh for adding Twitch followers again after a certain amount of time, since Twitch doesn't provide notification when a user no longer follows a channel.
         /// </summary>
@@ -113,15 +129,6 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static int TwitchFollowerAutoBanCount => Settings.Default.TwitchFollowerAutoBanCount;
         /// <summary>
-        /// Specifies whether bot starts when stream is detected online.
-        /// </summary>
-        public static bool TwitchFollowerConnectOnline => Settings.Default.TwitchFollowerConnectOnline;
-        /// <summary>
-        /// Specifies whether bot stops when stream is detected offline.
-        /// </summary>
-        public static bool TwitchFollowerDisconnectOffline => Settings.Default.TwitchFollowerDisconnectOffline;
-
-        /// <summary>
         /// Specifies whether to welcome a user when they first join the given channel.
         /// </summary>
         public static bool FirstUserJoinedMsg
@@ -139,7 +146,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// The datetime of the earliest expiring Twitch token, to help limit operations and prevent crashing from using an outdated access token.
         /// </summary>
-        public static DateTime TwitchRefreshDate => Settings.Default.TwitchRefreshDate;
+        public static DateTime TwitchBotTokenDate => Settings.Default.TwitchBotTokenDate;
 
         /// <summary>
         /// Adds /me to all outgoing bot messages.
@@ -175,6 +182,12 @@ namespace StreamerBotLib.Static
         /// Auto shout specific users, per the welcome user setting (when they first join or when they first chat).
         /// </summary>
         public static bool AutoShout => Settings.Default.MsgAutoShout;
+
+        /// <summary>
+        /// Specifies whether to use Twitch API to shout out users when they interact with the channel - connected to the AutoShout methodology.
+        /// </summary>
+        public static bool TwitchChannelUserShoutAPI => Settings.Default.TwitchChannelUserShoutAPI;
+
         /// <summary>
         /// Setting for the bot to emit the "!so Username" to the given channel chat, such that other bots can pick-up a shout-out for additional notifications.
         /// </summary>
@@ -183,6 +196,32 @@ namespace StreamerBotLib.Static
         /// Enables whether the bot should shout out all users who raid the given channel.
         /// </summary>
         public static bool TwitchRaidShoutOut => Settings.Default.TwitchRaidShoutOut;
+
+        public static bool RepeatParallelMode => Settings.Default.RepeatParallelMode;
+        public static bool RepeatSerialMode => Settings.Default.RepeatSerialMode;
+        public static List<RepeatCommandGUISelect> RepeatSerialSaveData
+        {
+            get
+            {
+                return [.. Settings.Default.RepeatSerialSaveData.Cast<string>().Select(R => new RepeatCommandGUISelect() { Command = R, IsSelected = false })];
+            }
+
+            set
+            {
+                Settings.Default.RepeatSerialSaveData.Clear();
+                Settings.Default.RepeatSerialSaveData.AddRange([.. value.Where(C => !C.IsSelected).Select(C => C.Command)]);
+                Settings.Default.Save();
+            }
+        }
+        public static StringCollection RepeatSerialSaveDataString
+        {
+            get
+            {
+                return Settings.Default.RepeatSerialSaveData;
+            }
+        }
+
+        public static int RepeatSerialTime => Settings.Default.RepeatSerialTime;
         /// <summary>
         /// Enables repeat timer commands.
         /// </summary>
@@ -247,14 +286,14 @@ namespace StreamerBotLib.Static
         public static bool UserPartyStop => Settings.Default.UserPartyStop;
 
         /// <summary>
-        /// Specifies if the MultiLive bot autostarts when application opens, standalone app isn't running, and LiveMonitor bot is started.
-        /// </summary>
-        public static bool TwitchMultiLiveAutoStart => Settings.Default.TwitchMultiLiveAutoStart;
-
-        /// <summary>
         /// Enables or disables posting multiple live messages to social media on the same day, i.e. the stream crashes and restarts and another 'Live' alert is posted.
         /// </summary>
         public static bool PostMultiLive => Settings.Default.PostMultiLive;
+
+        /// <summary>
+        /// Enables or disables automatically popping up a browser window for a new channel online.
+        /// </summary>
+        public static bool TwitchMultiLiveBrowseChannel => Settings.Default.TwitchMultiLiveBrowseChannel;
 
         /// <summary>
         /// Whether to display the bot welcome message when connecting to the channel.
@@ -326,15 +365,6 @@ namespace StreamerBotLib.Static
         public static bool ManageOverlayTicker => Settings.Default.ManageOverlayTicker;
 
         /// <summary>
-        /// Enables starting the Twitch Chat Bot once the stream goes live. Depends on the live service detecting going live.
-        /// </summary>
-        public static bool TwitchChatBotConnectOnline => Settings.Default.TwitchChatBotConnectOnline;
-        /// <summary>
-        /// Enables whether to stop Twitch Chat Bot once the stream goes offline.
-        /// </summary>
-        public static bool TwitchChatBotDisconnectOffline => Settings.Default.TwitchChatBotDisconnectOffline;
-
-        /// <summary>
         /// Specifies whether to post a channel clip link to the given channel chat.
         /// </summary>
         public static bool TwitchClipPostChat
@@ -347,7 +377,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static double TwitchFrequencyClipTime => Settings.Default.TwitchFrequencyClipTime;
         /// <summary>
-        /// Specifies whether to post a channel clip link to Discord, and Discord webhooks need a 'clips' link.
+        /// Specifies whether to post a channel clip link to WebHooks, and WebHooks webhooks need a 'clips' link.
         /// </summary>
         public static bool TwitchClipPostDiscord => Settings.Default.TwitchClipPostDiscord;
         /// <summary>
@@ -395,7 +425,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Specifies how many selections to make for the giveaway.
         /// </summary>
-        public static short GiveawayCount
+        public static int GiveawayCount
         {
             get => Settings.Default.GiveawayCount; set => Settings.Default.GiveawayCount = value;
         }
@@ -430,26 +460,18 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// The number of giveaway entries a user can submit.
         /// </summary>
-        public static short GiveawayMaxEntries
+        public static int GiveawayMaxEntries
         {
             get => Settings.Default.GiveawayMaxEntries; set => Settings.Default.GiveawayMaxEntries = value;
         }
-
-        /// <summary>
-        /// Specifies Twitch Pub Sub scope, to include Channel Points.
-        /// </summary>
-        public static bool TwitchPubSubChannelPoints => Settings.Default.TwitchPubSubChannelPoints;
-        /// <summary>
-        /// Enables the PubSub to start when the stream is online and stop when the stream is offline.
-        /// </summary>
-        public static bool TwitchPubSubOnlineMode => Settings.Default.TwitchPubSubOnlineMode;
 
         /// <summary>
         /// Specifies the Twitch Channel Name to monitor.
         /// </summary>
         public static string TwitchChannelName
         {
-            get => Settings.Default.TwitchChannelName; set => Settings.Default.TwitchChannelName = value;
+            get => Settings.Default.TwitchChannelName;
+            set => Settings.Default.TwitchChannelName = value;
         }
         /// <summary>
         /// Specifies the Twitch Bot User Name for this application to chat through.
@@ -492,42 +514,42 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchBotClientId
         {
-            get => Settings.Default.TwitchClientID; set => Settings.Default.TwitchClientID = value;
+            get => Settings.Default.TwitchBotClientID; set => Settings.Default.TwitchBotClientID = value;
         }
         /// <summary>
         /// Specifies the bot account access token, used in authentication calls.
         /// </summary>
         public static string TwitchBotAccessToken
         {
-            get => Settings.Default.TwitchAccessToken; set => Settings.Default.TwitchAccessToken = value;
+            get => Settings.Default.TwitchBotAccessToken; set => Settings.Default.TwitchBotAccessToken = value;
         }
 
         /// <summary>
         /// Manages the Twitch Refresh Token.
         /// </summary>
-        public static string TwitchRefreshToken
+        public static string TwitchBotRefreshToken
         {
-            get => Settings.Default.TwitchRefreshToken;
-            set => Settings.Default.TwitchRefreshToken = value;
+            get => Settings.Default.TwitchBotRefreshToken;
+            set => Settings.Default.TwitchBotRefreshToken = value;
         }
 
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account client ID, to perform the function call.
         /// </summary>
-        public static string TwitchStreamClientId => Settings.Default.TwitchStreamClientId;
+        public static string TwitchStreamerClientId => Settings.Default.TwitchStreamerClientId;
         /// <summary>
         /// Some Twitch PubSub and Twitch API calls require the streamer account access token, to perform the function call.
         /// </summary>
-        public static string TwitchStreamOauthToken
+        public static string TwitchStreamerAccessToken
         {
-            get => Settings.Default.TwitchStreamOauthToken;
-            set => Settings.Default.TwitchStreamOauthToken = value;
+            get => Settings.Default.TwitchStreamerAccessToken;
+            set => Settings.Default.TwitchStreamerAccessToken = value;
         }
 
         /// <summary>
         /// Manages the Twitch Streamer based Refresh Token
         /// </summary>
-        public static string TwitchStreamRefreshToken
+        public static string TwitchStreamerRefreshToken
         {
             get => Settings.Default.TwitchStreamerRefreshToken;
             set => Settings.Default.TwitchStreamerRefreshToken = value;
@@ -538,6 +560,10 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static DateTime TwitchStreamerTokenDate => Settings.Default.TwitchStreamerTokenDate;
 
+        public static string TwitchStreamerNoScopesAccessToken => Settings.Default.TwitchStreamerNoScopesAccessToken;
+        public static string TwitchStreamerNoScopesRefreshToken => Settings.Default.TwitchStreamerNoScopesRefreshToken;
+        public static DateTime TwitchStreamerNoScopesTokenDate => Settings.Default.TwitchStreamerNoScopesTokenDate;
+
         #region Twitch Authorization code flow
 
         /// <summary>
@@ -547,7 +573,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Refers to the bot client Id, from app registration.
         /// </summary>
-        public static string TwitchAuthClientId => Settings.Default.TwitchAuthClientId;
+        public static string TwitchAuthBotClientId => Settings.Default.TwitchAuthBotClientId;
         /// <summary>
         /// Holds the bot account access token obtained in the 'authorization code flow' method to receive an access token.
         /// </summary>
@@ -618,6 +644,25 @@ namespace StreamerBotLib.Static
         /// Flag on whether to use the internal web browser for the authentication code process
         /// </summary>
         public static bool TwitchAuthUseInternalBrowser => Settings.Default.TwitchAuthUseInternalBrowser;
+
+        public static string TwitchAuthStreamerNoScopesAccessToken
+        {
+            get => Settings.Default.TwitchAuthStreamerNoScopesAccessToken;
+            set => Settings.Default.TwitchAuthStreamerNoScopesAccessToken = value;
+        }
+
+        public static string TwitchAuthStreamerNoScopesRefreshToken
+        {
+            get => Settings.Default.TwitchAuthStreamerNoScopesRefreshToken;
+            set => Settings.Default.TwitchAuthStreamerNoScopesRefreshToken = value;
+        }
+
+        public static string TwitchAuthStreamerNoScopesAuthCode
+        {
+            get => Settings.Default.TwitchAuthStreamerNoScopesAuthCode;
+            set => Settings.Default.TwitchAuthStreamerNoScopesAuthCode = value;
+        }
+
         #endregion
 
         /// <summary>
@@ -658,6 +703,15 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayEnabled; set => Settings.Default.MediaOverlayEnabled = value;
         }
+
+        /// <summary>
+        /// Choose whether to show Media Overlay Services in a separate window or within the main window
+        /// </summary>
+        public static bool MediaOverlayEmbedGUI
+        {
+            get => Settings.Default.MediaOverlayEmbedGUI; set => Settings.Default.MediaOverlayEmbedGUI = value;
+        }
+
         /// <summary>
         /// Enable the Media Overlay (Twitch) channel points redemption for an overlay action.
         /// </summary>
@@ -680,10 +734,19 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
+
+        public static int MediaOverlayClipWidth
+        {
+            get => Settings.Default.MediaOverlayClipWidth; set => Settings.Default.MediaOverlayClipWidth = value;
+        }
+        public static int MediaOverlayClipHeight
+        {
+            get => Settings.Default.MediaOverlayClipHeight; set => Settings.Default.MediaOverlayClipHeight = value;
+        }
         /// <summary>
         /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>
-        public static short MediaOverlayMediaActionPort
+        public static int MediaOverlayMediaActionPort
         {
             get => Settings.Default.MediaOverlayActionPort; set => Settings.Default.MediaOverlayActionPort = value;
         }
@@ -691,7 +754,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Manages the Overlay ticker medition port server Overlay ticker item Content through the http server.
         /// </summary>
-        public static short MediaOverlayMediaTickerPort
+        public static int MediaOverlayMediaTickerPort
         {
             get => Settings.Default.MediaOverlayTickerPort; set => Settings.Default.MediaOverlayTickerPort = value;
         }
@@ -731,6 +794,9 @@ namespace StreamerBotLib.Static
         /// Defines rotating each ticker item in the same spot
         /// </summary>
         public static bool MediaOverlayTickerRotate => Settings.Default.MediaOverlayTickerRotate;
+        /// <summary>
+        /// Defines the overlay ticker rotation time
+        /// </summary>
         public static int MediaOverlayTickerRotateTime => Settings.Default.MediaOverlayTickerRotateTime;
         /// <summary>
         /// Defines a marquee ticker scroller
@@ -794,10 +860,21 @@ namespace StreamerBotLib.Static
 
         #region DebugLogFlags
 
+#if DEBUG
+        /// <summary>
+        /// Quick flag to enable specific special purpose logging during test.
+        /// </summary>
+        public static bool EnableDebugSpecialPurpose => true;
+#endif
+
         /// <summary>
         /// Enables the Overlay actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugLogOverlays => Settings.Default.EnableDebugLogOverlays;
+        /// <summary>
+        /// Enables the DataBot actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugDataBot => Settings.Default.EnableDebugDataBot;
         /// <summary>
         /// Enables the DataManager actions to save to the debug log.
         /// </summary>
@@ -805,7 +882,7 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Enables the Twitch Chat Bot related actions to save to the debug log.
         /// </summary>
-        public static bool EnableDebugTwitchChatBot => Settings.Default.EnableDebugTwitchChatBot;
+        public static bool EnableDebugGUIMultiLive => Settings.Default.EnableDebugGUIMultiLive;
         /// <summary>
         /// Enables the Twitch Clip Bot related actions to save to the debug log.
         /// </summary>
@@ -813,31 +890,32 @@ namespace StreamerBotLib.Static
         /// <summary>
         /// Enables the Twitch Live Bot related actions to save to the debug log.
         /// </summary>
-        public static bool EnableDebugTwitchLiveBot => Settings.Default.EnableDebugTwitchLiveBot;
-        /// <summary>
-        /// Enables the Twitch Follow Bot related actions to save to the debug log.
-        /// </summary>
-        public static bool EnableDebugTwitchFollowBot => Settings.Default.EnableDebugTwitchFollowBot;
+        public static bool EnableDebugTwitchMultiBot => Settings.Default.EnableDebugTwitchMultiBot;
         /// <summary>
         /// Enables the Twitch PubSub Bot related actions to save to the debug log.
         /// </summary>
-        public static bool EnableDebugTwitchPubSubBot => Settings.Default.EnableDebugTwitchPubSubBot;
+        public static bool EnableDebugTwitchBotSendChat => Settings.Default.EnableDebugTwitchBotSendChat;
+        public static bool EnableDebugTwitchBotEventSubBot => Settings.Default.EnableDebugTwitchBotEventSubBot;
+        public static bool EnableDebugTwitchStreamerEventSubBot => Settings.Default.EnableDebugTwitchStreamerEventSubBot;
+        public static bool EnableDebugTwitchEventSub => Settings.Default.EnableDebugTwitchEventSub;
+        public static bool EnableDebugTwitchStreamerNoScopesEventSubBot => Settings.Default.EnableDebugTwitchStreamerNoScopesEventSubBot;
         /// <summary>
         /// Enables debug logging for Twitch bot User Service methods.
         /// </summary>
-        public static bool EnableDebugTwitchUserSvcBot => Settings.Default.EnableDebugTwitchUserSvcBot;
+        public static bool EnableDebugTwitchHelixBot => Settings.Default.EnableDebugTwitchHelixBot;
         /// <summary>
-        /// Enables the Media-Discord (may change to be more generic) Bot- related actions to save to the debug log.
+        /// Enables the Media-WebHooks (may change to be more generic) Bot- related actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugDiscordBot => Settings.Default.EnableDebugDiscordBot;
         public static bool EnableDebugTwitchTokenBot => Settings.Default.EnableDebugTwitchTokenBot;
         public static bool EnableDebugCommandSystem => Settings.Default.EnableDebugCommandSystem;
+        public static bool EnableDebugRepeatCommandSystem => Settings.Default.EnableDebugRepeatCommandSystem;
         public static bool EnableDebugCommonSystem => Settings.Default.EnableDebugCommonSystem;
         public static bool EnableDebugSystemController => Settings.Default.EnableDebugSystemController;
         public static bool EnableDebugStatSystem => Settings.Default.EnableDebugStatSystem;
         public static bool EnableDebugBotController => Settings.Default.EnableDebugBotController;
-        public static bool EnableDebugTwitchMultiLiveBot => Settings.Default.EnableDebugTwitchMultiLiveBot;
         public static bool EnableDebugCurrencySystem => Settings.Default.EnableDebugCurrencySystem;
+        public static bool EnableDebugManageStreamViewers => Settings.Default.EnableDebugManageStreamViewers;
         public static bool EnableDebugModerationSystem => Settings.Default.EnableDebugModerationSystem;
         public static bool EnableDebugOverlaySystem => Settings.Default.EnableDebugOverlaySystem;
         public static bool EnableDebugBlackjackGame => Settings.Default.EnableDebugBlackjackGame;
@@ -883,6 +961,86 @@ namespace StreamerBotLib.Static
 
         #endregion
 
+        #region Database choose and connection strings
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderSqlite
+        {
+            get => Settings.Default.EFCDatabaseProviderSqlite; set => Settings.Default.EFCDatabaseProviderSqlite = value;
+        }
+
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringSqlite => Settings.Default.EFCConnectStringSqlite;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderSqlServer
+        {
+            get => Settings.Default.EFCDatabaseProviderSqlServer; set => Settings.Default.EFCDatabaseProviderSqlServer = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringSqlServer => Settings.Default.EFCConnectStringSqlServer;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderCosmos
+        {
+            get => Settings.Default.EFCDatabaseProviderCosmos; set => Settings.Default.EFCDatabaseProviderCosmos = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringCosmos => Settings.Default.EFCConnectStringCosmos;
+        public static string EFCDbNameCosmos => Settings.Default.EFCDbNameCosmos;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderPostgreSQL
+        {
+            get => Settings.Default.EFCDatabaseProviderPostgreSQL; set => Settings.Default.EFCDatabaseProviderPostgreSQL = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringPostgreSQL => Settings.Default.EFCConnectStringPostgreSQL;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderMySql
+        {
+            get => Settings.Default.EFCDatabaseProviderMySql; set => Settings.Default.EFCDatabaseProviderMySql = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCConnectStringMySql => Settings.Default.EFCConnectStringMySql;
+
+        /// <summary>
+        /// Holds user selection for an EF Core database provider
+        /// </summary>
+        public static bool EFCDatabaseProviderKNet
+        {
+            get => Settings.Default.EFCDatabaseProviderKNet; set => Settings.Default.EFCDatabaseProviderKNet = value;
+        }
+        /// <summary>
+        /// Holds the user modified connection string for access through the database provider
+        /// </summary>
+        public static string EFCDbNameKNet => Settings.Default.EFCDbNameKNet;
+        public static string EFCKNetApplicationId => Settings.Default.EFCKNetApplicationId;
+        public static string EFCKNetBootstrapServers => Settings.Default.EFCKNetBootstrapServers;
+
+        #endregion
+
         /// <summary>
         /// Sets whether the "Join Party" list is started or not, and refreshes the settings.
         /// </summary>
@@ -909,18 +1067,19 @@ namespace StreamerBotLib.Static
         /// <param name="SettingName">The name in the "Settings.Default" to check.</param>
         /// <param name="CheckSettingValue">The value to compare to the default settings.</param>
         /// <returns>DefaultValue(SettingName).Value == CheckSettingValue; true if value is default</returns>
-        public static bool CheckSettingIsDefault(string SettingName, string CheckSettingValue)
+        public static bool CheckSettingIsDefault(string SettingName)
         {
-            DefaultSettingValueAttribute defaultSetting = null;
-
-            foreach (MemberInfo m in from MemberInfo m in typeof(Settings).GetProperties()
-                                     where m.Name == SettingName
-                                     select m)
+            var prop = typeof(Settings).GetProperty(SettingName);
+            if (prop != null)
             {
-                defaultSetting = (DefaultSettingValueAttribute)m.GetCustomAttribute(typeof(DefaultSettingValueAttribute));
+                var defaultValue = Settings.Default.Properties[SettingName]?.DefaultValue;
+                var currentValue = prop.GetValue(Settings.Default);
+                return Equals(defaultValue, currentValue);
             }
-
-            return defaultSetting.Value == CheckSettingValue;
+            else
+            {
+                throw new ArgumentException($"Setting '{SettingName}' not found in Settings.Default.");
+            }
         }
     }
 }

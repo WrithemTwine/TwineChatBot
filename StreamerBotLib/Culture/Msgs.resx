@@ -330,6 +330,10 @@
   <data name="Helpmonths" xml:space="preserve">
     <value>how many months subscribed this time</value>
   </data>
+  <data name="HelpPath" xml:space="preserve">
+    <value>Paste full path to file, double-click to browse to file.</value>
+    <comment>Message used in new data popup to discuss file path</comment>
+  </data>
   <data name="Helppayout" xml:space="preserve">
     <value>Blackjack message to show how much currency the player won</value>
   </data>
@@ -457,6 +461,9 @@
     <value>Command {0} added!</value>
     <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
+  <data name="MsgAddCommandFailed" xml:space="preserve">
+    <value>Command-{0}-already exists, not added. Instead, use !editcommand.</value>
+  </data>
   <data name="Msgaddquote" xml:space="preserve">
     <value>Thank you for adding quote #quotenum.</value>
   </data>
@@ -486,7 +493,7 @@
     <value>Twine Streamer Bot written by WrithemTwine, https://github.com/WrithemTwine/TwineChatBot/ . Free to try and use, just give attribution. Testers needed.</value>
   </data>
   <data name="MsgBoxDataLoadedMsg" xml:space="preserve">
-    <value>$"Fatal error, both main data and backup data files failed to properly load. All further data saves have been suspended until the Bot restarts. Please close and review the data files for improper XML formatting, retore from backups - ensure using the '{StreamerBotLib.Data.DataManager.DataFileXML}' filename. Without restoration, the datafile will need to be restarted from default."</value>
+    <value>"Could not connect to the database. Please ensure the data file is available and not open by another program."</value>
   </data>
   <data name="MsgBoxDataLoadedTitle" xml:space="preserve">
     <value>Fatal DataFile Load</value>
@@ -585,6 +592,10 @@
     <value>No Category</value>
     <comment>When user has no category</comment>
   </data>
+  <data name="MsgNoCommands" xml:space="preserve">
+    <value>No Commands Enabled for use.</value>
+    <comment>Response message for retrieving datamanager commands with "isEnabled" is false for all commands.</comment>
+  </data>
   <data name="MsgNoDeathCounter" xml:space="preserve">
     <value>The death counter is not established.</value>
   </data>
@@ -668,6 +679,10 @@
   </data>
   <data name="MsgSupporterJoined" xml:space="preserve">
     <value>Thanks #user for supporting the channel and welcome back to stream!</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
+  <data name="Msgtime" xml:space="preserve">
+    <value>The current time at my location is: #time, on #date.</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="MsgTwitchAuthFailedAuthentication" xml:space="preserve">
@@ -831,6 +846,10 @@
     <value>-use:!socials</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
+  <data name="Paramtime" xml:space="preserve">
+    <value>-use:!time</value>
+    <comment>parameter for command</comment>
+  </data>
   <data name="Paramunlurk" xml:space="preserve">
     <value>-use:!unlurk</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
@@ -847,7 +866,7 @@
     <value>-use:!viewdeath</value>
   </data>
   <data name="Paramwatchtime" xml:space="preserve">
-    <value>-t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
+    <value>-t:UserStats -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;</value>
     <comment>parameter for command, don't change switch text between '-' and ':'</comment>
   </data>
   <data name="Paramworklurk" xml:space="preserve">
@@ -932,6 +951,7 @@
   </data>
   <data name="Respond" xml:space="preserve">
     <value>Currently not used.</value>
+    <comment>currently not used</comment>
   </data>
   <data name="setcategory" xml:space="preserve">
     <value>setcategory</value>
@@ -964,6 +984,10 @@
   <data name="streamer" xml:space="preserve">
     <value>streamer</value>
     <comment>MsgVar variable value</comment>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>time</value>
+    <comment>default command, can be translated</comment>
   </data>
   <data name="Total" xml:space="preserve">
     <value>total</value>

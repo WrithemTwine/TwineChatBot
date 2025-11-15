@@ -1,159 +1,98 @@
-﻿
-using StreamerBotLib.BotClients;
+﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
-
-using System.Reflection;
 
 namespace StreamerBotLib.GUI
 {
     public class GUITwitchBots : GUIBotBase
     {
-        public static event EventHandler OnLiveStreamStarted;
-        public static event EventHandler OnLiveStreamUpdated;
         public static event EventHandler OnFollowerBotStarted;
-        public static event EventHandler OnLiveStreamStopped;
 
         /// <summary>
         /// Specifically Twitch Lib chat bot.
         /// </summary>
-        public static TwitchBotChatClient TwitchChat { get; private set; }
-        public static TwitchBotFollowerSvc TwitchFollower { get; private set; }
-        public static TwitchBotLiveMonitorSvc TwitchLiveMonitor { get; private set; }
-        public static TwitchBotClipSvc TwitchClip { get; private set; }
-        public static TwitchBotUserSvc TwitchBotUserSvc { get; private set; }
-        public static TwitchBotPubSub TwitchBotPubSub { get; private set; }
-
+        //public static TwitchBotEventSubChatClient TwitchBotEventSubChatClient { get; private set; } = BotsTwitch.TwitchBotEventSubChatClient;
+        public static TwitchBotSendChatClient TwitchBotSendChatClient { get; private set; } = BotsTwitch.TwitchBotSendChatClient;
+        public static TwitchEventSub TwitchEventSubBot { get; private set; } = BotsTwitch.TwitchEventSubBot;
+        public static TwitchEventSub TwitchEventSubStreamer { get; private set; } = BotsTwitch.TwitchEventSubStreamer;
+        public static TwitchBotLiveMonitorSvc TwitchBotLiveMonitorSvc { get; private set; } = BotsTwitch.TwitchBotLiveMonitorSvc;
+        public static TwitchBotClipSvc TwitchClip { get; private set; } = BotsTwitch.TwitchBotClipSvc;
+        public static TwitchHelixBot TwitchHelixBot { get; private set; } = BotsTwitch.TwitchHelixBot;
+        //public static TwitchStreamerEventSubBotScopes TwitchStreamerEventSubBotScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotScopes;
+        //public static TwitchStreamerEventSubBotNoScopes TwitchStreamerEventSubBotNoScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotNoScopes;
         public GUITwitchBots()
         {
-            TwitchChat = BotsTwitch.TwitchBotChatClient;
-            TwitchFollower = BotsTwitch.TwitchFollower;
-            TwitchClip = BotsTwitch.TwitchBotClipSvc;
-            TwitchLiveMonitor = BotsTwitch.TwitchLiveMonitor;
-            TwitchBotUserSvc = BotsTwitch.TwitchBotUserSvc;
-            TwitchBotPubSub = BotsTwitch.TwitchBotPubSub;
+            LogWriter.DebugLog(".ctor_GUITwitchBots", DebugLogTypes.GUIBotComs, "Building the GUITwitchBots.");
 
-            TwitchChat.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchChat.OnBotStopped += TwitchBot_OnBotStopped;
-            TwitchChat.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            //TwitchBotEventSubChatClient.OnBotStarted += TwitchBot_OnBotStarted;
+            //TwitchBotEventSubChatClient.OnBotStopped += TwitchBot_OnBotStopped;
+            //TwitchBotEventSubChatClient.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
-            TwitchFollower.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchFollower.OnBotStarted += TwitchFollower_OnBotStarted;
-            TwitchFollower.OnBotStopped += TwitchBot_OnBotStopped;
-            TwitchFollower.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            TwitchEventSubBot.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchEventSubBot.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            TwitchEventSubBot.OnBotStopped += TwitchBot_OnBotStopped;
 
-            TwitchLiveMonitor.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchLiveMonitor.OnBotStarted += TwitchLiveMonitor_OnBotStarted;
-            TwitchLiveMonitor.OnBotStopped += TwitchBot_OnBotStopped;
-            TwitchLiveMonitor.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            TwitchEventSubStreamer.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchEventSubStreamer.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            TwitchEventSubStreamer.OnBotStopped += TwitchBot_OnBotStopped;
+
+            TwitchBotLiveMonitorSvc.OnBotStarted += TwitchBot_OnBotStarted;
+            TwitchBotLiveMonitorSvc.OnBotStopped += TwitchBot_OnBotStopped;
+            TwitchBotLiveMonitorSvc.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
             TwitchClip.OnBotStarted += TwitchBot_OnBotStarted;
             TwitchClip.OnBotStopped += TwitchBot_OnBotStopped;
             TwitchClip.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
-            TwitchBotPubSub.OnBotStarted += TwitchBot_OnBotStarted;
-            TwitchBotPubSub.OnBotStopped += TwitchBot_OnBotStopped;
-            TwitchBotPubSub.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+            //TwitchStreamerEventSubBotScopes.OnBotStarted += TwitchBot_OnBotStarted;
+            //TwitchStreamerEventSubBotScopes.OnBotStopped += TwitchBot_OnBotStopped;
+            //TwitchStreamerEventSubBotScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
-            BotsTwitch.RaidCompleted += Twitch_RaidCompleted;
+            //TwitchStreamerEventSubBotNoScopes.OnBotStarted += TwitchBot_OnBotStarted;
+            //TwitchStreamerEventSubBotNoScopes.OnBotStopped += TwitchBot_OnBotStopped;
+            //TwitchStreamerEventSubBotNoScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
         }
 
         public static void Send(string msg)
         {
-            TwitchChat.Send(msg);
-        }
-
-        private void TwitchLiveMonitor_OnBotStarted(object sender, EventArgs e)
-        {
-            TwitchLiveMonitor.LiveStreamMonitor.OnStreamOnline += LiveStreamMonitor_OnStreamOnline;
-            TwitchLiveMonitor.LiveStreamMonitor.OnStreamUpdate += LiveStreamMonitor_OnStreamUpdate;
-            TwitchLiveMonitor.LiveStreamMonitor.OnStreamOffline += LiveStreamMonitor_OnStreamOffline;
-        }
-
-        private void Twitch_RaidCompleted(object sender, EventArgs e)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Raid now reported complete.");
-
-            LiveStreamMonitor_OnStreamOffline(this, new());
-        }
-
-        private void LiveStreamMonitor_OnStreamOffline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOfflineArgs e)
-        {
-            if (OptionFlags.TwitchChannelName == e.Channel || TwitchBotsBase.TwitchChannelId == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now offline.");
-
-                OnLiveStreamStopped?.Invoke(this, new());
-            }
-        }
-
-        private void LiveStreamMonitor_OnStreamUpdate(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamUpdateArgs e)
-        {
-            if (OptionFlags.TwitchChannelName == e.Channel || TwitchBotsBase.TwitchChannelId == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now updated.");
-
-                OnLiveStreamUpdated?.Invoke(this, new());
-            }
-        }
-
-        private void LiveStreamMonitor_OnStreamOnline(object sender, TwitchLib.Api.Services.Events.LiveStreamMonitor.OnStreamOnlineArgs e)
-        {
-            if (OptionFlags.TwitchChannelName == e.Channel || TwitchBotsBase.TwitchChannelId == e.Channel) // ensure monitoring other channels doesn't alert GUI status change
-            {
-                LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.TwitchBots, "Notify GUI stream is now online.");
-
-                OnLiveStreamStarted?.Invoke(this, new());
-            }
-        }
-
-        private void TwitchBot_OnBotStopped(object sender, EventArgs e)
-        {
-            TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsStopped });
+            LogWriter.DebugLog("Send", DebugLogTypes.GUIBotComs, $"Sending a message, {msg}, to the chat.");
+            TwitchBotSendChatClient.Send(msg);
         }
 
         private void TwitchBot_OnBotStarted(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
+            LogWriter.DebugLog("TwitchBot_OnBotStarted", DebugLogTypes.GUIBotComs, $"Bot started, {currBot.BotClientName}.");
+            BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsActive == true });
         }
 
-        private void TwitchFollower_OnBotStarted(object sender, EventArgs e)
+        private void TwitchBot_OnBotStopped(object sender, EventArgs e)
         {
-            OnFollowerBotStarted?.Invoke(this, new());
+            TwitchBotsBase currBot = sender as TwitchBotsBase;
+            LogWriter.DebugLog("TwitchBot_OnBotStopped", DebugLogTypes.GUIBotComs, $"Bot stopped, {currBot.BotClientName}.");
+            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsActive == true });
         }
 
         private void TwitchBot_OnBotFailedStart(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
-            BotFailedStart(new() { BotName = currBot.BotClientName, Started = currBot.IsStarted });
+            LogWriter.DebugLog("TwitchBot_OnBotFailedStart", DebugLogTypes.GUIBotComs, $"Bot failed to start, {currBot.BotClientName}.");
+            BotFailedStart(new() { BotName = currBot.BotClientName, Started = currBot.IsActive == true });
         }
 
         #region Events
-        public static void RegisterGetCategory(EventHandler<OnGetChannelGameNameEventArgs> GetCategoryEvent)
-        {
-            TwitchBotUserSvc.GetChannelGameName += GetCategoryEvent;
-        }
-
         public static void RegisterChannelPoints(EventHandler<OnGetChannelPointsEventArgs> GetPointsEvent)
         {
-            TwitchBotUserSvc.GetChannelPoints += GetPointsEvent;
+            LogWriter.DebugLog("RegisterChannelPoints", DebugLogTypes.GUIBotComs, "Registering the channel points event.");
+            TwitchHelixBot.GetChannelPoints += GetPointsEvent;
         }
-
-        public static void GetUserGameCategory(string UserName)
-        {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, DebugLogTypes.GUIBotComs, "Sending request for user game category.");
-
-            _ = TwitchBotUserSvc.GetUserGameCategory(UserName: UserName);
-        }
-
 
         public static void GetChannelPoints(string UserName)
         {
-            _ = TwitchBotUserSvc.GetUserCustomRewards(UserName: UserName);
+            LogWriter.DebugLog("GetChannelPoints", DebugLogTypes.GUIBotComs, $"Getting channel points for {UserName}.");
+            _ = TwitchHelixBot.GetUserCustomRewards(UserName: UserName);
         }
 
         #endregion

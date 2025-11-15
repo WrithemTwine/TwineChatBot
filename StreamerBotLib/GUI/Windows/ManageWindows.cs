@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.DataSQL.TableMeta;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
-
-using System.Data;
 
 namespace StreamerBotLib.GUI.Windows
 {
@@ -9,20 +9,49 @@ namespace StreamerBotLib.GUI.Windows
     {
         private EditData EditDataWindow { get; set; }
 
-        private Dictionary<string, List<string>> TableDataPairs = new();
+        private Dictionary<string, List<string>> TableDataPairs { get; } = [];
 
-        public ManageWindows()
+        private TableMeta CurrTableRow { get; set; }
+
+        private bool _openNewWindow, _setTableData;
+        private Action _OpenGridWindow;
+
+        internal static EventHandler<AddNewRowEventArgs> DataGridUpdatedRowHandler { get; set; }
+
+        public ManageWindows() { }
+
+        public void AddNewItem(TableMeta tableMeta)
         {
+            CurrTableRow = tableMeta;
+            OpenDataGridRowWindow(true);
         }
 
-        public void DataGridAddNewItem(IDataManageReadOnly dataManageReadOnly, DataTable dataTable)
+        public void EditExistingItem(TableMeta tableMeta)
         {
-            DataGridOpenRowWindow(dataManageReadOnly, dataTable);
+            CurrTableRow = tableMeta;
+            OpenDataGridRowWindow(false);
         }
 
-        public void DataGridEditItem(IDataManageReadOnly dataManageReadOnly, DataTable dataTable, DataRow dataRow)
+        private void OpenDataGridRowWindow(bool NewRow)
         {
-            DataGridOpenRowWindow(dataManageReadOnly, dataTable, dataRow);
+            if (!_setTableData)
+            {
+                _OpenGridWindow = () => ThreadManager.AddTaskToGUIDispatcher(() => OpenDataGridRowWindow(NewRow));
+                _openNewWindow = true;
+            }
+            else
+            {
+                EditDataWindow = new(ActionSystem.DataManage);
+                EditDataWindow.AddNewRow += DataGridUpdatedRowHandler; // hookup adding a new row to a table
+
+                if (CurrTableRow.CurrEntity.TableName is "OverlayServices" or "ModeratorApprove")
+                {
+                    EditDataWindow.SetOverlayActions(TableDataPairs);
+                }
+
+                EditDataWindow.LoadData(CurrTableRow.CurrEntity, NewRow);
+                EditDataWindow.Show();
+            }
         }
 
         public void SetTableData(Dictionary<string, List<string>> SourceData)
@@ -32,25 +61,13 @@ namespace StreamerBotLib.GUI.Windows
             {
                 TableDataPairs.Add(D.Key, D.Value);
             }
-        }
+            _setTableData = true;
 
-        private void DataGridOpenRowWindow(IDataManageReadOnly dataManageReadOnly, DataTable dataTable, DataRow dataRow = null)
-        {
-            EditDataWindow = new(dataManageReadOnly);
-            EditDataWindow.UpdatedDataRow += EditDataWindow_UpdatedDataRow;
-
-            if (dataTable.TableName is "OverlayServices" or "ModeratorApprove")
+            if (_openNewWindow)
             {
-                EditDataWindow.SetOverlayActions(TableDataPairs);
+                _openNewWindow = false;
+                _OpenGridWindow();
             }
-
-            EditDataWindow.LoadData(dataTable, dataRow);
-            EditDataWindow.Show();
-        }
-
-        private void EditDataWindow_UpdatedDataRow(object sender, Events.UpdatedDataRowArgs e)
-        {
-            SystemsController.PostUpdatedDataRow(e.RowChanged);
         }
     }
 }

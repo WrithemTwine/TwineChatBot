@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <StartupObject>StreamerBotImport.App</StartupObject>
+    <Version>2.0.0.0</Version>
+	  <Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML;Release_PomeloMySql;Debug_EFEETesting;Update_Nuget_Only</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ImportUpdate.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Import\DataSource.Designer.cs">
+      <DependentUpon>DataSource.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Import\Multi\MultiDataSource.Designer.cs">
+      <DependentUpon>MultiDataSource.xsd</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Import\DataSource.xsd">
+      <LastGenOutput>DataSource.Designer.cs</LastGenOutput>
+      <Generator>MSDataSetGenerator</Generator>
+    </None>
+    <None Update="Import\Multi\MultiDataSource.xsd">
+      <LastGenOutput>MultiDataSource.Designer.cs</LastGenOutput>
+      <Generator>MSDataSetGenerator</Generator>
+    </None>
+  </ItemGroup>
+
+</Project>

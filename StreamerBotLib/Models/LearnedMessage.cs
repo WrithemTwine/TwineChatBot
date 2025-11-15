@@ -1,27 +1,16 @@
-﻿using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Models.Enums;
 
 namespace StreamerBotLib.Models
 {
-    public class LearnedMessage
+    public class LearnedMessage(string Msg, MsgTypes msgTypes)
     {
-        public string Message { get; set; }
-        public MsgTypes MsgType { get; set; }
-
-        public LearnedMessage(string Msg, MsgTypes msgTypes)
-        {
-            Message = Msg;
-            MsgType = msgTypes;
-        }
+        public string Message { get; set; } = Msg;
+        public MsgTypes MsgType { get; set; } = msgTypes;
 
         public static List<LearnedMessage> BuildList(string[] Msgs, MsgTypes msgType)
         {
-            List<LearnedMessage> output = new();
-            foreach (string M in Msgs)
-            {
-                output.Add(new(M, msgType));
-            }
-
-            return output;
+            return (from string M in Msgs
+                    select new LearnedMessage(M, msgType)).ToList();
         }
     }
 }

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
+    <Version>0.1.12.4</Version>
+    <AssemblyVersion>0.1.12.4</AssemblyVersion>
+    <Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML;Release_PomeloMySql;Debug_EFEETesting;Update_Nuget_Only</Configurations>
+    <BaseOutputPath>bin\</BaseOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
+    <PackageReference Include="System.Text.Json" Version="9.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StreamerBotLib\StreamerBotLib.csproj" />
+  </ItemGroup>
+
+</Project>

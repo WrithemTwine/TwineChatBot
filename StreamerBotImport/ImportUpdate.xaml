@@ -1,0 +1,25 @@
+﻿<Page x:Class="StreamerBotImport.ImportUpdate"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Importing DataTables" Height="230" Width="350" UseLayoutRounding="True" >
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
+            <TextBlock Text="Tables found with data: " />
+            <TextBlock Name="TextBlock_TableCount" />
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
+            <TextBlock Text="All table row data: " />
+            <TextBlock Name="TextBlock_RowCount" />
+        </StackPanel>
+        <StackPanel Margin="10" DockPanel.Dock="Top" Orientation="Horizontal" Visibility="Collapsed">
+            <TextBlock Text="Current Progress: " />
+            <ProgressBar x:Name="ProgressBar_TotalProgress" VerticalAlignment="Top" Margin="5" Height="10" MinWidth="200" Width="auto" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+        </StackPanel>
+        <StackPanel x:Name="StackPanel_Import_Complete" Visibility="Collapsed">
+            <TextBlock Text="Import completed." FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,5" />
+        </StackPanel>
+    </DockPanel>
+</Page>

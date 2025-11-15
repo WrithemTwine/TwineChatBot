@@ -1,192 +1,267 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="StreamerBotLib.DataSQL.Models.BanBase" Collapsed="true">
-    <Position X="0.75" Y="6.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>DataSQL\Models\BanBase.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.BanReasons" Collapsed="true">
-    <Position X="0.75" Y="7.75" Width="1.5" />
+    <Position X="61.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAEAAQAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\BanReasons.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.BanRules" Collapsed="true">
-    <Position X="17.25" Y="0.5" Width="1.5" />
+    <Position X="63.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAEAAAAAAAAAAAAABA=</HashCode>
+      <HashCode>AAACAAAAAAAIAAAAAAAAAAAAAAAUAAAAAAAAAAAAABA=</HashCode>
       <FileName>DataSQL\Models\BanRules.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.CategoryList" Collapsed="true">
-    <Position X="5.75" Y="3.5" Width="1.5" />
+    <Position X="50.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAgAAAAAAAAAAIAAAAAAAAAAAAAAACAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAgAgAAAAAAAAIAACAAAAAAAAAAAACAA=</HashCode>
       <FileName>DataSQL\Models\CategoryList.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.ChannelEvents" Collapsed="true">
-    <Position X="19" Y="0.5" Width="1.5" />
+    <Position X="54.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAgAAACAAAAAAAAEAAAQAAAAAAAAAAAAAIAAAAAI=</HashCode>
+      <HashCode>AAAAAgAAACAAAAAAAAEAAAQAAAAAAAAAAAAAIAAAAAI=</HashCode>
       <FileName>DataSQL\Models\ChannelEvents.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.Clips" Collapsed="true">
-    <Position X="20.75" Y="0.5" Width="1.5" />
+    <Position X="34.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACCAAACAACAEAAACEAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <HashCode>AAQAAAAACAACAkAAACAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\Clips.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.Commands" Collapsed="true">
-    <Position X="22.5" Y="0.5" Width="1.5" />
+    <Position X="3" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACCAAAACwAAAAAIQEQQAgEAACoAAAACAAgIAAACAw=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\Commands.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.Currency" Collapsed="true">
-    <Position X="0.75" Y="4.75" Width="1.5" />
+    <Position X="9.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAgAAAAAAA=</HashCode>
+      <HashCode>AAIBAAAAAAAAAAAAYAAAAAAAAAAAAAAAQAAgAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\Currency.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="StreamerBotLib.DataSQL.Models.CurrencyBase" Collapsed="true">
-    <Position X="2" Y="3.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>DataSQL\Models\CurrencyBase.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.CurrencyType" Collapsed="true">
-    <Position X="3" Y="4.75" Width="1.5" />
+    <Position X="41.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAAAAA=</HashCode>
+      <HashCode>ACAAAAAAAAAAAAAAIAAAAAAACAAAAAAAAAAhAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\CurrencyType.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.CustomWelcome" Collapsed="true">
-    <Position X="12.5" Y="1.75" Width="1.5" />
+    <Position X="23.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
       <FileName>DataSQL\Models\CustomWelcome.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="StreamerBotLib.DataSQL.Models.Discord" Collapsed="true">
-    <Position X="17.25" Y="1.5" Width="1.5" />
+  <Class Name="StreamerBotLib.DataSQL.Models.Webhooks" Collapsed="true">
+    <Position X="7.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAABAAAAAAAEQAAAAAAAAAAAAAAAAAgAAABA=</HashCode>
-      <FileName>DataSQL\Models\Discord.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\Webhooks.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.Followers" Collapsed="true">
-    <Position X="1.25" Y="1.75" Width="1.5" />
+    <Position X="12" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAACAEAAAAAAACAAAAQAAAAAAAAAAAACAAAAAAACAA=</HashCode>
+      <HashCode>AAABCAEAAAgAAACAAAAQAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
       <FileName>DataSQL\Models\Followers.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.GameDeadCounter" Collapsed="true">
-    <Position X="5.75" Y="4.75" Width="1.5" />
+    <Position X="45.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAACAAAAAAAAgAAAAAAAAAAAQAAAAAAAAAAAAAACAA=</HashCode>
       <FileName>DataSQL\Models\GameDeadCounter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.GiveawayUserData" Collapsed="true">
-    <Position X="5.75" Y="1.75" Width="1.5" />
+    <Position X="16.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\GiveawayUserData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.InRaidData" Collapsed="true">
-    <Position X="10.25" Y="1.75" Width="1.5" />
+    <Position X="21" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAACAAAAAAAAAAAAAAAAAAAAAAAAAQgAAAAAAAACAA=</HashCode>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAgAQAAAAAACAA=</HashCode>
       <FileName>DataSQL\Models\InRaidData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.LearnMsgs" Collapsed="true">
-    <Position X="19" Y="1.5" Width="1.5" />
+    <Position X="57" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AACCAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\LearnMsgs.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.ModeratorApprove" Collapsed="true">
-    <Position X="20.75" Y="1.5" Width="1.5" />
+    <Position X="36.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AJACAAAAAAAAAAABAAEAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <HashCode>AJAAAAAAAAAAAAABAAEAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\ModeratorApprove.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.OutRaidData" Collapsed="true">
-    <Position X="22.5" Y="1.5" Width="1.5" />
+    <Position X="48" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\OutRaidData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.OverlayServices" Collapsed="true">
-    <Position X="17.25" Y="2.5" Width="1.5" />
+    <Position X="52.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ggICAAACAAACAAAAAAEAAAAAAAAAAAAAAQAAIAAABAA=</HashCode>
       <FileName>DataSQL\Models\OverlayServices.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.OverlayTicker" Collapsed="true">
-    <Position X="19" Y="2.5" Width="1.5" />
+    <Position X="59.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAIAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\OverlayTicker.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.Quotes" Collapsed="true">
-    <Position X="20.75" Y="2.5" Width="1.5" />
+    <Position X="39" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\Quotes.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.ShoutOuts" Collapsed="true">
-    <Position X="14.75" Y="1.75" Width="1.5" />
+    <Position X="27.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\ShoutOuts.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.StreamStats" Collapsed="true">
-    <Position X="22.5" Y="2.5" Width="1.5" />
+    <Position X="43.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AEAOSgCAAwAAAAAgAEAAAAAAAMQAkEUAECAAAAAADgA=</HashCode>
+      <HashCode>AEQMQACAAwACAAAgAEAAAAAAAMQAkEEAEKAAAAAALgA=</HashCode>
       <FileName>DataSQL\Models\StreamStats.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.UserBase" Collapsed="true">
-    <Position X="8" Y="0.5" Width="1.5" />
+    <Position X="21" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAAAAAAAAAAgAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\UserBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.Users" Collapsed="true">
-    <Position X="3.5" Y="1.75" Width="1.5" />
+    <Position X="14.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAACCBAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAABAhAQQAAAAACAAAAIACARAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\Users.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="StreamerBotLib.DataSQL.Models.UserStats" Collapsed="true">
-    <Position X="8" Y="1.75" Width="1.5" />
+    <Position X="18.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAAQBAAAAIAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <HashCode>AAABAAAAAgAAQBAAQAIAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
       <FileName>DataSQL\Models\UserStats.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.TimeoutSecondsConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="65.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\0TypeConverters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.IntConvert" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="61.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\0TypeConverters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.CategoryConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="65.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\0TypeConverters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.CommandsBase" Collapsed="true">
+    <Position X="2" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAACwAAAAAIQEQQAiEAACoAAAAiAAgIAAACAw=</HashCode>
+      <FileName>DataSQL\Models\CommandsBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.CommandsUser" Collapsed="true">
+    <Position X="0.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\CommandsUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.MultiChannels" Collapsed="true">
+    <Position X="32.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAgAAAAAAABAAAAIAAAQAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\MultiChannels.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.MultiLiveStreams" Collapsed="true">
+    <Position X="25.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAgAAAAAAAAAIAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\MultiLiveStreams.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.MultiSummaryLiveStreams" Collapsed="true">
+    <Position X="30" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAAAAAAIAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\MultiSummaryLiveStreams.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.MultiWebhooks" Collapsed="true">
+    <Position X="5.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\Models\MultiWebhooks.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.OldFollowUsers" Collapsed="true">
+    <Position X="63.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAgAAACAAAAQAAgAAAAAAAAACQAAAAAACAA=</HashCode>
+      <FileName>DataSQL\Models\OldFollowUsers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.Models.WebhooksBase" Collapsed="true">
+    <Position X="6.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAABAAgAAAAEQAAAAAACAAAAAAAAAAgAAABA=</HashCode>
+      <FileName>DataSQL\Models\WebhooksBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StreamerBotLib.DataSQL.EntityBase" Collapsed="true">
+    <Position X="30" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataSQL\EntityBase.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

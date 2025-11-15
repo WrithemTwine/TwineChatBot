@@ -6,15 +6,10 @@ namespace SimpleTestFeature.Exceptions
     /// <summary>
     /// Exception object specific to HTTP status code 429, Too Many Request.
     /// </summary>
-    public class TooManyRequestsException : Exception
+    public class TooManyRequestsException(string message,
+                                    DateTime resetTime = default,
+                                    HttpResponseMessage httpResponseMessage = null) : Exception(message)
     {
-        public TooManyRequestsException(string message,
-                                        DateTime resetTime = default,
-                                        HttpResponseMessage httpResponseMessage = null) : base(message)
-        {
-            ResetTime = resetTime;
-            HttpResponseMessage = httpResponseMessage;
-        }
 
         /// <summary>
         /// The exception message.
@@ -23,10 +18,10 @@ namespace SimpleTestFeature.Exceptions
         /// <summary>
         /// The time when the request allowance is reset for another request.
         /// </summary>
-        public DateTime ResetTime { get; set; }
+        public DateTime ResetTime { get; set; } = resetTime;
         /// <summary>
         /// The full http response message.
         /// </summary>
-        public HttpResponseMessage HttpResponseMessage { get; set; }
+        public HttpResponseMessage HttpResponseMessage { get; set; } = httpResponseMessage;
     }
 }

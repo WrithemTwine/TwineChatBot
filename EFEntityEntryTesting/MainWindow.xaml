@@ -1,0 +1,73 @@
+﻿<Window x:Class="EFEntityEntryTesting.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EFEntityEntryTesting"
+        xmlns:GUI="clr-namespace:EFEntityEntryTesting.GUI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="1100" Loaded="Window_Loaded" Closed="Window_Closed">
+    <Window.Resources>
+        <GUI:GUIDataManager x:Key="GUIDataManager" />
+    </Window.Resources>
+    <DockPanel DataContext="{StaticResource GUIDataManager}">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="5,5,0,5" />
+                    <Setter Property="Padding" Value="7,2" />
+                </Style>
+            </StackPanel.Resources>
+            <Button x:Name="Button_StartStream" Content="Start Stream" Click="Button_StartStream_Click" />
+            <Button x:Name="Button_RandomUsers" Content="Add Random Users" Click="Button_RandomUsers_Click" IsEnabled="False" />
+            <Button Name="Button_EndStream" Content="End Stream" Click="Button_EndStream_Click" IsEnabled="False" />
+        </StackPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusBar_StatusUpdate" Text="StatusUnchanged" />
+            </StatusBarItem>
+        </StatusBar>
+
+        <StackPanel DockPanel.Dock="Top" Height="90">
+            <TextBlock>CurrencyType</TextBlock>
+            <DataGrid x:Name="Db_CurrencyType" ItemsSource="{Binding CurrencyTypes}" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Currency Name" SortMemberPath="CurrencyName" Binding="{Binding CurrencyName}" />
+                    <DataGridTextColumn Header="Accrue Amount" SortMemberPath="AccrueAmt" Binding="{Binding AccrueAmt}" />
+                    <DataGridTextColumn Header="Seconds" SortMemberPath="Seconds" Binding="{Binding Seconds}" />
+                    <DataGridTextColumn Header="Currency Name" SortMemberPath="CurrencyName" Binding="{Binding CurrencyName}" />
+                    <DataGridTextColumn Header="Max Value" SortMemberPath="MaxValue" Binding="{Binding MaxValue}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Left">
+                <TextBlock DockPanel.Dock="Top">User</TextBlock>
+                <DataGrid DockPanel.Dock="Top" x:Name="DB_Users" ItemsSource="{Binding Users}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Platform" SortMemberPath="Platform" Binding="{Binding Platform}" />
+                        <DataGridTextColumn Header="User Id" SortMemberPath="UserId" Binding="{Binding UserId}" />
+                        <DataGridTextColumn Header="User Name" SortMemberPath="UserName" Binding="{Binding UserName}" />
+                        <DataGridTextColumn Header="First Date Seen" Binding="{Binding FirstDateSeen}" />
+                        <DataGridTextColumn Header="Last Date Seen" Binding="{Binding LastDateSeen}" />
+                        <DataGridTextColumn Header="Watch Time" Binding="{Binding UserStats.WatchTime}" Width="150"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+
+            <DockPanel DockPanel.Dock="Right">
+                <TextBlock DockPanel.Dock="Top">Currency</TextBlock>
+                <DataGrid DockPanel.Dock="Top" x:Name="Db_Currency" ItemsSource="{Binding Currency}" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="User Id" SortMemberPath="User.UserId" Binding="{Binding User.UserId}" />
+                        <DataGridTextColumn Header="User Name" SortMemberPath="User.UserName" Binding="{Binding User.UserName}" />
+                        <DataGridTextColumn Header="Currency Name" SortMemberPath="CurrencyName" Binding="{Binding CurrencyName}" />
+                        <DataGridTextColumn Header="Value" SortMemberPath="Value" Binding="{Binding Value}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </DockPanel>
+        
+    </DockPanel>
+</Window>

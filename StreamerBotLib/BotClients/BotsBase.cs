@@ -1,10 +1,9 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 
 using System.Collections.ObjectModel;
-using System.Reflection;
 
 namespace StreamerBotLib.BotClients
 {
@@ -12,24 +11,20 @@ namespace StreamerBotLib.BotClients
     {
         public event EventHandler<BotEventArgs> BotEvent;
 
-        protected Collection<Thread> MultiThreadOps = new();
-        /// <summary>
-        /// Utilize the read-only version of the data manager, designed to only read data
-        /// </summary>
-        public static IDataManageReadOnly DataManager { get; set; }
+        protected Collection<Thread> MultiThreadOps = [];
 
-        internal Collection<IIOModule> BotsList { get; private set; } = new();
+        internal Collection<IIOModule> BotsList { get; private set; } = [];
 
         public void AddBot(IIOModule bot)
         {
             BotsList.Add(bot);
         }
 
-        public void Send(string s)
+        public void Send(string s, bool Announcement = false)
         {
             foreach (IIOModule a in BotsList)
             {
-                a.Send(s);
+                a.Send(s, Announcement);
             }
         }
 
@@ -45,7 +40,7 @@ namespace StreamerBotLib.BotClients
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "StopBots");
             }
         }
 
@@ -63,20 +58,16 @@ namespace StreamerBotLib.BotClients
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "StopThreads");
             }
         }
 
         protected void InvokeBotEvent(object sender, BotEvents Botevent, EventArgs eventargs)
         {
-            BotEvent?.Invoke(sender, new() { MethodName = Botevent.ToString(), e = eventargs });
+            BotEvent?.Invoke(sender, new() { MethodName = Botevent, e = eventargs });
         }
 
         public virtual void GetAllFollowers()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual void GetAllFollowers(bool OverrideUpdateFollowers = false)
         {
             throw new NotImplementedException();
         }

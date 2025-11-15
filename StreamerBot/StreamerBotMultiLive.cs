@@ -1,91 +1,71 @@
 ﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.GUI;
-using StreamerBotLib.MultiLive;
-using StreamerBotLib.Static;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Systems.MultiLive;
 
 using System.Windows;
+using System.Windows.Controls;
 
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
         #region MultiLive
+
+        private void MultiLive_Data_Loaded(object sender, RoutedEventArgs e)
+        {
+            Controller.HandleOnDataCollectionUpdated((MultiLive_Data.Content as MultiLiveDataGrids).DataManager_OnDataCollectionUpdated);
+
+            // allow edits while bot is active
+            (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
+            (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
+            (MultiLive_Data.Content as MultiLiveDataGrids).SummarizeChannels += StreamerBotWindow_SummarizeChannels;
+            (MultiLive_Data.Content as MultiLiveDataGrids).FindMultiChannelUserId += StreamerBotWindow_FindMultiChannelUserId;
+            (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMultiChannelUser += StreamerBotWindow_AddNewMultiChannelUser;
+            (MultiLive_Data.Content as MultiLiveDataGrids).GUISaveEdits = Controller.GUISaveDataGridEdits;
+            (MultiLive_Data.Content as MultiLiveDataGrids).PreviewKeyDownDeleteRows += MultiLive_DG_PreviewKeyDown_Click;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemDeleteClick += MenuItem_DeleteClick;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemEnabledClick += DataGridContextMenu_EnableItems_Click;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemDisabledClick += DataGridContextMenu_DisableItems_Click;
+            AddMultiLiveFoundUserId += (MultiLive_Data.Content as MultiLiveDataGrids).UpdateMultiChannelUserId;
+
+#if DEBUG
+            (MultiLive_Data.Content as MultiLiveDataGrids).DebugAddNewMultiLiveData += StreamerBotWindow_DebugAddNewMultiLiveData;
+#endif
+
+            ((Frame)sender).Loaded -= MultiLive_Data_Loaded;
+        }
+
+#if DEBUG
+        private void StreamerBotWindow_DebugAddNewMultiLiveData(object sender, EventArgs e)
+        {
+            Controller.DebugAddNewMultiLiveData();
+        }
+#endif
+
         private const string MultiLiveName = "MultiUserLiveBot";
 
-        private void SetMultiLiveActive(bool ProcessFound = false)
+        private event EventHandler<AddNewMultiChannelUserEventArgs> AddMultiLiveFoundUserId;
+
+        private void StreamerBotWindow_AddNewMultiChannelUser(object sender, AddNewMultiChannelUserEventArgs e)
         {
-            if (ProcessFound)
-            {
-                BotController.DisconnectTwitchMultiLive();
-            }
-            else
-            {
-                BotController.ConnectTwitchMultiLive();
-            }
-
-            Label_LiveStream_MultiLiveActiveMsg.Visibility = ProcessFound ? Visibility.Visible : Visibility.Collapsed;
-            GroupBox_Bots_Starts_MultiLive.Visibility = ProcessFound ? Visibility.Collapsed : Visibility.Visible;
-
-
-            if (GroupBox_Bots_Starts_MultiLive.Visibility == Visibility.Visible)
-            {
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = Radio_Twitch_LiveBotStart.IsChecked == true;
-
-                // allow edits while bot is active
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetHandlers(Settings_LostFocus, TB_BotActivityLog_TextChanged);
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetDataManager(GUITwitchBots.TwitchLiveMonitor.MultiLiveDataManager);
-            }
-            else
-            {
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-                Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
-
-                // prevent edits while multilive bot is inactive - avoids conflict with standalone bot
-                (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(false);
-            }
+            Controller.AddNewMonitorChannel([e.LiveUser]);
         }
 
-        private void Radio_Twitch_LiveBotStart_Checked(object sender, RoutedEventArgs e)
+        private void StreamerBotWindow_FindMultiChannelUserId(object sender, AddNewMultiChannelUserEventArgs e)
         {
-            if (Radio_MultiLiveTwitch_StartBot != null)
-            {
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
-
-                if (OptionFlags.TwitchMultiLiveAutoStart)
-                {
-                    Radio_MultiLiveTwitch_StartBot.IsChecked = true;
-                }
-            }
+            e.LiveUser.UserId = BotController.GetMultiChannelUserId(e.LiveUser.UserName);
+            AddMultiLiveFoundUserId?.Invoke(this, new(e.LiveUser));
         }
 
-        private void Radio_Twitch_LiveBotStop_Checked(object sender, RoutedEventArgs e)
-        {
-            // stop MultiLive bot when LiveMonitor bot is stopped
-            if (Radio_MultiLiveTwitch_StopBot != null)
-            {
-                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-            }
-        }
+        private bool SummarizeChannels = false;
 
-        private void BC_MultiLiveTwitch_BotOp(object sender, RoutedEventArgs e)
+        private void StreamerBotWindow_SummarizeChannels(object sender, MultiLiveSummarizeEventArgs e)
         {
-            if (sender == Radio_MultiLiveTwitch_StartBot)
+            if (!SummarizeChannels) // some reason, this event is being called three times, prevent extra calls
             {
-                BotController.StartTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = false;
-                Radio_MultiLiveTwitch_StartBot.IsChecked = true;
-                Radio_MultiLiveTwitch_StopBot.IsChecked = false;
-                Radio_MultiLiveTwitch_StopBot.IsEnabled = true;
-            }
-            else if (sender == Radio_MultiLiveTwitch_StopBot)
-            {
-                BotController.StopTwitchMultiLive();
-                Radio_MultiLiveTwitch_StartBot.IsEnabled = true;
-                Radio_MultiLiveTwitch_StartBot.IsChecked = false;
-                Radio_MultiLiveTwitch_StopBot.IsChecked = true;
-                Radio_MultiLiveTwitch_StopBot.IsEnabled = false;
+                SummarizeChannels = true;
+                Controller.MultiChannelSummarize(e);
+                SummarizeChannels = false;
             }
         }
 

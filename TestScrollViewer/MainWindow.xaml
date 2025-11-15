@@ -1,0 +1,44 @@
+﻿<Window x:Class="TestScrollViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestScrollViewer"
+        mc:Ignorable="d"
+        Title="ScrollViewer Pixel" Height="255" Width="316"
+        Background="Gray">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="DockPanel.Dock" Value="Top" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Width" Value="100" />
+            <Setter Property="Height" Value="100" />
+        </Style>
+    </Window.Resources>
+    <DockPanel Background="Black" Margin="5">
+        <TextBlock>Add some Content</TextBlock>
+        <TextBlock>Add some more Content</TextBlock>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <WrapPanel>
+                <GroupBox>
+                    <TextBlock>
+                        Load up some more content in the scroll viewer control.
+                    </TextBlock>
+                </GroupBox>
+                <GroupBox>
+                    <TextBlock>
+    Load up some more content in the scroll viewer control.
+                    </TextBlock>
+                </GroupBox>
+                <GroupBox>
+                    <TextBlock>
+Load up some more content in the scroll viewer control.
+                    </TextBlock>
+                </GroupBox>
+            </WrapPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

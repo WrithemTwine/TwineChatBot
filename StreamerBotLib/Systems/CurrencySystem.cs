@@ -1,84 +1,80 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.CurrencyGames;
 
-using System.Reflection;
-
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
+        private const int TaskDelay = 10000; // in milliseconds
+
         private bool CurAccrualStarted;
         private bool WatchStarted;
 
         public bool BlackJackActive; // whether a game is active
         private bool BlackJackPlay; // bool - time to play, add no more players
-        private List<LiveUser> GameBlackJackPlayers { get; set; } = new();
+        private List<LiveUser> GameBlackJackPlayers { get; set; } = [];
         private LiveUser GameCurrBlackJackPlayer = null;
         private BlackJack GameCurrBlackJack;
-        private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = new();
+        private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = [];
         private string GameBlackJackCurrency;
 
-
-        public void StartCurrencyClock()
+        private void AccrualClocks()
         {
-            if (!CurAccrualStarted)
+            if (!CurAccrualStarted && !WatchStarted)
             {
                 CurAccrualStarted = true;
-
-                try
-                {
-                    ThreadManager.CreateThreadStart(() =>
-                    {
-                        while (OptionFlags.IsStreamOnline && OptionFlags.CurrencyStart && OptionFlags.ManageUsers)
-                        {
-                            lock (CurrUsers)
-                            {
-                                DataManage.UpdateCurrency(new(from LiveUser U in CurrUsers
-                                                              select U.UserName), DateTime.Now.ToLocalTime());
-                            }
-                            // randomly extend the time delay up to 2times as long
-                            Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
-                        }
-                        CurAccrualStarted = false;
-                    });
-                }
-                catch (ThreadInterruptedException ex)
-                {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
-                }
-            }
-        }
-
-        public void MonitorWatchTime()
-        {
-            if (!WatchStarted)
-            {
                 WatchStarted = true;
+
                 try
                 {
-                    ThreadManager.CreateThreadStart(() =>
+                    ThreadManager.CreateThreadStart("AccrualClocks", async () =>
                     {
-                        // watch time accruing only works when stream is online <- i.e. watched!
+                        // watch time and currency accruing only works when stream is online <- i.e. watched!
                         while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
                         {
-                            lock (CurrUsers)
+                            DateTime CurrTime = DateTime.Now.ToLocalTime();
+
+                            lock (StreamViewers)
                             {
-                                DataManage.UpdateWatchTime(new List<string>(from LiveUser U in CurrUsers
-                                                                            select U.UserName), DateTime.Now.ToLocalTime());
+                                var CurrViewers = StreamViewers.GetCurrentActiveUsers(isRegistered: true);
+
+                                if (OptionFlags.CurrencyStart)
+                                {
+                                    DataManage.UpdateCurrency(CurrViewers, CurrTime);
+                                }
+                                else
+                                {
+                                    DataManage.UpdateWatchTime(CurrViewers, CurrTime);
+                                }
                             }
-                            // randomly extend the time delay up to 2times as long
-                            Thread.Sleep(SecondsDelay * (1 + (DateTime.Now.Second / 60)));
+                            await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
                         }
+
+                        CurAccrualStarted = false;
                         WatchStarted = false;
                     });
                 }
                 catch (ThreadInterruptedException ex)
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "AccrualClocks");
                 }
             }
+        }
+
+        private void StartCurrencyClock()
+        {
+            LogWriter.DebugLog("StartCurrencyClock", DebugLogTypes.CurrencySystem, "Starting currency clock");
+
+            AccrualClocks();
+        }
+
+        private void MonitorWatchTime()
+        {
+            LogWriter.DebugLog("MonitorWatchTime", DebugLogTypes.CurrencySystem, "Starting watch time monitor");
+
+            AccrualClocks();
         }
 
         #region Blackjack
@@ -87,8 +83,10 @@ namespace StreamerBotLib.Systems
         {
             if (!BlackJackPlay && cmdrow.Currency_field != "")
             {
+                LogWriter.DebugLog("GamePlayBlackJack", DebugLogTypes.CurrencySystem, "Starting BlackJack game");
                 if (!BlackJackActive)
                 {
+                    LogWriter.DebugLog("GamePlayBlackJack", DebugLogTypes.CurrencySystem, "BlackJack game not active, starting game");
                     GameBlackJackPlayers.Clear();
 
                     FormatResult(VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(
@@ -101,12 +99,14 @@ namespace StreamerBotLib.Systems
                         }
                         )), cmdrow.SendMsgCount, cmdrow);
 
-                    ThreadManager.CreateThreadStart(() => GameBlackJackStart());
+                    LogWriter.DebugLog("GamePlayBlackJack", DebugLogTypes.CurrencySystem, "Creating BlackJack game");
                     GameCurrBlackJack = new();
+                    ThreadManager.CreateThreadStart("GamePlayBlackJack", () => GameBlackJackStart());
 
                     GameBlackJackCurrency = cmdrow.Currency_field;
                     lock (GameCurrBlackJackAnswer)
                     {
+                        LogWriter.DebugLog("GamePlayBlackJack", DebugLogTypes.CurrencySystem, "Clearing BlackJack answer stack");
                         GameCurrBlackJackAnswer.Clear();
                     }
                 }
@@ -114,21 +114,26 @@ namespace StreamerBotLib.Systems
             }
             else if (BlackJackPlay)
             {
+                LogWriter.DebugLog("GamePlayBlackJack", DebugLogTypes.CurrencySystem, "BlackJack game active, no more players allowed");
                 OnProcessCommand(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackNoJoin));
             }
             else
             {
+                LogWriter.DebugLog("GamePlayBlackJack", DebugLogTypes.CurrencySystem, "BlackJack game not active, no currency");
                 OnProcessCommand(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackNoCurrency));
             }
         }
 
         private void GameBlackJackAddUser(LiveUser CurrUser, int Wager, string CurrencyName)
         {
+            LogWriter.DebugLog("GameBlackJackAddUser", DebugLogTypes.CurrencySystem, "Adding user to BlackJack game");
             // check if user has enough currency
             if (!BlackJackPlay)
             {
+                LogWriter.DebugLog("GameBlackJackAddUser", DebugLogTypes.CurrencySystem, "BlackJack game not active, adding user");
                 if (DataManage.CheckCurrency(CurrUser, Wager, CurrencyName))
                 {
+                    LogWriter.DebugLog("GameBlackJackAddUser", DebugLogTypes.CurrencySystem, "User has enough currency, adding user to game");
                     GameCurrBlackJack.AddUser(CurrUser, Wager);
                     GameBlackJackPlayers.Add(CurrUser);
                     DataManage.PostCurrencyUpdate(CurrUser, -Wager, GameBlackJackCurrency);
@@ -141,6 +146,7 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
+                    LogWriter.DebugLog("GameBlackJackAddUser", DebugLogTypes.CurrencySystem, "User does not have enough currency, not adding user to game");
                     OnProcessCommand(VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackPlayerNoMoney),
                         VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
@@ -152,6 +158,8 @@ namespace StreamerBotLib.Systems
 
         private void GameBlackJackStart()
         {
+            LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Starting BlackJack game");
+
             BlackJackActive = true;
             Thread.Sleep(1000 * 60 * 1); // 1000ms=1s, 1s *60s/min*1min/s = 1m time in seconds
             BlackJackPlay = true;
@@ -159,28 +167,35 @@ namespace StreamerBotLib.Systems
 
             if (!GameCurrBlackJack.CheckHouseWin()) // if House has 21, only way anyone else can win is with 21, all other players lose
             {
+                LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "House does not have 21, starting player turns");
+
                 OnProcessCommand(VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackStart),
                     VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                         new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
-                    })));
+                    })), false, 0);
 
                 int WaitTime = 30000; // 30 seconds in milliseconds
 
                 foreach (LiveUser user in GameBlackJackPlayers)
                 {
+                    LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Starting player turn");
+
                     GameCurrBlackJackPlayer = user;
                     int CurrCardCount = GameCurrBlackJack.GetUserCardValue(user);
 
                     if (CurrCardCount == BlackJack.BlackJackWin)
                     {
+                        LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player has 21, skipping turn");
                         OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}");
                     }
                     else
                     {
+                        LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player does not have 21, starting turn");
                         while (CurrCardCount < BlackJack.BlackJackWin)
                         {
+                            LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player does not have 21, getting card");
                             OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} " + VariableParser.ParseReplace(
                                     LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackHit),
                                     VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -188,7 +203,7 @@ namespace StreamerBotLib.Systems
                                     new(MsgVars.hit, LocalizedMsgSystem.GetVar(MsgVars.hit)),
                                     new(MsgVars.stand, LocalizedMsgSystem.GetVar(MsgVars.stand))
                                     }
-                                )));
+                                )), false, 0);
                             int ThreadWait = 0;
                             while (ThreadWait < WaitTime && GameCurrBlackJackAnswer.Count == 0)
                             {
@@ -198,6 +213,7 @@ namespace StreamerBotLib.Systems
 
                             if (GameCurrBlackJackAnswer.Count == 1)
                             {
+                                LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player has responded to card request");
                                 lock (GameCurrBlackJackAnswer)
                                 {
                                     var Response = GameCurrBlackJackAnswer.Pop();
@@ -220,45 +236,55 @@ namespace StreamerBotLib.Systems
 
                             if (CurrCardCount == BlackJack.BlackJackWin)
                             {
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}");
+                                LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player has 21, skipping turn");
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJack21Win)}", false, 0);
                             }
                             else if (CurrCardCount > BlackJack.BlackJackWin)
                             {
-                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}");
+                                LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Player has busted, skipping turn");
+                                OnProcessCommand($"{user.UserName}, {GameCurrBlackJack.GetUserCard(user)} {LocalizedMsgSystem.GetVar(PlayCardBlackJack.BlackJackBust)}", false, 0);
                             }
                         }
                     }
                 }
             }
 
-            OnProcessCommand(GameCurrBlackJack.HousePlay(), 0);
+            LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "House turn");
+            OnProcessCommand(GameCurrBlackJack.HousePlay(), false, 0);
 
             foreach (var U in GameCurrBlackJack.PayoutPlayers())
             {
                 if (U != null)
                 {
                     OnProcessCommand(U.ResultMessage);
-                    DataManage.PostCurrencyUpdate(U.Player, U.Payout, GameBlackJackCurrency);
                 }
             }
+
+            LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "Paying out players");
+            DataManage.PostCurrencyUpdate(GameCurrBlackJack.PayoutPlayers(), GameBlackJackCurrency);
 
             GameCurrBlackJack = null;
             BlackJackPlay = false;
             BlackJackActive = false;
+            LogWriter.DebugLog("GameBlackJackStart", DebugLogTypes.CurrencySystem, "BlackJack game ended");
         }
 
         public void GameCheckBlackJackResponse(LiveUser CurrUser, string Response)
         {
+            LogWriter.DebugLog("GameCheckBlackJackResponse", DebugLogTypes.CurrencySystem, "Checking BlackJack response");
             if (CurrUser == GameCurrBlackJackPlayer)
             {
+                LogWriter.DebugLog("GameCheckBlackJackResponse", DebugLogTypes.CurrencySystem, "Player has responded to BlackJack request");
                 lock (GameCurrBlackJackAnswer)
                 {
+                    LogWriter.DebugLog("GameCheckBlackJackResponse", DebugLogTypes.CurrencySystem, "Pushing player response to stack");
                     if (GameCurrBlackJackAnswer.Count == 0)
                     {
                         GameCurrBlackJackAnswer.Push(new(CurrUser, Response.ToLower()));
                     }
                 }
             }
+            LogWriter.DebugLog("GameCheckBlackJackResponse", DebugLogTypes.CurrencySystem, "Player has not responded to BlackJack request");
         }
 
         #endregion

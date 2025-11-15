@@ -1,12 +1,11 @@
 ﻿using StreamerBotLib.Culture;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System.Globalization;
-using System.Reflection;
 using System.Resources;
 
 namespace StreamerBotLib.Systems
@@ -58,14 +57,15 @@ namespace StreamerBotLib.Systems
 
          * 
          */
-        private static IDataManageReadOnly _datamanager;
+        private static IDataManagerReadOnly _datamanager;
         private static readonly ResourceManager RM = Msgs.ResourceManager;
 
         /// <summary>
         /// Set the DataManager to use for extracting event messages
         /// </summary>
-        public static void SetDataManager(IDataManageReadOnly dataManager)
+        public static void SetDataManager(IDataManagerReadOnly dataManager)
         {
+            LogWriter.DebugLog("SetDataManager", DebugLogTypes.LocalizedMessages, "Setting DataManager for LocalizedMsgSystem.");
             _datamanager = dataManager;
         }
 
@@ -78,11 +78,9 @@ namespace StreamerBotLib.Systems
         /// <returns>A string containing variables to customize the event message.</returns>
         public static string GetEventMsg(ChannelEventActions channelEventActions, out bool Enabled, out short Multi)
         {
-            lock (GUI.GUIDataManagerLock.Lock)
-            {
-                return _datamanager.GetEventRowData(channelEventActions, out Enabled, out Multi)
-                    ?? RM.GetString("Msg" + channelEventActions.ToString(), CultureInfo.CurrentCulture);
-            }
+            LogWriter.DebugLog("GetEventMsg", DebugLogTypes.LocalizedMessages, "Retrieving Event Message.");
+            return _datamanager.GetEventRowData(channelEventActions, out Enabled, out Multi)
+                ?? RM.GetString("Msg" + channelEventActions.ToString(), CultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -92,6 +90,7 @@ namespace StreamerBotLib.Systems
         /// <returns>The localized command message string.</returns>
         public static string GetDefaultComMsg(DefaultCommand defaultCommand)
         {
+            LogWriter.DebugLog("GetDefaultComMsg", DebugLogTypes.LocalizedMessages, $"Retrieving Default Command Message: {defaultCommand}");
             return RM.GetString("Msg" + defaultCommand.ToString(), CultureInfo.CurrentCulture);
         }
 
@@ -102,6 +101,7 @@ namespace StreamerBotLib.Systems
         /// <returns>The parameter value for the command.</returns>
         public static string GetDefaultComParam(DefaultCommand defaultCommand)
         {
+            LogWriter.DebugLog("GetDefaultComParam", DebugLogTypes.LocalizedMessages, $"Retrieving Default Command Parameter: Param{defaultCommand}");
             return RM.GetString("Param" + defaultCommand.ToString(), CultureInfo.CurrentCulture);
         }
 
@@ -113,6 +113,7 @@ namespace StreamerBotLib.Systems
         /// <returns>The value of the requested variable.</returns>
         public static string GetVar<T>(T msgVars)
         {
+            LogWriter.DebugLog("GetVar", DebugLogTypes.LocalizedMessages, $"Retrieving Variable: {msgVars}");
             return RM.GetString(msgVars.ToString(), CultureInfo.CurrentCulture);
         }
 
@@ -123,6 +124,7 @@ namespace StreamerBotLib.Systems
         /// <returns></returns>
         public static bool CheckDefaultCommand(string Command)
         {
+            LogWriter.DebugLog("CheckDefaultCommand", DebugLogTypes.LocalizedMessages, $"Checking Default Command: {Command}");
             bool result = false;
             foreach (var _ in from DefaultCommand d in Enum.GetValues(typeof(DefaultCommand))
                               where Command == GetVar(d)
@@ -141,6 +143,7 @@ namespace StreamerBotLib.Systems
         /// <returns>A localized string message for announcing the bot connection message.</returns>
         public static string GetTwineBotAuthorInfo()
         {
+            LogWriter.DebugLog("GetTwineBotAuthorInfo", DebugLogTypes.LocalizedMessages, "Retrieving Twine Bot Author Info.");
             return VariableParser.ParseReplace(
                 Msgs.TwineBotInfo,
                 new Dictionary<string, string>() {
@@ -157,6 +160,7 @@ namespace StreamerBotLib.Systems
         /// <returns><c>True</c> provides 'autohost' message, <c>False</c> provides 'host' message.</returns>
         public static string DetermineHost(bool Hosting)
         {
+            LogWriter.DebugLog("DetermineHost", DebugLogTypes.LocalizedMessages, $"Determining Host Message: Hosting={Hosting}");
             return Hosting ? Msgs.autohost : Msgs.host;
         }
 
@@ -166,7 +170,8 @@ namespace StreamerBotLib.Systems
         /// <returns>A list of command name-help pairs.</returns>
         public static List<Command> GetCommandHelp()
         {
-            List<Command> temp = new();
+            LogWriter.DebugLog("GetCommandHelp", DebugLogTypes.LocalizedMessages, "Retrieving Command Help.");
+            List<Command> temp = [];
 
             foreach (MsgVars a in Enum.GetValues(typeof(MsgVars)))
             {
@@ -176,13 +181,14 @@ namespace StreamerBotLib.Systems
 
                     if (helpvalue != null)
                     {
+                        LogWriter.DebugLog("GetCommandHelp", DebugLogTypes.LocalizedMessages, $"Adding Command Help: {a}");
                         temp.Add(new() { Parameter = VariableParser.Prefix + a.ToString(), Value = helpvalue });
                     }
                 }
                 // catch the 'MissingManifestResourceException' where no resource contains the desired string
                 catch (Exception ex)
                 {
-                    LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                    LogWriter.LogException(ex, "GetCommandHelp");
                 }
             }
 

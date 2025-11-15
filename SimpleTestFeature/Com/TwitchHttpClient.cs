@@ -6,7 +6,7 @@ namespace SimpleTestFeature.Com
 {
     internal static class TwitchHttpClient
     {
-        private static HttpClient httpClient = new();
+        private static readonly HttpClient httpClient = new();
 
         public static async Task<HttpResponseMessage> DeleteAsync(Uri url)
         {

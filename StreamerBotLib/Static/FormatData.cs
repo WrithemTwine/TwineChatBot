@@ -1,9 +1,9 @@
-﻿
-using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Systems;
 
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace StreamerBotLib.Static
 {
@@ -31,7 +31,6 @@ namespace StreamerBotLib.Static
         /// <returns>The plural context of the provided words based on number.</returns>
         public static string PluralityOnlyWord(int src, MsgVars msgVars)
         {
-
             return PluralityOnlyWord(src, msgVars);
         }
 
@@ -84,7 +83,7 @@ namespace StreamerBotLib.Static
         /// <returns>a string containing the culture adjusted plurality of the supplied number</returns>
         public static string Plurality(double src, MsgVars msgVars, string Prefix = null, string Suffix = null)
         {
-            string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(',');
+            string[] plural = LocalizedMsgSystem.GetVar(msgVars).Split(", ");
 
             StringBuilder sb = new();
             sb = sb.Append(string.Format(CultureInfo.CurrentCulture, src % 1 == 0 ? "{0:N0}" : "{0:N}", src));
@@ -116,7 +115,7 @@ namespace StreamerBotLib.Static
             const double yeardays = 365.242;
             const double monthdays = yeardays / 12;
 
-            string output = "";
+            List<string> output = [];
 
             Dictionary<string, int> datakeys = new()
             {
@@ -131,26 +130,35 @@ namespace StreamerBotLib.Static
             {
                 if (datakeys[k] != 0)
                 {
-                    output += Plurality(datakeys[k], (MsgVars)Enum.Parse(typeof(MsgVars), "Plural" + k)) + ", ";
+                    output.Add(Plurality(datakeys[k], Enum.Parse<MsgVars>("Plural" + k)));
                 }
             }
 
-            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours, 2), MsgVars.Pluralhour), output.LastIndexOf(',') == -1 ? "no time available" : output.Remove(output.LastIndexOf(',')));
+            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Converted {timeSpan} into: {(output.Count == 0 ? "no time available" : string.Join(", ", output))}");
+
+            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours, 2), MsgVars.Pluralhour), output.Count == 0 ? "no time available" : string.Join(", ", output));
         }
 
         /// <summary>
         /// Calculates difference between a past date and DateTime.Now.ToLocalTime().
         /// </summary>
-        /// <param name="pastdate">the historic date of some activity</param>
+        /// <param name="pastdate">the historic date of some activity converted to local time.</param>
         /// <returns>the elapsed time since the historic date to now</returns>
         public static string FormatTimes(DateTime pastdate)
         {
-            return FormatTimes(DateTime.Now.ToLocalTime() - pastdate.ToLocalTime());
+            DateTime Curr = DateTime.Now.ToLocalTime();
+            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Computing the difference between now: {Curr.ToLocalTime()} and past date: {pastdate}.");
+            return FormatTimes(Curr - pastdate);
         }
 
         public static string AddEscapeFormat(string SrcText)
         {
-            return SrcText.Replace("'", "''");
+            return Regex.Replace(SrcText, "''*", "''");
+        }
+
+        public static string RemoveEscapeFormat(string SrcText)
+        {
+            return Regex.Replace(SrcText, "''*", "'");
         }
 
     }

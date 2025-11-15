@@ -1,0 +1,44 @@
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
+namespace StreamerBotLib.Models
+{
+    /// <summary>
+    /// Manages the ShoutOut requested for each LiveUser.
+    /// 
+    /// NewUserEntry: Different users can only be shoutout once every 2 minutes
+    /// -LastShoutOut = null, NextShoutOut = null => first shoutout occurs asap
+    /// 
+    /// ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
+    /// -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
+    /// -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
+    /// </summary>
+    /// <param name="user">The user to shoutout.</param>
+    [DebuggerDisplay("User = {User}")]
+    public class ShoutOutLiveUser(LiveUser user) : IEquatable<ShoutOutLiveUser>, IComparable<ShoutOutLiveUser>
+    {
+        public DateTime? LastShoutOut { get; set; } = null;
+        public DateTime? NextShoutOut { get; set; } = null;
+        public LiveUser User { get; set; } = user;
+
+        public int CompareTo(ShoutOutLiveUser other)
+        {
+            return User.CompareTo(other.User);
+        }
+
+        public bool Equals(ShoutOutLiveUser x, ShoutOutLiveUser y)
+        {
+            return x.User.Equals(y.User);
+        }
+
+        public bool Equals(ShoutOutLiveUser other)
+        {
+            return User.Equals(other.User);
+        }
+
+        public int GetHashCode([DisallowNull] ShoutOutLiveUser obj)
+        {
+            return obj.User.GetHashCode();
+        }
+    }
+}

@@ -1,0 +1,23 @@
+﻿<Window x:Class="StreamerBotImport.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StreamerBotImport"
+        mc:Ignorable="d"
+        Title="Import &amp; Migrate Database" Height="300" Width="500"
+        Background="{DynamicResource FullBackground}">
+    <DockPanel>
+        <Frame DockPanel.Dock="Top"
+               LoadCompleted="ImportFrame_LoadCompleted"
+               Name="ImportFrame" 
+               Source="pack://application:,,,/StreamerBotImport;component/ImportUpdate.xaml"
+               />
+
+        <StackPanel DockPanel.Dock="Top">
+            <Label Name="Label_BeginMigration" Content="Beginning Migrations" Visibility="Collapsed" />
+            <Label Name="Label_EndMigration" Content="Migrations Complete" Visibility="Collapsed"/>
+            <Button Name="Button_Close" Content="Close" Width="100" Height="30" Click="Button_Close_Click" Visibility="Collapsed" />
+        </StackPanel>
+    </DockPanel>
+</Window>

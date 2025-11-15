@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Models.Enums;
 
 using System.Collections;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ namespace StreamerBotLib.Models
         public ViewerTypes ViewerType { get; set; }
         public MsgTypes MsgType { get; set; }
         public ModActions ModAction { get; set; }
-        public string TimeoutSeconds { get; set; } = "0";
+        public int TimeoutSeconds { get; set; } = 0;
 
         public new bool Equals(object x, object y)
         {

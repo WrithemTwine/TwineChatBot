@@ -1,7 +1,5 @@
-﻿using StreamerBotLib.Static;
-
-using System.Net.Http;
-using System.Reflection;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
@@ -38,8 +36,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// </summary>
         public event EventHandler<OnStreamUpdateArgs> OnStreamUpdate;
 
-        public DateTime InstanceDate { get; set; }
-
         /// <summary>
         /// The constructor from the LiveStreamMonitorService
         /// </summary>
@@ -49,15 +45,15 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// <param name="api">The api used to query information.</param>
         /// <param name="checkIntervalInSeconds"></param>
         /// <param name="maxStreamRequestCountPerRequest"></param>
-        public ExtLiveStreamMonitorService(ITwitchAPI api, int checkIntervalInSeconds = 60, int maxStreamRequestCountPerRequest = 100, DateTime instanceDate = default) :
+        public ExtLiveStreamMonitorService(ITwitchAPI api, int checkIntervalInSeconds = 60, int maxStreamRequestCountPerRequest = 100) :
             base(api, checkIntervalInSeconds)
         {
             if (maxStreamRequestCountPerRequest < 1 || maxStreamRequestCountPerRequest > 100)
+            {
                 throw new ArgumentException("Twitch doesn't support less than 1 or more than 100 streams per request.", nameof(maxStreamRequestCountPerRequest));
+            }
 
             MaxStreamRequestCountPerRequest = maxStreamRequestCountPerRequest;
-
-            InstanceDate = instanceDate;
         }
 
         public void ClearCache()
@@ -69,20 +65,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             _nameBasedMonitor = null;
             _idBasedMonitor = null;
         }
-
-        //public void SetChannelsById(List<string> channelsToMonitor)
-        //{
-        //    SetChannels(channelsToMonitor);
-
-        //    _monitor = IdBasedMonitor;
-        //}
-
-        //public void SetChannelsByName(List<string> channelsToMonitor)
-        //{
-        //    SetChannels(channelsToMonitor);
-
-        //    _monitor = NameBasedMonitor;
-        //}
 
         protected override async Task OnServiceTimerTick()
         {
@@ -99,7 +81,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (Exception ex)
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "OnServiceTimerTick");
             }
         }
 
@@ -129,14 +111,16 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         private void HandleLiveStreamUpdate(string channel, Stream liveStream, bool callEvents)
         {
-            LogWriter.DebugLog(MethodBase.GetCurrentMethod().Name, Enums.DebugLogTypes.TwitchLiveBot, $"Performing stream update with instance dated {InstanceDate}.");
+            LogWriter.DebugLog("HandleLiveStreamUpdate", DebugLogTypes.TwitchMultiLiveBot, $"Performing stream update.");
 
             var wasAlreadyLive = LiveStreams.ContainsKey(channel);
 
             LiveStreams[channel] = liveStream;
 
             if (!callEvents)
+            {
                 return;
+            }
 
             if (!wasAlreadyLive)
             {
@@ -153,12 +137,16 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             var wasAlreadyLive = LiveStreams.TryGetValue(channel, out var cachedLiveStream);
 
             if (!wasAlreadyLive)
+            {
                 return;
+            }
 
             LiveStreams.Remove(channel);
 
             if (!callEvents)
+            {
                 return;
+            }
 
             OnStreamOffline?.Invoke(this, new OnStreamOfflineArgs { Channel = channel, Stream = cachedLiveStream });
         }
@@ -179,7 +167,9 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                         [selectedSet.Count, selectedSet, _api.Settings.AccessToken]);
 
                 if (resultset.Streams == null)
+                {
                     continue;
+                }
 
                 livestreamers.AddRange(resultset.Streams);
             }

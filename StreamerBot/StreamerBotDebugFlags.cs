@@ -1,16 +1,26 @@
-﻿using StreamerBotLib.BotIOController;
+﻿using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
 
 using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 
+using StreamerBotLib.Models.Enums;
+
+
+#if DEBUG
+using StreamerBotLib.GUI.Windows;
+#endif
+
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
+#if DEBUG
+        private DebugStreamUsers TestingWindow;
+#endif
+
         #region Debug Empty Stream
 
         private void CheckDebug(object sender, RoutedEventArgs e)
@@ -33,30 +43,57 @@ namespace StreamerBot
                 string Category = "Microsoft Flight Simulator";
                 string ID = "7193";
                 string Title = "Testing a debug stream";
+                List<CategoryData> output = [.. Controller.GetGameCategories()];
 
-                Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, ID, Category, Debug: true);
+                ThreadManager.CreateThreadStart("StartDebugStream_Click", () =>
+                {
+                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), platform: Platform.Default, Debug: true);
 
-                List<Tuple<string, string>> output = SystemsController.DataManage.GetGameCategories();
-                Random random = new();
-                Tuple<string, string> itemfound = output[random.Next(output.Count)];
-                Controller.HandleOnStreamUpdate(itemfound.Item1, itemfound.Item2);
+                    Random random = new();
+                    CategoryData itemfound = output[random.Next(output.Count)];
+                    Controller.HandleOnStreamUpdate(itemfound);
+#if DEBUG
+                    Controller.TestAddUsers();
+#endif
+                });
+
+#if DEBUG
+                TestingWindow = new();
+                TestingWindow.AddDebugUsers += TestingWindow_AddDebugUsers;
+                TestingWindow.Show();
+#endif
 
                 SetLiveStreamActive(true);
             }
-
         }
+
+#if DEBUG
+        private void TestingWindow_AddDebugUsers(object sender, EventArgs e)
+        {
+            Controller.TestAddUsers();
+        }
+#endif
 
         private void EndDebugStream_Click(object sender, RoutedEventArgs e)
         {
             if (DebugStreamStarted != DateTime.MinValue)
             {
-                BotController.HandleOnStreamOffline();
+                Controller.HandleOnStreamOffline(Platform.Default);
 
                 DebugStreamStarted = DateTime.MinValue;
 
                 SetLiveStreamActive(false);
-            }
 
+#if DEBUG
+                TestingWindow.AddDebugUsers -= TestingWindow_AddDebugUsers;
+
+                if (TestingWindow.IsVisible)
+                {
+                    TestingWindow.Close();
+                }
+#endif
+
+            }
         }
 
         #endregion
@@ -110,4 +147,5 @@ namespace StreamerBot
         }
 
     }
+
 }

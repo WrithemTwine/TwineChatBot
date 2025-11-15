@@ -3,59 +3,53 @@
     /// <summary>
     /// Holds the data for each player in the game.
     /// </summary>
-    internal class PlayGameUserWager<T, S>
+    /// <remarks>
+    /// Assign the data.
+    /// </remarks>
+    /// <param name="player">The current player.</param>
+    /// <param name="wager">The player's wager.</param>
+    public class PlayGameUserWager<T, S>(LiveUser player, int wager)
         where T : Enum
         where S : Enum
     {
         /// <summary>
         /// The current player detail.
         /// </summary>
-        internal LiveUser Player { get; set; }
+        public LiveUser Player { get; set; } = player;
 
         /// <summary>
         /// The player's wager.
         /// </summary>
-        internal int Wager { get; set; }
+        public int Wager { get; set; } = wager;
 
         /// <summary>
         /// Indicates whether this player won their hand.
         /// </summary>
-        internal bool Win { get; set; }
+        public bool Win { get; set; }
 
         /// <summary>
         /// The final payout for the player.
         /// </summary>
-        internal double Payout { get; set; }
+        public double Payout { get; set; }
 
         /// <summary>
         /// The resulting message for the player's hand - whether they won or lost.
         /// </summary>
-        internal string ResultMessage { get; set; }
+        public string ResultMessage { get; set; }
 
         /// <summary>
         /// The cards in the player's hand.
         /// </summary>
-        internal List<PlayingCard<T, S>> Cards { get; set; } = new();
+        public List<PlayingCard<T, S>> Cards { get; set; } = [];
 
         /// <summary>
         /// The numerical amount of the player's hand.
         /// </summary>
-        internal int CardCount { get; set; }
+        public int CardCount { get; set; }
 
         /// <summary>
         /// The visual representation of the player's cards in their hand.
         /// </summary>
-        internal string CardItems { get; set; } = "";
-
-        /// <summary>
-        /// Assign the data.
-        /// </summary>
-        /// <param name="player">The current player.</param>
-        /// <param name="wager">The player's wager.</param>
-        public PlayGameUserWager(LiveUser player, int wager)
-        {
-            Player = player;
-            Wager = wager;
-        }
+        public string CardItems { get; set; } = "";
     }
 }

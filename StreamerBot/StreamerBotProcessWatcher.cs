@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Static;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
 
-using System.Diagnostics;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,17 +20,7 @@ namespace StreamerBot
 
         public event EventHandler VerifyNewVersion;
 
-        /// <summary>
-        /// True - "MultiUserLiveBot.exe" is active, False - "MultiUserLiveBot.exe" is not active
-        /// </summary>
-        private bool? IsMultiProcActive { get; set; }
-
         private delegate void ProcWatch(bool IsActive);
-
-        private void UpdateProc(bool IsActive)
-        {
-            _ = AppDispatcher.BeginInvoke(new ProcWatch(SetMultiLiveActive), IsActive);
-        }
 
         private void ProcessWatcher()
         {
@@ -43,22 +33,18 @@ namespace StreamerBot
             {
                 while (WatchProcessOps)
                 {
-                    Process[] processes = Process.GetProcessesByName(MultiLiveName);
-                    if ((processes.Length > 0) != IsMultiProcActive) // only change IsMultiProcActive when the process activity changes
+                    if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
-                        UpdateProc(processes.Length > 0);
-                        IsMultiProcActive = processes.Length > 0;
-                    }
-
-                    if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchRefreshDate) <= new TimeSpan(0, 5, sleep / 1000))
-                    {
+#if DEBUG
+#else
                         NotifyExpiredCredentials?.Invoke(this, new());
+#endif
                     }
 
                     if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
                     {
                         Controller.TwitchStartUpdateAllFollowers();
-                        TwitchFollowRefresh = DateTime.Now.AddHours(TwitchFollowerCurrRefreshHrs);
+                        TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
                     }
 
                     if (DateTime.Now >= VersionCheckDate)
@@ -75,7 +61,7 @@ namespace StreamerBot
             }
             catch (ThreadInterruptedException ex) // will always throw exception when exiting during a Sleep
             {
-                LogWriter.LogException(ex, MethodBase.GetCurrentMethod().Name);
+                LogWriter.LogException(ex, "ProcessWatcher");
             }
         }
 
@@ -98,21 +84,96 @@ namespace StreamerBot
         private void ComboBox_TwitchFollower_RefreshHrs_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox srchrs = sender as ComboBox;
-            short hrs = (short)srchrs.SelectedValue;
+            int hrs = (int)srchrs.SelectedValue;
 
             // changes the refresh time - which is already set at this point
             TwitchFollowRefresh = TwitchFollowRefresh.AddHours(hrs - TwitchFollowerCurrRefreshHrs);
-            TwitchFollowerCurrRefreshHrs = hrs;
+            TwitchFollowerCurrRefreshHrs = OptionFlags.TwitchFollowerRefreshHrs;
         }
 
         private void StatusBar_Button_UpdateFollows_Click(object sender, RoutedEventArgs e)
         {
-            Controller.TwitchStartUpdateAllFollowers(true);
+            Controller.TwitchStartUpdateAllFollowers();
         }
 
-        #endregion 
+        #endregion
         #endregion
 
+        #region GUIAppStats
+        private void ThreadManager_OnThreadCountUpdate(object sender, ThreadManagerCountArg e)
+        {
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                _ = new BotOperation(() =>
+                {
+                    guiAppStats.Threads.UpdateValue(e.AllThreadCount);
+                    guiAppStats.ClosedThreads.UpdateValue(e.ClosedThreadCount);
+                });
+            }
+            );
+        }
 
+        private void UpdateAppTime()
+        {
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                _ = new BotOperation(() => { guiAppStats.Uptime.UpdateValue(DateTime.Now - StartBotDate); });
+            }
+            );
+        }
+
+        #endregion
+
+        /// <summary>
+        /// A running watcher thread checks for elapsed time, and raises an event when current time exceeds the 
+        /// time to check for another version; and not just when the application starts - the user can have the 
+        /// application open for weeks and would know of a new version without restarting it.
+        /// Handles the event when it's time to check for a new version.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StreamerBotWindow_VerifyNewVersion(object sender, EventArgs e)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                // navigate to the predefined stable link.
+                WebView2_GitHub_StableVersion.NavigateToString(OptionFlags.GitHubStableLink);
+            });
+        }
+
+
+        #region BotOps-changes in token expiration
+
+        /// <summary>
+        /// Event to handle when the Bot Credentials expire. The expiration date 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
+        {
+            LogWriter.DebugLog("BotWindow_NotifyExpiredCredentials", DebugLogTypes.GUIEvents, "Notification the bot tokens are now expired.");
+
+            List<RadioButton> BotOps =
+            [
+                Radio_Twitch_ClipBotStop,
+                Radio_Twitch_LiveBotStop,
+            ];
+
+            Dispatcher.Invoke(() =>
+            {
+                foreach (RadioButton button in BotOps)
+                {
+                    HelperStopBot(button);
+                }
+
+                LogWriter.DebugLog("BotWindow_NotifyExpiredCredentials", DebugLogTypes.GUIEvents, "Stopped all bots due to expired tokens.");
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            });
+        }
+
+        #endregion
     }
 }

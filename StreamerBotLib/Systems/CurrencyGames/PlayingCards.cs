@@ -14,7 +14,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
         /// <summary>
         /// Holds the deck of cards used in this instance.
         /// </summary>
-        private List<PlayingCard<T, S>> playingCards = new();
+        private readonly List<PlayingCard<T, S>> playingCards = [];
 
         /// <summary>
         /// Create a deck of playing cards from the 'T' and 'S' enum types.
@@ -22,7 +22,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
         /// <param name="NumberofDecks">Specify how many card decks should be generated for dealing cards.</param>
         internal PlayingCards(int NumberofDecks = 1)
         {
-            List<PlayingCard<T, S>> temp = new();
+            List<PlayingCard<T, S>> temp = [];
 
             for (int i = 0; i < NumberofDecks; i++)
             {

@@ -11,7 +11,7 @@ namespace StreamerBotLib.BotClients
     {
         private static readonly HttpClient client = new();
 
-        private static readonly Queue<Tuple<Uri, JsonContent>> DataJobs = new();
+        private static readonly Queue<Tuple<Uri, JsonContent>> DataJobs = [];
         private static bool JobThread;
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace StreamerBotLib.BotClients
 
             if (!JobThread) // check if job thread is running
             {
-                ThreadManager.CreateThreadStart(SendDataAsync);
+                ThreadManager.CreateThreadStart("SendMessage", SendDataAsync);
 
                 lock (DataJobs)
                 {
@@ -54,7 +54,7 @@ namespace StreamerBotLib.BotClients
 
                 _ = await client.PostAsync(job.Item1.AbsoluteUri, job.Item2);
 
-                // wait so Discord doesn't complain about bots posting too fast to a page
+                // wait so WebHooks doesn't complain about bots posting too fast to a page
                 Thread.Sleep(20000); // wait 20 seconds between posting, 3 posts a minute
             }
 
@@ -71,7 +71,7 @@ namespace StreamerBotLib.BotClients
     //
     // https://discord.com/developers/docs/resources/webhook#execute-webhook
     //
-    //    JSON/Form Params - Discord Webhooks
+    //    JSON/Form Params - WebHooks Webhooks
     //FIELD         TYPE                                DESCRIPTION                                     REQUIRED
     //content       string                              the message contents(up to 2000 characters)     one of content, file, embeds
     //username      string                              override the default username of the webhook    false
@@ -184,7 +184,7 @@ namespace StreamerBotLib.BotClients
         //private const int max_embeds = 10;
 
         [AllowNull, JsonPropertyName("content")]
-        public string Content { get; private set; } = content != null ? content[..Math.Min(2000, content.Length)] : null;
+        public string Content { get; private set; } = content?[..Math.Min(2000, content.Length)];
         [AllowNull, JsonPropertyName("username")]
         public string Username { get; private set; } = username;
         [AllowNull, JsonPropertyName("avatarurl")]
@@ -194,7 +194,7 @@ namespace StreamerBotLib.BotClients
         [AllowNull, JsonPropertyName("file")]
         public object File { get; private set; } = file;
         [AllowNull, JsonPropertyName("embeds")]
-        public Embed[] Embeds { get; private set; } = embeds;
+        public Embed[] Embeds { get; private set; } = embeds; // WebHooks expects to remove in future API updates
         [AllowNull, JsonPropertyName("payloadjson")]
         public string PayloadJson { get; private set; } = payloadjson;
         [AllowNull, JsonPropertyName("allowedmentions")]

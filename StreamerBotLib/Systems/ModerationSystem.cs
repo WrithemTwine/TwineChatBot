@@ -1,59 +1,53 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.MLearning;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.MLearning;
 
 namespace StreamerBotLib.Systems
 {
-    internal partial class ActionSystem
+    public partial class ActionSystem
     {
-        private List<Tuple<string, Task, DateTime>> RequestApprovalList = new();
+        private readonly List<Tuple<string, Task, DateTime>> RequestApprovalList = [];
 
-        private List<string> describe = new();
+        private readonly List<string> describe = [];
 
         #region Auto-Mod Messages
-        public void ManageLearnedMsgList()
+        private static void ManageLearnedMsgList()
         {
-            lock (GUI.GUIDataManagerLock.Lock)
+            ThreadManager.AddTaskToGUIDispatcher(() =>
             {
+                LogWriter.DebugLog("ManageLearnedMsgList", DebugLogTypes.ModerationSystem, "Checking for learned messages.");
                 List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
                 if (learnMsgsRows != null)
                 {
-                    List<BotModAction> botModActions = new();
-
-                    foreach (LearnMsgRecord M in learnMsgsRows)
-                    {
-                        botModActions.Add(new()
-                        {
-                            LearnMsg = M.TeachingMsg,
-                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
-                        });
-                    }
-
-                    MessageAnalysis.UpdateLearningList(botModActions);
+                    MessageAnalysis.UpdateLearningList((from LearnMsgRecord M in learnMsgsRows
+                                                        select new BotModAction()
+                                                        {
+                                                            LearnMsg = M.TeachingMsg,
+                                                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
+                                                        }).ToList());
                 }
-            }
+            });
         }
 
-        public Tuple<ModActions, int, MsgTypes, BanReasons> ModerateMessage(CmdMessage MsgReceived)
+        private Tuple<ModActions, int, MsgTypes, BanReasons> ModerateMessage(CmdMessage MsgReceived)
         {
+            LogWriter.DebugLog("ModerateMessage", DebugLogTypes.ModerationSystem, $"Moderating message from {MsgReceived.DisplayName}.");
             ManageLearnedMsgList();
 
-            lock (GUI.GUIDataManagerLock.Lock)
-            {
-                MsgTypes Found = MessageAnalysis.Predict(MsgReceived.Message);
+            MsgTypes Found = MessageAnalysis.Predict(MsgReceived.Message);
 
-                Tuple<ModActions, BanReasons, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
+            Tuple<ModActions, BanReasons, int> remedy = DataManage.FindRemedy(MsgReceived.UserType, Found);
 
-                return new(remedy.Item1, remedy.Item3, Found, remedy.Item2);
-            }
+            return new(remedy.Item1, remedy.Item3, Found, remedy.Item2);
         }
         #endregion
 
         #region User Requests
 
-        internal static Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
+        public Tuple<string, string> GetApprovalRule(ModActionType ActionType, string Command)
         {
+            LogWriter.DebugLog("GetApprovalRule", DebugLogTypes.ModerationSystem, $"Checking for approval rule for {Command}.");
             return DataManage.CheckModApprovalRule(ActionType, FormatData.AddEscapeFormat(Command));
         }
 
@@ -62,8 +56,9 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="Description">A description of the request to approve.</param>
         /// <param name="Request">The Task of the request to perform once approved.</param>
-        public void AddApprovalRequest(string Description, Task Request)
+        public void PostApproval(string Description, Task Request)
         {
+            LogWriter.DebugLog("AddApprovalRequest", DebugLogTypes.ModerationSystem, $"Adding a new approval request for {Description}.");
             bool ItemCount = false;
             lock (RequestApprovalList)
             {
@@ -73,7 +68,7 @@ namespace StreamerBotLib.Systems
 
             if (ItemCount)
             {
-                ThreadManager.CreateThreadStart(() => { MonitorApprovals(); });
+                ThreadManager.CreateThreadStart("AddApprovalRequest", () => { MonitorApprovals(); });
             }
         }
 
@@ -81,8 +76,9 @@ namespace StreamerBotLib.Systems
         /// Retrieve the numbered description list for each request.
         /// </summary>
         /// <returns>A numbered list of request descriptions.</returns>
-        public List<string> GetDescriptions()
+        private List<string> GetDescriptions()
         {
+            LogWriter.DebugLog("GetDescriptions", DebugLogTypes.ModerationSystem, $"Getting approval list.");
             describe.Clear();
             lock (RequestApprovalList)
             {
@@ -101,8 +97,9 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="Idx">The index of the label to retrieve</param>
         /// <returns>The description label of the request.</returns>
-        public string GetLabel(string Idx)
+        private string GetLabel(string Idx)
         {
+            LogWriter.DebugLog("GetLabel", DebugLogTypes.ModerationSystem, $"Getting the label, {RequestApprovalList[Convert.ToInt32(Idx)].Item1}.");
             lock (RequestApprovalList)
             {
                 return RequestApprovalList[Convert.ToInt32(Idx)].Item1;
@@ -113,10 +110,11 @@ namespace StreamerBotLib.Systems
         /// A moderator approved a specific request, and this method runs the approved request.
         /// </summary>
         /// <param name="Label">The specific request to approve.</param>
-        public void RunApprovedRequest(string Label)
+        private void RunApprovedRequest(string Label)
         {
             lock (RequestApprovalList)
             {
+                LogWriter.DebugLog("RunApprovedRequest", DebugLogTypes.ModerationSystem, $"Performing approval for {Label}.");
                 Tuple<string, Task, DateTime> RemoveTuple = null;
                 foreach (var tuple in from Tuple<string, Task, DateTime> tuple in RequestApprovalList
                                       where tuple.Item1 == Label
@@ -141,8 +139,10 @@ namespace StreamerBotLib.Systems
         {
             while (RequestApprovalList.Count > 0)
             {
+                LogWriter.DebugLog("MonitorApprovals", DebugLogTypes.ModerationSystem, $"Found {RequestApprovalList.Count} items to approve.");
+
                 DateTime Expiry = DateTime.Now;
-                List<Tuple<string, Task, DateTime>> toRemove = new();
+                List<Tuple<string, Task, DateTime>> toRemove = [];
 
                 lock (RequestApprovalList)
                 {
