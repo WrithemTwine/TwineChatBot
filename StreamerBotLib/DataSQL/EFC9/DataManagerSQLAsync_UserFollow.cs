@@ -161,6 +161,11 @@ namespace StreamerBotLib.DataSQL.EFC9
             return (await PostFollowers([follow])).Count != 0;
         }
 
+        /// <summary>
+        /// Add followers to the system. Only new followers will be returned.
+        /// </summary>
+        /// <param name="follows"></param>
+        /// <returns>The follower list who are currently not in the system or a prior follower.</returns>
         internal Task<List<Follow>> PostFollowers(IEnumerable<Follow> follows)
         {
             currtime = DateTime.Now.ToLocalTime();
@@ -170,7 +175,10 @@ namespace StreamerBotLib.DataSQL.EFC9
                 followsQueue.Enqueue(follows);
                 PostFollowsQueue();
                 using var context = BuildDataContext();
-                return (List<Follow>)[.. follows.Where(F => !context.Followers.Any(DF => DF.UserId == F.FromUserId))];
+                return (List<Follow>)[.. follows.Where(
+                                        F => !context.Followers.Any(DF => DF.UserId == F.FromUserId) 
+                                             && !context.OldFollowUsers.Any(OF=>OF.UserId == F.FromUserId)
+                                    )];
             });
         }
 

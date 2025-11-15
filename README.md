@@ -1,123 +1,79 @@
-# TwineChatBot
-Twitch bots written using .NET 8.0/C# and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, user settings are saved to user/App Data, and data grids (tables) show the data saved to the database (xml datagram) file and future support may include SQL databases for storage. 
+# TwineStreamerBot
+Twitch bots written using .NET 9.0/C#, Entity Framework Core (EFC) 9, and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, with data grids visualizing table data saved to a SQL database, and user settings are saved to user/App Data.
+
+The goal is to provide a local running (not through a website) bot application for streamers to use and improve the stream viewer experience, and provide many useful features without needing other bots to supplement the feature set. Other streaming platforms may be supported with enough interest - the code is setup to support adding additional platforms in the future.
+
+# EFC SQL Databases
+The supported SQL databases are based on the freeware EFC 9 providers, https://learn.microsoft.com/en-us/ef/core/providers/:
+   - Cosmos (Azure)
+   - KNet (Apache Kafka(TM))
+   - MySql
+   - PomeloMySql
+   - PostGre
+   - Sqlite
+   - SqlServer
+
+Notes:
+- The primary testing for this app is with Sqlite. Other versions may have issues not found without direct testing as LINQ calls may not be fully cross-compatible between database providers. Please submit a GitHub issue if you find any issues with a specific database provider.
+- Other databases will/should work through other (paid) implemented EFC database providers. The provider version library must be the same as the EFC version used in the app (EFC 9) - the major versions are not cross-compatible. There are a few settings to adjust to use another EFC provider of choice. Please submit a GitHub issue if you want help to configure a specific database provider (specifically, reference the EFC provider library, the DbContext configuration to access the SQL database, and saving the connection settings within the app for ease of use).
 
 ----------------------------------
 # Application - Twine Streamer Bot 
 (documentation updated periodically, may not reflect actual current feature set)
 
-Features: This bot utilizes TwitchLib.
+Features: This bot utilizes TwitchLib, including Helix Api and EventSub.
 
-The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, and responses to channel events.
+The user can attach the bot to their channel for interacting with viewers through chat commands, repeating command timers, channel point redemptions, and responses to channel events.
 
 Implements:
-   - Twitch EventSub bot - read chats, stream online-offline, raids in/out, follower, channel point redemptions, bits/cheers, subscriptions viewer/gift
+TwitchLib based Bots:
+Use your own access tokens, to refresh every few months as per Twitch requirements, or authorize the app and it will manage token refresh automatically. Also, can use just your Twitch streamer account or also add-on a separate bot account to chat on your behalf (separate username in chat).
+   - Twitch EventSub bots - read chats, stream online-offline, raids in/out, follower, channel point redemptions, bits/cheers, subscriptions viewer/gift
    - Twitch Multi-Live bot - monitor other streamer channels to post promotion to Discord channel(s)
-   - Twitch "Clip" bot - new 
+   - Twitch "Clip" bot - can create new clips during a stream and locally save clip metadata for additional details.
 
-   - App Services Bot
-     - Media Overlay Server
-
-(future scalability) the app setup allows adding more Twitch bots (different Twitch functions) and other platforms
-   - TBD, next featured bot
+App Service Bot(s):
+   - Media Overlay Server - a local webserver to provide overlay alerts for streaming software (OBS, Streamlabs OBS, etc) to show text/images/videos on stream based on events, commands, and channel point redemptions
+   - (reserved for future bot services)
 
 Database management to organize:
    - viewers to a channel (supporting watch-time type commands)
-   - followers to a channel (supporting follow age type commands)
+   - currency for chat based games (currently Blackjack-21)
+   - followers to a channel (supporting follow age type commands), and Old Followers (stopped following or username changes)
    - a viewer list to auto shout out viewers when they are first recognized as arrived in the channel
    - Statistics for the current live stream
-   - save basic statistics for incoming raid users, and outgoing raids
-- Responses to events occuring in the channel:
-   - Messages to viewer actions and events: welcome a viewer message, incoming raids, subscriptions and resubscriptions, gifted subscriptions, bits (Twitch), new follower, hosting messages, and going live messages
-   - Command system 
-      - built-in commands with editable response messages, includes social media link messages, uptime, watchtime, all commands list, and shout-out users
-      - user-defined commands - set your own messages
-      - types:
-         - a simple text message, with certain variables to customize the message (e.g. refer to the viewer who called the command)
-         - a data retrieval message - some implementation, currently updating and coding; to allow user customization for a data return message, define your own messages to get data returned from the database through a command message
-         - repeat timers - repeat any of the above messages per defined seconds
-   - Currency system - your viewers earn virtual currency to use in (future) chat games
-   - Currency games (future feature) - using currency earned from watching
-   - Overlay System - customize alerts to appear in stream overlay based on selected events
+   - Basic multichannel live activity for promoting other streamers when they go live (Multi-Live Bot feature): includes channel name, live activity tracking, and summary live data through a certain data
+   - save basic statistics for incoming raid users and outgoing raids
+   - Webhooks, such as for Discord, to post messages when the streamer goes live, and other channels you want to promote (Multi-Live Bot feature)
+   - commands to use during streams, default and user-defined
+   - Giveaway data
+   - Streamer quotes
+   - Overlay alerts to show images/videos on stream based on events, commands, and channel point redemptions
 
-Options to manage bot actions (enable or disable):
-   - saving bot authentication tokens, with a reminder for refreshing the token
-   - (future feature?) automatically update Twitch access tokens
-- App Features:
-   - Manage channel viewers - saving in the database
-   - Manage channel followers - saving in the database
-   - Save stats for each live stream, including the current stream
-   - Save stats for incoming stream raid users
-   - Notify the channel when the bot connects
-   - Post go live messages to social media
-      - currently to Discord webhooks
-      - additional as requested (and possible)
-   - Repeat commands on a timer (in seconds)
-      - all the time
-      - only when live
-      - slow down repeating when channel is slow (few viewers or chats in a timeframe)
-   - Welcome viewers (only once per live stream)
-      - when viewer joins channel
-      - when viewer first chats
-   - Auto shout out users (once per live stream)
-      - when viewer first appears or chats, tied to welcoming viewers
-      - when viewer raids the channel
-   - Viewer Giveaways
-      - Specify Commands or Channel Points (requires PubSub bot active) for the user to enter
-      - Specify the user can enter 1 or more times up to a specified max limit
-      - Giveaway - Start, Stop, and Winner customizable messages can be sent to chat
-   - Manage Overlay Alerts
-      - First, select events such as Channel Point rewards, Commands, Channel Event (new follower, subscription, etc), 
-      - Then, select an image and/or video to display for an amount of time
+General app features for stream:
+  - Help your stream viewers feel at home with custom messages from the bot:
+	- Messages specific to new viewers, returning viewers, and followers
+	- Specific viewer custom messages, e.g. their own welcome message
+  - Respond with context messages as users interact with your channel - such as "Thanks User1 for following!", or other events such as subscriptions, bits/cheers, raids, and channel point redemptions
+  - Channel commands, default and custom, with access level control, e.g. Moderator only commands
+  - Repeating timer commands, e.g. remind viewers to follow the channel every X minutes
+	 - 'Independent Timing' (Parallel) or 'Selection Order' (Serial) timer modes
+		- Independent: timers run independently, so multiple timer messages can appear in chat at once
+		- Selection: choose the order for commands to appear in chat, and they are performed one at a time, and the list restarts at the end.
+	 - the repeat timer commands can have time variances:
+		- Straight time - no adjustments to the timer interval
+		- Smart slow-down timing - choose a threshold of chat and/or user activity, and command timers will slow down when conditions are below the threshold, and resume normal timing when above the threshold
+		- Threshold based timing - choose a threshold of chat and/or user activity, and command timers will only run when conditions are at or above the threshold
+  - Chat games: let users play chat games with their channel currency. Currently only Blackjack-21 is implemented. Future games will probably be added, no current plans (implemented the system, easier to add additional games).
+  - Giveaways: run giveaways for your viewers, with options for entry methods (command entry or channel point redepemption), and random winner selection
+  - Streamer quotes: save and retrieve memorable quotes from your stream
+  - User shoutouts: can include a random clip from the user to play during the shoutout alert
 
-- Twitch Features:
-   - Add "/me" to messages (i.e. italicized message)
-      - all messages or 
-      - user specified selected message
-   - Managing follows:
-      - Update all followers when bot starts
-      - Remove non-followers from Followers table
-      - Notification message for new follows
-      - Option to refresh all followers every specified number of hours (status unfollow isn't a Twitch API message, rather, check the whole list for current follower listing) - after Follow bot starts
-   - Uses EventSub to listen to Channel Point Redemptions
-       - For Giveaways
-       - Future features upon request, per EventSub API
-   - Automatically start when app starts:
-      - Twitch EventSub bot
-      - Twitch Live bot
-      - Twitch Clip bot
-      - Multi-Live bot features - when Multi-Live Bot app is not started
+Future features not currently implemented:
+- Write the Wiki documentation for the app, including how to set up and use the various features
 
-Twitch (some features depend on settings)
-   - Chat bot
-      - interacts with viewers during live streams through commands and events
-      - start and/or stop bot when stream is online or offline
-      - when left running, tends to the channel like thanking new followers and repeating timer commands
-   - Follow bot
-      - registers new follows to the channel
-      - when started: retrieves followers and removes non-followers from the database
-      - routinely retrieve followers and remove non-followers without restarting the follow bot
-      - (future feature?) message spam protection for large groups of followers
-   - Live bot
-      - registers when your channel goes live or goes offline
-      - monitors other channels to share when they go live
-   - Clip bot
-      - retrieves clips upon startup
-      - monitors channel for active clips
-        - option to post to chat
-        - option to post to Discord via Webhook
-   - EventSub bot
-      - set up subscriptions with Twitch to receive realtime updates
-        - Custom Rewards redemption (Channel Points)
-        - (future features) more topics available via Twitch API
-    When Multi-Live Bot
-      - is running, this feature is disabled
-      - is not running, this feature is available and shares the same data file
-   Note: Live bot and Multi-Live Bot read from the same file to save the channels you wish to promote their going live,  the social media links for posting messages, and a tracker of the going live channels to prevent any multiple message posting (if the option is enabled).
-
-Future features not implemented - and may not be implemented:
-- Currency system - currency (implemented-testing), the chat gaming side (in process)
 - Message spam protection: if there are a large influx of follows at a time or significant number of subscriptions; limit the number of messages
 
 - Possibly a Twitch extension to connect to the webserver, to help provide overlays when streaming e.g. Xbox or Playstation without using a capture card to overlay a camera and notifications before sending to a streaming platform
 
-- Considering options for attaching bot to a user-specified SQL database, which would be easier to manage sizes and data archives.
+- Additional features not yet determined, can submit GitHub issues for suggestions. Twitch can occassionally expand their Api features, opening up more possibilities.

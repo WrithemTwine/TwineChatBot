@@ -60,6 +60,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// </summary>
         public void ClearCache()
         {
+#if DEBUG
+            LogWriter.DebugLog("ClearCache", Models.Enums.DebugLogTypes.SpecialPurpose, "Clear the channel clips monitor cache.");
+#endif
+
             KnownClips.Clear();
 
             _lastClipsDates.Clear();
@@ -126,6 +130,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             try
             {
+#if DEBUG
+                LogWriter.DebugLog("GetAllClipsAsync", Models.Enums.DebugLogTypes.SpecialPurpose, $"Get All Clips for the channel: {ChannelName}");
+#endif
+
                 do
                 {
                     GetClipsResponse curr = await _monitor.ActionAsync((c, param) =>
@@ -156,6 +164,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             try
             {
+#if DEBUG
+                LogWriter.DebugLog("OnServiceTimerTick", Models.Enums.DebugLogTypes.SpecialPurpose, "Service Timer Tick");
+#endif
+
                 await base.OnServiceTimerTick();
                 await MonitorNewClips();
             }
@@ -171,6 +183,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         private async Task<List<Clip>> GetLatestClipsAsync(string channel)
         {
+#if DEBUG
+            LogWriter.DebugLog("GetLatestClipsAsync", Models.Enums.DebugLogTypes.SpecialPurpose, $"Get latest clips for channel: {channel}");
+#endif
+
             GetClipsResponse resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c),
                 channel, [QueryCountPerRequest]);
 
@@ -181,6 +197,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             try
             {
+#if DEBUG
+                LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.SpecialPurpose, $"Creating clip for channel ID: {channelId}");
+#endif
+
                 return await _api.Helix.Clips.CreateClipAsync(channelId);
             }
             catch (BadScopeException)
