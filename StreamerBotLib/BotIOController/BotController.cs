@@ -1,16 +1,17 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
@@ -31,14 +32,15 @@ namespace StreamerBotLib.BotIOController
         public event EventHandler TokensInitialized;
 
         public event EventHandler OnStreamOnline;
-        public event EventHandler<OnGetChannelGameNameEventArgs> OnStreamCategoryChanged;
+        public event EventHandler<FindChannelCategoryEventArgs> OnStreamCategoryChanged;
         public event EventHandler OnStreamOffline;
 
-        private Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
-                                                                      select new KeyValuePair<Platform, bool>(P, false));
+        private readonly Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
+                                                                               select new KeyValuePair<Platform, bool>(P, false));
 
-        public SystemsController Systems { get; private set; }
-        internal static Collection<IBotTypes> BotsList { get; private set; } = [];
+        // public SystemsController Systems { get; private set; }
+        public static DataBot DataBot { get; private set; }
+
         public List<Bots> StartedChatBots { get; private set; } = [];
         private bool ChatBotStopping;
 
@@ -46,6 +48,7 @@ namespace StreamerBotLib.BotIOController
         private string GiveawayItemName = "";
         private bool GiveawayStarted = false;
 
+        internal static Collection<IBotTypes> BotsList { get; private set; } = [];
         private BotsTwitch TwitchBots { get; set; }
         public static BotOverlayServer OverlayServerBot { get; set; } = new();
 
@@ -55,16 +58,61 @@ namespace StreamerBotLib.BotIOController
         private Queue<Task> Operations { get; set; } = [];   // an ordered list, enqueue into one end, dequeue from other end
         private Thread SendThread;  // the thread for sending messages back to the monitored channels
 
-        public BotController()
+        public BotController(EventHandler<EventArgs> OnLoadCompletedHandler)
         {
-            Systems = new();
-            Systems.PostChannelMessage += Systems_PostChannelMessage;
-            Systems.BanUserRequest += Systems_BanUserRequest;
-            Systems.TwitchShoutOutUser += Systems_TwitchShoutOutUser;
+            DataBot = new();
+            DataBot.SetLoadCompletedHandler(OnLoadCompletedHandler);
+            DataBot.Initialize();
+
+            DataBot.InitializeBotControllerHandlers(
+                PostChannelMessage: Systems_PostChannelMessage,
+                BanUserRequest: Systems_BanUserRequest,
+                TwitchShoutOutUser: Systems_TwitchShoutOutUser);
+
+            DataBot.SetGetClipsHandler(HandleGetUserClips);
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
-            OutputSentToBots += ActionSystem.OutputSentToBotsHandler;
+            OutputSentToBots += DataBot.GetPostChannelMessageHandler();
+
+            ThreadManager.CreateThreadStart(".ctor_BotController", () =>
+            {
+                TwitchBots.InitializeGetIds(
+                  (liveUser) =>
+                  {
+                      string result = null;
+                      using (var waitHandle = new ManualResetEventSlim())
+                      {
+                          DataBot.GetUserId(liveUser, id =>
+                          {
+                              result = id;
+                              waitHandle.Set();
+                          });
+                          waitHandle.Wait();
+                      }
+                      return result;
+                  }
+                  );
+
+                DataBot.InitializeLiveMonitorUpdateChannels(
+                    TwitchBots.InitializeLiveMonitor(
+                       (platform) =>
+                       {
+                           IEnumerable<string> result = null;
+                           using (var waitHandle = new ManualResetEventSlim())
+                           {
+                               DataBot.GetMonitorChannels(platform, ids =>
+                               {
+                                   result = ids;
+                                   waitHandle.Set();
+                               });
+                               waitHandle.Wait();
+                           }
+                           return result ?? Enumerable.Empty<string>();
+                       }
+                       )
+                    );
+            });
 
             SetNewOverlayEventHandler();
 
@@ -73,6 +121,18 @@ namespace StreamerBotLib.BotIOController
 
             TwitchBots.InvalidTwitchAccess += TwitchBots_InvalidTwitchAccess;
             TwitchBots.OnTwitchTokensInitialized += TwitchBots_OnTwitchTokensInitialized;
+
+        }
+
+        public IEnumerable<string> PostIds(IEnumerable<string> Ids)
+        {
+            return Ids;
+        }
+
+        public void HandleOnDataCollectionUpdated(EventHandler<OnDataCollectionUpdatedEventArgs> eventHandler)
+        {
+            LogWriter.DebugLog("HandleOnDataCollectionUpdated", DebugLogTypes.BotController, "Received a request to handle data collection updates.");
+            DataBot.InitializeDataManagerCollectionUpdateEvent(eventHandler);
         }
 
         private void TwitchBots_OnTwitchTokensInitialized(object sender, EventArgs e)
@@ -189,7 +249,10 @@ namespace StreamerBotLib.BotIOController
                             TwitchStreamUpdate((NewChannelUpdateEventArgs)e.e);
                             break;
                         case BotEvents.TwitchCategoryUpdate:
-                            TwitchCategoryUpdate((OnGetChannelGameNameEventArgs)e.e);
+                            TwitchCategoryUpdate((FindChannelCategoryEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchFoundViewerCategory:
+                            TwitchFoundViewerCategory((FindChannelCategoryEventArgs)e.e);
                             break;
                         case BotEvents.TwitchNowHosting:
                             break;
@@ -326,7 +389,7 @@ namespace StreamerBotLib.BotIOController
                 }
 
                 LogWriter.DebugLog("ExitBots", DebugLogTypes.BotController, "Sending an exit to the data system.");
-                Systems.Exit();
+                DataBot.Exit();
             }
             catch (Exception ex)
             {
@@ -338,9 +401,9 @@ namespace StreamerBotLib.BotIOController
         /// This method checks the user settings and will delete any DB data if the user unchecks the setting. 
         /// Other methods to manage users & followers will adapt to if the user adjusted the setting
         /// </summary>
-        public static void ManageDatabase()
+        public void ManageDatabase()
         {
-            SystemsController.ManageDatabase();
+            DataBot.ManageDatabase();
             // TODO: add fixes if user re-enables 'managing { users || followers || stats }' to restart functions without restarting the bot
 
             // if ManageFollowers is False, then remove followers!, upstream code stops the follow bot
@@ -354,96 +417,131 @@ namespace StreamerBotLib.BotIOController
             // when management resumes, code upstream enables the startbot process 
         }
 
-        #region Send Data Updates to Database
+        #region I-O to Database
 
         /// <summary>
         /// Send a 'Clear Watch Time' to the system database.
         /// </summary>
-        public static void ClearWatchTime()
+        public void ClearWatchTime()
         {
             LogWriter.DebugLog("ClearWatchTime", DebugLogTypes.BotController, $"Received \"Clear Watch Time\" request.");
 
-            SystemsController.ClearWatchTime();
+            DataBot.ClearWatchTime();
         }
 
         /// <summary>
         /// Send a 'clear all currency values' to the system database.
         /// </summary>
-        public static void ClearAllCurrenciesValues()
+        public void ClearAllCurrenciesValues()
         {
             LogWriter.DebugLog("ClearAllCurrenciesValues", DebugLogTypes.BotController, "Received \"Clear All Currencies Values\" request.");
 
-            SystemsController.ClearAllCurrenciesValues();
+            DataBot.ClearAllCurrenciesValues();
         }
 
         /// <summary>
         /// Send a 'clear all users non followers' to the system database.
         /// </summary>
-        public static void ClearUsersNonFollowers()
+        public void ClearUsersNonFollowers()
         {
             LogWriter.DebugLog("ClearUsersNonFollowers", DebugLogTypes.BotController, "Received \"Clear Users Non Followers\" request.");
 
-            SystemsController.ClearUsersNonFollowers();
+            DataBot.ClearUsersNonFollowers();
         }
 
         /// <summary>
         /// Send a "Set System Events Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set System Events in bulk.</param>
-        public static void SetSystemEventsEnabled(bool Enabled)
+        public void SetSystemEventsEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetSystemEventsEnabled", DebugLogTypes.BotController, $"Received a \"Set System Events Enabled\" " +
                 $"request to set all events to {Enabled}.");
 
-            SystemsController.SetSystemEventsEnabled(Enabled);
+            DataBot.SetSystemEventsEnabled(Enabled);
         }
 
         /// <summary>
         /// Send a "Set BuiltIn Commands Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set built-in commands in bulk.</param>
-        public static void SetBuiltInCommandsEnabled(bool Enabled)
+        public void SetBuiltInCommandsEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetBuiltInCommandsEnabled", DebugLogTypes.BotController, $"Received a \"Set Built-in " +
                 $"Commands Enabled\" request set all events to {Enabled}.");
 
-            SystemsController.SetBuiltInCommandsEnabled(Enabled);
+            DataBot.SetBuiltInCommandsEnabled(Enabled);
         }
 
         /// <summary>
         /// Send a "Set User Defined Commands Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set user defined commands in bulk.</param>
-        public static void SetUserDefinedCommandsEnabled(bool Enabled)
+        public void SetUserDefinedCommandsEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetUserDefinedCommandsEnabled", DebugLogTypes.BotController, $"Received a \"Set User Defined " +
                 $"Commands Enabled\" request set all events to {Enabled}.");
 
-            SystemsController.SetUserDefinedCommandsEnabled(Enabled);
+            DataBot.SetUserDefinedCommandsEnabled(Enabled);
+        }
+
+        public void DeleteDataRows(IEnumerable<object> dataRows, string TableName)
+        {
+            DataBot.DeleteDataRows(dataRows, TableName);
         }
 
         /// <summary>
         /// Send a "Set WebHooks Webhooks Enabled" toggle request to the system database.
         /// </summary>
         /// <param name="Enabled">True or False to set WebHooks Webhooks in bulk.</param>
-        public static void SetDiscordWebhooksEnabled(bool Enabled)
+        public void SetDiscordWebhooksEnabled(bool Enabled)
         {
             LogWriter.DebugLog("SetDiscordWebhooksEnabled", DebugLogTypes.BotController, $"Received a \"Set WebHooks Webhooks Enabled\" " +
                 $"request to set all events to {Enabled}.");
 
-            SystemsController.SetDiscordWebhooksEnabled(Enabled);
+            DataBot.SetDiscordWebhooksEnabled(Enabled);
+        }
+
+        public void UpdatedIsEnabledRows(string TableName)
+        {
+            DataBot.GUISaveDataGridEdits(false, TableName);
+        }
+
+        public void GUISaveDataGridEdits(bool CommandUpdate, string TableName)
+        {
+            DataBot.GUISaveDataGridEdits(CommandUpdate, TableName);
+        }
+
+        public void UpdateRepeatCommands()
+        {
+            DataBot.UpdateRepeatCommands();
         }
 
         /// <summary>
         /// Insert a new AutoShoutUser entry into the database.
         /// </summary>
         /// <param name="UserName">The username to add into the database for the autoshout table.</param>
-        public static void AddNewAutoShoutUser(string Userid, Platform platform)
+        public void AddNewAutoShoutUser(string Userid, Platform platform)
         {
             LogWriter.DebugLog("AddNewAutoShoutUser", DebugLogTypes.BotController, $"Received an \"Add New Auto Shout User\" " +
                 $"request to add= {Userid} =to the database.");
 
-            SystemsController.AddNewAutoShoutUser(Userid, platform);
+            DataBot.AddNewAutoShoutUser(Userid, platform);
+        }
+
+        public void GetOverlayActions(Action<Dictionary<string, List<string>>> callback)
+        {
+            DataBot.GetOverlayActions(callback);
+        }
+
+        public void AddNewMonitorChannel(List<LiveUser> monitorChannels)
+        {
+            DataBot.AddNewMonitorChannel(monitorChannels);
+        }
+
+        public void ResetCategoryStreamCount()
+        {
+            DataBot.ResetCategoryStreamCount();
         }
 
         #endregion
@@ -499,7 +597,9 @@ namespace StreamerBotLib.BotIOController
                 LogWriter.DebugLog("GetUserCategory", DebugLogTypes.BotController, $"Received request to provide the " +
                     $"streaming category for the channel named: {ChannelName}, with {UserId} userId.");
 
-                return BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName).CategoryName;
+                CategoryData categoryData = BotsTwitch.GetUserCategory(UserId: UserId, UserName: ChannelName);
+
+                return categoryData.CategoryName;
             }
             else
             {
@@ -547,7 +647,6 @@ namespace StreamerBotLib.BotIOController
             //    _ => throw new NotImplementedException()
             //};
         }
-
 
         private void Systems_TwitchShoutOutUser(object sender, TwitchShoutOutUsersEventArgs e)
         {
@@ -659,7 +758,7 @@ namespace StreamerBotLib.BotIOController
             HandleBotEventNewFollowers(ConvertFollowers(Follower.Channel, Platform.Twitch));
         }
 
-        public static void TwitchStopBulkFollowers()
+        public void TwitchStopBulkFollowers()
         {
             HandleBotEventStopBulkFollowers();
         }
@@ -716,12 +815,12 @@ namespace StreamerBotLib.BotIOController
             HandleChatBotStopped(Bots.TwitchEventSubBot, args);
         }
 
-        public static void TwitchStartBulkFollowers()
+        public void TwitchStartBulkFollowers()
         {
             HandleBotEventStartBulkFollowers();
         }
 
-        public static void TwitchBulkPostFollowers(OnNewFollowersDetectedArgs Follower)
+        public void TwitchBulkPostFollowers(OnNewFollowersDetectedArgs Follower)
         {
             HandleBotEventBulkPostFollowers(ConvertFollowers(Follower.NewFollowers, Platform.Twitch));
         }
@@ -744,6 +843,7 @@ namespace StreamerBotLib.BotIOController
                     Language = SrcClip.Language,
                     Title = SrcClip.Title,
                     Url = SrcClip.Url,
+                    EmbedUrl = SrcClip.EmbedUrl,
                     FromUserId = SrcClip.CreatorId,
                     FromUserName = SrcClip.CreatorName
                 };
@@ -792,9 +892,14 @@ namespace StreamerBotLib.BotIOController
             HandleOnStreamUpdate(new(e.ChannelUpdate.CategoryId, e.ChannelUpdate.CategoryName));
         }
 
-        public void TwitchCategoryUpdate(OnGetChannelGameNameEventArgs e)
+        public void TwitchCategoryUpdate(FindChannelCategoryEventArgs e)
         {
             HandleOnStreamUpdate(new(e.GameId, e.GameName));
+        }
+
+        public void TwitchFoundViewerCategory(FindChannelCategoryEventArgs e)
+        {
+            HandleFoundViewerCategory(new(e.GameId, e.GameName));
         }
 
         internal void TwitchStreamOffline(NewStreamOfflineEventArgs e)
@@ -978,22 +1083,22 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleBotEventNewFollowers(Models.Follow follow)
         {
-            Systems.AddNewFollowers([follow]);
+            DataBot.AddNewFollowers([follow]);
         }
 
-        public static void HandleBotEventStartBulkFollowers()
+        public void HandleBotEventStartBulkFollowers()
         {
-            SystemsController.StartBulkFollowers();
+            DataBot.StartBulkFollowers();
         }
 
-        public static void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
+        public void HandleBotEventBulkPostFollowers(List<Models.Follow> follows)
         {
-            SystemsController.UpdateFollowers(follows);
+            DataBot.UpdateFollowers(follows);
         }
 
-        public static void HandleBotEventStopBulkFollowers()
+        public void HandleBotEventStopBulkFollowers()
         {
-            SystemsController.StopBulkFollowers();
+            DataBot.StopBulkFollowers();
         }
 
         #endregion
@@ -1002,60 +1107,30 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleBotEventPostNewClip(List<Models.Clip> clips)
         {
-            Systems.ClipHelper(clips);
+            DataBot.ClipHelper(clips);
+        }
+
+        public void HandleGetUserClips(object sender, GetChannelClipsEventArgs e)
+        {
+            if (e.Platform == Platform.Twitch)
+            {
+                TwitchBots.GetUserChannelClips(e.ChannelName, e.CallBackResult);
+            }
         }
 
         #endregion
 
         #region LiveStream
 
-        private void PostGameCategoryEvent(CategoryData categoryData)
-        {
-            OnStreamCategoryChanged?.Invoke(this, new() { GameId = categoryData.CategoryId, GameName = categoryData.CategoryName });
-        }
-
-        private static void HandleMultiLiveOnStreamOnline(LiveUser User, string Title, DateTime StartedAt, string Category)
+        private void HandleMultiLiveOnStreamOnline(LiveUser User, string Title, DateTime StartedAt, string Category)
         {
             DateTime CurrTime = StartedAt.ToLocalTime();
 
             // true posted new event, false did not post
-            bool PostedLive;
 
             ThreadManager.AddTaskToGUIDispatcher(() =>
             {
-                PostedLive = SystemsController.DataManage.PostMultiStreamDate(User, CurrTime);
-
-                if (PostedLive)
-                {
-                    bool MultiLive = SystemsController.DataManage.CheckMultiStreamDate(User.UserId, User.Platform, CurrTime);
-
-                    if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
-                    {
-                        // get message, set a default if otherwise deleted/unavailable
-                        string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
-
-                        // keys for exchanging codes for representative names
-                        Dictionary<string, string> dictionary = new()
-                        {
-                            { "#user", User.UserName },
-                            { "#category", Category },
-                            { "#title", Title },
-                            { "#url", User.UserName }
-                        };
-
-                        SystemsController.DataManage.PostMultiLiveLog(VariableParser.ParseReplace(msg, dictionary));
-
-                        foreach (Tuple<WebhooksSource, Uri> u in SystemsController.DataManage.GetMultiWebHooks())
-                        {
-                            if (u.Item1 == WebhooksSource.Discord)
-                            {
-                                DiscordWebhook.SendMessage(u.Item2,
-                                    VariableParser.ParseReplace(msg, dictionary),
-                                    VariableParser.BuildPlatformUrl(User.UserName, User.Platform));
-                            }
-                        }
-                    }
-                }
+                DataBot.PostMultiStreamDate(User, CurrTime, (PostedLive) => PostMultiLiveStreamDateCallBack(User, Title, Category, CurrTime, PostedLive));
 
                 if (User.Platform == Platform.Twitch)
                 {
@@ -1070,6 +1145,53 @@ namespace StreamerBotLib.BotIOController
                     }
                 }
             });
+        }
+
+        private static void PostMultiLiveStreamDateCallBack(LiveUser User, string Title, string Category, DateTime CurrTime, bool PostedLive)
+        {
+            if (PostedLive)
+            {
+                DataBot.CheckMultiLiveStreamDate(User.UserId, User.Platform, CurrTime, (MultiLive) => MultiStreamDateCallback(User, Title, Category, MultiLive));
+            }
+        }
+
+        private static void MultiStreamDateCallback(LiveUser User, string Title, string Category, bool MultiLive)
+        {
+            if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
+            {
+                // get message, set a default if otherwise deleted/unavailable
+                string msg = OptionFlags.MsgLive ?? "@everyone, #user is now live streaming #category - #title! Come join and say hi at: #url";
+
+                // keys for exchanging codes for representative names
+                Dictionary<string, string> dictionary = new()
+                        {
+                            { "#user", User.UserName },
+                            { "#category", Category },
+                            { "#title", Title },
+                            { "#url", User.UserName }
+                        };
+
+                DataBot.PostMultiLiveLog(VariableParser.ParseReplace(msg, dictionary));
+                DataBot.GetMultiWebHooks((Webhooks) => PostMultiWebHooksCallback(User, msg, dictionary, Webhooks));
+            }
+        }
+
+        private static void PostMultiWebHooksCallback(LiveUser User, string msg, Dictionary<string, string> dictionary, IEnumerable<Tuple<WebhooksSource, Uri>> Webhooks)
+        {
+            foreach (Tuple<WebhooksSource, Uri> u in Webhooks)
+            {
+                if (u.Item1 == WebhooksSource.Discord)
+                {
+                    DiscordWebhook.SendMessage(u.Item2,
+                        VariableParser.ParseReplace(msg, dictionary),
+                        VariableParser.BuildPlatformUrl(User.UserName, User.Platform));
+                }
+            }
+        }
+
+        public void MultiChannelSummarize(MultiLiveSummarizeEventArgs e)
+        {
+            DataBot.MultiSummarize(e);
         }
 
         private void ManageOnlineStream(Platform platform)
@@ -1097,15 +1219,23 @@ namespace StreamerBotLib.BotIOController
 
                 ManageBotsStreamStatusChanged(true);
 
-                bool Started = Systems.StreamOnline(StartedAt);
+                DataBot.StreamOnline(StartedAt, Category, (isOnline) => callbackHandleOnStreamOnline(isOnline, ChannelName, Title, StartedAt, Category, platform, Debug)); // a callback to finish the stream online process
+            }
+            catch (Exception ex)
+            {
+                LogWriter.LogException(ex, "HandleOnStreamOnline");
+            }
+        }
 
+        private void callbackHandleOnStreamOnline(bool Started, string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
+        {
+            try
+            {
                 if (Started)
                 {
-                    bool MultiLive = ActionSystem.CheckStreamTime(StartedAt);
-                    SystemsController.SetCategory(Category);
-                    PostGameCategoryEvent(Category);
+                    bool MultiLive = ActionSystem.CheckStreamDate(StartedAt); // since this call is within another callback through DataBot, we don't need to use DataBot
 
-                    if (OptionFlags.PostMultiLive && MultiLive || !MultiLive)
+                    if ((OptionFlags.PostMultiLive && MultiLive) || !MultiLive)
                     {
                         // get message, set a default if otherwise deleted/unavailable
                         string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.Live, out bool Enabled, out _);
@@ -1123,18 +1253,7 @@ namespace StreamerBotLib.BotIOController
 
                         if (Enabled && !Debug)
                         {
-                            foreach (Tuple<bool, Uri> u in ActionSystem.GetDiscordWebhooks(WebhooksKind.Live))
-                            {
-                                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
-                                                                {
-                                                                        new(MsgVars.everyone, u.Item1 ? "@everyone" : "")
-                                                                }
-                                                            )
-                                                        ),
-                                                        VariableParser.BuildPlatformUrl(ChannelName, platform)
-                                                    );
-                                Systems.UpdatedStat(StreamStatType.Discord);
-                            }
+                            DataBot.GetDiscordWebhooks(WebhooksKind.Live, (Webhooks) => PostToDiscord(ChannelName, platform, TempMsg, Webhooks));
                         }
                     }
                 }
@@ -1145,10 +1264,37 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
+        private void PostToDiscord(string ChannelName, Platform platform, string TempMsg, IEnumerable<Tuple<bool, Uri>> Webhooks)
+        {
+            foreach (Tuple<bool, Uri> u in Webhooks)
+            {
+                DiscordWebhook.SendMessage(u.Item2, VariableParser.ParseReplace(TempMsg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                                                {
+                                                                        new(MsgVars.everyone, u.Item1 ? "@everyone" : "")
+                                                }
+                                            )
+                                        ),
+                                        VariableParser.BuildPlatformUrl(ChannelName, platform)
+                                    );
+                DataBot.UpdatedStat(StreamStatType.Discord);
+            }
+        }
+
+        public void HandleFoundViewerCategory(CategoryData categoryData)
+        {
+            DataBot.PostViewerCategory(categoryData);
+        }
+
         public void HandleOnStreamUpdate(CategoryData categoryData)
         {
-            SystemsController.SetCategory(categoryData);
-            PostGameCategoryEvent(categoryData);
+            DataBot.SetCategory(categoryData);
+
+            if (OptionFlags.IsStreamOnline)
+            {
+                DataBot.PostCategoryStream(categoryData);
+            }
+
+            OnStreamCategoryChanged?.Invoke(this, new() { GameId = categoryData.CategoryId, GameName = categoryData.CategoryName });
         }
 
         public void HandleOnStreamOffline(Platform platform, string HostedChannel = null, DateTime? RaidTime = null)
@@ -1164,7 +1310,7 @@ namespace StreamerBotLib.BotIOController
                 ManageBotsStreamStatusChanged(false);
 
                 DateTime currTime = RaidTime?.ToLocalTime() ?? DateTime.Now.ToLocalTime();
-                SystemsController.StreamOffline(currTime);
+                DataBot.StreamOffline(currTime);
 
                 if (RaidTime != null)
                 {
@@ -1175,7 +1321,7 @@ namespace StreamerBotLib.BotIOController
                     LogWriter.DebugLog("HandleOnStreamOffline", DebugLogTypes.BotController, $"No raid occurred, stream offline.");
                 }
 
-                SystemsController.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
+                DataBot.PostOutgoingRaid(HostedChannel ?? "No Raid", currTime);
                 //OptionFlags.TwitchOutRaidStarted = false;
             }
         }
@@ -1214,7 +1360,7 @@ namespace StreamerBotLib.BotIOController
                                                         BeginProcMsgs,
                                                         Priority: ThreadExitPriority.Normal);
                 SendThread.Start();
-                Systems.NotifyBotStart();
+                DataBot.NotifyBotStart();
             }
         }
 
@@ -1227,7 +1373,7 @@ namespace StreamerBotLib.BotIOController
 
             if (StartedChatBots.Count == 0 && args == null)
             {
-                Systems.NotifyBotStop();
+                DataBot.NotifyBotStop();
             }
             ChatBotStopping = true;
         }
@@ -1255,14 +1401,13 @@ namespace StreamerBotLib.BotIOController
 
             if (Enabled)
             {
-                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.Subscribe), Multi);
-
+                DataBot.GetEventAnnounce(ChannelEventActions.Subscribe, (result) => Send(ParsedMsg, result, Multi));
             }
 
-            Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
+            DataBot.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, User, UserMsg: HTMLParsedMsg);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, User.UserName);
+            DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Subscribe, User, UserMsg: HTMLParsedMsg);
+            DataBot.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, User.UserName);
         }
 
         public void HandleReSubscriber(LiveUser User, int Months, string TotalMonths, string Subscription, string SubscriptionName, bool ShareStreak, string StreakMonths)
@@ -1286,12 +1431,12 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.Resubscribe), Multi);
+                DataBot.GetEventAnnounce(ChannelEventActions.Resubscribe, (result) => Send(ParsedMsg, result, Multi));
             }
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, User, UserMsg: HTMLParsedMsg);
+            DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, User, UserMsg: HTMLParsedMsg);
 
-            Systems.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, User.UserName);
+            DataBot.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
+            DataBot.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, User.UserName);
         }
 
         public void HandleGiftSubscription(LiveUser User, string Months, string RecipientUserName, string Subscription, string SubscriptionName)
@@ -1309,11 +1454,11 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.GiftSub), Multi);
+                DataBot.GetEventAnnounce(ChannelEventActions.GiftSub, (result) => Send(ParsedMsg, result, Multi));
             }
-            Systems.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, User, UserMsg: HTMLParsedMsg);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, User.UserName);
+            DataBot.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
+            DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, User, UserMsg: HTMLParsedMsg);
+            DataBot.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, User.UserName);
             //            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastSubscriber, RecipientUserName);
         }
 
@@ -1330,19 +1475,19 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.CommunitySubs), Multi);
+                DataBot.GetEventAnnounce(ChannelEventActions.CommunitySubs, (result) => Send(ParsedMsg, result, Multi));
             }
 
-            Systems.UpdatedStat(StreamStatType.GiftSubs, SubCount);
-            Systems.UpdatedStat(StreamStatType.AutoEvents);
+            DataBot.UpdatedStat(StreamStatType.GiftSubs, SubCount);
+            DataBot.UpdatedStat(StreamStatType.AutoEvents);
 
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, User, UserMsg: HTMLParsedMsg);
-            SystemsController.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, User.UserName ?? "anonymous");
+            DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.CommunitySubs, User, UserMsg: HTMLParsedMsg);
+            DataBot.AddNewOverlayTickerItem(OverlayTickerItem.LastGiftSub, User.UserName ?? "anonymous");
         }
 
         public void HandleChannelCheer(LiveUser user, int Bits)
         {
-            Systems.UserCheered(user, Bits);
+            DataBot.UserCheered(user, Bits);
         }
 
         public void HandleBeingHosted(LiveUser User, string HostedByChannel, bool IsAutoHosted, int Viewers)
@@ -1359,37 +1504,31 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                Send(ParsedMsg, SystemsController.DataManage.GetEventAnnounce(ChannelEventActions.BeingHosted), Multi);
+                DataBot.GetEventAnnounce(ChannelEventActions.BeingHosted, (result) => Send(ParsedMsg, result, Multi));
             }
 
-            Systems.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
-            Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, User, UserMsg: HTMLParsedMsg);
+            DataBot.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
+            DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BeingHosted, User, UserMsg: HTMLParsedMsg);
         }
 
         public void HandleUserJoined(List<Models.LiveUser> Users)
         {
-            Systems.UserJoined(Users);
+            DataBot.UserJoined(Users);
         }
 
         public void HandleUserLeft(Models.LiveUser User)
         {
-            Systems.UserLeft(User);
+            DataBot.UserLeft(User);
         }
-
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Calling method invokes this method and provides event arg parameter")]
-        //public void HandleUserTimedOut(OnUserTimedoutArgs e)
-        //{
-        //    Systems.UpdatedStat(StreamStatType.UserTimedOut);
-        //}
 
         public void HandleUserBanned(LiveUser User)
         {
             try
             {
-                Systems.UpdatedStat(StreamStatType.UserBanned);
+                DataBot.UpdatedStat(StreamStatType.UserBanned);
                 HandleUserLeft(User);
 
-                Systems.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, User);
+                DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.BannedUser, User);
             }
             catch (Exception ex)
             {
@@ -1399,17 +1538,17 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleAddChat(string UserName, Platform Source)
         {
-            Systems.UserJoined([new(UserName, Source)]);
+            DataBot.UserJoined([new(UserName, Source)]);
         }
 
         public void HandleMessageReceived(Models.CmdMessage MsgReceived, Platform Source)
         {
-            Systems.MessageReceived(MsgReceived, new(MsgReceived.DisplayName, Source, MsgReceived.UserId));
+            DataBot.MessageReceived(MsgReceived, new(MsgReceived.DisplayName, Source, MsgReceived.UserId));
         }
 
         public void HandleIncomingRaidData(Models.LiveUser User, DateTime RaidTime, int ViewerCount, CategoryData Category)
         {
-            Systems.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
+            DataBot.PostIncomingRaid(User, RaidTime.ToLocalTime(), ViewerCount, Category);
         }
 
         public void HandleOutgoingRaidData(string ToChannelName, DateTime RaidTime, Platform platform)
@@ -1423,7 +1562,7 @@ namespace StreamerBotLib.BotIOController
             {
                 HandleGiveawayPostName(new(commandmsg.DisplayName, Source, commandmsg.UserId));
             }
-            Systems.ProcessCommand(commandmsg, Source);
+            DataBot.ProcessCommand(commandmsg, Source);
         }
 
         public void HandleCustomReward(LiveUser User, string RewardTitle, string RewardMsg)
@@ -1433,8 +1572,11 @@ namespace StreamerBotLib.BotIOController
                 HandleGiveawayPostName(User);
             }
 
-            Tuple<string, string> approval = SystemsController.GetApprovalRule(ModActionType.ChannelPoints, RewardTitle);
+            DataBot.GetApprovalRule(ModActionType.ChannelPoints, RewardTitle, (result) => CustRewardDataBotCallback(User, RewardTitle, RewardMsg, result));
+        }
 
+        private void CustRewardDataBotCallback(LiveUser User, string RewardTitle, string RewardMsg, Tuple<string, string> approval)
+        {
             if (approval != null)
             {
                 LogWriter.DebugLog("HandleCustomReward", DebugLogTypes.TwitchBots, $"Custom reward {RewardTitle} requires approval.");
@@ -1442,7 +1584,7 @@ namespace StreamerBotLib.BotIOController
                 switch (User.Platform)
                 {
                     case Platform.Twitch:
-                        Systems.PostApproval($"{approval.Item2} {User.UserName} {RewardMsg}",
+                        DataBot.PostApproval($"{approval.Item2} {User.UserName} {RewardMsg}",
                             new(() =>
                             {
                                 TwitchBots.PostInternalCommand(approval.Item2, [User.UserName, RewardMsg], $"!{approval.Item2} {User.UserName} {RewardMsg}");
@@ -1458,7 +1600,7 @@ namespace StreamerBotLib.BotIOController
             {
                 LogWriter.DebugLog("HandleCustomReward", DebugLogTypes.OverlayBot, $"Checking Channel Point Redemption {RewardTitle} for an Overlay request.");
 
-                Systems.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, User);
+                DataBot.CheckForOverlayEvent(OverlayTypes.ChannelPoints, RewardTitle, User);
             }
         }
 
@@ -1474,7 +1616,7 @@ namespace StreamerBotLib.BotIOController
             GiveawayItemName = ItemName;
             GiveawayStarted = true;
 
-            Systems.BeginGiveaway();
+            DataBot.BeginGiveaway();
         }
 
         /// <summary>
@@ -1482,7 +1624,7 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public void HandleGiveawayEnd()
         {
-            Systems.EndGiveaway();
+            DataBot.EndGiveaway();
 
             GiveawayItemType = GiveawayTypes.None;
             GiveawayItemName = "";
@@ -1495,7 +1637,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="User">The user entering the giveaway.</param>
         public void HandleGiveawayPostName(LiveUser User)
         {
-            Systems.ManageGiveaway(User);
+            DataBot.ManageGiveaway(User);
         }
 
         /// <summary>
@@ -1507,7 +1649,7 @@ namespace StreamerBotLib.BotIOController
             {
                 HandleGiveawayEnd();
             }
-            Systems.PostGiveawayResult();
+            DataBot.PostGiveawayResult();
         }
 
 
@@ -1518,7 +1660,12 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         public void ActivateRepeatTimers()
         {
-            Systems.ActivateRepeatTimers();
+            DataBot.ActivateRepeatTimers();
+        }
+
+        public void ResetRepeatTimerMode()
+        {
+            DataBot.ResetRepeatTimerMode();
         }
 
         #endregion
@@ -1537,22 +1684,61 @@ namespace StreamerBotLib.BotIOController
 
         #endregion
 
-        #region MediaOverlay Server
+        #region MediaOverlay
 
         /// <summary>
         /// Connect the Overlay System event notification to the Overlay Server bot to process any new Overlay actions detected.
         /// </summary>
         private void SetNewOverlayEventHandler()
         {
-            Systems.SetNewOverlayEventHandler(
+            DataBot.SetNewOverlayEventHandler(
                 OverlayServerBot.NewOverlayEventHandler,
                 OverlayServerBot.UpdatedTickerEventHandler
                 );
+        }
+
+        public void SendInitialTickerItems()
+        {
+            DataBot.SendInitialTickerItems();
+        }
+
+        public void SetChannelRewardList(List<string> channelPointNames)
+        {
+            DataBot.SetChannelRewardList(channelPointNames);
         }
 
         #endregion
 
         #endregion
 
+        #region Debug
+
+        public IEnumerable<CategoryData> GetGameCategories()
+        {
+            IEnumerable<CategoryData> categories = null;
+            using (var waitHandle = new ManualResetEventSlim())
+            {
+                DataBot.GetGameCategories((result) =>
+                {
+                    categories = result;
+                    waitHandle.Set();
+                });
+                waitHandle.Wait();
+            }
+            return categories;
+        }
+
+#if DEBUG
+        public void TestAddUsers()
+        {
+            DataBot.TestAddUsers();
+        }
+
+        public void DebugAddNewMultiLiveData()
+        {
+            DataBot.DebugAddNewMultiLiveData();
+        }
+#endif
+        #endregion
     }
 }

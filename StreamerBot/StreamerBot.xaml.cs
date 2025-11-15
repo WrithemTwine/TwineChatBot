@@ -1,9 +1,9 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -21,11 +21,7 @@ using System.Windows.Threading;
 
 namespace StreamerBot
 {
-    // TODO: add "announcement" option to commands, to use Twitch's 'announcement' chat adornment: https://dev.twitch.tv/docs/api/reference/#send-chat-announcement
-    // TODO: add "shoutout" user option to invoke Twitch's chat level shoutout option
     // TODO: look at using "localhost" for the clip's referback URL to grab a clip to send to overlay-reconnect into Overlay
-
-    // TODO: raid-out currently didn't note for a raid-but, other bot may have interfered with performing the call and capturing the raid call
     // TODO: review expired token handling for null calls
 
 
@@ -68,9 +64,7 @@ namespace StreamerBot
 
             WatchProcessOps = true;
 
-            Controller = new();
-
-            DataManagerViewLoaded();
+            Controller = new BotController(DataManage_OnLoadCompleted);
 
             InitializeComponent();
 
@@ -88,6 +82,9 @@ namespace StreamerBot
             guiTwitchBot = Resources["TwitchBot"] as GUITwitchBots;
             guiAppStats = Resources["AppStats"] as GUIAppStats;
             guiAppServices = Resources["AppServices"] as GUIAppServices;
+            GUIDataManagerViews = TryFindResource("DataViews") as GUIDataManagerViews;
+
+            DataManagerViewLoaded();
 
             ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
             SetTwitchFollowerRefreshTime();
@@ -98,28 +95,27 @@ namespace StreamerBot
             StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 
             ConstructEvents();
-
         }
 
         #region Bot_Ops
         private void Button_SystemEvents_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetSystemEventsEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetSystemEventsEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void Button_BuiltInCommands_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetBuiltInCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetBuiltInCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void Button_UserDefinedCommands_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetUserDefinedCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetUserDefinedCommandsEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void Button_DiscordWebhooks_Click(object sender, RoutedEventArgs e)
         {
-            BotController.SetDiscordWebhooksEnabled(((Button)sender).Name.Contains("Enabled"));
+            Controller.SetDiscordWebhooksEnabled(((Button)sender).Name.Contains("Enabled"));
         }
 
         private void ShoutUsers_Click(object sender, RoutedEventArgs e)
@@ -147,7 +143,7 @@ namespace StreamerBot
         /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
         private void UpdateData(Button targetclick, Action<string> InvokeMethod)
         {
-            if (!OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName), OptionFlags.TwitchChannelName)) // prevent operation if default value
+            if (!OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName))) // prevent operation if default value
             {
                 targetclick.IsEnabled = false;
 
@@ -188,7 +184,7 @@ namespace StreamerBot
 
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => BotController.GetUserCategory()));
         }
-        private void BotEvents_GetChannelGameName(object sender, OnGetChannelGameNameEventArgs e)
+        private void BotEvents_GetChannelGameName(object sender, FindChannelCategoryEventArgs e)
         {
             LogWriter.DebugLog("BotEvents_GetChannelGameName", DebugLogTypes.GUIEvents, "Received update to the channel game category.");
 
@@ -248,20 +244,6 @@ namespace StreamerBot
 
                 Settings.Default.ManageDataArchiveMsg = false;
             }
-
-
-            if (Settings.Default.AppCurrWorkingPopup)
-            {
-                Settings.Default.AppCurrWorkingPopup = false;
-                string SaveCWDPath = GetAppDataCWD();
-
-                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application'AppVersion current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
-
-                if (boxResult == MessageBoxResult.Yes)
-                {
-                    Settings.Default.AppCurrWorkingAppData = true;
-                }
-            }
         }
 
         private void TB_BotActivityLog_TextChanged(object sender, TextChangedEventArgs e)
@@ -271,7 +253,10 @@ namespace StreamerBot
 
         private void Settings_LostFocus(object sender, RoutedEventArgs e)
         {
+            LogWriter.DebugLog("Settings_LostFocus", DebugLogTypes.GUIEvents, "Settings lost focus, check Twitch button enable status.");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         /// <summary>
@@ -329,7 +314,7 @@ namespace StreamerBot
             //    }
             //}
 
-            BotController.ManageDatabase();
+            Controller.ManageDatabase();
         }
 
         private async void PreviewMouseLeftButton_SelectAll(object sender, MouseButtonEventArgs e)
@@ -396,15 +381,14 @@ namespace StreamerBot
             if (TBSource?.Name == CheckBox_RepeatCommands_Enable?.Name || SPSource?.Name == StackPanel_RepeatCommands_RepeatOptions?.Name)
             {
                 SetVisibility(CheckBox_RepeatCommands_Enable, StackPanel_RepeatCommands_RepeatOptions);
+                if (GroupBox_Options_RepeatCommands != null)
+                {
+                    GroupBox_Options_RepeatCommands.Width = CheckBox_RepeatCommands_Enable.IsChecked == true ? 460 : 230;
+                }
                 Controller.ActivateRepeatTimers();
             }
             else if (TBSource?.Name == RadioButton_RepeatTimer_NoAdjustment.Name || TBSource?.Name == RadioButton_RepeatTimer_SlowDownOption.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption.Name || GBSource?.Name == GroupBox_RepeatTimer_ThresholdOptions.Name)
             {
-                if (TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name || TBSource?.Name == RadioButton_RepeatTimer_ThresholdOption?.Name)
-                {
-                    SetVisibility(RadioButton_RepeatTimer_ThresholdOption, StackPanel_Repeat_ThresholdsOptions);
-                }
-
                 if (RadioButton_RepeatTimer_NoAdjustment != null && RadioButton_RepeatTimer_SlowDownOption != null && GroupBox_RepeatTimer_ThresholdOptions != null)
                 {
                     SetVisibility(RadioButton_RepeatTimer_SlowDownOption.IsChecked == true ? RadioButton_RepeatTimer_SlowDownOption : RadioButton_RepeatTimer_ThresholdOption, GroupBox_RepeatTimer_ThresholdOptions);
@@ -433,6 +417,65 @@ namespace StreamerBot
             }
         }
 
+        private void CheckBox_RepeatWhenLive_UnChecked(object sender, RoutedEventArgs e)
+        {
+            // setup the repeat timer; setting is unchecked so the repeat timer should be started for the user
+            Controller.ActivateRepeatTimers();
+        }
+
+        private void RadioButton_RepeatCommand_SerialMode_Loaded(object sender, RoutedEventArgs e)
+        {
+            switch (RadioButton_RepeatCommand_SerialMode?.IsChecked)
+            {
+                case true:
+                    GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Visible;
+                    break;
+                case false or null:
+                    GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Collapsed;
+                    break;
+            }
+        }
+
+        private void RadioButton_RepeatCommand_ParallelMode_Checked(object sender, RoutedEventArgs e)
+        {
+            Controller.ActivateRepeatTimers();
+        }
+
+        private void RadioButton_RepeatCommand_SerialMode_Checked(object sender, RoutedEventArgs e)
+        {
+            if (GroupBox_Options_RepeatSerialModeSettings != null)
+            {
+                GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Visible;
+            }
+
+            Controller.ActivateRepeatTimers();
+        }
+
+        private void Button_Options_RepeatSerialCommandList_Add_Click(object sender, RoutedEventArgs e)
+        {
+            ComboBox selectedCommand = ((ComboBox)(((StackPanel)((Button)sender).Parent).Children[1]));
+
+            if (selectedCommand.SelectedItem != null)
+            {
+                OptionFlags.RepeatSerialSaveDataString.Add(selectedCommand.Text);
+                Settings.Default.Save();
+                ListBox_Options_RepeatSerialCommandList.ItemsSource = OptionFlags.RepeatSerialSaveData;
+                Controller.UpdateRepeatCommands();
+            }
+        }
+
+        private void Button_Options_RepeatSeralCommandList_Remove_Click(object sender, RoutedEventArgs e)
+        {
+            OptionFlags.RepeatSerialSaveData = (List<StreamerBotLib.Models.Repeat.RepeatCommandGUISelect>)ListBox_Options_RepeatSerialCommandList.ItemsSource;
+            ListBox_Options_RepeatSerialCommandList.ItemsSource = OptionFlags.RepeatSerialSaveData;
+            Controller.UpdateRepeatCommands();
+        }
+
+        private void RadioButton_RepeatCommand_SerialMode_Unchecked(object sender, RoutedEventArgs e)
+        {
+            GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Collapsed;
+        }
+
         private void TextBox_Follower_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox src = (TextBox)sender;
@@ -454,6 +497,11 @@ namespace StreamerBot
         private void TextBlock_MouseEnter_Hidden(object sender, MouseEventArgs e)
         {
             TextBlock_AppDataDir.Visibility = Visibility.Hidden;
+        }
+
+        private void Button_ResetStreamCount_Click(object sender, RoutedEventArgs e)
+        {
+            Controller.ResetCategoryStreamCount();
         }
 
         #region LiveStatus Online Indicator
@@ -515,7 +563,10 @@ namespace StreamerBot
         /// <param name="e"></param>
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
+            LogWriter.DebugLog("TextBox_SourceUpdated", DebugLogTypes.GUIEvents, "Text box source updated, check Twitch button enable status.");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private void JoinCollectionCheckBox_Checked(object sender, RoutedEventArgs e)
@@ -539,21 +590,30 @@ namespace StreamerBot
         {
             Label_Twitch_RefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+            LogWriter.DebugLog("RefreshButton_Click", DebugLogTypes.GUIEvents, "User clicked the refresh button, update the label and hide the expired message.");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private void RefreshButtonNoScopes_Click(object sender, RoutedEventArgs e)
         {
             Label_Twitch_RefreshDate_NoScopes.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredCredentialsMsg.Visibility = Visibility.Collapsed;
+            LogWriter.DebugLog("RefreshButtonNoScopes_Click", DebugLogTypes.GUIEvents, "User clicked the refresh button, update the label and hide the expired message.");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         private void RefreshStreamButton_Click(object sender, RoutedEventArgs e)
         {
             Label_Twitch_StreamerRefreshDate.Content = DateTime.Now.ToLocalTime().AddDays(TwitchTokenRefreshDays);
             TextBlock_ExpiredStreamerCredentialsMsg.Visibility = Visibility.Collapsed;
+            LogWriter.DebugLog("RefreshStreamButton_Click", DebugLogTypes.GUIEvents, "User clicked the refresh button, update the label and hide the expired message.");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         #endregion
@@ -569,8 +629,10 @@ namespace StreamerBot
                 OptionFlags.TwitchPriorChannelName = TextBox_TwitchChannelUserName.Text;
             }
 
+            LogWriter.DebugLog("TextBox_TwitchChannelBotNames_TargetUpdated", DebugLogTypes.GUIEvents, "Text box source updated, check Twitch button enable status.");
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
-
     }
 }

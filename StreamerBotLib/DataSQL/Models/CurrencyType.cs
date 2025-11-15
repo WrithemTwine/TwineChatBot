@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CurrencyName))]
     [Index(nameof(CurrencyName), IsUnique = true)]
+    [DebuggerDisplay("CurrencyName={CurrencyName}, AccrueAmt={AccrueAmt}, Seconds={Seconds}, MaxValue={MaxValue}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class CurrencyType(
                               double accrueAmt,

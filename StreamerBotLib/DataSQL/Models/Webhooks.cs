@@ -1,8 +1,7 @@
-﻿using StreamerBotLib.Enums;
+﻿using StreamerBotLib.Models.Enums;
 
 namespace StreamerBotLib.DataSQL.Models
 {
-
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Webhooks(int id,
                          bool isEnabled,

@@ -1,9 +1,9 @@
 ﻿using Microsoft.Web.WebView2.Wpf;
 
 using StreamerBotLib.BotClients;
-using StreamerBotLib.Enums;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
@@ -23,24 +23,40 @@ namespace StreamerBot
             {
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
-                Version thisversion = this.GetType().Assembly.GetName().Version;
 
-                if (thisversion.Major == 1 && thisversion.MajorRevision == 3 && thisversion.Minor == 1 && thisversion.MinorRevision == 3)
-                { // reset the credentials, new access scopes for each token
-                    Settings.Default.TwitchAuthBotClientId = (string)Settings.Default.GetPreviousVersion("TwitchAuthClientId"); ;
+                // reserved for clearing tokens when there is an access scope change
 
-                    Settings.Default.TwitchAuthBotAccessToken = null;
-                    Settings.Default.TwitchAuthBotAuthCode = null;
-                    Settings.Default.TwitchAuthBotRefreshToken = null;
-                    Settings.Default.TwitchAuthStreamerAccessToken = null;
-                    Settings.Default.TwitchAuthStreamerAuthCode = null;
-                    Settings.Default.TwitchAuthStreamerRefreshToken = null;
+                //Version thisversion = this.GetType().Assembly.GetName().Version;
 
-                    Settings.Default.TwitchBotAccessToken = null;
-                    Settings.Default.TwitchStreamerAccessToken = null;
-                }
+                //if (thisversion.Major == 1 && thisversion.MajorRevision == 3 && thisversion.Minor == 1 && thisversion.MinorRevision == 3)
+                //{ // reset the credentials, new access scopes for each token
+                //    Settings.Default.TwitchAuthBotClientId = (string)Settings.Default.GetPreviousVersion("TwitchAuthClientId"); ;
+
+                //    Settings.Default.TwitchAuthBotAccessToken = null;
+                //    Settings.Default.TwitchAuthBotAuthCode = null;
+                //    Settings.Default.TwitchAuthBotRefreshToken = null;
+                //    Settings.Default.TwitchAuthStreamerAccessToken = null;
+                //    Settings.Default.TwitchAuthStreamerAuthCode = null;
+                //    Settings.Default.TwitchAuthStreamerRefreshToken = null;
+
+                //    Settings.Default.TwitchBotAccessToken = null;
+                //    Settings.Default.TwitchStreamerAccessToken = null;
+                //}
 
                 Settings.Default.Save();
+            }
+
+            if (Settings.Default.AppCurrWorkingPopup)
+            {
+                Settings.Default.AppCurrWorkingPopup = false;
+                string SaveCWDPath = GetAppDataCWD();
+
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application'AppVersion current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+
+                if (boxResult == MessageBoxResult.Yes)
+                {
+                    Settings.Default.AppCurrWorkingAppData = true;
+                }
             }
 
             if (Settings.Default.AppCurrWorkingAppData)
@@ -53,7 +69,7 @@ namespace StreamerBot
         private void SetDatabaseChoice()
         {
             if (!
-#if DEBUG || DEBUG_VIEWXAML || RELEASE_SQLITE
+#if DEBUG || DEBUG_VIEWXAML || RELEASE_SQLITE || UPDATE_NUGET_ONLY
             OptionFlags.EFCDatabaseProviderSqlite
 #elif RELEASE_POSTGRE
             OptionFlags.EFCDatabaseProviderPostgreSQL
@@ -96,6 +112,7 @@ namespace StreamerBot
         /// </summary>
         private void ConstructEvents()
         {
+            // Twitch Bots focus
             GUITwitchBots.OnBotStopped += GUI_OnBotStopped;
             GUITwitchBots.OnBotStarted += GUI_OnBotStarted;
             GUITwitchBots.OnBotStarted += GuiTwitchBot_GiveawayEvents;
@@ -108,9 +125,9 @@ namespace StreamerBot
             Controller.InvalidAuthorizationToken += Controller_InvalidAuthorizationToken;
             Controller.TokensInitialized += Controller_TokensInitializedAsync;
 
-
             GUITwitchBots.RegisterChannelPoints(TwitchBotUserSvc_GetChannelPoints);
 
+            // Service bots focus - such as Media Overlay Server
             guiAppServices.AppDataDirectory = GetAppDataCWD();
             GUIAppServices.OnBotStarted += GUI_OnBotStarted;
             GUIAppServices.OnBotStopped += GUI_OnBotStopped;
@@ -121,7 +138,6 @@ namespace StreamerBot
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
             VerifyNewVersion += StreamerBotWindow_VerifyNewVersion;
         }
-
 
         #region GitHub webpage
         /// <summary>
@@ -164,10 +180,29 @@ namespace StreamerBot
 
         #region Window Open and Close
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            LogWriter.DebugLog("Window_Loaded", DebugLogTypes.GUIEvents, "Begin Window Loaded events.");
+        private bool DataManagerLoaded = false;
+        private bool WindowLoaded = false;
 
+        private void DataManage_OnLoadCompleted(object sender, EventArgs e)
+        {
+            DataManagerLoaded = true;
+
+            if (WindowLoaded)
+            {
+                FinalizeLoading();
+            }
+            else
+            {
+                while (!WindowLoaded)
+                {
+                    Thread.Sleep(100);
+                }
+                FinalizeLoading();
+            }
+        }
+
+        private void FinalizeLoading()
+        {
             ThreadManager.CreateThreadStart("Window_Loaded", () =>
             {
                 _ = Dispatcher.BeginInvoke(() =>
@@ -175,14 +210,24 @@ namespace StreamerBot
                     ToggleButton_ChooseTwitchAuth_Click(this, null);
 
                     CheckMessageBoxes();
-                    CheckBox_ManageData_Click(sender, new());
+                    CheckBox_ManageData_Click(this, new());
                     CheckBox_TabifySettings_Clicked(this, new());
                     CheckDebug(this, new());
                     SetVisibility(this, new());
                 });
             });
+        }
 
-            LogWriter.DebugLog("Window_Loaded", DebugLogTypes.GUIEvents, "End Window Loaded events.");
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowLoaded = true;
+            LogWriter.DebugLog("Window_Loaded", DebugLogTypes.GUIEvents, "Begin Window Loaded events.");
+
+            if (DataManagerLoaded)
+            {
+                FinalizeLoading();
+                LogWriter.DebugLog("Window_Loaded", DebugLogTypes.GUIEvents, "Started Window Loaded events.");
+            }
         }
 
         /// <summary>
@@ -240,7 +285,7 @@ namespace StreamerBot
             OptionFlags.ActiveToken = false;
 
 #if DEBUG
-            if (TestingWindow != null && TestingWindow.IsActive)
+            if (TestingWindow != null && TestingWindow.ShowActivated)
             {
                 TestingWindow?.Close();
             }

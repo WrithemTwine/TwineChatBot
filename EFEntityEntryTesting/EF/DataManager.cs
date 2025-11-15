@@ -234,9 +234,9 @@ namespace EFEntityEntryTesting.EF
 
         internal event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionChanged;
 
-        private List<Users> UsersList { get; set; } = [];
-        private List<Currency> CurrencyList { get; set; } = [];
-        private List<CurrencyType> CurrencyTypeList { get; set; } = [];
+        private ObservableCollection<Users> UsersList = [];
+        private ObservableCollection<Currency> CurrencyList = [];
+        private ObservableCollection<CurrencyType> CurrencyTypeList = [];
 
         public DataManager()
         {
@@ -283,64 +283,53 @@ namespace EFEntityEntryTesting.EF
 
         public ObservableCollection<Users> GetUsersObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             _GUIcontext.Users.Load();
-            //UsersList = _GUIcontext.Users.Local.ToList();
-            return _GUIcontext.Users.Local.ToObservableCollection();
-            //}
+
+            UsersList.Clear();
+            UsersList.AddRange(_GUIcontext.Users.Local.ToList());
+            return UsersList;
         }
 
         public ObservableCollection<Currency> GetCurrObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             _GUIcontext.Currency.Load();
-            //CurrencyList = _GUIcontext.Currency.Local.ToList();
-            return _GUIcontext.Currency.Local.ToObservableCollection();
-            //}
+
+            CurrencyList.Clear();
+            CurrencyList.AddRange(_GUIcontext.Currency.Local.ToList());
+            return CurrencyList;
         }
 
         public ObservableCollection<CurrencyType> GetCurrTypeObsCol()
         {
-            //lock (_GUIcontext)
-            //{
             _GUIcontext.CurrencyType.Load();
-            //CurrencyTypeList = _GUIcontext.CurrencyType.Local.ToList();
-            return _GUIcontext.CurrencyType.Local.ToObservableCollection();
-            //}
+            CurrencyTypeList.Clear();
+
+            CurrencyTypeList.AddRange(_GUIcontext.CurrencyType.Local.ToList());
+
+            return CurrencyTypeList;
         }
 
         private async Task RefreshUsersObsCol()
         {
-            //lock (_GUIcontext)
-            //{
+            _GUIcontext.ChangeTracker.Clear();
             await _GUIcontext.Users.LoadAsync();
+            UsersList.Clear();
 
-            //ThreadManager.AddTaskToGUIDispatcher(() =>
-            //{
-            //    UsersList.Clear();
-            //    UsersList.AddRange([.. _GUIcontext.Users.Local]);
-            //});
+            UsersList.AddRange(_GUIcontext.Users.Local.ToList());
 
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Users)));
-            //}
         }
 
         private async Task RefreshCurrencyObsCol()
         {
-            //lock (_GUIcontext)
-            //{
-            await _GUIcontext.Currency.LoadAsync();
+            _GUIcontext.ChangeTracker.Clear();
 
-            //ThreadManager.AddTaskToGUIDispatcher(() =>
-            //{
-            //    CurrencyList.Clear();
-            //    CurrencyList.AddRange([.. _GUIcontext.Currency.Local]);
-            //});
+            await _GUIcontext.Currency.LoadAsync();
+            CurrencyList.Clear();
+
+            CurrencyList.AddRange(_GUIcontext.Currency.Local.ToList());
 
             OnDataCollectionChanged?.Invoke(this, new(nameof(_GUIcontext.Currency)));
-            //}
         }
 
         #endregion

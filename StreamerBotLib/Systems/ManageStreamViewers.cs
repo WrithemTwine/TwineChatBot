@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems
@@ -32,7 +32,7 @@ namespace StreamerBotLib.Systems
                 viewer.Registered = false;
 
 #if DEBUG
-                LogWriter.DebugLog("EndStreamResetList", DebugLogTypes.SpecialPurpose, $"User: {viewer.LiveUser.UserName} - {viewer.LiveUser.Platform}");
+                //LogWriter.DebugLog("EndStreamResetList", DebugLogTypes.SpecialPurpose, $"User: {viewer.LiveUser.UserName} - {viewer.LiveUser.Platform}");
 #endif
                 return false;
             });
@@ -94,10 +94,10 @@ namespace StreamerBotLib.Systems
             }
 
 #if DEBUG
-            foreach (var user in result)
-            {
-                LogWriter.DebugLog("AddUsersFirstJoinedChannel", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
-            }
+            //foreach (var user in result)
+            //{
+            //    LogWriter.DebugLog("AddUsersFirstJoinedChannel", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
+            //}
 #endif
 
             return result;
@@ -124,10 +124,10 @@ namespace StreamerBotLib.Systems
             }
 
 #if DEBUG
-            foreach (var user in result)
-            {
-                LogWriter.DebugLog("AddUsersFirstChatMessage", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
-            }
+            //foreach (var user in result)
+            //{
+            //    LogWriter.DebugLog("AddUsersFirstChatMessage", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
+            //}
 #endif
 
             return result;
@@ -186,10 +186,10 @@ namespace StreamerBotLib.Systems
             }
 
 #if DEBUG
-            foreach (var user in result)
-            {
-                LogWriter.DebugLog("GetUsersLeft", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
-            }
+            //foreach (var user in result)
+            //{
+            //    LogWriter.DebugLog("GetUsersLeft", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
+            //}
 #endif
 
             return result;
@@ -210,10 +210,10 @@ namespace StreamerBotLib.Systems
                 .ToList();
 
 #if DEBUG
-            foreach (var user in activeUsers)
-            {
-                LogWriter.DebugLog("GetCurrentActiveUsers", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
-            }
+            //foreach (var user in activeUsers)
+            //{
+            //    LogWriter.DebugLog("GetCurrentActiveUsers", DebugLogTypes.SpecialPurpose, $"User: {user.UserName} - {user.Platform}");
+            //}
 #endif
 
             return activeUsers;

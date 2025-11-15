@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 
 using TwitchLib.EventSub.Websockets.Core.Models;
@@ -8,7 +8,7 @@ namespace StreamerBotLib.BotClients.Twitch
     public class EventSubMessageIdsLogger : IEventSubMessageIdsLogger
     {
         public bool MsgLogging { get; set; }
-        public List<EventSubMetadata> MessageIdLog = [];
+        public List<WebsocketEventSubMetadata> MessageIdLog = [];
 
         public void MsgLogCleanup()
         {
@@ -16,6 +16,7 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 ThreadManager.CreateThreadStart(Task.Run(async () =>
                 {
+                    MsgLogging = true;
                     MessageIdLog.Clear();
 
                     TimeSpan interval = new(0, 10, 0);
@@ -25,11 +26,12 @@ namespace StreamerBotLib.BotClients.Twitch
 
                         await Task.Delay(500);
                     }
+                    MsgLogging = false;
                 }));
             }
         }
 
-        public bool AddMessageId(EventSubMetadata args, Predicate<EventSubMetadata> action)
+        public bool AddMessageId(WebsocketEventSubMetadata args, Predicate<WebsocketEventSubMetadata> action)
         {
             return MessageIdLog.UniqueAdd(args, action);
         }

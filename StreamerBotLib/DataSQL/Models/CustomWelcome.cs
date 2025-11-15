@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
+    [DebuggerDisplay("UserId={UserId}, Platform={Platform}, Message={Message}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class CustomWelcome(string message,
                                string userId,

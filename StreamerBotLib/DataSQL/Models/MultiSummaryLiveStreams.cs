@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
+    [DebuggerDisplay("UserId={UserId}, StreamCount={StreamCount}, ThroughDate={ThroughDate}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class MultiSummaryLiveStreams(int streamCount,
                                         DateTime throughDate,

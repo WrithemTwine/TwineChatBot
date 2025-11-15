@@ -3,9 +3,46 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:SqlModels="clr-namespace:StreamerBotLib.DataSQL.Models"
     xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
+    xmlns:SqlModelConverters="clr-namespace:StreamerBotLib.DataSQL.Models.Converters"
+    xmlns:Converter="clr-namespace:StreamerBotLib.Models.Converters"
+    xmlns:Models="clr-namespace:StreamerBotLib.Models"
+    xmlns:StaticLib="clr-namespace:StreamerBotLib.Static"
     xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     mc:Ignorable="d">
+
+    <SqlModelConverters:IntConvert x:Name="IntConverter" x:Key="IntConverter" />
+    <SqlModelConverters:TimeoutSecondsConverter x:Name="TimeoutSecConvert" x:Key="TimeoutSecConvert" />
+    <StaticLib:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
+    <Converter:ConvertCategory x:Name="ConvertCategory" x:Key="ConvertCategory" />
+    <Converter:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
+    <Converter:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
+    <Converter:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
+ 
+    <GroupStyle x:Key="DataGrid_GroupStyle">
+        <GroupStyle.HeaderTemplate>
+            <DataTemplate>
+                <StackPanel Orientation="Horizontal" Margin="2,5">
+                    <StackPanel.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="14" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text=" - " />
+                    <TextBlock Text="{Binding ItemCount}" />
+                    <TextBlock Text=" item(s)" />
+                </StackPanel>
+            </DataTemplate>
+        </GroupStyle.HeaderTemplate>
+        <GroupStyle.Panel>
+            <ItemsPanelTemplate>
+                <DataGridRowsPresenter />
+            </ItemsPanelTemplate>
+        </GroupStyle.Panel>
+    </GroupStyle>
 
     <Style TargetType="{x:Type DataGrid}">
         <Setter Property="AlternationCount" Value="1" />
@@ -35,7 +72,24 @@
                 </Style>
             </Setter.Value>
         </Setter>
+
     </Style>
+
+
+    <DataTemplate x:Key="CategoryDataTemplate">
+        <StackPanel>
+            <TextBlock Text="{Binding Category, Mode=TwoWay, Converter={StaticResource ConvertCategory}}" TextWrapping="Wrap" Width="250" />
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditCategoryDataTemplate">
+        <StackPanel>
+            <ListBox
+                x:Name="ComboBox_EditCategoryDataTemplate" 
+                MinHeight="50" MaxHeight="200"
+                ItemsSource="{Binding Category, Mode=TwoWay, Converter={StaticResource EditConvertCategory}}" />
+        </StackPanel>
+    </DataTemplate>
 
     <!--#region DataGrid DateTime templates -->
     <DataTemplate x:Key="DateFirstSeenTemplate">
@@ -199,6 +253,94 @@
 
     <!--#region DataGrid RowDetail DataTemplates -->
 
+    <DataTemplate x:Key="DG_RowDetailDT_Clips">
+        <Border BorderThickness="2">
+            <StackPanel Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel>
+                    <TextBlock>Category:</TextBlock>
+                    <TextBlock Text="{Binding CategoryId}" />
+                    <TextBlock> -</TextBlock>
+                    <TextBlock Text="{Binding CategoryList.Category}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Language:</TextBlock>
+                    <TextBlock Text="{Binding Language}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>Title:</TextBlock>
+                    <TextBlock Text="{Binding Title}" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock>URL:</TextBlock>
+                    <TextBlock Text="{Binding Url}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_Commands">
+        <Border BorderThickness="2">
+            <DockPanel>
+                <DockPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="MinWidth" Value="75" />
+                        <Setter Property="Foreground" Value="{StaticResource ForegroundText}" />
+                    </Style>
+                </DockPanel.Resources>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock>Usage:</TextBlock>
+                    <TextBlock Background="{StaticResource LightBackground}" Text="{Binding Usage}" TextWrapping="Wrap" />
+                    <TextBlock>Allow Parameter: </TextBlock>
+                    <CheckBox IsChecked="{Binding AllowParam}" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock>Send Message Count:</TextBlock>
+                    <TextBox Text="{Binding SendMsgCount, Converter={StaticResource IntConverter}}" />
+                    <TextBlock>Message:</TextBlock>
+                    <TextBox Text="{Binding Message}" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock>Lookup Data: </TextBlock>
+                    <CheckBox IsChecked="{Binding LookupData}" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Width="100">Lookup Table: </TextBlock>
+                    <TextBox Text="{Binding Table}" />
+                    <TextBlock Width="100">Key Field: </TextBlock>
+                    <TextBox Text="{Binding KeyField}" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Width="100">Data Field: </TextBlock>
+                    <TextBox Text="{Binding DataField}" />
+                    <TextBlock Width="100">Currency Field: </TextBlock>
+                    <TextBox Text="{Binding CurrencyField}" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock>Action: </TextBlock>
+                    <ComboBox ItemsSource="{Binding Source={StaticResource EnumCommandAction}}" SelectedItem="{Binding Action}"/>
+                    <TextBlock>Sort: </TextBlock>
+                    <ComboBox ItemsSource="{Binding Source={StaticResource EnumCommandSort}}" SelectedItem="{Binding Sort}"/>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock>Select Top N Records: </TextBlock>
+                    <TextBox Text="{Binding Top, Converter={StaticResource IntConverter}}" />
+                    <TextBlock>Record Units (e.g. chat,chats): </TextBlock>
+                    <TextBox Text="{Binding Unit}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </DataTemplate>
+
     <DataTemplate x:Key="DG_RowDetailDT_Followers">
         <Border BorderThickness="2">
             <StackPanel Orientation="Vertical">
@@ -224,109 +366,41 @@
         </Border>
     </DataTemplate>
 
-    <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
+    <DataTemplate x:Key="DG_RowDetailDT_OverlayServices">
         <Border BorderThickness="2">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="25" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="10" />
-
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="30" />
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
-
-                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
-
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Users" />
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MaxUsers, StringFormat={}{0:N0}}"/>
-                <TextBlock Grid.Row="3" Grid.Column="2" Text="Total Chats" />
-                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding TotalChats, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Commands" />
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CommandMsgs, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="4" Grid.Column="2" Text="Auto Commands" />
-                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding AutomatedCommands, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Channel Points Redeemed" />
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ChannelPtCount, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="5" Grid.Column="2" Text="Channel Challenges" />
-                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding ChannelChallenge, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="6" Grid.Column="0" Text="Webhook Messages" />
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WebhookMsgs, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="6" Grid.Column="2" Text="Clips Made" />
-                <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding ClipsMade, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="7" Grid.Column="0" Text="New Follows"/>
-                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding NewFollows, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="7" Grid.Column="2" Text="Mods Present" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding ModeratorsPresent, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="8" Grid.Column="0" Text="VIPs Present" />
-                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding VIPsPresent, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="8" Grid.Column="2" Text="Subs Present" />
-                <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SubsPresent, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="9" Grid.Column="0" Text="New Subs" />
-                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding NewSubscribers, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="9" Grid.Column="2" Text="Gift Subs" />
-                <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding GiftSubs, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Events" />
-                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding AutomatedEvents, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="10" Grid.Column="2" Text="Bits" />
-                <TextBlock Grid.Row="10" Grid.Column="3" Text="{Binding Bits, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="11" Grid.Column="0" Text="Raids" />
-                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Raids, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="11" Grid.Column="2" Text="Hosted" />
-                <TextBlock Grid.Row="11" Grid.Column="3" Text="{Binding Hosted, StringFormat={}{0:N0}}" />
-
-                <TextBlock Grid.Row="12" Grid.Column="0" Text="Users TimedOut"/>
-                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UsersTimedOut, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="12" Grid.Column="2" Text="Users Banned" />
-                <TextBlock Grid.Row="12" Grid.Column="3" Text="{Binding UsersBanned, StringFormat={}{0:N0}}" />
-            </Grid>
-        </Border>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_MultiWebhooks">
-        <Border BorderThickness="1">
-            <StackPanel Orientation="Vertical">
-                <StackPanel.Resources>
+            <DockPanel>
+                <DockPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
                         <Setter Property="Margin" Value="0,3" />
                         <Setter Property="Orientation" Value="Horizontal" />
                     </Style>
-                </StackPanel.Resources>
+                </DockPanel.Resources>
                 <StackPanel>
+                    <TextBlock>Message:</TextBlock>
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_Webhooks">
+        <Border BorderThickness="1">
+            <DockPanel>
+                <DockPanel.Resources>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Margin" Value="0,3" />
+                        <Setter Property="Orientation" Value="Horizontal" />
+                    </Style>
+                </DockPanel.Resources>
+                <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Server NickName:</TextBlock>
                     <TextBox Text="{Binding Server}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Webhook URL:</TextBlock>
-                    <TextBox Width="150" Text="{Binding Webhook}" />
+                    <TextBox TextWrapping="Wrap" Text="{Binding Webhook}" />
                 </StackPanel>
-            </StackPanel>
+            </DockPanel>
         </Border>
     </DataTemplate>
 
@@ -401,14 +475,25 @@
     <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
 
     <CollectionViewSource x:Key="DG_BanReasons_CVS" Source="{Binding BanReasons, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_BanRules_CVS" Source="{Binding BanRules, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_BanRules_CVS" Source="{Binding BanRules, Source={StaticResource DataViews}}">
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="ViewerTypes" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_CategoryList_CVS" Source="{Binding CategoryList, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_ChannelEvents_CVS" Source="{Binding ChannelEvents, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="Name" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_Clips_CVS" Source="{Binding Clips, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_Clips_CVS" Source="{Binding Clips, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="CategoryList.Category" Direction="Ascending" />
+        </CollectionViewSource.SortDescriptions>
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="CategoryList.Category" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_Commands_CVS" Source="{Binding Commands, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="CmdName"/>
@@ -423,6 +508,9 @@
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="User.UserName" />
         </CollectionViewSource.SortDescriptions>
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="CurrencyName" />
+        </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}">
@@ -438,20 +526,37 @@
     </CollectionViewSource>
 
     <CollectionViewSource x:Key="DG_GameDeadCounter_CVS" Source="{Binding GameDeadCounter, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_GiveawayUserData_CVS" Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_GiveawayUserData_CVS" Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="DateTime" Direction="Descending" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="RaidDate" Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_LearnMsgs_CVS" Source="{Binding LearnMsgs, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_ModeratorApprove_CVS" Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_LearnMsgs_CVS" Source="{Binding LearnMsgs, Source={StaticResource DataViews}}">
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="MsgType" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_ModeratorApprove_CVS" Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}" >
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="ModActionType" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiChannels_CVS" Source="{Binding MultiChannels, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="UserName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="LiveDate" Direction="Descending" />
+            <scm:SortDescription PropertyName="MultiChannels.UserName" />
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
 
     <CollectionViewSource x:Key="DG_MultiWebhooks_CVS" Source="{Binding MultiWebhooks, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
@@ -460,8 +565,6 @@
         </CollectionViewSource.SortDescriptions>
         <CollectionViewSource.GroupDescriptions>
             <PropertyGroupDescription PropertyName="Kind" />
-            <PropertyGroupDescription PropertyName="AddEveryone" />
-            <PropertyGroupDescription PropertyName="IsEnabled" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_MultiSummaryLiveStreams_CVS" Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />
@@ -471,7 +574,11 @@
             <scm:SortDescription PropertyName="RaidDate" Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_OverlayServices_CVS" Source="{Binding OverlayServices, Source={StaticResource DataViews}}" />
+    <CollectionViewSource x:Key="DG_OverlayServices_CVS" Source="{Binding OverlayServices, Source={StaticResource DataViews}}">
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="OverlayType" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
     <CollectionViewSource x:Key="DG_OverlayTicker_CVS" Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_Quotes_CVS" Source="{Binding Quotes, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_ShoutOuts_CVS" Source="{Binding ShoutOuts, Source={StaticResource DataViews}}" />
@@ -491,19 +598,6 @@
 
     <!--#endregion-->
 
-    <GUI:ConvertCategory x:Name="ConvertCategory" x:Key="ConvertCategory" />
-    <GUI:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
 
-    <DataTemplate x:Key="CategoryDataTemplate">
-        <StackPanel>
-            <TextBlock Text="{Binding Category, Converter={StaticResource ConvertCategory}}" TextWrapping="Wrap" Width="250" />
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditCategoryDataTemplate">
-        <StackPanel>
-            <ComboBox ItemsSource="{Binding Category, Converter={StaticResource EditConvertCategory}}" />
-        </StackPanel>
-    </DataTemplate>
 
 </ResourceDictionary>

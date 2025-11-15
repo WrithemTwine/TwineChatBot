@@ -1,10 +1,11 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class OverlayTicker : IDatabaseTableMeta
     {
-        public StreamerBotLib.Overlay.Enums.OverlayTickerItem TickerName { get => (StreamerBotLib.Overlay.Enums.OverlayTickerItem)Values["TickerName"]; set => Values["TickerName"] = value; }
+        public OverlayTickerItem TickerName { get => (OverlayTickerItem)Values["TickerName"]; set => Values["TickerName"] = value; }
         public System.String UserName { get => (System.String)Values["UserName"]; set => Values["UserName"] = value; }
 
         public Dictionary<string, object> Values { get; }
@@ -21,7 +22,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         }
         public Dictionary<string, Type> Meta => new()
         {
-              { "TickerName", typeof(StreamerBotLib.Overlay.Enums.OverlayTickerItem) },
+              { "TickerName", typeof(OverlayTickerItem) },
               { "UserName", typeof(System.String) }
         };
         public object GetModelEntity()

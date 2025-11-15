@@ -1,14 +1,14 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
+using TwitchLib.EventSub.Core.EventArgs.Channel;
 using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
 using TwitchLib.EventSub.Websockets;
-using TwitchLib.EventSub.Websockets.Core.EventArgs.Channel;
-using TwitchLib.EventSub.Websockets.Handler.Channel;
+using TwitchLib.EventSub.Websockets.Core.Models;
 
 namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 {
@@ -33,16 +33,16 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                   {
                       return
-                      m.MessageId == args.Notification.Metadata.MessageId &&
-                      m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                      m.MessageId == ((WebsocketEventSubMetadata)((WebsocketEventSubMetadata)args.Metadata)).MessageId &&
+                      m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                   }))
                 {
                     LogWriter.DebugLog("OnChannelChatMessage", DebugLogTypes.TwitchBotEventSubBot, "Received a new chat message event.");
 
-                    ChannelChatMessage msg = args.Notification.Payload.Event;
+                    ChannelChatMessage msg = args.Payload.Event;
                     OnChannelChatMessageReceived?.Invoke(this, new(msg));
                 }
             });
@@ -74,7 +74,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         /// </summary>
         public void AddSubscriptions()
         {
-            CreateEventSubSubscription(new ChatMessageHandler().SubscriptionType, "1", new Dictionary<string, string>
+            CreateEventSubSubscription("channel.chat.message", "1", new Dictionary<string, string>
             {
                 {"broadcaster_user_id", OptionFlags.TwitchStreamerUserId },
                 {"user_id", OptionFlags.TwitchBotUserId }
@@ -86,7 +86,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         /// </summary>
         public void AddConnectionSubscriptions()
         {
-            CreateEventSubSubscription(new ChatMessageHandler().SubscriptionType, "1", new Dictionary<string, string>
+            CreateEventSubSubscription("channel.chat.message", "1", new Dictionary<string, string>
             {
                 {"broadcaster_user_id", OptionFlags.TwitchStreamerUserId },
                 {"user_id", OptionFlags.TwitchBotUserId }
@@ -107,12 +107,12 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"Requesting new subscription for {SubscriptionType}.");
                 if (!SubscriptionIdKeys.ContainsKey(SubscriptionType) && _eventSubWebsocketClient.SessionId != null)
                 {
-                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"Adding new subscription for {SubscriptionType}.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"Adding new subscription for {SubscriptionType}.");
 
                     var SubResponse = tokenBot.BotHelixApi.Helix.EventSub.CreateEventSubSubscriptionAsync(
                     SubscriptionType, Version, conditions, EventSubTransportMethod.Websocket, _eventSubWebsocketClient.SessionId).Result.Subscriptions[0];
 
-                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
+                    LogWriter.DebugLog("CreateEventSubSubscription", DebugLogTypes.TwitchBotEventSubBot, $"New {SubscriptionType} subscription added. Current EventSub cost is {SubResponse.Cost} with a(n) {SubResponse.Status} status.");
 
                     SubscriptionIdKeys.Add(KeyOverride ?? SubResponse.Type, SubResponse.Id);
                 }
@@ -141,7 +141,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                         SubscriptionIdKeys.Remove(key);
                     }
                     LogWriter.DebugLog("DeleteEventSubSubscription",
-                       DebugLogTypes.TwitchStreamerEventSubBot,
+                       DebugLogTypes.TwitchBotEventSubBot,
                        $"Deleted the {key} subscription.");
                 }
             }
@@ -153,7 +153,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         public void ClearSubscriptions()
         {
-            LogWriter.DebugLog("ClearEventSubSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Clearing all subscriptions.");
+            LogWriter.DebugLog("ClearEventSubSubscriptions", DebugLogTypes.TwitchBotEventSubBot, "Clearing all subscriptions.");
 
             SubscriptionIdKeys.Clear();
         }

@@ -1,8 +1,8 @@
 ﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -31,6 +31,7 @@ namespace TestStreamerBot
         public TestBotController()
         {
             Initialize();
+            dataManager = BotController.DataBot.GetDataManager() as IDataManagerTestMethods;
         }
 
         private void Initialize()
@@ -62,11 +63,9 @@ namespace TestStreamerBot
                     {
                         File.Delete(DatabaseName);
                     }
-                    botController = new();
+                    botController = new(null);
 
                     botController.OutputSentToBots += BotController_OutputSentToBots;
-
-                    dataManager = (IDataManagerTestMethods)SystemsController.DataManage;
                 }
             }
         }
@@ -234,7 +233,7 @@ namespace TestStreamerBot
 
                 List<Follow> regularfollower = [GenerateFollower("Reg")];
 
-                BotController.HandleBotEventStartBulkFollowers();
+                botController.HandleBotEventStartBulkFollowers();
 
                 botController.HandleBotEventNewFollowers(regularfollower[0]);
 
@@ -246,7 +245,7 @@ namespace TestStreamerBot
                     Platform.Twitch,
                     GetRandomGameIdName().GameName)));
 
-                BotController.HandleBotEventBulkPostFollowers(bulkfollows);
+                botController.HandleBotEventBulkPostFollowers(bulkfollows);
 
                 foreach (Follow f in bulkfollows)
                 {

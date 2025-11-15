@@ -1,17 +1,17 @@
 ﻿#define AUTO_FLUSH
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
 
 using System.Globalization;
 using System.IO;
 
+namespace StreamerBotLib.Static
+{
 #if !AUTO_FLUSH
 using System.Reflection;
 using System.Text;
 #endif
 
-namespace StreamerBotLib.Static
-{
     /// <summary>
     /// Manages log output across the whole bot.
     /// </summary>
@@ -167,6 +167,7 @@ namespace StreamerBotLib.Static
                 DebugLogTypes.SpecialPurpose => OptionFlags.EnableDebugSpecialPurpose ? line : "",
 #endif
                 DebugLogTypes.OverlayBot => OptionFlags.EnableDebugLogOverlays ? line : "",
+                DebugLogTypes.DataBot => OptionFlags.EnableDebugDataBot ? line : "",
                 DebugLogTypes.DataManager => OptionFlags.EnableDebugDataManager ? line : "",
                 DebugLogTypes.TwitchBots => OptionFlags.EnableDebugTwitchBots ? line : "",
                 DebugLogTypes.TwitchStreamerEventSubBot => OptionFlags.EnableDebugTwitchStreamerEventSubBot ? line : "",

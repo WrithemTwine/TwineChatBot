@@ -13,11 +13,7 @@ namespace EFEntityEntryTesting.GUI
         public ObservableCollection<Currency> Currency { get; private set; }
         public ObservableCollection<CurrencyType> CurrencyTypes { get; private set; }
 
-        public GUIDataManager()
-        {
-            // comment this SetObsCols() method and build to get XAML designer to display GUI (reload designer)
-            SetObsCols();
-        }
+        public GUIDataManager() { }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;

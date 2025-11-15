@@ -1,7 +1,7 @@
 ﻿using StreamerBotLib.Culture;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 

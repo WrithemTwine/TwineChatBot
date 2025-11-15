@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(ClipId), nameof(CategoryId))]
     [Index(nameof(ClipId), nameof(CreatedAt), nameof(CategoryId))]
+    [DebuggerDisplay("ClipId={ClipId}, CreatedAt={CreatedAt}, CategoryId={CategoryId}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Clips(string clipId,
                        DateTime createdAt,
@@ -32,5 +35,6 @@ namespace StreamerBotLib.DataSQL.Models
         public float Duration { get; set; } = duration;
         public string Url { get; set; } = url;
 
+        public CategoryList CategoryList { get; set; } = null!;
     }
 }

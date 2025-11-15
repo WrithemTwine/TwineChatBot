@@ -1,6 +1,6 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 using TwitchLib.Api;
@@ -11,12 +11,15 @@ using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
 using TwitchLib.Api.Helix.Models.Chat.GetChatters;
+using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Api.Services.Events.FollowerService;
+
+using HelixClips = TwitchLib.Api.Helix.Models.Clips.GetClips.Clip;
 
 namespace StreamerBotLib.BotClients.Twitch
 {
@@ -27,7 +30,6 @@ namespace StreamerBotLib.BotClients.Twitch
         /// <summary>
         /// Reports Game Category Name from querying a channel
         /// </summary>
-        public event EventHandler<OnGetChannelGameNameEventArgs> GetChannelGameName;
         public event EventHandler<OnGetChannelPointsEventArgs> GetChannelPoints;
         public event EventHandler<OnStreamRaidResponseEventArgs> StartRaidEventResponse;
         public event EventHandler<GetStreamsEventArgs> GetStreamsViewerCount;
@@ -35,6 +37,9 @@ namespace StreamerBotLib.BotClients.Twitch
         public event EventHandler<OnNewFollowersDetectedArgs> OnBulkFollowsUpdate;
         public event EventHandler BulkFollowsCompleted;
         public event EventHandler AccessTokenUnauthorized;
+
+        public event EventHandler<FindChannelCategoryEventArgs> FoundStreamerCategory;
+        public event EventHandler<FindChannelCategoryEventArgs> FoundViewerCategory;
 
         internal TwitchHelixBot(TwitchTokenBot TokenBot)
         {
@@ -98,6 +103,30 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 return await tokenBot.StreamerHelixApi.Helix.ChannelPoints.GetCustomRewardAsync(Id);
             }
+            return null;
+        }
+
+        private async Task<List<HelixClips>> GetChannelClipsAsync(string UserId = null, string UserName = null)
+        {
+            string Id = UserId ?? await HelixGetUserId(UserName);
+            if (Id != null)
+            {
+                List<HelixClips> clips = [];
+                string after = null;
+
+                do
+                {
+                    GetClipsResponse curr = await tokenBot.StreamerHelixApi.Helix.Clips.GetClipsAsync(broadcasterId: Id,
+                                                                                                    first: 100,
+                                                                                                   after: after);
+                    after = curr.Pagination.Cursor;
+                    clips.AddRange(curr.Clips);
+                } while (after != null);
+
+                return clips;
+
+            }
+
             return null;
         }
 
@@ -289,7 +318,11 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 if (UserName == OptionFlags.TwitchChannelName)
                 {
-                    PostEvent_GetChannelGameName(gameName, gameId);
+                    PostEvent_GetStreamerCategory(gameName, gameId);
+                }
+                else
+                {
+                    PostEvent_GetViewerCategory(gameName, gameId);
                 }
 
                 return new(gameId, gameName);
@@ -558,13 +591,28 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        public List<HelixClips> GetChannelClips(string UserId = null, string UserName = null)
+        {
+            return PerformAction("GetChannelClips", () =>
+            {
+                return GetChannelClipsAsync(UserId: UserId, UserName: UserName);
+            }).Result;
+        }
+
         #region process events
 
-        private void PostEvent_GetChannelGameName(string foundGameName, string foundGameId)
+        private void PostEvent_GetStreamerCategory(string foundGameName, string foundGameId)
         {
             LogWriter.DebugLog("PostEvent_GetChannelGameName", DebugLogTypes.TwitchHelixBot, "Posting game category update through 'GetChannelGameName' event.");
 
-            GetChannelGameName?.Invoke(this, new OnGetChannelGameNameEventArgs() { GameName = foundGameName, GameId = foundGameId });
+            FoundStreamerCategory?.Invoke(this, new FindChannelCategoryEventArgs() { GameName = foundGameName, GameId = foundGameId });
+        }
+
+        private void PostEvent_GetViewerCategory(string foundGameName, string foundGameId)
+        {
+            LogWriter.DebugLog("PostEvent_GetChannelGameName", DebugLogTypes.TwitchHelixBot, "Posting game category update through 'GetChannelGameName' event.");
+
+            FoundViewerCategory?.Invoke(this, new FindChannelCategoryEventArgs() { GameName = foundGameName, GameId = foundGameId });
         }
 
         private void PostEvent_GetCustomRewards(List<string> CustomRewardsList)

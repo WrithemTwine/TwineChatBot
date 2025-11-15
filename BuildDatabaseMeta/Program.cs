@@ -94,14 +94,14 @@ namespace BuildDatabaseMeta
         {
             StreamWriter streamWriter = new(filename, false);
             streamWriter.Write(
-            $"using StreamerBotLib.Enums;\r\n" +
+            $"namespace StreamerBotLib.DataSQL.TableMeta\r\n" +
+            $"{{\r\n" +
+               $"using StreamerBotLib.Enums;\r\n" +
             $"using StreamerBotLib.DataSQL.Models;\r\n" +
             $"using StreamerBotLib.Interfaces;\r\n" +
             $"using StreamerBotLib.Overlay.Enums;\r\n" +
             $"\r\n" +
-            $"namespace StreamerBotLib.DataSQL.TableMeta\r\n" +
-            $"{{\r\n" +
-            $"    internal class {classname} : IDatabaseTableMeta\r\n" +
+         $"    internal class {classname} : IDatabaseTableMeta\r\n" +
             $"    {{\r\n" +
             $"{param}\r\n" +
             $"\r\n" +
@@ -144,11 +144,11 @@ namespace BuildDatabaseMeta
         {
             StreamWriter streamWriter = new(filename);
             streamWriter.Write(
-                $"using StreamerBotLib.Interfaces;\r\n" +
-                $"\r\n" +
                 $"namespace StreamerBotLib.DataSQL.TableMeta\r\n" +
                 $"{{\r\n" +
-                $"    public class TableMeta\r\n" +
+                 $"using StreamerBotLib.Interfaces;\r\n" +
+                $"\r\n" +
+               $"    public class TableMeta\r\n" +
                 $"    {{\r\n" +
                 $"        internal IDatabaseTableMeta CurrEntity;\r\n" +
                 $"\r\n" +

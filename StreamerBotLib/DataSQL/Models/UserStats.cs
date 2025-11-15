@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
+    [DebuggerDisplay("UserId={UserId}, Platform={Platform}, WatchTime={WatchTime}, ChannelChat={ChannelChat}, CallCommands={CallCommands}")]
 
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class UserStats(
@@ -18,15 +21,15 @@ namespace StreamerBotLib.DataSQL.Models
                            Platform platform)
 #else
     public class UserStats(
-                           TimeSpan watchTime = default,
-                           int channelChat = 0,
-                           int callCommands = 0,
-                           int rewardRedeems = 0,
-                           int clipsCreated = 0,
-                           string userId = null,
-                           Platform platform = Platform.Default)
+                            TimeSpan watchTime = default,
+                            int channelChat = 0,
+                            int callCommands = 0,
+                            int rewardRedeems = 0,
+                            int clipsCreated = 0,
+                            string userId = null,
+                            Platform platform = Platform.Default)
 #endif
-     : UserBase(userId, platform)
+      : UserBase(userId, platform)
     {
         public TimeSpan WatchTime { get; set; } = watchTime == default ? new(0, 0, 0) : watchTime;
         public int ChannelChat { get; set; } = channelChat;

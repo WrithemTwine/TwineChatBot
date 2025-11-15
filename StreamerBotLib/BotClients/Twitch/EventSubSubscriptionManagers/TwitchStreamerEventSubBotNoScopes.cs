@@ -1,16 +1,14 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
+using TwitchLib.EventSub.Core.EventArgs.Channel;
+using TwitchLib.EventSub.Core.EventArgs.Stream;
 using TwitchLib.EventSub.Websockets;
-using TwitchLib.EventSub.Websockets.Core.EventArgs.Channel;
-using TwitchLib.EventSub.Websockets.Core.EventArgs.Stream;
-using TwitchLib.EventSub.Websockets.Handler.Channel;
-using TwitchLib.EventSub.Websockets.Handler.Channel.Raids;
-using TwitchLib.EventSub.Websockets.Handler.Stream;
+using TwitchLib.EventSub.Websockets.Core.Models;
 
 namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 {
@@ -68,20 +66,21 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             LogWriter.DebugLog("AddSubscriptions", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Adding subscriptions.");
 
-            CreateEventSubSubscription(new StreamOnlineHandler().SubscriptionType, "1",
-                new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchBotUserId } });
+            //CreateEventSubSubscription(
+            //    "stream.online", "1",
+            //    new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchBotUserId } });
 
-            CreateEventSubSubscription(new ChannelUpdateHandler().SubscriptionType, "2", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "to_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } }, "ChannelRaidTo");
-            CreateEventSubSubscription(new ChannelRaidHandler().SubscriptionType, "1", new() { { "from_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } }, "ChannelRaidFrom");
-            CreateEventSubSubscription(new StreamOfflineHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.update", "2", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.raid", "1", new() { { "to_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } }, "ChannelRaidTo");
+            CreateEventSubSubscription("channel.raid", "1", new() { { "from_broadcaster_user_id", OptionFlags.TwitchStreamerUserId } }, "ChannelRaidFrom");
+            CreateEventSubSubscription("stream.offline", "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
         }
         public void AddConnectionSubscriptions()
         {
             LogWriter.DebugLog("AddConnectionSubscriptions", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Adding connection subscriptions.");
 
             CreateEventSubSubscription(
-                new StreamOnlineHandler().SubscriptionType,
+                "stream.online",
                 "1",
                 new Dictionary<string, string>
                 {
@@ -155,23 +154,23 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId((WebsocketEventSubMetadata)args.Metadata, (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 })
                    )
                 {
-                    if (args.Notification.Payload.Event.FromBroadcasterUserId == OptionFlags.TwitchStreamerUserId)
+                    if (args.Payload.Event.FromBroadcasterUserId == OptionFlags.TwitchStreamerUserId)
                     {
                         LogWriter.DebugLog("ChannelRaid", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Channel raid is outgoing.");
-                        OutChannelRaid?.Invoke(this, new(args.Notification.Payload.Event, args.Notification.Metadata.MessageTimestamp.ToLocalTime()));
+                        OutChannelRaid?.Invoke(this, new(args.Payload.Event, ((WebsocketEventSubMetadata)args.Metadata).MessageTimestamp.ToLocalTime()));
                     }
                     else
                     {
                         LogWriter.DebugLog("ChannelRaid", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Channel raid is incoming.");
-                        NewChannelRaid?.Invoke(this, new(args.Notification.Payload.Event, args.Notification.Metadata.MessageTimestamp.ToLocalTime()));
+                        NewChannelRaid?.Invoke(this, new(args.Payload.Event, ((WebsocketEventSubMetadata)args.Metadata).MessageTimestamp.ToLocalTime()));
                     }
                 }
             });
@@ -180,23 +179,23 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 })
                 )
                 {
                     LogWriter.DebugLog("StreamOffline", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Stream is offline.");
 
-                    NewStreamOffline?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewStreamOffline?.Invoke(this, new(args.Payload.Event));
 
                     // stop the offline subscriptions that won't happen while stream is offline
-                    DeleteEventSubSubscription(new ChannelRaidHandler().SubscriptionType);
-                    DeleteEventSubSubscription(new StreamOfflineHandler().SubscriptionType);
+                    DeleteEventSubSubscription("channel.raid");
+                    DeleteEventSubSubscription("stream.offline");
 
-                    CreateEventSubSubscription(new StreamOnlineHandler().SubscriptionType, "1", new Dictionary<string, string>
+                    CreateEventSubSubscription("stream.online", "1", new Dictionary<string, string>
                     {
                          {"broadcaster_user_id", OptionFlags.TwitchStreamerUserId },
                          {"user_id", OptionFlags.TwitchBotUserId }
@@ -209,16 +208,16 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
                     LogWriter.DebugLog("ChannelUpdate", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Channel has been updated.");
 
-                    NewChannelUpdate?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewChannelUpdate?.Invoke(this, new(args.Payload.Event));
                 }
             });
         }
@@ -226,19 +225,19 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 })
                 )
                 {
                     LogWriter.DebugLog("StreamOnline", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Stream is online.");
 
-                    NewStreamOnline?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewStreamOnline?.Invoke(this, new(args.Payload.Event));
                     AddSubscriptions();
-                    DeleteEventSubSubscription(new StreamOnlineHandler().SubscriptionType);
+                    DeleteEventSubSubscription("stream.offline");
                 }
             });
         }

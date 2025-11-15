@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 using System.Windows;
@@ -35,7 +35,10 @@ namespace StreamerBot
                 {
                     if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
+#if DEBUG
+#else
                         NotifyExpiredCredentials?.Invoke(this, new());
+#endif
                     }
 
                     if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
@@ -163,7 +166,11 @@ namespace StreamerBot
                     HelperStopBot(button);
                 }
 
+                LogWriter.DebugLog("BotWindow_NotifyExpiredCredentials", DebugLogTypes.GUIEvents, "Stopped all bots due to expired tokens.");
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 TwitchCheckFocusAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             });
         }
 

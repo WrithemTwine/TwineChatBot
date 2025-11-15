@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(MsgType), nameof(BanReason))]
+    [DebuggerDisplay("Id={Id}, MsgType={MsgType}, BanReason={BanReason}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class BanReasons(
                             int id,
@@ -13,14 +16,14 @@ namespace StreamerBotLib.DataSQL.Models
                             Enums.BanReasons banReason)
 #else
     public class BanReasons(
-                            int id = 0,
-                            MsgTypes msgType = default,
-                            Enums.BanReasons banReason = default)
+                             int id = 0,
+                             MsgTypes msgType = default,
+                             StreamerBotLib.Models.Enums.BanReasons banReason = default)
 #endif
- : EntityBase
+  : EntityBase
     {
         public int Id { get; set; } = id;
         public MsgTypes MsgType { get; set; } = msgType;
-        public Enums.BanReasons BanReason { get; set; } = banReason;
+        public StreamerBotLib.Models.Enums.BanReasons BanReason { get; set; } = banReason;
     }
 }

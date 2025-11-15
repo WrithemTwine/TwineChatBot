@@ -1,4 +1,6 @@
-﻿namespace StreamerBotLib.Static
+﻿using System.Collections.ObjectModel;
+
+namespace StreamerBotLib.Static
 {
     public static class Extensions
     {
@@ -110,6 +112,29 @@
             foreach (T item in ItemEnumerable)
             {
                 UniqueAdd(ICollection, item);
+            }
+        }
+
+        /// <summary>
+        /// Adds the elements of the specified collection to the end of the <see cref="ObservableCollection{T}"/>.
+        /// </summary>
+        /// <remarks>If either <paramref name="ObservableCollection"/> or <paramref
+        /// name="ItemEnumerable"/> is  <see langword="null"/>, the method will return without performing any
+        /// operation.</remarks>
+        /// <typeparam name="T">The type of elements in the collection.</typeparam>
+        /// <param name="ObservableCollection">The <see cref="ObservableCollection{T}"/> to which the elements will be added.  Cannot be <see
+        /// langword="null"/>.</param>
+        /// <param name="ItemEnumerable">The collection of elements to add to the <see cref="ObservableCollection{T}"/>.  Cannot be <see
+        /// langword="null"/>.</param>
+        public static void AddRange<T>(this ObservableCollection<T> ObservableCollection, IEnumerable<T> ItemEnumerable)
+        {
+            if (ObservableCollection == null || ItemEnumerable == null)
+            {
+                return;
+            }
+            foreach (T item in ItemEnumerable)
+            {
+                ObservableCollection.Add(item);
             }
         }
     }

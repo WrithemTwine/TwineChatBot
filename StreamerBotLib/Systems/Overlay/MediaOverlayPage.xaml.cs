@@ -1,0 +1,323 @@
+﻿using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Communication;
+using StreamerBotLib.Systems.Overlay.Control;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.GUI;
+using StreamerBotLib.Systems.Overlay.Models;
+using StreamerBotLib.Systems.Overlay.Static;
+
+using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+
+namespace StreamerBotLib.Systems.Overlay
+{
+    /// <summary>
+    /// Interaction logic for MediaOverlayPage.xaml
+    /// </summary>
+    public partial class MediaOverlayPage : Page
+    {
+        private OverlayController Controller { get; }
+        private GUIData GUIData { get; }
+
+        public MediaOverlayPage()
+        {
+            Controller = new();
+
+            InitializeComponent();
+
+            TabControl_OverlayStyles.TabStripPlacement = Dock.Bottom;
+
+            GUIData = (GUIData)Resources["GUIAppData"];
+
+            // when overlay server is offline/not started, main bot queues alerts
+            // starting this bot then tries to process alerts without loading styles
+            // trying to set the alert html text lead to NULL exception when no style available
+            // to match the alert, so the bot crashed.
+            // UpdateLinks loads the styles in case alerts are waiting to be processed
+
+            if (OptionFlags.MediaOverlayAutoStart && OptionFlags.MediaOverlayAutoServerStart
+                && OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayMediaTickerPort != 0)
+            {
+                RadioButton_OverlayServer_Start.IsChecked = true;
+            }
+            TickerSelections(this, new());
+            UpdateLinks();
+        }
+
+        public void StopController()
+        {
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                RadioButton_OverlayServer_Stop.IsChecked = true;
+            });
+        }
+
+        #region Connect to Main App
+        public EventHandler<OverlayActionType> GetOverlayActionReceivedHandler()
+        {
+            return ReceivedOverlayEvent;
+        }
+
+        public void ReceivedOverlayEvent(object sender, OverlayActionType e)
+        {
+            // LogWriter.DebugLog("ReceivedOverlayEvent", StreamerBotLib.Enums.DebugLogTypes.OverlaySystem, $"Processing Overlay event {e}.");
+            OverlayController.SendAlert(new OverlayPage()
+            {
+                OverlayType = e.OverlayType.ToString(),
+                OverlayHyperText = ProcessHyperText.ProcessOverlay(
+                    e,
+                        GUIData.OverlayEditStyles.Find((f) =>
+                            f.OverlayType == e.OverlayType.ToString()
+                        || f.OverlayType == PublicConstants.OverlayAllActions
+                    ),
+                        out string ImageHyperText,
+                        out string VideoHyperText)
+            });
+
+            if (!string.IsNullOrEmpty(ImageHyperText))
+            {
+                OverlayController.SendImage(new OverlayPage()
+                {
+                    OverlayType = e.OverlayType.ToString(),
+                    OverlayHyperText = ImageHyperText
+                });
+            }
+
+            if (!string.IsNullOrEmpty(VideoHyperText))
+            {
+                OverlayController.SendVideo(new OverlayPage()
+                {
+                    OverlayType = e.OverlayType.ToString(),
+                    OverlayHyperText = VideoHyperText
+                });
+            }
+
+            GUIData.UpdateStat(e.OverlayType.ToString());
+        }
+
+        public EventHandler<UpdatedTickerItemsEventArgs> GetupdatedTickerReceivedHandler()
+        {
+            return TickerReceivedEvent;
+        }
+
+        public void TickerReceivedEvent(object sender, UpdatedTickerItemsEventArgs e)
+        {
+            Controller.SetTickerData(e.TickerItems, GUIData.OverlayEditStyles);
+        }
+
+        #endregion
+
+        public void CheckAutoStart()
+        {
+            if (OptionFlags.MediaOverlayAutoServerStart && OptionFlags.MediaOverlayMediaActionPort != 0 && OptionFlags.MediaOverlayMediaTickerPort != 0
+                && RadioButton_OverlayServer_Start.IsChecked != true)
+            {
+                RadioButton_OverlayServer_Start.IsChecked = true;
+            }
+        }
+
+        private void Click_UpdateLinks(object sender, RoutedEventArgs e)
+        {
+            UpdateLinks();
+        }
+
+        /// <summary>
+        /// Disable user access to certain GUI elements depending on whether the HTTP Server is started.
+        /// </summary>
+        /// <param name="ServerStarted">If the Server is started</param>
+        private void SetIsEnabled(bool ServerStarted = true)
+        {
+            if (ServerStarted)
+            {
+                RadioButton_OverlayServer_Start.IsEnabled = false;
+                RadioButton_OverlayServer_Stop.IsEnabled = true;
+                TextBox_ActionPortNumber.IsEnabled = false;
+                TextBox_TickerPortNumber.IsEnabled = false;
+                CheckBox_OptionSamePage.IsEnabled = false;
+            }
+            else
+            {
+                RadioButton_OverlayServer_Start.IsEnabled = true;
+                RadioButton_OverlayServer_Stop.IsEnabled = false;
+                TextBox_ActionPortNumber.IsEnabled = true;
+                TextBox_TickerPortNumber.IsEnabled = true;
+                CheckBox_OptionSamePage.IsEnabled = true;
+            }
+        }
+
+        private void RadioButton_OverlayServer_Start_Checked(object sender, RoutedEventArgs e)
+        {
+            SetIsEnabled();
+            Controller.StartServer();
+        }
+
+        private void AddEditPages()
+        {
+            GUIData.ClearEditPages();
+            if (OptionFlags.MediaOverlayUseSameStyle)
+            {
+                GUIData.AddEditPage(OverlayTypes.None.ToString());
+            }
+            else
+            {
+                GUIData.AddEditPage(Enum.GetNames(typeof(OverlayTypes)));
+            }
+
+            if (!OptionFlags.MediaOverlayTickerMulti)
+            {
+                GUIData.AddEditPage(new List<OverlayTickerItem>(from SelectedTickerItem S in TickerFormatter.selectedTickerItems
+                                                                where S.IsSelected
+                                                                select (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)).ToArray());
+            }
+            else if (TickerFormatter.selectedTickerItems.Where(s => s.IsSelected).Select(s => s).Any())
+            {
+                // if multi, just send 1 item and the style is set
+                GUIData.AddEditPage(OverlayTickerItem.LastFollower);
+
+                if (OptionFlags.MediaOverlayTickerMarquee)
+                {
+                    GUIData.AddEditPage(TickerStyle.MultiMarquee);
+                }
+                else if (OptionFlags.MediaOverlayTickerRotate)
+                {
+                    GUIData.AddEditPage(TickerStyle.MultiRotate);
+                }
+            }
+
+            BuildStylePages();
+        }
+
+        /// <summary>
+        /// The GUI presents the overlay styles relevant to the current user selections.
+        /// This builds and rebuils those styles within a tabcontrol.
+        /// Reads the current collection, builds a textbox to edit the data, and adds as a tab to the GUI.
+        /// </summary>
+        private void BuildStylePages()
+        {
+            if (TabControl_OverlayStyles.Items.Count > 0)
+            {
+                foreach (var item in TabControl_OverlayStyles.Items)
+                {
+                    (item as TabItem).Template = null;
+                }
+            }
+            TabControl_OverlayStyles.Items.Clear();
+
+            foreach (OverlayStyle O in GUIData.OverlayEditStyles)
+            {
+                if (O.OverlayType != OverlayTypes.None.ToString() || OptionFlags.MediaOverlayUseSameStyle)
+                {
+                    TextBox textBox = new()
+                    {
+                        DataContext = O,
+                        AcceptsReturn = true
+                    };
+
+                    Binding tabContentBinding = new(nameof(O.OverlayStyleText))
+                    {
+                        Source = O
+                    };
+
+                    textBox.SetBinding(TextBox.TextProperty, tabContentBinding);
+                    textBox.LostFocus += TextBox_LostFocus;
+
+                    ScrollViewer sv = new() { Content = textBox };
+                    DockPanel doc = new();
+                    doc.Children.Add(sv);
+
+                    TabItem newTab = new() { Header = O.OverlayType, Content = doc };
+
+                    TabControl_OverlayStyles.Items.Add(newTab);
+                }
+            }
+
+            if (TabControl_OverlayStyles.Items.Count > 0)
+            {
+                TabControl_OverlayStyles.SelectedIndex = 0;
+            }
+        }
+
+        private void RadioButton_OverlayServer_Stop_Checked(object sender, RoutedEventArgs e)
+        {
+            SetIsEnabled(false);
+            Controller.StopServer();
+        }
+
+        private void UpdateLinks()
+        {
+            AddEditPages();
+            GUIData.UpdateLinks();
+        }
+
+        private async void TextBox_PreviewMouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            await Application.Current.Dispatcher.InvokeAsync((sender as TextBox).SelectAll);
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((OverlayStyle)(sender as TextBox).DataContext).SaveFile();
+            Controller.UpdateTicker(GUIData.OverlayEditStyles);
+        }
+
+        private void TickerSelections(object sender, RoutedEventArgs e)
+        {
+            SelectedTickerItems selectedTickerItems = ((SelectedTickerItems)Resources["TickerSelectedItems"]);
+            selectedTickerItems.SaveSelections();
+            OverlayController.SetTickerItems(selectedTickerItems.GetSelectedTickers());
+            UpdateLinks();
+        }
+
+        private void TickerSpecChanges(object sender, RoutedEventArgs e)
+        {
+            AddEditPages();
+            Controller.UpdateTicker(GUIData.OverlayEditStyles);
+            UpdateLinks();
+        }
+
+        /// <summary>
+        /// Occurs when the user edits a ticker presentation style duration. We need to rebuild the style to 
+        /// use the new duration.
+        /// </summary>
+        /// <param name="sender">where the event came from -unused</param>
+        /// <param name="e">the info sent with the event -unused</param>
+        private void MarqueeTypeSecondsLostFocus(object sender, RoutedEventArgs e)
+        {
+            // choose which page to update depending on selected presentation
+            if (OptionFlags.MediaOverlayTickerMarquee)
+            {
+                GUIData.UpdateEditPage(TickerStyle.MultiMarquee);
+            }
+            else if (OptionFlags.MediaOverlayTickerRotate)
+            {
+                GUIData.UpdateEditPage(TickerStyle.MultiRotate);
+            }
+
+            // refresh the styles presented in the GUI, due to the duration change
+            BuildStylePages();
+        }
+
+        private void OverlayLink_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Clipboard.SetText(((Button)sender).Content.ToString());
+
+                TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
+            }
+            catch (COMException ex)
+            {
+                LogWriter.LogException(ex, "OverlayLink_Click");
+            }
+        }
+
+        private void TabItem_Links_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Hidden;
+        }
+
+    }
+}

@@ -1,12 +1,13 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
+﻿
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
 
 /*
- * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL. 
+ * For clips to appear in any overlay action, Twitch requires for their embed player a domain name and the domain must utilize SSL or http://localhost. 
  * https://dev.twitch.tv/docs/embed
  * 
  * For this reason, currently disabling the Clips features - either showing the clip someone made of the current channel and shoutout random clip for a user.
@@ -31,6 +32,13 @@ namespace StreamerBotLib.Systems
         public static event EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerItems;
 
         private readonly List<string> ChannelPointRewards = [];
+
+        public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> NewOverlayeventHandler, EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerEventHandler)
+        {
+            LogWriter.DebugLog("SetNewOverlayEventHandler", DebugLogTypes.SystemController, "Setting new overlay event handlers.");
+            NewOverlayEvent += NewOverlayeventHandler;
+            UpdatedTickerItems += UpdatedTickerEventHandler;
+        }
 
         /// <summary>
         /// Setup the channel points reward list, update the new information.
@@ -65,13 +73,13 @@ namespace StreamerBotLib.Systems
             return OverlayActionPairs;
         }
 
-        private static void CheckURL(string ProvidedURL, float UrlDuration, ref OverlayActionType data)
+        private static void CheckURL(string ProvidedURL, float UrlDuration, ref OverlayActionType data, bool Clip = false)
         {
             LogWriter.DebugLog("CheckURL", DebugLogTypes.OverlayBot, $"Checking the provided URL {ProvidedURL} and Duration {UrlDuration}.");
             if (ProvidedURL != null && UrlDuration != 0)
             {
                 data.MediaFile = ProvidedURL;
-                data.Duration = Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
+                data.Duration = Clip ? (int)Math.Ceiling(UrlDuration) : Math.Min((int)Math.Ceiling(UrlDuration), data.Duration);
 
                 LogWriter.DebugLog("CheckURL", DebugLogTypes.OverlayBot, $"The provided URL {ProvidedURL} and Duration {data.Duration} check out, and are added to data.");
 
@@ -83,6 +91,12 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("OnNewOverlayEvent", DebugLogTypes.OverlayBot, $"Building Overlay Event with action data, {e.OverlayAction.OverlayType} and {e.OverlayAction.ActionValue}.");
 
             NewOverlayEvent?.Invoke(this, e);
+        }
+
+        public void CheckForOverlayEvent(OverlayTypes overlayType, Enum enumvalue, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
+        {
+            LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlaySystem, "Checking for overlay event.");
+            CheckForOverlayEvent(overlayType, enumvalue.ToString(), User, UserMsg, ProvidedURL, UrlDuration);
         }
 
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
@@ -125,7 +139,7 @@ namespace StreamerBotLib.Systems
                         ThreadManager.CreateThreadStart("CheckForOverlayEvent", () =>
                         {
                             ShoutOutOverlayAction UserShout = new(FoundAction, OnNewOverlayEvent);
-                            OnGetChannelClipsEvent(new() { ChannelName = User.UserName, CallBackResult = UserShout.FoundChannelClips });
+                            OnGetChannelClipsEvent(new() { Platform = User.Platform, ChannelName = User.UserName, CallBackResult = UserShout.FoundChannelClips });
 
                             while (!UserShout.Finish) // keep thread open until Clips bot gives a response
                             {
@@ -149,6 +163,7 @@ namespace StreamerBotLib.Systems
         private void OnGetChannelClipsEvent(GetChannelClipsEventArgs e)
         {
             LogWriter.DebugLog("OnGetChannelClipsEvent", DebugLogTypes.OverlayBot, $"Requesting Channel Clips for {e.ChannelName}.");
+            // TODO: handle this event back to Helix for "get Clips" for a channel name, FoundChannelClips callback would process the clip for overlay
             GetChannelClipsEvent?.Invoke(this, e);
         }
 
@@ -168,7 +183,7 @@ namespace StreamerBotLib.Systems
                     int found = random.Next(clips.Count);
                     Clip resultClip = clips[found];
 
-                    CheckURL(resultClip.Url, (int)Math.Ceiling(resultClip.Duration), ref ShoutOut);
+                    CheckURL(resultClip.EmbedUrl, (int)Math.Ceiling(resultClip.Duration), ref ShoutOut, true);
                 }
 
                 PerformShoutOut(new() { OverlayAction = ShoutOut });
@@ -183,7 +198,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="item">An object containing the overlay ticker item details for updating.</param>
         /// <param name="UserName">The Username specific to the ticker item.</param>
-        public static void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
+        public void AddNewOverlayTickerItem(OverlayTickerItem item, string UserName)
         {
             LogWriter.DebugLog("AddNewOverlayTickerItem", DebugLogTypes.OverlayBot, $"Adding a new Overlay Ticker Item for {UserName}.");
             if (OptionFlags.ManageOverlayTicker)

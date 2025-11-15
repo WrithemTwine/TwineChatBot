@@ -1,7 +1,7 @@
-﻿using StreamerBotLib.Properties;
+﻿using StreamerBotLib.Models.Repeat;
+using StreamerBotLib.Properties;
 
-using System.Configuration;
-using System.Reflection;
+using System.Collections.Specialized;
 
 namespace StreamerBotLib.Static
 {
@@ -196,6 +196,32 @@ namespace StreamerBotLib.Static
         /// Enables whether the bot should shout out all users who raid the given channel.
         /// </summary>
         public static bool TwitchRaidShoutOut => Settings.Default.TwitchRaidShoutOut;
+
+        public static bool RepeatParallelMode => Settings.Default.RepeatParallelMode;
+        public static bool RepeatSerialMode => Settings.Default.RepeatSerialMode;
+        public static List<RepeatCommandGUISelect> RepeatSerialSaveData
+        {
+            get
+            {
+                return [.. Settings.Default.RepeatSerialSaveData.Cast<string>().Select(R => new RepeatCommandGUISelect() { Command = R, IsSelected = false })];
+            }
+
+            set
+            {
+                Settings.Default.RepeatSerialSaveData.Clear();
+                Settings.Default.RepeatSerialSaveData.AddRange([.. value.Where(C => !C.IsSelected).Select(C => C.Command)]);
+                Settings.Default.Save();
+            }
+        }
+        public static StringCollection RepeatSerialSaveDataString
+        {
+            get
+            {
+                return Settings.Default.RepeatSerialSaveData;
+            }
+        }
+
+        public static int RepeatSerialTime => Settings.Default.RepeatSerialTime;
         /// <summary>
         /// Enables repeat timer commands.
         /// </summary>
@@ -708,6 +734,15 @@ namespace StreamerBotLib.Static
         {
             get => Settings.Default.MediaOverlayShoutoutClips; set => Settings.Default.MediaOverlayShoutoutClips = value;
         }
+
+        public static int MediaOverlayClipWidth
+        {
+            get => Settings.Default.MediaOverlayClipWidth; set => Settings.Default.MediaOverlayClipWidth = value;
+        }
+        public static int MediaOverlayClipHeight
+        {
+            get => Settings.Default.MediaOverlayClipHeight; set => Settings.Default.MediaOverlayClipHeight = value;
+        }
         /// <summary>
         /// Manages the Overlay action media port serving Overlay alert Content through the http server.
         /// </summary>
@@ -836,6 +871,10 @@ namespace StreamerBotLib.Static
         /// Enables the Overlay actions to save to the debug log.
         /// </summary>
         public static bool EnableDebugLogOverlays => Settings.Default.EnableDebugLogOverlays;
+        /// <summary>
+        /// Enables the DataBot actions to save to the debug log.
+        /// </summary>
+        public static bool EnableDebugDataBot => Settings.Default.EnableDebugDataBot;
         /// <summary>
         /// Enables the DataManager actions to save to the debug log.
         /// </summary>
@@ -1028,14 +1067,19 @@ namespace StreamerBotLib.Static
         /// <param name="SettingName">The name in the "Settings.Default" to check.</param>
         /// <param name="CheckSettingValue">The value to compare to the default settings.</param>
         /// <returns>DefaultValue(SettingName).Value == CheckSettingValue; true if value is default</returns>
-        public static bool CheckSettingIsDefault(string SettingName, string CheckSettingValue)
+        public static bool CheckSettingIsDefault(string SettingName)
         {
-            return ((DefaultSettingValueAttribute)(from MemberInfo m in typeof(Settings).GetProperties()
-                                                   where m.Name == SettingName
-                                                   select m)
-                                                   .FirstOrDefault()?
-                                                   .GetCustomAttribute(typeof(DefaultSettingValueAttribute)))
-                                                   ?.Value == CheckSettingValue;
+            var prop = typeof(Settings).GetProperty(SettingName);
+            if (prop != null)
+            {
+                var defaultValue = Settings.Default.Properties[SettingName]?.DefaultValue;
+                var currentValue = prop.GetValue(Settings.Default);
+                return Equals(defaultValue, currentValue);
+            }
+            else
+            {
+                throw new ArgumentException($"Setting '{SettingName}' not found in Settings.Default.");
+            }
         }
     }
 }

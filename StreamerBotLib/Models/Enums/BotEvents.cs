@@ -1,0 +1,42 @@
+﻿namespace StreamerBotLib.Models.Enums
+{
+    public enum BotEvents
+    {
+        TwitchBotEventSubStarted,
+        TwitchBotEventSubStopping,
+        TwitchBotEventSubStopped,
+        TwitchBeingHosted,
+        TwitchBulkPostFollowers,
+        TwitchStartBulkFollowers,
+        TwitchStopBulkFollowers,
+        TwitchCommunitySubscription,
+        TwitchGiftSubscription,
+        TwitchNewSubscriber,
+        TwitchPostNewClip,
+        TwitchClipSvcOnClipFound,
+        TwitchPostNewFollowers,
+        TwitchReSubscriber,
+        TwitchStreamOffline,
+        TwitchMultiStreamOnline,
+        TwitchMultiGetChannels,
+        TwitchStreamOnline,
+        TwitchStreamUpdate,
+        TwitchCategoryUpdate,
+        TwitchNowHosting,
+        TwitchOnUserLeft,
+        TwitchOnUserTimedout,
+        TwitchOnUserBanned,
+        TwitchRitualNewChatter,
+        TwitchMessageReceived,
+        TwitchIncomingRaid,
+        TwitchChatCommandReceived,
+        TwitchChannelPointsRewardRedeemed,
+        TwitchOutgoingRaid,
+        TwitchBotCommandCall,
+        HandleBotEventEmpty,
+        TwitchCurrentUsers,
+        TwitchChannelCheer,
+        TwitchResumeStreamOnline,
+        TwitchFoundViewerCategory
+    }
+}

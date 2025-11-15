@@ -1,11 +1,12 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class OldFollowUsers : IDatabaseTableMeta
     {
         public System.String UserId { get => (System.String)Values["UserId"]; set => Values["UserId"] = value; }
-        public StreamerBotLib.Enums.Platform Platform { get => (StreamerBotLib.Enums.Platform)Values["Platform"]; set => Values["Platform"] = value; }
+        public Platform Platform { get => (Platform)Values["Platform"]; set => Values["Platform"] = value; }
         public System.String UserName { get => (System.String)Values["UserName"]; set => Values["UserName"] = value; }
         public System.Boolean IsFollower { get => (System.Boolean)Values["IsFollower"]; set => Values["IsFollower"] = value; }
         public System.DateTime FollowedDate { get => (System.DateTime)Values["FollowedDate"]; set => Values["FollowedDate"] = value; }
@@ -34,7 +35,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public Dictionary<string, Type> Meta => new()
         {
               { "UserId", typeof(System.String) },
-              { "Platform", typeof(StreamerBotLib.Enums.Platform) },
+              { "Platform", typeof(Platform) },
               { "UserName", typeof(System.String) },
               { "IsFollower", typeof(System.Boolean) },
               { "FollowedDate", typeof(System.DateTime) },

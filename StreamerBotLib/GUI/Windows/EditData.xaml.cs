@@ -1,18 +1,19 @@
-﻿#define EFC_AddEdit
+﻿
+#define EFC_AddEdit
 
 //#define XAML_AddEdit
 
 using Microsoft.Win32;
 
-using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.DataSQL.Models.Converters;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Overlay.Static;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Static;
 
 using System.ComponentModel;
 using System.IO;
@@ -21,6 +22,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+
 
 namespace StreamerBotLib.GUI.Windows
 {
@@ -68,7 +70,7 @@ namespace StreamerBotLib.GUI.Windows
                     { "Sort", Enum.GetValues(typeof(CommandSort)) },
                     { "ModAction", Enum.GetValues(typeof(ModActions)) },
                     { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
-                    { "BanReason", Enum.GetValues(typeof(Enums.BanReasons)) },
+                    { "BanReason", Enum.GetValues(typeof(Models.Enums.BanReasons)) },
                     { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
                     { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
                     { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },
@@ -154,7 +156,12 @@ namespace StreamerBotLib.GUI.Windows
                             MinWidth = 200
                         };
 
-                        Binding filepath = new() { Path = new(Data), Mode = BindingMode.OneWayToSource, FallbackValue = FilePathInfo };
+                        Binding filepath = new()
+                        {
+                            Path = new(Data),
+                            Mode = BindingMode.OneWayToSource,
+                            FallbackValue = FilePathInfo
+                        };
                         ((TextBox)valueElement).SetBinding(TextBox.TextProperty, filepath);
 
                         ((TextBox)valueElement).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;

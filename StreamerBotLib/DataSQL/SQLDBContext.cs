@@ -19,6 +19,7 @@ using System.IO;
 using StreamerBotLib.DataSQL.Models;
 
 
+
 namespace StreamerBotLib.DataSQL
 {
     public class SQLDBContext(DbContextOptions<SQLDBContext> options) : DbContext(options)
@@ -76,6 +77,7 @@ namespace StreamerBotLib.DataSQL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,6 +97,12 @@ namespace StreamerBotLib.DataSQL
                 .HasPrincipalKey(c => c.Category)
                 .HasForeignKey(c => c.Category);
 
+            modelBuilder.Entity<CategoryList>()
+                .HasMany(c => c.Clips)
+                .WithOne(c => c.CategoryList)
+                .HasPrincipalKey(c => c.CategoryId)
+                .HasForeignKey(c => c.CategoryId);
+
             modelBuilder.Entity<Currency>()
                 .HasOne(c => c.CurrencyType)
                 .WithMany(c => c.Currency)
@@ -112,17 +120,21 @@ namespace StreamerBotLib.DataSQL
                 .HasOne(u => u.CustomWelcome)
                 .WithOne(w => w.User)
                 .HasForeignKey<CustomWelcome>(w => new { w.UserId, w.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.ShoutOuts)
                 .WithOne(u => u.User)
                 .HasForeignKey<ShoutOuts>(u => new { u.UserId, u.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
             modelBuilder.Entity<Users>()
                 .HasMany(u => u.GiveawayUserData)
-                .WithOne(g => g.Users);
+                .WithOne(g => g.User)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Users>()
                 .HasOne(s => s.UserStats)
@@ -151,12 +163,14 @@ namespace StreamerBotLib.DataSQL
                 .HasMany(m => m.MultiLiveStreams)
                 .WithOne(m => m.MultiChannels)
                 .HasForeignKey(m => new { m.UserId, m.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             modelBuilder.Entity<MultiChannels>()
                 .HasOne(m => m.MultiSummaryLiveStreams)
                 .WithOne(m => m.MultiChannels)
                 .HasForeignKey<MultiSummaryLiveStreams>(m => new { m.UserId, m.Platform })
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(true);
 
             modelBuilder.Entity<LearnMsgs>()

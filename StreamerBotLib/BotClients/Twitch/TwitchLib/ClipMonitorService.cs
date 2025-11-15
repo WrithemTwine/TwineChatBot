@@ -1,4 +1,5 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 using System.Diagnostics.CodeAnalysis;
@@ -31,7 +32,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         public int CacheSize { get; }
 
         public event EventHandler<OnNewClipsDetectedArgs> OnNewClipFound;
-        public event EventHandler AccessTokenUnauthorized;
+        public event EventHandler<ExpiredTokenEventArgs> AccessTokenUnauthorized;
 
         public ClipMonitorService(ITwitchAPI api, int checkIntervalInSeconds = 60, int queryCountPerRequest = 100, int cacheSize = 1000) : base(api, checkIntervalInSeconds)
         {
@@ -59,6 +60,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         /// </summary>
         public void ClearCache()
         {
+#if DEBUG
+            LogWriter.DebugLog("ClearCache", Models.Enums.DebugLogTypes.SpecialPurpose, "Clear the channel clips monitor cache.");
+#endif
+
             KnownClips.Clear();
 
             _lastClipsDates.Clear();
@@ -125,6 +130,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
             try
             {
+#if DEBUG
+                LogWriter.DebugLog("GetAllClipsAsync", Models.Enums.DebugLogTypes.SpecialPurpose, $"Get All Clips for the channel: {ChannelName}");
+#endif
+
                 do
                 {
                     GetClipsResponse curr = await _monitor.ActionAsync((c, param) =>
@@ -141,7 +150,7 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             }
             catch (BadScopeException)
             {
-                AccessTokenUnauthorized?.Invoke(this, new());
+                AccessTokenUnauthorized?.Invoke(this, new(null)); // ignore perform action, service tick calls this again later
                 return null;
             }
             catch (Exception ex)
@@ -155,12 +164,16 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             try
             {
+#if DEBUG
+                LogWriter.DebugLog("OnServiceTimerTick", Models.Enums.DebugLogTypes.SpecialPurpose, "Service Timer Tick");
+#endif
+
                 await base.OnServiceTimerTick();
                 await MonitorNewClips();
             }
             catch (BadScopeException)
             {
-                AccessTokenUnauthorized?.Invoke(this, new());
+                AccessTokenUnauthorized?.Invoke(this, new(null));
             }
             catch (Exception ex)
             {
@@ -170,6 +183,10 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 
         private async Task<List<Clip>> GetLatestClipsAsync(string channel)
         {
+#if DEBUG
+            LogWriter.DebugLog("GetLatestClipsAsync", Models.Enums.DebugLogTypes.SpecialPurpose, $"Get latest clips for channel: {channel}");
+#endif
+
             GetClipsResponse resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c),
                 channel, [QueryCountPerRequest]);
 
@@ -180,11 +197,15 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
             try
             {
+#if DEBUG
+                LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.SpecialPurpose, $"Creating clip for channel ID: {channelId}");
+#endif
+
                 return await _api.Helix.Clips.CreateClipAsync(channelId);
             }
             catch (BadScopeException)
             {
-                AccessTokenUnauthorized?.Invoke(this, new());
+                AccessTokenUnauthorized?.Invoke(this, new(() => _api.Helix.Clips.CreateClipAsync(channelId)));
                 return null;
             }
             catch (Exception ex)

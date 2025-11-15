@@ -1,19 +1,15 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
+using TwitchLib.EventSub.Core.EventArgs.Channel;
 using TwitchLib.EventSub.Core.SubscriptionTypes.Channel;
 using TwitchLib.EventSub.Websockets;
-using TwitchLib.EventSub.Websockets.Core.EventArgs.Channel;
-using TwitchLib.EventSub.Websockets.Handler.Channel;
-using TwitchLib.EventSub.Websockets.Handler.Channel.ChannelPoints.Redemptions;
-using TwitchLib.EventSub.Websockets.Handler.Channel.Cheers;
-using TwitchLib.EventSub.Websockets.Handler.Channel.Follows;
-using TwitchLib.EventSub.Websockets.Handler.Channel.Subscription;
+using TwitchLib.EventSub.Websockets.Core.Models;
 
 namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 {
@@ -82,16 +78,16 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             LogWriter.DebugLog("AddSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Adding all subscriptions.");
 
-            CreateEventSubSubscription(new ChannelPointsCustomRewardRedemptionAddHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelSubscriptionMessageHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelSubscribeHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelSubscriptionGiftHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelCheerHandler().SubscriptionType, "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
-            CreateEventSubSubscription(new ChannelFollowHandler().SubscriptionType, "2", new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "moderator_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.channel_points_custom_reward_redemption.add", "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.subscription.message", "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.subscribe", "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.subscription.gift", "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.cheer", "1", new() { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId } });
+            CreateEventSubSubscription("channel.follow", "2", new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "moderator_user_id", OptionFlags.TwitchStreamerUserId } });
 
             if (!OptionFlags.TwitchStreamerUseToken)
             {
-                CreateEventSubSubscription(new ChatMessageHandler().SubscriptionType, "1", new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchStreamerUserId } });
+                CreateEventSubSubscription("channel.chat.message", "1", new Dictionary<string, string> { { "broadcaster_user_id", OptionFlags.TwitchStreamerUserId }, { "user_id", OptionFlags.TwitchStreamerUserId } });
                 OnChannelChatMessageStarted?.Invoke(this, new());
             }
         }
@@ -104,16 +100,16 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         {
             LogWriter.DebugLog("RemoveSubscriptions", DebugLogTypes.TwitchStreamerEventSubBot, "Deleting all subscriptions.");
 
-            DeleteEventSubSubscription(new ChannelPointsCustomRewardRedemptionAddHandler().SubscriptionType);
-            DeleteEventSubSubscription(new ChannelSubscriptionMessageHandler().SubscriptionType);
-            DeleteEventSubSubscription(new ChannelSubscribeHandler().SubscriptionType);
-            DeleteEventSubSubscription(new ChannelSubscriptionGiftHandler().SubscriptionType);
-            DeleteEventSubSubscription(new ChannelCheerHandler().SubscriptionType);
-            DeleteEventSubSubscription(new ChannelFollowHandler().SubscriptionType);
+            DeleteEventSubSubscription("channel.channel_points_custom_reward_redemption.add");
+            DeleteEventSubSubscription("channel.subscription.message");
+            DeleteEventSubSubscription("channel.subscribe");
+            DeleteEventSubSubscription("channel.subscription.gift");
+            DeleteEventSubSubscription("channel.cheer");
+            DeleteEventSubSubscription("channel.follow");
 
             if (!OptionFlags.TwitchStreamerUseToken)
             {
-                DeleteEventSubSubscription(new ChatMessageHandler().SubscriptionType);
+                DeleteEventSubSubscription("channel.chat.message");
             }
         }
 
@@ -124,14 +120,14 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
-                    NewChannelCustomRewardRedemption?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewChannelCustomRewardRedemption?.Invoke(this, new(args.Payload.Event));
                 }
             });
         }
@@ -142,14 +138,14 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
-                    NewChannelSubscriptionMessage?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewChannelSubscriptionMessage?.Invoke(this, new(args.Payload.Event));
                 }
             });
         }
@@ -160,14 +156,14 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
-                    NewChannelSubscribe?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewChannelSubscribe?.Invoke(this, new(args.Payload.Event));
                 }
             });
         }
@@ -178,14 +174,14 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
-                    NewChannelSubscriptionGift?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewChannelSubscriptionGift?.Invoke(this, new(args.Payload.Event));
                 }
             });
         }
@@ -196,14 +192,14 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
-                    NewChannelCheer?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewChannelCheer?.Invoke(this, new(args.Payload.Event));
                 }
             });
         }
@@ -214,14 +210,14 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
-                    NewChannelFollow?.Invoke(this, new(args.Notification.Payload.Event));
+                    NewChannelFollow?.Invoke(this, new(args.Payload.Event));
                 }
             });
         }
@@ -232,14 +228,14 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
             return Task.Run(() =>
             {
-                if (EventSubMessageIdsLogger.AddMessageId(args.Notification.Metadata, (m) =>
+                if (EventSubMessageIdsLogger.AddMessageId(((WebsocketEventSubMetadata)args.Metadata), (m) =>
                 {
                     return
-                    m.MessageId == args.Notification.Metadata.MessageId &&
-                    m.SubscriptionType == args.Notification.Metadata.SubscriptionType;
+                    m.MessageId == ((WebsocketEventSubMetadata)args.Metadata).MessageId &&
+                    m.SubscriptionType == ((WebsocketEventSubMetadata)args.Metadata).SubscriptionType;
                 }))
                 {
-                    ChannelChatMessage msg = args.Notification.Payload.Event;
+                    ChannelChatMessage msg = args.Payload.Event;
                     OnChannelChatMessageReceived?.Invoke(this, new(msg));
                 }
             });

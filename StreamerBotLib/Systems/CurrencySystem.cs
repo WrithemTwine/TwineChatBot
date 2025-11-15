@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.CurrencyGames;
 
@@ -7,6 +7,8 @@ namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem
     {
+        private const int TaskDelay = 10000; // in milliseconds
+
         private bool CurAccrualStarted;
         private bool WatchStarted;
 
@@ -61,14 +63,14 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void StartCurrencyClock()
+        private void StartCurrencyClock()
         {
             LogWriter.DebugLog("StartCurrencyClock", DebugLogTypes.CurrencySystem, "Starting currency clock");
 
             AccrualClocks();
         }
 
-        public void MonitorWatchTime()
+        private void MonitorWatchTime()
         {
             LogWriter.DebugLog("MonitorWatchTime", DebugLogTypes.CurrencySystem, "Starting watch time monitor");
 

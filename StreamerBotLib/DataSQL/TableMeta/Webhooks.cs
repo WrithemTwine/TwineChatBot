@@ -1,4 +1,5 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
@@ -6,9 +7,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
     {
         public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }
         public System.Boolean IsEnabled { get => (System.Boolean)Values["IsEnabled"]; set => Values["IsEnabled"] = value; }
-        public StreamerBotLib.Enums.WebhooksSource WebhooksSource { get => (StreamerBotLib.Enums.WebhooksSource)Values["WebhooksSource"]; set => Values["WebhooksSource"] = value; }
+        public WebhooksSource WebhooksSource { get => (WebhooksSource)Values["WebhooksSource"]; set => Values["WebhooksSource"] = value; }
         public System.String Server { get => (System.String)Values["Server"]; set => Values["Server"] = value; }
-        public StreamerBotLib.Enums.WebhooksKind Kind { get => (StreamerBotLib.Enums.WebhooksKind)Values["Kind"]; set => Values["Kind"] = value; }
+        public WebhooksKind Kind { get => (WebhooksKind)Values["Kind"]; set => Values["Kind"] = value; }
         public System.Boolean AddEveryone { get => (System.Boolean)Values["AddEveryone"]; set => Values["AddEveryone"] = value; }
         public System.Uri Webhook { get => (System.Uri)Values["Webhook"]; set => Values["Webhook"] = value; }
 
@@ -33,9 +34,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
         {
               { "Id", typeof(System.Int32) },
               { "IsEnabled", typeof(System.Boolean) },
-              { "WebhooksSource", typeof(StreamerBotLib.Enums.WebhooksSource) },
+              { "WebhooksSource", typeof(WebhooksSource) },
               { "Server", typeof(System.String) },
-              { "Kind", typeof(StreamerBotLib.Enums.WebhooksKind) },
+              { "Kind", typeof(WebhooksKind) },
               { "AddEveryone", typeof(System.Boolean) },
               { "Webhook", typeof(System.Uri) }
         };

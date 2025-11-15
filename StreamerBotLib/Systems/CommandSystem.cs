@@ -1,11 +1,10 @@
-﻿
-using StreamerBotLib.BotIOController;
+﻿using StreamerBotLib.BotIOController;
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.ComponentModel;
 using System.Globalization;
@@ -15,10 +14,12 @@ namespace StreamerBotLib.Systems
     public partial class ActionSystem : INotifyPropertyChanged
     {
         // bubbles up messages from the event timers because there is no invoking method to receive this output message 
-        public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<PostChannelMessageEventArgs> ProcessedCommand;
         public event EventHandler<TwitchShoutOutUsersEventArgs> TwitchShoutOutUser;
+
+        internal static int LastLiveViewerCount = 0;
+
 
         /// <summary>
         /// Informs the GUI of updated info.
@@ -28,6 +29,18 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("NotifyPropertyChanged", DebugLogTypes.CommandSystem, $"Notifying GUI of updated info: {ParamName}");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(ParamName));
+        }
+
+        public IEnumerable<string> GetCommandList(bool prefix = true)
+        {
+            LogWriter.DebugLog("GetCommandList", DebugLogTypes.CommandSystem, "Getting command list.");
+            return DataManage.GetCommandList(prefix);
+        }
+
+        public IEnumerable<string> GetCommandListNoParams(bool prefix = true)
+        {
+            LogWriter.DebugLog("GetCommandList", DebugLogTypes.CommandSystem, "Getting command list.");
+            return DataManage.GetCommandListNoParams(prefix);
         }
 
         /// <summary>
@@ -102,9 +115,9 @@ namespace StreamerBotLib.Systems
                 {
                     LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command requires approval: {cmdMessage.CommandText}.");
 
-                    AddApprovalRequest($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
+                    PostApproval($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
                         new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
-                    result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotController.GetBotName(source), source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
+                    result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotUserName, source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
                 }
             }
             else
@@ -189,9 +202,9 @@ namespace StreamerBotLib.Systems
             return DataManage.CheckWelcomeUser(UserId);
         }
 
-        private string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
+        internal string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)
         {
-            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parsing command: {command} from {User.UserName}.");
+            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parsing command: {command} for {User.UserId} : {User.UserName} : {User.Platform}.");
 
             string result = "";
             string tempHTMLResponse = "";
@@ -202,7 +215,7 @@ namespace StreamerBotLib.Systems
 
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
-                    result = DataManage.PostCommand(newcom[1..], CommandParams.Parse(arglist));
+                result = DataManage.PostCommand(newcom[1..], CommandParams.Parse(arglist));
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.settitle))
             {
@@ -226,8 +239,11 @@ namespace StreamerBotLib.Systems
                 if (arglist.Count > 0)
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Channel provided, {arglist[0]}.");
-                    BotController.RaidChannel(arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0], User.Platform);
+                    BotController.RaidChannel(arglist[0].Replace("@", ""), User.Platform);
                     result = cmdrow.Message;
+
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Output message: {result}.");
+
                 }
                 else
                 {
@@ -320,7 +336,7 @@ namespace StreamerBotLib.Systems
                             break;
                     }
 
-                        output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Platform);
+                    output = DataManage.PostMergeUserStats(CurrUser.Replace("@", ""), SrcUsr.Replace("@", ""), User.Platform);
                 }
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Merge result: {output}.");
                 result = output == null ? result : output == true ? LocalizedMsgSystem.GetVar(Msg.MsgMergeSuccessful) : LocalizedMsgSystem.GetVar(Msg.MsgMergeFailed);
@@ -367,7 +383,7 @@ namespace StreamerBotLib.Systems
                 string newcom = arglist[0][0] == '!' ? arglist[0] : string.Empty;
                 arglist.RemoveAt(0);
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Editing command: {newcom}.");
-                    result = DataManage.EditCommand(newcom[1..], arglist);
+                result = DataManage.EditCommand(newcom[1..], arglist);
             }
             else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.removecommand))
             {
@@ -399,7 +415,7 @@ namespace StreamerBotLib.Systems
                     datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
                         new(MsgVars.user,ParamUser),
-                        new(MsgVars.date, created == DateTime.MinValue ? "not found" : FormatData.FormatTimes(created))
+                        new(MsgVars.date, created == DateTime.MinValue ? "not found" : FormatData.FormatTimes(created.ToLocalTime()))
                     });
 
                     OnProcessCommand(VariableParser.ParseReplace(cmdrow.Message, datavalues));
@@ -563,7 +579,7 @@ namespace StreamerBotLib.Systems
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Adding quote: {string.Join(' ', arglist)}.");
                     int quoteNum;
 
-                        quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
+                    quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
 
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
@@ -618,6 +634,7 @@ namespace StreamerBotLib.Systems
 
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parameter value: {paramvalue}.");
 
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Building variable dictionary for command.");
                 datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
                     new(MsgVars.username, paramvalue),
@@ -628,17 +645,20 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.com, paramvalue )
                 });
 
+                string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
+
                 if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so)
-                    && !(DataManage.GetUserId(new(paramvalue, User.Platform)) != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
+                    && !(ShoutuserId != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No user found for shout-out.");
                     result = LocalizedMsgSystem.GetVar(Msg.MsgNoUserFound);
                 }
                 else
                 {
-                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Custom command found: {command}.");
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Other command found: {command}.");
                     if (cmdrow.Lookupdata)
                     {
+                        LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Looking up additional data for command.");
                         LookupQuery(cmdrow, paramvalue, ref datavalues);
                     }
 
@@ -647,8 +667,8 @@ namespace StreamerBotLib.Systems
                     {
                         if (OptionFlags.TwitchChannelUserShoutAPI)
                         {
-                            LiveUser shoutoutUser = new(userName: paramvalue, Platform.Twitch);
-                            shoutoutUser.UserId = DataManage.GetUserId(shoutoutUser);
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Using Twitch API to shout out user.");
+                            LiveUser shoutoutUser = new(userName: paramvalue, Platform.Twitch, userId: ShoutuserId);
                             TwitchShoutOutUser?.Invoke(this, new(shoutoutUser));
                         }
                     }
@@ -657,8 +677,9 @@ namespace StreamerBotLib.Systems
                     {
                         ThreadManager.CreateThreadStart("ParseCommand", () =>
                         {
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Command contains #category, looking up category.");
                             VariableParser.AddData(ref datavalues,
-                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: DataManage.GetUserId(new(paramvalue, User.Platform)), bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
+                            new Tuple<MsgVars, string>[] { new(MsgVars.category, BotController.GetUserCategory(ChannelName: paramvalue, UserId: ShoutuserId, bots: User.Platform) ?? LocalizedMsgSystem.GetVar(Msg.MsgNoCategory)) });
 
                             string resultcat = VariableParser.ParseReplace(cmdrow.Message, datavalues);
                             tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
@@ -668,9 +689,10 @@ namespace StreamerBotLib.Systems
 
                             LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Found !so message with a category, {resultcat}.");
 
+                            LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Checking for Overlay Event.");
                             CheckForOverlayEvent(overlayType: OverlayTypes.Commands,
                                 Action: DefaultCommand.so.ToString(),
-                                User, UserMsg: tempHTMLResponse);
+                                new(userName: paramvalue, Platform.Twitch, userId: ShoutuserId), UserMsg: tempHTMLResponse);
                         });
 
                         result = "";
@@ -691,7 +713,14 @@ namespace StreamerBotLib.Systems
             if (result != "")
             {
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Command performed, resulting message: {result}. Checking for Overlay Event.");
-                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, User, UserMsg: tempHTMLResponse);
+                string paramvalue = cmdrow.AllowParam
+                    ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
+                        ? User.UserName
+                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                    : User.UserName;
+                string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
+
+                CheckForOverlayEvent(overlayType: OverlayTypes.Commands, Action: command, new(userName: paramvalue, Platform.Twitch, userId: ShoutuserId), UserMsg: tempHTMLResponse);
             }
 
             result ??= "";
@@ -709,7 +738,7 @@ namespace StreamerBotLib.Systems
             ProcessedCommand?.Invoke(this, new() { Msg = Message, Announcement = announcement, RepeatMsg = repeatMsg });
         }
 
-        private static string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)
+        private string PartyCommand(string command, string DisplayName, string argument, CommandData cmdrow)
         {
             LogWriter.DebugLog("PartyCommand", DebugLogTypes.CommandSystem, $"Processing party command: {command}.");
 
@@ -761,7 +790,7 @@ namespace StreamerBotLib.Systems
             return response;
         }
 
-        private static void LookupQuery(CommandData CommData, string paramvalue, ref Dictionary<string, string> datavalues)
+        private void LookupQuery(CommandData CommData, string paramvalue, ref Dictionary<string, string> datavalues)
         {
             //TODO: the query commands with data lookup needs a lot of work!
             LogWriter.DebugLog("LookupQuery", DebugLogTypes.CommandSystem, $"Performing query: {CommData.CmdName}.");

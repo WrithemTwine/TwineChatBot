@@ -31,6 +31,10 @@ namespace EFEntityEntryTesting
 
             ThreadManager.SetGUIDispatcher(Dispatcher);
         }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            GUIDataManager.SetObsCols();
+        }
 
         private void SetStatusUpdate(string text)
         {
@@ -100,7 +104,7 @@ namespace EFEntityEntryTesting
 
         private void AddUsersToStream()
         {
-            ThreadManager.CreateThreadStart("AddUsersToStream", async () =>
+            Dispatcher.BeginInvoke(async () =>
             {
                 DateTime currTime = DateTime.Now;
                 List<string> CurrUsers = DataManager.GetUsers(random.Next(maxusers));
@@ -108,7 +112,7 @@ namespace EFEntityEntryTesting
                 List<string> NewUsers = CurrUsers.Except(UsersJoined).ToList();
                 List<string> OldUsers = UsersJoined.Except(CurrUsers).ToList();
                 await DataManager.PostUsersJoinedAsync(NewUsers, currTime);
-                DataManager.PostUsersLeftAsync(OldUsers, currTime);
+                await DataManager.PostUsersLeftAsync(OldUsers, currTime);
                 UsersJoined.Clear();
                 UsersJoined.AddRange(CurrUsers);
 
@@ -124,5 +128,7 @@ namespace EFEntityEntryTesting
                 await Task.Delay(6000);
             }
         }
+
+
     }
 }

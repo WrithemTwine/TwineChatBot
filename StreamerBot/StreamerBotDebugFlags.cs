@@ -1,21 +1,27 @@
-﻿using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
-using StreamerBotLib.Systems;
 
 using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 
+using StreamerBotLib.Models.Enums;
+
+
+#if DEBUG
+using StreamerBotLib.GUI.Windows;
+#endif
+
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
-        #region Debug Empty Stream
 #if DEBUG
         private DebugStreamUsers TestingWindow;
 #endif
+
+        #region Debug Empty Stream
 
         private void CheckDebug(object sender, RoutedEventArgs e)
         {
@@ -37,17 +43,17 @@ namespace StreamerBot
                 string Category = "Microsoft Flight Simulator";
                 string ID = "7193";
                 string Title = "Testing a debug stream";
+                List<CategoryData> output = [.. Controller.GetGameCategories()];
 
                 ThreadManager.CreateThreadStart("StartDebugStream_Click", () =>
                 {
-                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), platform: StreamerBotLib.Enums.Platform.Default, Debug: true);
+                    Controller.HandleOnStreamOnline(User, Title, DebugStreamStarted, new(ID, Category), platform: Platform.Default, Debug: true);
 
-                    List<CategoryData> output = SystemsController.DataManage.GetGameCategories();
                     Random random = new();
                     CategoryData itemfound = output[random.Next(output.Count)];
                     Controller.HandleOnStreamUpdate(itemfound);
 #if DEBUG
-                    Controller.Systems.TestAddUsers();
+                    Controller.TestAddUsers();
 #endif
                 });
 
@@ -64,7 +70,7 @@ namespace StreamerBot
 #if DEBUG
         private void TestingWindow_AddDebugUsers(object sender, EventArgs e)
         {
-            Controller.Systems.TestAddUsers();
+            Controller.TestAddUsers();
         }
 #endif
 
@@ -72,7 +78,7 @@ namespace StreamerBot
         {
             if (DebugStreamStarted != DateTime.MinValue)
             {
-                Controller.HandleOnStreamOffline(StreamerBotLib.Enums.Platform.Default);
+                Controller.HandleOnStreamOffline(Platform.Default);
 
                 DebugStreamStarted = DateTime.MinValue;
 

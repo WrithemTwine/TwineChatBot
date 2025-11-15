@@ -1,15 +1,14 @@
-﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.DataSQL.MultiContext;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
+﻿using StreamerBotLib.DataSQL.EFC9;
+using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.GUI;
-using StreamerBotLib.Interfaces;
 using StreamerBotLib.Models;
-using StreamerBotLib.Overlay.Enums;
-using StreamerBotLib.Overlay.Models;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
-
-using System.Data;
+using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
 
 namespace StreamerBotLib.DataSQL
 {
@@ -21,17 +20,15 @@ namespace StreamerBotLib.DataSQL
     {
         private readonly DataManagerSQLAsync _dataManager;
 
-        public string MultiLiveStatusLog { get; private set; }
-        private readonly List<string> MultiLiveStatusList = [];
+        private List<string> MultiLiveStatusLog;
         private const int MaxList = 50;
 
         public List<ArchiveMultiStream> CleanupList { get; } = [];
 
         public event EventHandler<OnBulkFollowersAddFinishedEventArgs> OnBulkFollowersAddFinished;
-
         public event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionUpdated;
-
         public event EventHandler UpdatedMonitoringChannels;
+        public event EventHandler<EventArgs> OnLoadCompleted;
 
         /// <summary>
         /// Cache a list to maintain until user adjusts commands, they remain unchanged
@@ -45,13 +42,24 @@ namespace StreamerBotLib.DataSQL
             _dataManager.OnDataCollectionUpdated += _dataManager_OnDataCollectionUpdated;
             _dataManager.OnBulkFollowersAddFinished += _dataManager_OnBulkFollowersAddFinished;
             _dataManager.UpdatedMonitoringChannels += _dataManager_UpdatedMonitoringChannels;
+            _dataManager.OnLoadCompleted += _dataManager_OnLoadCompleted;
+        }
+
+        public async Task InitializeDataManager()
+        {
+            await _dataManager.InitializeDataBaseAsync();
+        }
+
+        private void _dataManager_OnLoadCompleted(object sender, EventArgs e)
+        {
+            OnLoadCompleted?.Invoke(sender, e);
         }
 
         private void _dataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
         {
             LogWriter.DebugLog("_dataManager_UpdatedMonitoringChannels", DebugLogTypes.DataManager, "UpdatedMonitoringChannels event triggered.");
 
-            UpdatedMonitoringChannels?.Invoke(this, new());
+            UpdatedMonitoringChannels?.Invoke(this, e);
         }
 
         private void _dataManager_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
@@ -121,21 +129,21 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool CheckMultiStreamDate(string UserId, Platform platform, DateTime dateTime)
+        public bool CheckMultiLiveStreamDate(string UserId, Platform platform, DateTime dateTime)
         {
-            LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.DataManager, "Checking multi-stream date.");
+            LogWriter.DebugLog("CheckMultiStreamDate", DebugLogTypes.DataManager, "Checking multi-channel live stream date.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.CheckMultiStreamDate(UserId, platform, dateTime).Result;
+                return _dataManager.CheckMultiLiveStreamDate(UserId, platform, dateTime).Result;
             }
         }
 
-        public bool CheckMultiStreams(DateTime streamStart)
+        public bool CheckStreamDate(DateTime streamStart)
         {
             LogWriter.DebugLog("CheckMultiStreams", DebugLogTypes.DataManager, "Checking multi-streams.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.CheckMultiStreams(streamStart).Result;
+                return _dataManager.CheckStreamDate(streamStart).Result;
             }
         }
 
@@ -229,10 +237,16 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void DeleteDataRows(IEnumerable<DataRow> dataRows)
+        public void DeleteDataRows(IEnumerable<object> dataRows, string TableName)
         {
             LogWriter.DebugLog("DeleteDataRows", DebugLogTypes.DataManager, "Deleting data rows - not available.");
-            lock (GUIDataManagerLock.Lock) { }
+            lock (GUIDataManagerLock.Lock)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.DeleteDataRows(dataRows, TableName);
+                });
+            }
         }
 
         public string EditCommand(string cmd, List<string> Arglist)
@@ -246,7 +260,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
+        public Tuple<ModActions, StreamerBotLib.Models.Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes)
         {
             LogWriter.DebugLog("FindRemedy", DebugLogTypes.DataManager, "Finding remedy.");
             lock (GUIDataManagerLock.Lock)
@@ -255,12 +269,21 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public List<ArchiveMultiStream> GetCleanupList()
+        public void SetCleanupList(ref List<ArchiveMultiStream> archiveMultiStreams)
         {
             LogWriter.DebugLog("GetCleanupList", DebugLogTypes.DataManager, "Getting cleanup list.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.GetCleanupList();
+                _dataManager.SetCleanupList(ref archiveMultiStreams);
+            }
+        }
+
+        public void SetMultiLiveStatusLog(ref List<string> log)
+        {
+            LogWriter.DebugLog("SetMultiLiveStatusLog", DebugLogTypes.DataManager, "Setting multi-live status log.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                MultiLiveStatusLog = log;
             }
         }
 
@@ -305,7 +328,20 @@ namespace StreamerBotLib.DataSQL
             LogWriter.DebugLog("GetCommandList", DebugLogTypes.DataManager, "Getting command list.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.GetCommandList(prefix).Result;
+                var Commands = _dataManager.GetCommandList(prefix).Result;
+
+                return Commands.Count == 0 ? [LocalizedMsgSystem.GetVar("MsgNoCommands")] : Commands;
+            }
+        }
+
+        public IEnumerable<string> GetCommandListNoParams(bool prefix)
+        {
+            LogWriter.DebugLog("GetCommandList", DebugLogTypes.DataManager, "Getting command list.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                var Commands = _dataManager.GetCommandListNoParams(prefix).Result;
+
+                return Commands.Count == 0 ? [LocalizedMsgSystem.GetVar("MsgNoCommands")] : Commands;
             }
         }
 
@@ -568,6 +604,15 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        public LiveUser GetUserById(string UserId, Platform platform)
+        {
+            LogWriter.DebugLog("GetUserByUserId", DebugLogTypes.DataManager, "Getting user by user ID.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.GetUserById(UserId, platform).Result;
+            }
+        }
+
         public List<Tuple<bool, Uri>> GetWebhooks(WebhooksSource webhooksSource, WebhooksKind webhooks)
         {
             LogWriter.DebugLog("GetWebhooks", DebugLogTypes.DataManager, "Getting webhooks.");
@@ -577,14 +622,14 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void GUIRowEditSave()
+        public void GUIRowEditSave(string TableName)
         {
             LogWriter.DebugLog("GUIRowEditSave", DebugLogTypes.DataManager, "GUI row edit save.");
             lock (GUIDataManagerLock.Lock)
             {
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
-                    await _dataManager.GUIRowEditSave();
+                    await _dataManager.GUIRowEditSave(TableName);
                 });
             }
         }
@@ -628,6 +673,13 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        /// <summary>
+        /// Posts a new category to the data manager.
+        /// </summary>
+        /// <remarks>This method is thread-safe and ensures that the operation is synchronized using a
+        /// lock. The method waits for the result of the asynchronous operation and returns the outcome.</remarks>
+        /// <param name="categoryData">The data representing the category to be posted. Cannot be null.</param>
+        /// <returns><see langword="true"/> if the category was successfully posted; otherwise, <see langword="false"/>.</returns>
         public bool PostCategory(CategoryData categoryData)
         {
             LogWriter.DebugLog("PostCategory", DebugLogTypes.DataManager, "Posting category.");
@@ -637,6 +689,13 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        /// <summary>
+        /// Posts a category stream to the data manager for processing.
+        /// </summary>
+        /// <remarks>This method schedules the posting operation on the GUI dispatcher thread to ensure
+        /// thread safety.</remarks>
+        /// <param name="category">The category data to be posted. Cannot be null.</param>
+        /// <param name="StreamCount">The number of streams to be associated with the category. Must be a non-negative integer.</param>
         public void PostCategoryStream(CategoryData category, int StreamCount)
         {
             LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.DataManager, "Posting category stream.");
@@ -649,12 +708,28 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName)
+        public void ResetCategoryStreamCount()
+        {
+            LogWriter.DebugLog("ResetCategoryStreamCount", DebugLogTypes.DataManager, "Resetting all category stream counts.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.ResetCategoryStreamCount();
+                });
+            }
+        }
+
+        public bool PostClip
+            (
+            string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, 
+            string Title, string Url, string fromUserId, string fromUserName, bool LastClip
+            )
         {
             LogWriter.DebugLog("PostClip", DebugLogTypes.DataManager, "Posting clip.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.PostClip(ClipId, CreatedAt, Duration, GameId, Language, Title, Url, fromUserId, fromUserName).Result;
+                return _dataManager.PostClip(ClipId, CreatedAt, Duration, GameId, Language, Title, Url, fromUserId, fromUserName, LastClip).Result;
             }
         }
 
@@ -813,13 +888,14 @@ namespace StreamerBotLib.DataSQL
             {
                 ThreadManager.AddTaskToGUIDispatcher(() =>
                 {
-                    MultiLiveStatusList.Insert(0, LogItem);
+                    MultiLiveStatusLog.Insert(0, $"{DateTime.Now.ToLocalTime():g} {LogItem}");
 
-                    if (MultiLiveStatusList.Count > MaxList)
-                    {
-                        MultiLiveStatusList.RemoveRange(MaxList - 1, MultiLiveStatusList.Count - MaxList);
+                    if (MultiLiveStatusLog.Count > MaxList)
+                    { // limit the list to MaxList items
+                        LogWriter.DebugLog("PostMultiLiveLog", DebugLogTypes.DataManager, $"Trimming MultiLiveStatusLog to {MaxList} items.");
+                        MultiLiveStatusLog.RemoveRange(MaxList - 1, MultiLiveStatusLog.Count - MaxList);
                     }
-                    MultiLiveStatusLog = string.Join("\r\n", MultiLiveStatusList);
+
                     _dataManager.NotifyDataCollectionUpdated(nameof(MultiLiveStatusLog));
                 });
             }
@@ -1020,12 +1096,11 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        [Obsolete("No longer compatible after upgrade to Entity Framework Core")]
-        public void SetIsEnabled(IEnumerable<DataRow> dataRows, bool IsEnabled)
-        {
-            LogWriter.DebugLog("SetIsEnabled", DebugLogTypes.DataManager, "Setting is enabled.");
-            lock (GUIDataManagerLock.Lock) { }
-        }
+        //public void SetIsEnabled(IEnumerable<EntityBase> dataRows, string TableName, bool IsEnabled)
+        //{
+        //    LogWriter.DebugLog("SetIsEnabled", DebugLogTypes.DataManager, "Setting is enabled.");
+        //    lock (GUIDataManagerLock.Lock) { }
+        //}
 
         public void SetSystemEventsEnabled(bool Enabled)
         {
@@ -1193,30 +1268,6 @@ namespace StreamerBotLib.DataSQL
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     await _dataManager.UpdateWatchTime(Users, CurrTime);
-                });
-            }
-        }
-
-        public void UpdateWatchTime(LiveUser User, DateTime CurrTime)
-        {
-            LogWriter.DebugLog("UpdateWatchTime", DebugLogTypes.DataManager, "Updating watch time.");
-            lock (GUIDataManagerLock.Lock)
-            {
-                ThreadManager.AddTaskToGUIDispatcher(() =>
-                {
-                    UpdateWatchTime([User], CurrTime);
-                });
-            }
-        }
-
-        public void UserJoined(LiveUser User, DateTime NowSeen)
-        {
-            LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager, "User joined.");
-            lock (GUIDataManagerLock.Lock)
-            {
-                ThreadManager.AddTaskToGUIDispatcher(async () =>
-                {
-                    await _dataManager.UserJoined(User, NowSeen);
                 });
             }
         }

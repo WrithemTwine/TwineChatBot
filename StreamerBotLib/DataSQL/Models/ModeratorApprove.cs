@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(ModActionType), nameof(ModActionName))]
     [Index(nameof(ModActionType), nameof(ModActionName))]
+    [DebuggerDisplay("IsEnabled={IsEnabled}, ModActionType={ModActionType}, ModActionName={ModActionName}, ModPerformType={ModPerformType}, ModPerformAction={ModPerformAction}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class ModeratorApprove(bool isEnabled,
                                   ModActionType modActionType,

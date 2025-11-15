@@ -1,8 +1,7 @@
-﻿
-using StreamerBotLib.BotClients;
+﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotClients.Twitch;
-using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 namespace StreamerBotLib.GUI

@@ -1,23 +1,24 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.DiscriminatorEnums;
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(WebhooksSource), nameof(Server), nameof(Kind))]
-
+    [DebuggerDisplay("Id={Id}, IsEnabled={IsEnabled}, WebhooksSource={WebhooksSource}, Server={Server}, Kind={Kind}, AddEveryone={AddEveryone}")]
     public class WebhooksBase(int id = 0,
-                         bool isEnabled = false,
-                         WebhooksSource webhooksSource = default,
-                         string server = null,
-                         WebhooksKind kind = default,
-                         bool addEveryone = false,
-                         Uri webhook = default)
-      : EntityBase
+                           bool isEnabled = false,
+                           WebhooksSource webhooksSource = default,
+                           string server = null,
+                           WebhooksKind kind = default,
+                           bool addEveryone = false,
+                           Uri webhook = default)
+        : EntityBase
     {
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Name))]
     [Index(nameof(Name), IsUnique = true)]
+    [DebuggerDisplay("Name={Name}, IsEnabled={IsEnabled}, RepeatMsg={RepeatMsg}, AddMe={AddMe}, Announce={Announce}, Message={Message}, Commands={Commands}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class ChannelEvents(ChannelEventActions name,
                                short repeatMsg,

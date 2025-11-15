@@ -3,6 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EFEntityEntryTesting.EF
 {

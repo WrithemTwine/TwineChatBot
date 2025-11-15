@@ -1,10 +1,9 @@
 ﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.Events;
-using StreamerBotLib.GUI;
-using StreamerBotLib.MultiLive;
-using StreamerBotLib.Systems;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Systems.MultiLive;
 
 using System.Windows;
+using System.Windows.Controls;
 
 namespace StreamerBot
 {
@@ -14,8 +13,7 @@ namespace StreamerBot
 
         private void MultiLive_Data_Loaded(object sender, RoutedEventArgs e)
         {
-            GUIDataManagerViews.DataViewsUpdated += (MultiLive_Data.Content as MultiLiveDataGrids).DataManager_OnDataCollectionUpdated;
-
+            Controller.HandleOnDataCollectionUpdated((MultiLive_Data.Content as MultiLiveDataGrids).DataManager_OnDataCollectionUpdated);
 
             // allow edits while bot is active
             (MultiLive_Data.Content as MultiLiveDataGrids).SetIsEnabled(true);
@@ -23,8 +21,26 @@ namespace StreamerBot
             (MultiLive_Data.Content as MultiLiveDataGrids).SummarizeChannels += StreamerBotWindow_SummarizeChannels;
             (MultiLive_Data.Content as MultiLiveDataGrids).FindMultiChannelUserId += StreamerBotWindow_FindMultiChannelUserId;
             (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMultiChannelUser += StreamerBotWindow_AddNewMultiChannelUser;
+            (MultiLive_Data.Content as MultiLiveDataGrids).GUISaveEdits = Controller.GUISaveDataGridEdits;
+            (MultiLive_Data.Content as MultiLiveDataGrids).PreviewKeyDownDeleteRows += MultiLive_DG_PreviewKeyDown_Click;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemDeleteClick += MenuItem_DeleteClick;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemEnabledClick += DataGridContextMenu_EnableItems_Click;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemDisabledClick += DataGridContextMenu_DisableItems_Click;
             AddMultiLiveFoundUserId += (MultiLive_Data.Content as MultiLiveDataGrids).UpdateMultiChannelUserId;
+
+#if DEBUG
+            (MultiLive_Data.Content as MultiLiveDataGrids).DebugAddNewMultiLiveData += StreamerBotWindow_DebugAddNewMultiLiveData;
+#endif
+
+            ((Frame)sender).Loaded -= MultiLive_Data_Loaded;
         }
+
+#if DEBUG
+        private void StreamerBotWindow_DebugAddNewMultiLiveData(object sender, EventArgs e)
+        {
+            Controller.DebugAddNewMultiLiveData();
+        }
+#endif
 
         private const string MultiLiveName = "MultiUserLiveBot";
 
@@ -32,7 +48,7 @@ namespace StreamerBot
 
         private void StreamerBotWindow_AddNewMultiChannelUser(object sender, AddNewMultiChannelUserEventArgs e)
         {
-            SystemsController.DataManage.PostMonitorChannel([e.LiveUser]);
+            Controller.AddNewMonitorChannel([e.LiveUser]);
         }
 
         private void StreamerBotWindow_FindMultiChannelUserId(object sender, AddNewMultiChannelUserEventArgs e)
@@ -48,7 +64,7 @@ namespace StreamerBot
             if (!SummarizeChannels) // some reason, this event is being called three times, prevent extra calls
             {
                 SummarizeChannels = true;
-                SystemsController.MultiSummarize(e);
+                Controller.MultiChannelSummarize(e);
                 SummarizeChannels = false;
             }
         }

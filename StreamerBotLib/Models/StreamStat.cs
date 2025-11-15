@@ -2,7 +2,6 @@ using StreamerBotLib.DataSQL.Models;
 
 using System.Diagnostics;
 
-using DataImport = StreamerBotLib.DataSQL.MultiContext.Import.DataSource;
 
 namespace StreamerBotLib.Models
 {
@@ -85,7 +84,8 @@ namespace StreamerBotLib.Models
               streamStats.ClipsMade,
               streamStats.ChannelPtCount,
               streamStats.ChannelChallenge,
-              streamStats.MaxUsers);
+              streamStats.MaxUsers,
+              streamStats.Category);
 
         public DateTime StreamStart { get; set; } = streamStart;
         public DateTime StreamEnd { get; set; } = streamEnd;
@@ -114,38 +114,6 @@ namespace StreamerBotLib.Models
         /// Maintain current active category of the stream
         /// </summary>
         public string Category { get; set; } = currentCategory;
-
-        public void Update(DataImport.StreamStatsRow streamStatsRow)
-        {
-            StreamStart = streamStatsRow.StreamStart;
-            StreamEnd = streamStatsRow.StreamEnd;
-            NewFollows = streamStatsRow.NewFollows;
-            NewSubscribers = streamStatsRow.NewSubscribers;
-            GiftSubs = streamStatsRow.GiftSubs;
-            try
-            {
-                Bits = Convert.ToInt32(streamStatsRow.Bits);
-            }
-            catch (OverflowException)
-            {
-                Bits = int.MaxValue;
-            }
-            Raids = streamStatsRow.Raids;
-            Hosted = streamStatsRow.Hosted;
-            UsersBanned = streamStatsRow.UsersBanned;
-            UsersTimedOut = streamStatsRow.UsersTimedOut;
-            ModeratorsPresent = streamStatsRow.ModeratorsPresent;
-            SubsPresent = streamStatsRow.SubsPresent;
-            VIPsPresent = streamStatsRow.VIPsPresent;
-            TotalChats = streamStatsRow.TotalChats;
-            CommandMsgs = streamStatsRow.Commands;
-            AutomatedCommands = streamStatsRow.AutomatedCommands;
-            WebhookMsgs = streamStatsRow.DiscordMsgs;
-            ClipsMade = streamStatsRow.ClipsMade;
-            ChannelPtCount = streamStatsRow.ChannelPtCount;
-            ChannelChallenge = streamStatsRow.ChannelChallenge;
-            MaxUsers = streamStatsRow.MaxUsers;
-        }
 
         public void Clear()
         {

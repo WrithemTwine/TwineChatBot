@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(Id))]
     [Index(nameof(Id), nameof(OverlayType), nameof(OverlayAction))]
+    [DebuggerDisplay("Id={Id}, IsEnabled={IsEnabled}, OverlayType={OverlayType}, OverlayAction={OverlayAction}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class OverlayServices(int id,
                                  bool isEnabled,

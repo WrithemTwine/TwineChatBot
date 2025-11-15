@@ -1,12 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using StreamerBotLib.Enums;
+using StreamerBotLib.Models.Enums;
+
+using System.Diagnostics;
 
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform), nameof(CurrencyName))]
     [Index(nameof(UserId), nameof(CurrencyName), IsUnique = true)]
-
+    [DebuggerDisplay("UserId={UserId}, Platform={Platform}, CurrencyName={CurrencyName}, Value={Value}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Currency(
         string userId,

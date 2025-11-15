@@ -2,10 +2,13 @@
 
 using StreamerBotLib.Static;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(CategoryId), nameof(Category))]
     [Index(nameof(CategoryId), nameof(Category), IsUnique = true)]
+    [DebuggerDisplay("CategoryId={CategoryId}, Category={Category}, StreamCount={StreamCount}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class CategoryList(string categoryId,
                               string category,
@@ -30,6 +33,8 @@ namespace StreamerBotLib.DataSQL.Models
         public GameDeadCounter? GameDeadCounter { get; set; }
 
         public ICollection<Followers> Followers { get; } = [];
+
+        public ICollection<Clips> Clips { get; } = [];
 
     }
 }

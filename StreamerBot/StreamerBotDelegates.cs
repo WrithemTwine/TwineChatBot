@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Interfaces;
+﻿using StreamerBotLib.Models.Interfaces;
 
 using System.Windows.Controls;
 

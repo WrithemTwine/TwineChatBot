@@ -1,13 +1,14 @@
-using StreamerBotLib.Interfaces;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class BanRules : IDatabaseTableMeta
     {
         public System.Int32 Id { get => (System.Int32)Values["Id"]; set => Values["Id"] = value; }
-        public StreamerBotLib.Enums.ViewerTypes ViewerTypes { get => (StreamerBotLib.Enums.ViewerTypes)Values["ViewerTypes"]; set => Values["ViewerTypes"] = value; }
-        public StreamerBotLib.Enums.MsgTypes MsgType { get => (StreamerBotLib.Enums.MsgTypes)Values["MsgType"]; set => Values["MsgType"] = value; }
-        public StreamerBotLib.Enums.ModActions ModAction { get => (StreamerBotLib.Enums.ModActions)Values["ModAction"]; set => Values["ModAction"] = value; }
+        public ViewerTypes ViewerTypes { get => (ViewerTypes)Values["ViewerTypes"]; set => Values["ViewerTypes"] = value; }
+        public MsgTypes MsgType { get => (MsgTypes)Values["MsgType"]; set => Values["MsgType"] = value; }
+        public ModActions ModAction { get => (ModActions)Values["ModAction"]; set => Values["ModAction"] = value; }
         public System.Int32 TimeoutSeconds { get => (System.Int32)Values["TimeoutSeconds"]; set => Values["TimeoutSeconds"] = value; }
 
         public Dictionary<string, object> Values { get; }
@@ -28,9 +29,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
         public Dictionary<string, Type> Meta => new()
         {
               { "Id", typeof(System.Int32) },
-              { "ViewerTypes", typeof(StreamerBotLib.Enums.ViewerTypes) },
-              { "MsgType", typeof(StreamerBotLib.Enums.MsgTypes) },
-              { "ModAction", typeof(StreamerBotLib.Enums.ModActions) },
+              { "ViewerTypes", typeof(ViewerTypes) },
+              { "MsgType", typeof(MsgTypes) },
+              { "ModAction", typeof(ModActions) },
               { "TimeoutSeconds", typeof(System.Int32) }
         };
         public object GetModelEntity()

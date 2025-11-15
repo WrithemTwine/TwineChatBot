@@ -1,13 +1,12 @@
-﻿using StreamerBotLib.Enums;
-using StreamerBotLib.Events;
-using StreamerBotLib.Interfaces;
-using StreamerBotLib.Overlay;
-using StreamerBotLib.Overlay.Models;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay;
+using StreamerBotLib.Systems.Overlay.Models;
 
 namespace StreamerBotLib.BotClients
 {
-
     public class BotOverlayServer : IOModule, IBotTypes
     {
         /// <summary>
