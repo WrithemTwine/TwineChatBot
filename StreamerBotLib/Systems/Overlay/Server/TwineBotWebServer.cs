@@ -98,7 +98,7 @@ namespace StreamerBotLib.Systems.Overlay.Server
         {
             IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
             IPEndPoint[] listeners = properties.GetActiveTcpListeners();
-            int[] openPorts = listeners.Select(item => item.Port).ToArray();
+            int[] openPorts = [.. listeners.Select(item => item.Port)];
             return openPorts.All(openPort => openPort != port);
         }
 
@@ -133,11 +133,11 @@ namespace StreamerBotLib.Systems.Overlay.Server
         {
             //if (HTTPListenServer.IsListening)
             //{
-                lock (OverlayPages)
-                {
-                    OverlayPages.Add(overlayPage);
-                    LogWriter.DebugLog("SendAlert", DebugLogTypes.OverlayBot, $"http server - Overlay alert, {overlayPage.OverlayType}, added and awaiting to be served.");
-                }
+            lock (OverlayPages)
+            {
+                OverlayPages.Add(overlayPage);
+                LogWriter.DebugLog("SendAlert", DebugLogTypes.OverlayBot, $"http server - Overlay alert, {overlayPage.OverlayType}, added and awaiting to be served.");
+            }
             //}
         }
 
@@ -145,11 +145,11 @@ namespace StreamerBotLib.Systems.Overlay.Server
         {
             //if (HTTPListenServer.IsListening)
             //{
-                lock (OverlayVideo)
-                {
-                    OverlayVideo.Add(overlayPage);
-                    LogWriter.DebugLog("SendVideo", DebugLogTypes.OverlayBot, $"http server - Overlay video, {overlayPage.OverlayType}, added and awaiting to be served.");
-                }
+            lock (OverlayVideo)
+            {
+                OverlayVideo.Add(overlayPage);
+                LogWriter.DebugLog("SendVideo", DebugLogTypes.OverlayBot, $"http server - Overlay video, {overlayPage.OverlayType}, added and awaiting to be served.");
+            }
             //}
         }
 
@@ -157,11 +157,11 @@ namespace StreamerBotLib.Systems.Overlay.Server
         {
             //if (HTTPListenServer.IsListening)
             //{
-                lock (OverlayImages)
-                {
-                    OverlayImages.Add(overlayPage);
-                    LogWriter.DebugLog("SendImage", DebugLogTypes.OverlayBot, $"http server - Overlay image, {overlayPage.OverlayType}, added and awaiting to be served.");
-                }
+            lock (OverlayImages)
+            {
+                OverlayImages.Add(overlayPage);
+                LogWriter.DebugLog("SendImage", DebugLogTypes.OverlayBot, $"http server - Overlay image, {overlayPage.OverlayType}, added and awaiting to be served.");
+            }
             //}
         }
 

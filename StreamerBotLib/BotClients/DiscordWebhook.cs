@@ -137,7 +137,7 @@ namespace StreamerBotLib.BotClients
         public AllowedMentions(AllowedMentionTypes[] mentions, string[] roles, string[] users)
         {
             List<string> temp = [];
-            List<AllowedMentionTypes> tempmentions = new(mentions);
+            List<AllowedMentionTypes> tempmentions = [.. mentions];
 
             tempmentions.UniqueAdd(AllowedMentionTypes.everyone);
             tempmentions.UniqueAdd(AllowedMentionTypes.roles);
@@ -149,7 +149,7 @@ namespace StreamerBotLib.BotClients
             {
                 case > max_data:
                     {
-                        List<string> temproles = new(roles);
+                        List<string> temproles = [.. roles];
                         temproles.RemoveRange(max_data, temproles.Count - max_data);
                         Roles = [.. temproles];
                         break;
@@ -164,7 +164,7 @@ namespace StreamerBotLib.BotClients
             {
                 case > max_data:
                     {
-                        List<string> tempusers = new(users);
+                        List<string> tempusers = [.. users];
                         tempusers.RemoveRange(max_data, tempusers.Count - max_data);
                         Users = [.. tempusers];
                         break;

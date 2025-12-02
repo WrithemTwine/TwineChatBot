@@ -265,7 +265,7 @@
             }
             else
             {
-                Tuple<int, double>[] pairs = y.Zip(weights, Tuple.Create).ToArray();
+                Tuple<int, double>[] pairs = [.. y.Zip(weights, Tuple.Create)];
                 weightedTree = KDTree.FromData(points: x, values: pairs, distance: Distance);
             }
 

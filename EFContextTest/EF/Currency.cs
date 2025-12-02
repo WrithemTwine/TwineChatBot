@@ -20,7 +20,7 @@ namespace EFContextTest.EF
 
         public CurrencyType CurrencyType { get; set; } = null!;
 
-        public static Currency operator +(Currency lhs, Currency rhs)
+        public static Currency? operator +(Currency lhs, Currency rhs)
         {
             if (lhs != null && rhs != null)
             {

@@ -108,7 +108,7 @@ namespace StreamerBotLib.BotIOController
                                });
                                waitHandle.Wait();
                            }
-                           return result ?? Enumerable.Empty<string>();
+                           return result ?? [];
                        }
                        )
                     );
@@ -1219,7 +1219,9 @@ namespace StreamerBotLib.BotIOController
 
                 ManageBotsStreamStatusChanged(true);
 
-                DataBot.StreamOnline(StartedAt, Category, (isOnline) => callbackHandleOnStreamOnline(isOnline, ChannelName, Title, StartedAt, Category, platform, Debug)); // a callback to finish the stream online process
+                OnStreamCategoryChanged?.Invoke(this, new() { GameId = Category.CategoryId, GameName = Category.CategoryName });
+
+                DataBot.StreamOnline(StartedAt, Category, (isOnline) => CallbackHandleOnStreamOnline(isOnline, ChannelName, Title, StartedAt, Category, platform, Debug)); // a callback to finish the stream online process
             }
             catch (Exception ex)
             {
@@ -1227,7 +1229,7 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
-        private void callbackHandleOnStreamOnline(bool Started, string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
+        private void CallbackHandleOnStreamOnline(bool Started, string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
         {
             try
             {

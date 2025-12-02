@@ -13,11 +13,11 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchEventSub : TwitchBotsBase
     {
-        private IEventSubMessageIdsLogger _EventSubMessageIdsLogger;
-        private EventSubWebsocketClient _EventSubWebsocketClient;
+        private readonly IEventSubMessageIdsLogger _EventSubMessageIdsLogger;
+        private readonly EventSubWebsocketClient _EventSubWebsocketClient;
         private readonly TwitchTokenBot tokenBot;
 
-        private List<ITwitchBotEventSubSubscriptions> SubscriptionHandlers = [];
+        private readonly List<ITwitchBotEventSubSubscriptions> SubscriptionHandlers = [];
 
         internal event EventHandler OnInitialBotStartupSubHandlers;
         public event EventHandler TokenUpdatedEventSubUpdated;

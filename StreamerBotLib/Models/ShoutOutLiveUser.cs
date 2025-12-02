@@ -40,5 +40,15 @@ namespace StreamerBotLib.Models
         {
             return obj.User.GetHashCode();
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ShoutOutLiveUser);
+        }
+
+        public override int GetHashCode()
+        {
+            return User.GetHashCode();
+        }
     }
 }

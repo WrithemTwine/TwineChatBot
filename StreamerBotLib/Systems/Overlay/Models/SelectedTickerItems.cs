@@ -18,7 +18,7 @@ namespace StreamerBotLib.Systems.Overlay.Models
 
         public SelectedTickerItems()
         {
-            TickerItems = [.. from string ticker in Enum.GetNames(typeof(OverlayTickerItem))
+            TickerItems = [.. from string ticker in Enum.GetNames<OverlayTickerItem>()
                               select new SelectedTickerItem()
                               {
                                   IsSelected = new List<string>(OptionFlags.MediaOverlayTickerSelected).Contains(ticker),
@@ -29,9 +29,9 @@ namespace StreamerBotLib.Systems.Overlay.Models
         public void SaveSelections()
         {
             OptionFlags.MediaOverlayTickerSelected =
-             (from SelectedTickerItem ticker in TickerItems
+             [.. (from SelectedTickerItem ticker in TickerItems
               where ticker.IsSelected
-              select ticker.OverlayTickerItem).ToArray();
+              select ticker.OverlayTickerItem)];
 
         }
 

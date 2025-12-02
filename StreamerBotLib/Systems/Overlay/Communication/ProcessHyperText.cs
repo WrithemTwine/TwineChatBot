@@ -195,8 +195,8 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                 reloadtime = OptionFlags.MediaOverlayTickerMarqueeTime;
             }
 
-            List<XElement> spans = new(from TickerItem T in tickerItems
-                                       select ProcessTicker(T.OverlayTickerItem, T.UserName));
+            List<XElement> spans = [.. from TickerItem T in tickerItems
+                                       select ProcessTicker(T.OverlayTickerItem, T.UserName)];
 
             string body = "";
 

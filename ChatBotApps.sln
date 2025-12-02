@@ -168,7 +168,7 @@ Global
 		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Release_Sqlite|Any CPU.ActiveCfg = Release|Any CPU
 		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Release_SqlServer|Any CPU.ActiveCfg = Release|Any CPU
 		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Update_Nuget_Only|Any CPU.ActiveCfg = Debug_EFEETesting|Any CPU
+		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Update_Nuget_Only|Any CPU.ActiveCfg = Update_Nuget_Only|Any CPU
 		{5383324F-E023-40B6-8355-DCE137DAC401}.Debug_EFEETesting|Any CPU.ActiveCfg = Debug|Any CPU
 		{5383324F-E023-40B6-8355-DCE137DAC401}.Debug_ViewXAML|Any CPU.ActiveCfg = Debug_ViewXAML|Any CPU
 		{5383324F-E023-40B6-8355-DCE137DAC401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -203,7 +203,7 @@ Global
 		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Release_SqlServer|Any CPU.Build.0 = Release|Any CPU
 		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Update_Nuget_Only|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Update_Nuget_Only|Any CPU.ActiveCfg = Update_Nuget_Only|Any CPU
 		{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2}.Debug_EFEETesting|Any CPU.ActiveCfg = Debug|Any CPU
 		{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2}.Debug_EFEETesting|Any CPU.Build.0 = Debug|Any CPU
 		{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2}.Debug_ViewXAML|Any CPU.ActiveCfg = Debug_ViewXAML|Any CPU

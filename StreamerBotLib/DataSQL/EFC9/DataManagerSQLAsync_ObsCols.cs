@@ -106,7 +106,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.BanReasons.LoadAsync();
-                BanReasons.AddRange(GUIContext.BanReasons.Local.ToList());
+                BanReasons.AddRange([.. GUIContext.BanReasons.Local]);
 
                 return BanReasons;
             });
@@ -117,7 +117,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.BanRules.LoadAsync();
-                BanRules.AddRange(GUIContext.BanRules.Local.ToList());
+                BanRules.AddRange([.. GUIContext.BanRules.Local]);
                 return BanRules;
             });
         }
@@ -127,7 +127,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.CategoryList.LoadAsync();
-                CategoryList.AddRange(GUIContext.CategoryList.Local.ToList());
+                CategoryList.AddRange([.. GUIContext.CategoryList.Local]);
                 return CategoryList;
             });
         }
@@ -137,7 +137,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.ChannelEvents.LoadAsync();
-                ChannelEvents.AddRange(GUIContext.ChannelEvents.Local.ToList());
+                ChannelEvents.AddRange([.. GUIContext.ChannelEvents.Local]);
                 return ChannelEvents;
             });
         }
@@ -147,7 +147,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.Clips.Include(c => c.CategoryList).LoadAsync();
-                Clips.AddRange(GUIContext.Clips.Local.ToList());
+                Clips.AddRange([.. GUIContext.Clips.Local]);
                 return Clips;
             });
         }
@@ -157,7 +157,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.Commands.LoadAsync();
-                Commands.AddRange(GUIContext.Commands.Local.ToList());
+                Commands.AddRange([.. GUIContext.Commands.Local]);
                 return Commands;
             });
         }
@@ -167,7 +167,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.CommandsUser.LoadAsync();
-                CommandsUser.AddRange(GUIContext.CommandsUser.Local.ToList());
+                CommandsUser.AddRange([.. GUIContext.CommandsUser.Local]);
                 return CommandsUser;
             });
         }
@@ -177,7 +177,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.Currency.Include(u => u.User).ThenInclude(F => F.Follower).Include(u => u.User).ThenInclude(S => S.UserStats).LoadAsync();
-                Currency.AddRange(GUIContext.Currency.Local.ToList());
+                Currency.AddRange([.. GUIContext.Currency.Local]);
                 return Currency;
             });
         }
@@ -187,7 +187,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.CurrencyType.LoadAsync();
-                CurrencyType.AddRange(GUIContext.CurrencyType.Local.ToList());
+                CurrencyType.AddRange([.. GUIContext.CurrencyType.Local]);
                 return CurrencyType;
             });
         }
@@ -197,7 +197,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.CustomWelcome.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
-                CustomWelcome.AddRange(GUIContext.CustomWelcome.Local.ToList());
+                CustomWelcome.AddRange([.. GUIContext.CustomWelcome.Local]);
                 return CustomWelcome;
             });
         }
@@ -207,7 +207,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.Followers.Include(u => u.User).LoadAsync();
-                Followers.AddRange(GUIContext.Followers.Local.ToList());
+                Followers.AddRange([.. GUIContext.Followers.Local]);
                 return Followers;
             });
         }
@@ -217,7 +217,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.GameDeadCounter.Include(c => c.CategoryList).LoadAsync();
-                GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
+                GameDeadCounter.AddRange([.. GUIContext.GameDeadCounter.Local]);
                 return GameDeadCounter;
             });
         }
@@ -227,7 +227,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.GiveawayUserData.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
-                GiveawayUserData.AddRange(GUIContext.GiveawayUserData.Local.ToList());
+                GiveawayUserData.AddRange([.. GUIContext.GiveawayUserData.Local]);
                 return GiveawayUserData;
             });
         }
@@ -237,7 +237,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.InRaidData.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
-                InRaidData.AddRange(GUIContext.InRaidData.Local.ToList());
+                InRaidData.AddRange([.. GUIContext.InRaidData.Local]);
                 return InRaidData;
             });
         }
@@ -247,7 +247,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.LearnMsgs.LoadAsync();
-                LearnMsgs.AddRange(GUIContext.LearnMsgs.Local.ToList());
+                LearnMsgs.AddRange([.. GUIContext.LearnMsgs.Local]);
                 return LearnMsgs;
             });
         }
@@ -257,7 +257,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.ModeratorApprove.LoadAsync();
-                ModeratorApprove.AddRange(GUIContext.ModeratorApprove.Local.ToList());
+                ModeratorApprove.AddRange([.. GUIContext.ModeratorApprove.Local]);
                 return ModeratorApprove;
             });
         }
@@ -267,7 +267,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.MultiChannels.LoadAsync();
-                MultiChannels.AddRange(GUIContext.MultiChannels.Local.ToList());
+                MultiChannels.AddRange([.. GUIContext.MultiChannels.Local]);
                 return MultiChannels;
             });
         }
@@ -277,7 +277,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.MultiLiveStreams.Include(M => M.MultiChannels).LoadAsync();
-                MultiLiveStreams.AddRange(GUIContext.MultiLiveStreams.Local.ToList());
+                MultiLiveStreams.AddRange([.. GUIContext.MultiLiveStreams.Local]);
                 return MultiLiveStreams;
             });
         }
@@ -287,7 +287,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.MultiWebhooks.LoadAsync();
-                MultiWebhooks.AddRange(GUIContext.MultiWebhooks.Local.ToList());
+                MultiWebhooks.AddRange([.. GUIContext.MultiWebhooks.Local]);
                 return MultiWebhooks;
             });
         }
@@ -297,7 +297,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.MultiSummaryLiveStreams.Include(M => M.MultiChannels).LoadAsync();
-                MultiSummaryLiveStreams.AddRange(GUIContext.MultiSummaryLiveStreams.Local.ToList());
+                MultiSummaryLiveStreams.AddRange([.. GUIContext.MultiSummaryLiveStreams.Local]);
                 return MultiSummaryLiveStreams;
             });
         }
@@ -307,7 +307,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.OldFollowUsers.LoadAsync();
-                OldFollowUsers.AddRange(GUIContext.OldFollowUsers.Local.ToList());
+                OldFollowUsers.AddRange([.. GUIContext.OldFollowUsers.Local]);
                 return OldFollowUsers;
             });
         }
@@ -317,7 +317,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.OutRaidData.LoadAsync();
-                OutRaidData.AddRange(GUIContext.OutRaidData.Local.ToList());
+                OutRaidData.AddRange([.. GUIContext.OutRaidData.Local]);
                 return OutRaidData;
             });
         }
@@ -327,7 +327,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.OverlayServices.LoadAsync();
-                OverlayServices.AddRange(GUIContext.OverlayServices.Local.ToList());
+                OverlayServices.AddRange([.. GUIContext.OverlayServices.Local]);
                 return OverlayServices;
             });
         }
@@ -337,7 +337,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.OverlayTicker.LoadAsync();
-                OverlayTicker.AddRange(GUIContext.OverlayTicker.Local.ToList());
+                OverlayTicker.AddRange([.. GUIContext.OverlayTicker.Local]);
                 return OverlayTicker;
             });
         }
@@ -347,7 +347,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.Quotes.LoadAsync();
-                Quotes.AddRange(GUIContext.Quotes.Local.ToList());
+                Quotes.AddRange([.. GUIContext.Quotes.Local]);
                 return Quotes;
             });
         }
@@ -357,7 +357,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.ShoutOuts.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
-                ShoutOuts.AddRange(GUIContext.ShoutOuts.Local.ToList());
+                ShoutOuts.AddRange([.. GUIContext.ShoutOuts.Local]);
                 return ShoutOuts;
             });
         }
@@ -367,7 +367,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.StreamStats.LoadAsync();
-                StreamStats.AddRange(GUIContext.StreamStats.Local.ToList());
+                StreamStats.AddRange([.. GUIContext.StreamStats.Local]);
                 return StreamStats;
             });
         }
@@ -377,7 +377,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.Users.Include(f => f.Follower).LoadAsync();
-                Users.AddRange(GUIContext.Users.Local.ToList());
+                Users.AddRange([.. GUIContext.Users.Local]);
                 return Users;
             });
         }
@@ -387,7 +387,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.UserStats.Include(u => u.User).LoadAsync();
-                UserStats.AddRange(GUIContext.UserStats.Local.ToList());
+                UserStats.AddRange([.. GUIContext.UserStats.Local]);
                 return UserStats;
             });
         }
@@ -397,7 +397,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             return Task.Run(async () =>
             {
                 await GUIContext.Webhooks.LoadAsync();
-                Webhooks.AddRange(GUIContext.Webhooks.Local.ToList());
+                Webhooks.AddRange([.. GUIContext.Webhooks.Local]);
                 return Webhooks;
             });
         }
@@ -419,7 +419,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.BanReasons.LoadAsync();
                     BanReasons.Clear();
-                    BanReasons.AddRange(GUIContext.BanReasons.Local.ToList());
+                    BanReasons.AddRange([.. GUIContext.BanReasons.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.BanReasons), RecordCountChange);
                 });
             });
@@ -434,7 +434,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.BanRules.LoadAsync();
                     BanRules.Clear();
-                    BanRules.AddRange(GUIContext.BanRules.Local.ToList());
+                    BanRules.AddRange([.. GUIContext.BanRules.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.BanRules), RecordCountChange);
                 });
             });
@@ -449,7 +449,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.CategoryList.LoadAsync();
                     CategoryList.Clear();
-                    CategoryList.AddRange(GUIContext.CategoryList.Local.ToList());
+                    CategoryList.AddRange([.. GUIContext.CategoryList.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.CategoryList), RecordCountChange);
                 });
             });
@@ -464,7 +464,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.ChannelEvents.LoadAsync();
                     ChannelEvents.Clear();
-                    ChannelEvents.AddRange(GUIContext.ChannelEvents.Local.ToList());
+                    ChannelEvents.AddRange([.. GUIContext.ChannelEvents.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.ChannelEvents), RecordCountChange);
                 });
             });
@@ -479,7 +479,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.Clips.Include(c => c.CategoryList).LoadAsync();
                     Clips.Clear();
-                    Clips.AddRange(GUIContext.Clips.Local.ToList());
+                    Clips.AddRange([.. GUIContext.Clips.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.Clips), RecordCountChange);
                 });
             });
@@ -494,7 +494,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.Commands.LoadAsync();
                     Commands.Clear();
-                    Commands.AddRange(GUIContext.Commands.Local.ToList());
+                    Commands.AddRange([.. GUIContext.Commands.Local]);
 
                     NotifyDataCollectionUpdated(nameof(GUIContext.Commands), RecordCountChange);
                 });
@@ -510,7 +510,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.CommandsUser.LoadAsync();
                     CommandsUser.Clear();
-                    CommandsUser.AddRange(GUIContext.CommandsUser.Local.ToList());
+                    CommandsUser.AddRange([.. GUIContext.CommandsUser.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.CommandsUser), RecordCountChange);
                 });
             });
@@ -525,7 +525,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.Currency.Include(u => u.User).ThenInclude(F => F.Follower).Include(u => u.User).ThenInclude(S => S.UserStats).LoadAsync();
                     Currency.Clear();
-                    Currency.AddRange(GUIContext.Currency.Local.ToList());
+                    Currency.AddRange([.. GUIContext.Currency.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
                 });
             });
@@ -540,7 +540,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.CurrencyType.LoadAsync();
                     CurrencyType.Clear();
-                    CurrencyType.AddRange(GUIContext.CurrencyType.Local.ToList());
+                    CurrencyType.AddRange([.. GUIContext.CurrencyType.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.CurrencyType), RecordCountChange);
                 });
             });
@@ -555,7 +555,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.CustomWelcome.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
                     CustomWelcome.Clear();
-                    CustomWelcome.AddRange(GUIContext.CustomWelcome.Local.ToList());
+                    CustomWelcome.AddRange([.. GUIContext.CustomWelcome.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.CustomWelcome), RecordCountChange);
                 });
             });
@@ -570,7 +570,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.Followers.Include(u => u.User).LoadAsync();
                     Followers.Clear();
-                    Followers.AddRange(GUIContext.Followers.Local.ToList());
+                    Followers.AddRange([.. GUIContext.Followers.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.Followers), RecordCountChange);
                 });
             });
@@ -585,7 +585,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.GameDeadCounter.Include(c => c.CategoryList).LoadAsync();
                     GameDeadCounter.Clear();
-                    GameDeadCounter.AddRange(GUIContext.GameDeadCounter.Local.ToList());
+                    GameDeadCounter.AddRange([.. GUIContext.GameDeadCounter.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.GameDeadCounter), RecordCountChange);
                 });
             });
@@ -600,7 +600,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.GiveawayUserData.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
                     GiveawayUserData.Clear();
-                    GiveawayUserData.AddRange(GUIContext.GiveawayUserData.Local.ToList());
+                    GiveawayUserData.AddRange([.. GUIContext.GiveawayUserData.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.GiveawayUserData), RecordCountChange);
                 });
             });
@@ -615,7 +615,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.InRaidData.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
                     InRaidData.Clear();
-                    InRaidData.AddRange(GUIContext.InRaidData.Local.ToList());
+                    InRaidData.AddRange([.. GUIContext.InRaidData.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.InRaidData), RecordCountChange);
                 });
             });
@@ -630,7 +630,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.LearnMsgs.LoadAsync();
                     LearnMsgs.Clear();
-                    LearnMsgs.AddRange(GUIContext.LearnMsgs.Local.ToList());
+                    LearnMsgs.AddRange([.. GUIContext.LearnMsgs.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.LearnMsgs), RecordCountChange);
                 });
             });
@@ -645,7 +645,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.ModeratorApprove.LoadAsync();
                     ModeratorApprove.Clear();
-                    ModeratorApprove.AddRange(GUIContext.ModeratorApprove.Local.ToList());
+                    ModeratorApprove.AddRange([.. GUIContext.ModeratorApprove.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.ModeratorApprove), RecordCountChange);
                 });
             });
@@ -660,7 +660,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.MultiChannels.LoadAsync();
                     MultiChannels.Clear();
-                    MultiChannels.AddRange(GUIContext.MultiChannels.Local.ToList());
+                    MultiChannels.AddRange([.. GUIContext.MultiChannels.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiChannels), RecordCountChange);
                 });
             });
@@ -675,7 +675,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.MultiLiveStreams.Include(M => M.MultiChannels).LoadAsync();
                     MultiLiveStreams.Clear();
-                    MultiLiveStreams.AddRange(GUIContext.MultiLiveStreams.Local.ToList());
+                    MultiLiveStreams.AddRange([.. GUIContext.MultiLiveStreams.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiLiveStreams), RecordCountChange);
                 });
             });
@@ -690,7 +690,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.MultiSummaryLiveStreams.Include(M => M.MultiChannels).LoadAsync();
                     MultiSummaryLiveStreams.Clear();
-                    MultiSummaryLiveStreams.AddRange(GUIContext.MultiSummaryLiveStreams.Local.ToList());
+                    MultiSummaryLiveStreams.AddRange([.. GUIContext.MultiSummaryLiveStreams.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiSummaryLiveStreams), RecordCountChange);
                 });
             });
@@ -705,7 +705,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.MultiWebhooks.LoadAsync();
                     MultiWebhooks.Clear();
-                    MultiWebhooks.AddRange(GUIContext.MultiWebhooks.Local.ToList());
+                    MultiWebhooks.AddRange([.. GUIContext.MultiWebhooks.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.MultiWebhooks), RecordCountChange);
                 });
             });
@@ -720,7 +720,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.OldFollowUsers.LoadAsync();
                     OldFollowUsers.Clear();
-                    OldFollowUsers.AddRange(GUIContext.OldFollowUsers.Local.ToList());
+                    OldFollowUsers.AddRange([.. GUIContext.OldFollowUsers.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.OldFollowUsers), RecordCountChange);
                 });
             });
@@ -735,7 +735,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.OutRaidData.LoadAsync();
                     OutRaidData.Clear();
-                    OutRaidData.AddRange(GUIContext.OutRaidData.Local.ToList());
+                    OutRaidData.AddRange([.. GUIContext.OutRaidData.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.OutRaidData), RecordCountChange);
                 });
             });
@@ -750,7 +750,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.OverlayServices.LoadAsync();
                     OverlayServices.Clear();
-                    OverlayServices.AddRange(GUIContext.OverlayServices.Local.ToList());
+                    OverlayServices.AddRange([.. GUIContext.OverlayServices.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
                 });
             });
@@ -765,7 +765,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.OverlayTicker.LoadAsync();
                     OverlayTicker.Clear();
-                    OverlayTicker.AddRange(GUIContext.OverlayTicker.Local.ToList());
+                    OverlayTicker.AddRange([.. GUIContext.OverlayTicker.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.OverlayTicker), RecordCountChange);
                 });
             });
@@ -780,7 +780,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.Quotes.LoadAsync();
                     Quotes.Clear();
-                    Quotes.AddRange(GUIContext.Quotes.Local.ToList());
+                    Quotes.AddRange([.. GUIContext.Quotes.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.Quotes), RecordCountChange);
                 });
             });
@@ -795,7 +795,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.ShoutOuts.Include(u => u.User).ThenInclude(f => f.Follower).LoadAsync();
                     ShoutOuts.Clear();
-                    ShoutOuts.AddRange(GUIContext.ShoutOuts.Local.ToList());
+                    ShoutOuts.AddRange([.. GUIContext.ShoutOuts.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.ShoutOuts), RecordCountChange);
                 });
             });
@@ -810,7 +810,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.StreamStats.LoadAsync();
                     StreamStats.Clear();
-                    StreamStats.AddRange(GUIContext.StreamStats.Local.ToList());
+                    StreamStats.AddRange([.. GUIContext.StreamStats.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.StreamStats), RecordCountChange);
                 });
             });
@@ -826,8 +826,8 @@ namespace StreamerBotLib.DataSQL.EFC9
                     await GUIContext.Users.Include(f => f.Follower).LoadAsync();
                     Users.Clear();
                     UserStats.Clear();
-                    Users.AddRange(GUIContext.Users.Local.ToList());
-                    UserStats.AddRange(GUIContext.UserStats.Local.ToList());
+                    Users.AddRange([.. GUIContext.Users.Local]);
+                    UserStats.AddRange([.. GUIContext.UserStats.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.Users), RecordCountChange);
                     NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
                 });
@@ -843,7 +843,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.UserStats.LoadAsync();
                     UserStats.Clear();
-                    UserStats.AddRange(GUIContext.UserStats.Local.ToList());
+                    UserStats.AddRange([.. GUIContext.UserStats.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.UserStats), RecordCountChange);
                 });
             });
@@ -858,7 +858,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                     GUIContext.ChangeTracker.Clear();
                     await GUIContext.Webhooks.LoadAsync();
                     Webhooks.Clear();
-                    Webhooks.AddRange(GUIContext.Webhooks.Local.ToList());
+                    Webhooks.AddRange([.. GUIContext.Webhooks.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.Webhooks), RecordCountChange);
                 });
             });

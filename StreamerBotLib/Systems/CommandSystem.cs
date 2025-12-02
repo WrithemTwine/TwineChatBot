@@ -629,7 +629,7 @@ namespace StreamerBotLib.Systems
                 string paramvalue = cmdrow.AllowParam
                     ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
                         ? User.UserName
-                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                        : arglist[0].Contains('@') ? arglist[0][1..] : arglist[0]
                     : User.UserName;
 
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parameter value: {paramvalue}.");
@@ -716,7 +716,7 @@ namespace StreamerBotLib.Systems
                 string paramvalue = cmdrow.AllowParam
                     ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
                         ? User.UserName
-                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                        : arglist[0].Contains('@') ? arglist[0][1..] : arglist[0]
                     : User.UserName;
                 string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
 

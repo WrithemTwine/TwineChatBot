@@ -464,7 +464,6 @@ namespace StreamerBotLib.BotClients
 
             StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
         }
-
         private void TwitchStreamerEventSubBot_NewChannelUpdate(object sender, NewChannelUpdateEventArgs e)
         {
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelUpdate", DebugLogTypes.TwitchBots, $"Registered a stream update, {e.ChannelUpdate.BroadcasterUserName}.");
@@ -499,7 +498,6 @@ namespace StreamerBotLib.BotClients
                     LiveUser = new(e.ChannelRaid.FromBroadcasterUserName, Platform.Twitch, e.ChannelRaid.FromBroadcasterUserId)
                 });
         }
-
         private void TwitchStreamerEventSubBotNoScopes_OutChannelRaid(object sender, NewChannelRaidEventArgs e)
         {
             LogWriter.DebugLog("TwitchStreamerEventSubBotNoScopes_OutChannelRaid", DebugLogTypes.TwitchBots, $"EventSub bot received an outgoing raid notification to channel {e.ChannelRaid.ToBroadcasterUserName}.");
@@ -1149,7 +1147,7 @@ namespace StreamerBotLib.BotClients
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
         {
-            LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, "Detected a new clip to post.");
+            LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, $"Detected a new clip, {e.Clips.Count}, to post, Id: {e?.Clips[0].Id}.");
 
             if (e != null)
             {
@@ -1181,7 +1179,7 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchBots, "Performing a request to create a clip.");
 
-            TwitchBotClipSvc.CreateClip();
+            _ = TwitchBotClipSvc.CreateClipAsync();
         }
 
         #endregion
@@ -1304,7 +1302,7 @@ namespace StreamerBotLib.BotClients
         }
 
         private bool ShoutOutTaskActive = false;
-        private List<ShoutOutLiveUser> ShoutOutUsers = [];
+        private readonly List<ShoutOutLiveUser> ShoutOutUsers = [];
 
         private Task EvaluateShoutOutUsers()
         {
@@ -1314,6 +1312,8 @@ namespace StreamerBotLib.BotClients
             // ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
             // -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
             // -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
+            //
+            // After an hour without shoutout, remove user from list
 
             return Task.Run(async () =>
             {
@@ -1321,9 +1321,12 @@ namespace StreamerBotLib.BotClients
                 {
                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, "Starting the shoutout evaluation thread.");
                     DateTime lastShoutOut = DateTime.MinValue;
+                    IEnumerable<ShoutOutLiveUser> hourDeleteUsers = [];
+                    DateTime Curr;
 
-                    while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline)
+                    while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline && ShoutOutUsers.Count != 0)
                     {
+                        Curr = DateTime.Now;
                         ShoutOutLiveUser nextShoutOut = null;
                         LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shoutout users to evaluate: {ShoutOutUsers.Count}.");
                         lock (ShoutOutUsers)
@@ -1347,13 +1350,17 @@ namespace StreamerBotLib.BotClients
                                 }
                             }
                         }
-
-                        DateTime Curr = DateTime.Now;
                         if (nextShoutOut != null)
                         {
                             LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Preparing to shoutout user {nextShoutOut.User.UserName}.");
+
+//#if DEBUG
+//                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"NextShoutOut: {nextShoutOut.NextShoutOut}; LastShoutOut (w/2 min): {lastShoutOut.AddMinutes(2)}.");
+//#endif
+
                             if (nextShoutOut.NextShoutOut == null && lastShoutOut.AddMinutes(2) <= Curr)
                             { // new shoutout user, allowed per Twitch API every 2 minutes
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOut.User.UserName}.");
                                 TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
 
                                 lock (ShoutOutUsers)
@@ -1379,6 +1386,17 @@ namespace StreamerBotLib.BotClients
                                 lastShoutOut = Curr;
                             }
                         }
+
+                        lock (ShoutOutUsers)
+                        {
+                            hourDeleteUsers = ShoutOutUsers.Where(S => S.LastShoutOut != null && S.LastShoutOut.Value.AddHours(1) <= Curr && S.NextShoutOut == null);
+                            foreach (var del in hourDeleteUsers)
+                            {
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Removing shoutout user {del.User.UserName} after 1 hour of no shoutouts.");
+                                ShoutOutUsers.Remove(del);
+                            }
+                        }
+
                         await Task.Delay(5000);
                     }
 

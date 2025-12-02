@@ -12,7 +12,7 @@ namespace StreamerBotLib.Models.Repeat
 
         public bool IsStarted { get; private set; } = false;
 
-        private ActionSystem _actionsystem;
+        private readonly ActionSystem _actionsystem;
         private RepeatCommandMode _repeatcommandmethod;
 
         private const int TaskDelay = 5000;

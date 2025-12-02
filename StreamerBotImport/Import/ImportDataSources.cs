@@ -554,7 +554,7 @@ namespace StreamerBotImport.Import
                     //                     where string.Equals(R.UserName, U.ChannelName, StringComparison.OrdinalIgnoreCase)
                     //                     select R).FirstOrDefault();
 
-                    MultiChannels currUser = (from MC in context.MultiChannels where MC.UserId == U.UserId select MC).FirstOrDefault();
+                    MultiChannels? currUser = (from MC in context.MultiChannels where MC.UserId == U.UserId select MC).FirstOrDefault();
 
                     if (!(DBNull.Value.Equals(U["UserId"])) && (U.UserId != null) && currUser == null)
                     {
@@ -621,12 +621,12 @@ namespace StreamerBotImport.Import
                                          where C.UserId == L.UserId
                                          select C);
 
-                        UsersRow usersRow = (from U in _DataSource.Users
-                                             where string.Equals(U.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase)
-                                             select U).FirstOrDefault();
-                        MultiChannels channelsRow = (from C in context.MultiChannels
-                                                     where C.UserId == L.UserId
-                                                     select C).FirstOrDefault();
+                        UsersRow? usersRow = (from U in _DataSource.Users
+                                              where string.Equals(U.UserName, L.ChannelName, StringComparison.OrdinalIgnoreCase)
+                                              select U).FirstOrDefault();
+                        MultiChannels? channelsRow = (from C in context.MultiChannels
+                                                      where C.UserId == L.UserId
+                                                      select C).FirstOrDefault();
 
                         if (channelsRow != null) // (founddata.Any() || usersRow != null) && !DBNull.Value.Equals(usersRow.UserId) && !DBNull.Value.Equals(usersRow.UserName)) // only add if we can find user ID in multilive channel table
                         {

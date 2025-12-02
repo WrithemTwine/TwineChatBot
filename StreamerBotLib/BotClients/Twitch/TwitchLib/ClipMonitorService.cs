@@ -93,14 +93,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 if (!KnownClips.TryGetValue(channel, out List<Clip> Clipsknown))
                 {
                     newClips = latestClips;
-                    KnownClips[channel] = latestClips.Take(CacheSize).ToList();
+                    KnownClips[channel] = [.. latestClips.Take(CacheSize)];
                     _lastClipsDates[channel] = latestClips.Last().CreatedAt;
                 }
                 else
                 {
-                    HashSet<string> existingClips = new(Clipsknown.Select(f => f.Id));
+                    HashSet<string> existingClips = [.. Clipsknown.Select(f => f.Id)];
                     string latestKnownClipDate = _lastClipsDates[channel];
-                    newClips = latestClips.Except(Clipsknown, new ClipsComparer()).ToList();
+                    newClips = [.. latestClips.Except(Clipsknown, new ClipsComparer())];
                     latestKnownClipDate = latestClips.Last().CreatedAt;
                     Clipsknown.AddRange(newClips);
 
@@ -185,12 +185,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
 #if DEBUG
             LogWriter.DebugLog("GetLatestClipsAsync", Models.Enums.DebugLogTypes.SpecialPurpose, $"Get latest clips for channel: {channel}");
+#else
+            LogWriter.DebugLog("GetLatestClipsAsync", Models.Enums.DebugLogTypes.TwitchClipBot, $"Get latest clips for channel: {channel}");
 #endif
 
             GetClipsResponse resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c),
                 channel, [QueryCountPerRequest]);
 
-            return resultset.Clips.Reverse().ToList();
+            return [.. resultset.Clips.Reverse()];
         }
 
         public async Task<CreatedClipResponse> CreateClip(string channelId)
@@ -200,7 +202,6 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 #if DEBUG
                 LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.SpecialPurpose, $"Creating clip for channel ID: {channelId}");
 #endif
-
                 return await _api.Helix.Clips.CreateClipAsync(channelId);
             }
             catch (BadScopeException)

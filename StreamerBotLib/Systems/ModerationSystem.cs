@@ -20,12 +20,12 @@ namespace StreamerBotLib.Systems
                 List<LearnMsgRecord> learnMsgsRows = DataManage.UpdateLearnedMsgs();
                 if (learnMsgsRows != null)
                 {
-                    MessageAnalysis.UpdateLearningList((from LearnMsgRecord M in learnMsgsRows
+                    MessageAnalysis.UpdateLearningList([.. (from LearnMsgRecord M in learnMsgsRows
                                                         select new BotModAction()
                                                         {
                                                             LearnMsg = M.TeachingMsg,
-                                                            ModActions = (MsgTypes)Enum.Parse(typeof(MsgTypes), M.MsgType)
-                                                        }).ToList());
+                                                            ModActions = Enum.Parse<MsgTypes>(M.MsgType)
+                                                        })]);
                 }
             });
         }

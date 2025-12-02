@@ -17,7 +17,7 @@ namespace StreamerBotLib.Systems
         private List<LiveUser> GameBlackJackPlayers { get; set; } = [];
         private LiveUser GameCurrBlackJackPlayer = null;
         private BlackJack GameCurrBlackJack;
-        private Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = [];
+        private readonly Stack<Tuple<LiveUser, string>> GameCurrBlackJackAnswer = [];
         private string GameBlackJackCurrency;
 
         private void AccrualClocks()

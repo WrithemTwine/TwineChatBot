@@ -24,7 +24,9 @@ namespace StreamerBotLib.DataSQL.Models
 
         public ICollection<MultiLiveStreams> MultiLiveStreams { get; } = [];
 
+#pragma warning disable CS8632 // MultiSummaryLiveStreams is an EFC navigation property
         public MultiSummaryLiveStreams? MultiSummaryLiveStreams { get; set; }
+#pragma warning restore CS8632
 
         public bool Equals(MultiChannels x, MultiChannels y)
         {

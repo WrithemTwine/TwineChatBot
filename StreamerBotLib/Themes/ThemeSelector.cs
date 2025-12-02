@@ -15,9 +15,9 @@ namespace StreamerBotLib.Themes
             public bool ThemeSelected { get; set; }
         }
 
-        private static ThemeProperties[] ThemeList => (from PropertyInfo PropName in typeof(OptionFlags).GetProperties()
+        private static ThemeProperties[] ThemeList => [.. (from PropertyInfo PropName in typeof(OptionFlags).GetProperties()
                                                        where PropName.Name.StartsWith("Theme")
-                                                       select new ThemeProperties() { ThemeName = PropName.Name, ThemeSelected = (bool)PropName.GetValue(null) }).ToArray();
+                                                       select new ThemeProperties() { ThemeName = PropName.Name, ThemeSelected = (bool)PropName.GetValue(null) })];
 
         /// <summary>
         /// Based on <see cref="OptionFlags"/> Theme Properties, determines which theme the user selected and returns the proper theme file name.

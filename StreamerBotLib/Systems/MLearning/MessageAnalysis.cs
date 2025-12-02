@@ -890,7 +890,7 @@ zero
         /// <returns>A prepared string wihtout stopwords and no punctuation.</returns>
         private static string PrepString(string Input)
         {
-            List<string> SrcList = new(Input.Split(' '));
+            List<string> SrcList = [.. Input.Split(' ')];
 
             for (int i = 0; i < SrcList.Count; i++)
             {

@@ -156,7 +156,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             using var context = BuildDataContext();
             var entityType = context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{Table}");
-            return entityType?.FindPrimaryKey()?.Properties.Select(p => p.Name) ?? Enumerable.Empty<string>();
+            return entityType?.FindPrimaryKey()?.Properties.Select(p => p.Name) ?? [];
         }
 
         internal async Task<List<OverlayActionType>> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
@@ -241,9 +241,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task<List<string>> GetTableFields(string TableName)
         {
             using var context = BuildDataContext();
-            return context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers()
-                            .Select(T => T.Name)
-                            .ToList();
+            return [.. context.Model.FindEntityType($"StreamerBotLib.DataSQL.Models.{TableName}").GetMembers().Select(T => T.Name)];
         }
 
         internal Task<List<string>> GetTableNames()

@@ -87,7 +87,7 @@ namespace StreamerBotLib.Systems.Overlay.Models
 
                 if (strings.Count > 6)
                 {
-                    OverlayTypes type = (OverlayTypes)Enum.Parse(typeof(OverlayTypes), strings.Dequeue());
+                    OverlayTypes type = Enum.Parse<OverlayTypes>(strings.Dequeue());
                     int Duration = int.Parse(strings.Dequeue());
                     string User = strings.Dequeue();
                     string Msg = strings.Dequeue();

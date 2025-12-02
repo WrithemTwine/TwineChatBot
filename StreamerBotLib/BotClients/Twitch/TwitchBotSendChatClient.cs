@@ -1,9 +1,6 @@
 ﻿using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-
 using TwitchLib.Api.Core.Exceptions;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -17,7 +14,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private const int SingleChatLength = 500;
 
-        private List<string> newSendMsg = [];
+        private readonly List<string> newSendMsg = [];
 
         private bool CurrAnnouncement = false;
 
@@ -41,46 +38,53 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.DebugLog("TokenUpdatedEventSubUpdated", DebugLogTypes.TwitchBotSendChat, "Token updated event received, waiting 5 seconds before sending queued messages.");
                 await Task.Delay(5000); // wait 5 seconds to ensure EventSub is updated
 
-            IsActive = true;
-            while (newSendMsg.Count > 0)
-            {
-                string firstmsg = newSendMsg[0]; // refer to first message without dequeuing, due to potential exceptions
-                LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Message retrieved from queue and ready to send.");
-
-                try
+                IsActive = true;
+                while (newSendMsg.Count > 0)
                 {
-                    if (CurrAnnouncement)
+                    string firstmsg = newSendMsg[0]; // refer to first message without dequeuing, due to potential exceptions
+                    LogWriter.DebugLog("Send", DebugLogTypes.TwitchBotSendChat, "Message retrieved from queue and ready to send.");
+
+                    try
                     {
-                        LogWriter.DebugLog("Send-Announcement", DebugLogTypes.TwitchBotSendChat, "Sending announcement.");
+                        if (CurrAnnouncement)
+                        {
+                            LogWriter.DebugLog("Send-Announcement", DebugLogTypes.TwitchBotSendChat, "Sending announcement.");
 
-                        await tokenBot.BotHelixApi.Helix.Chat.SendChatAnnouncementAsync(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
-                        await Task.Delay(2000);
+                            await tokenBot.BotHelixApi.Helix.Chat.SendChatAnnouncementAsync(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
+                            await Task.Delay(2000);
+                        }
+                        else
+                        {
+                            await tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(
+                                new()
+                                {
+                                    BroadcasterId = OptionFlags.TwitchStreamerUserId,
+                                    SenderId = OptionFlags.TwitchBotUserId,
+                                    Message = firstmsg
+                                }
+                                );
+                            await Task.Delay(500);
+                        }
                     }
-                    else
+
+                    catch (TokenExpiredException ex)
                     {
-                        await tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
-                        await Task.Delay(500);
+                        LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
+                        ThreadManager.CreateThreadStart("Send_TokenUpdatedEventSubUpdated", () => { tokenBot.CheckToken(); });
                     }
-                }
+                    catch (BadScopeException ex)
+                    {
+                        LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
+                        ThreadManager.CreateThreadStart("Send_TokenUpdatedEventSubUpdated", () => { tokenBot.CheckToken(); });
+                    }
+                    catch (Exception ex)
+                    {
+                        LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
+                    }
 
-                catch (TokenExpiredException ex)
-                {
-                    LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
-                    ThreadManager.CreateThreadStart("Send_TokenUpdatedEventSubUpdated", () => { tokenBot.CheckToken(); });
+                    newSendMsg.Remove(firstmsg); // remove the message after successful send & no exceptions
                 }
-                catch (BadScopeException ex)
-                {
-                    LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
-                    ThreadManager.CreateThreadStart("Send_TokenUpdatedEventSubUpdated", () => { tokenBot.CheckToken(); });
-                }
-                catch (Exception ex)
-                {
-                    LogWriter.LogException(ex, "Send_TokenUpdatedEventSubUpdated");
-                }
-
-                newSendMsg.Remove(firstmsg); // remove the message after successful send & no exceptions
-            }
-            IsActive = false;
+                IsActive = false;
 
             });
         }
@@ -134,7 +138,14 @@ namespace StreamerBotLib.BotClients.Twitch
                         }
                         else
                         {
-                            await tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(OptionFlags.TwitchStreamerUserId, OptionFlags.TwitchBotUserId, firstmsg);
+                            await tokenBot.BotHelixApi.Helix.Chat.SendChatMessage(
+                                new()
+                                {
+                                    BroadcasterId = OptionFlags.TwitchStreamerUserId,
+                                    SenderId = OptionFlags.TwitchBotUserId,
+                                    Message = firstmsg
+                                }
+                                );
                             await Task.Delay(500);
                         }
                         clean = true;
@@ -144,15 +155,18 @@ namespace StreamerBotLib.BotClients.Twitch
                     {
                         LogWriter.LogException(ex, "Send");
                         ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                        break; // break out of the send loop, captured a replay within the TokenUpdatedEventSubUpdated event handler
                     }
                     catch (BadScopeException ex)
                     {
                         LogWriter.LogException(ex, "Send");
                         ThreadManager.CreateThreadStart("Send", () => { tokenBot.CheckToken(); });
+                        break; // break out of the send loop, captured a replay within the TokenUpdatedEventSubUpdated event handler
                     }
                     catch (Exception ex)
                     {
                         LogWriter.LogException(ex, "Send");
+                        break; // break out of the send loop, captured a replay within the TokenUpdatedEventSubUpdated event handler
                     }
 
                     if (clean)

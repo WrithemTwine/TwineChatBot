@@ -163,14 +163,14 @@ namespace StreamerBotLib.Systems.Overlay
             }
             else
             {
-                GUIData.AddEditPage(Enum.GetNames(typeof(OverlayTypes)));
+                GUIData.AddEditPage(Enum.GetNames<OverlayTypes>());
             }
 
             if (!OptionFlags.MediaOverlayTickerMulti)
             {
                 GUIData.AddEditPage(new List<OverlayTickerItem>(from SelectedTickerItem S in TickerFormatter.selectedTickerItems
                                                                 where S.IsSelected
-                                                                select (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)).ToArray());
+                                                                select Enum.Parse<OverlayTickerItem>(S.OverlayTickerItem)).ToArray());
             }
             else if (TickerFormatter.selectedTickerItems.Where(s => s.IsSelected).Select(s => s).Any())
             {

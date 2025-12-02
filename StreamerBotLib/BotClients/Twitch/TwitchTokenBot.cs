@@ -96,7 +96,7 @@ namespace StreamerBotLib.BotClients.Twitch
             BotClientName = Bots.TwitchTokenBot;
             InitializeTokens = false;
 
-            ActiveBotTokens = new();
+            ActiveBotTokens = [];
 
             foreach (BotType b in Enum.GetValues<BotType>())
             {
@@ -278,8 +278,8 @@ namespace StreamerBotLib.BotClients.Twitch
                 while ((Current < wakeup
                         || BotAccessTokenExpireDate > Current
                         || StreamerAccessTokenExpireDate > Current
-                        || StreamerNoScopesAccessTokenExpireDate > Current) 
-                        && OptionFlags.ActiveToken 
+                        || StreamerNoScopesAccessTokenExpireDate > Current)
+                        && OptionFlags.ActiveToken
                         && IsActive == true)
                 {
                     Thread.Sleep(2000);
@@ -411,34 +411,25 @@ namespace StreamerBotLib.BotClients.Twitch
                             }
                         }
 
-                        if (BotApiSettings == null)
+                        BotApiSettings ??= new()
                         {
-                            BotApiSettings = new()
-                            {
-                                ClientId = OptionFlags.TwitchAuthBotClientId,
-                                AccessToken = OptionFlags.TwitchAuthBotAccessToken,
-                            };
-                        }
+                            ClientId = OptionFlags.TwitchAuthBotClientId,
+                            AccessToken = OptionFlags.TwitchAuthBotAccessToken,
+                        };
 
-                        if (StreamerApiSettings == null)
-                        {
-                            StreamerApiSettings = OptionFlags.TwitchStreamerUseToken
+                        StreamerApiSettings ??= OptionFlags.TwitchStreamerUseToken
                                 ? new ApiSettings()
                                 {
                                     ClientId = OptionFlags.TwitchAuthStreamerClientId,
                                     AccessToken = OptionFlags.TwitchAuthStreamerAccessToken
                                 }
                                 : BotApiSettings;
-                        }
 
-                        if (StreamerNoScopesApiSettings == null)
+                        StreamerNoScopesApiSettings ??= new ApiSettings()
                         {
-                            StreamerNoScopesApiSettings = new ApiSettings()
-                            {
-                                ClientId = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId,
-                                AccessToken = OptionFlags.TwitchAuthStreamerNoScopesAccessToken
-                            };
-                        }
+                            ClientId = OptionFlags.TwitchStreamerUseToken ? OptionFlags.TwitchAuthStreamerClientId : OptionFlags.TwitchAuthBotClientId,
+                            AccessToken = OptionFlags.TwitchAuthStreamerNoScopesAccessToken
+                        };
 
                         SetTwitchApis();
                         //SetIds();

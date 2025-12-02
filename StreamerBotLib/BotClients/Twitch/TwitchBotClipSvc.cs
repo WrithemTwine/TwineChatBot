@@ -4,6 +4,7 @@ using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 using TwitchLib.Api.Core.Exceptions;
+using TwitchLib.Api.Helix.Models.Clips.CreateClip;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 
 namespace StreamerBotLib.BotClients.Twitch
@@ -25,6 +26,11 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
         {
+            if (IsActive == true && !ClipMonitorService.Enabled)
+            {
+                ClipMonitorService.Start();
+            }
+
             _rePerformAction?.Invoke();
             _rePerformAction = null;
         }
@@ -48,8 +54,8 @@ namespace StreamerBotLib.BotClients.Twitch
         private void ClipMonitorService_AccessTokenUnauthorized(object sender, ExpiredTokenEventArgs e)
         {
             LogWriter.DebugLog("ClipMonitorService_AccessTokenUnauthorized", DebugLogTypes.TwitchClipBot, "Checking tokens.");
-            tokenBot.CheckToken();
             _rePerformAction = e.RePerformAction;
+            tokenBot.CheckToken();
         }
 
         /// <summary>
@@ -149,14 +155,15 @@ namespace StreamerBotLib.BotClients.Twitch
             return await ClipMonitorService.GetAllClipsAsync(OptionFlags.TwitchStreamerUserId);
         }
 
-        public void CreateClip()
+        public async Task CreateClipAsync()
         {
             if (IsActive == true)
             {
                 LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, "Creating a new clip.");
 
                 // if create clip fails due to token, the token event will re-call this method
-                _ = ClipMonitorService?.CreateClip(OptionFlags.TwitchStreamerUserId);
+                await ClipMonitorService?.CreateClip(OptionFlags.TwitchStreamerUserId);
+                await ClipMonitorService?.MonitorNewClips(); // attempt to refresh current clip list
             }
         }
     }

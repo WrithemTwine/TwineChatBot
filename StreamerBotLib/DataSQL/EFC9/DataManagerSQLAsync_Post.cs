@@ -600,25 +600,25 @@ namespace StreamerBotLib.DataSQL.EFC9
             using var context = BuildDataContext();
             await PostCategory(categoryData);
 
-                await context.Database.BeginTransactionAsync();
-                CategoryList category = await context.CategoryList
-                                                     .Where(CL => (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName))
-                                                                    || CL.CategoryId == categoryData.CategoryId)
-                                                     .Select(CL => CL).FirstOrDefaultAsync();
-                category.StreamCount++;
-                StreamStats currStream = await context.StreamStats
-                          .Where(S => S.StreamStart == CurrStreamStart)
-                          .Select(S => S)
-                          .FirstOrDefaultAsync();
-                if (currStream != default)
-                {
-                    currStream.Category.UniqueAdd(categoryData.CategoryName);
-                }
+            await context.Database.BeginTransactionAsync();
+            CategoryList category = await context.CategoryList
+                                                 .Where(CL => (CL.Category == FormatData.AddEscapeFormat(categoryData.CategoryName))
+                                                                || CL.CategoryId == categoryData.CategoryId)
+                                                 .Select(CL => CL).FirstOrDefaultAsync();
+            category.StreamCount++;
+            StreamStats currStream = await context.StreamStats
+                      .Where(S => S.StreamStart == CurrStreamStart)
+                      .Select(S => S)
+                      .FirstOrDefaultAsync();
+            if (currStream != default)
+            {
+                currStream.Category.UniqueAdd(categoryData.CategoryName);
+            }
 
-                await context.Database.CommitTransactionAsync();
-                await context.SaveChangesAsync(true);
-                await RefreshCategoryListList(true);
-                await RefreshStreamStatsList(true);
+            await context.Database.CommitTransactionAsync();
+            await context.SaveChangesAsync(true);
+            await RefreshCategoryListList(true);
+            await RefreshStreamStatsList(true);
         }
 
         internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip)
