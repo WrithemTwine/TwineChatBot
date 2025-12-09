@@ -1354,7 +1354,7 @@
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                             <DockPanel Margin="10" ScrollViewer.CanContentScroll="True">
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
-                                    <GroupBox Header="Bot Management - Debug Mode" Width="auto" 
+                                    <GroupBox Header="Bot Management - Debug Mode" Width="auto"
                                               ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                                         <DockPanel>
                                             <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
@@ -1574,7 +1574,7 @@
                                                 </StackPanel>
                                             </GroupBox>
 
-                                            <TextBlock>Currently not enabled-working on machine learning</TextBlock>
+                                            <TextBlock Visibility="Collapsed">Currently not enabled-working on machine learning</TextBlock>
                                             <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}">
                                                 <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
                                             </CheckBox>

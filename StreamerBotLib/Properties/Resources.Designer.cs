@@ -19,7 +19,7 @@ namespace StreamerBotLib.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -97,6 +97,66 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap DefaultLastBits {
+            get {
+                object obj = ResourceManager.GetObject("DefaultLastBits", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap DefaultLastDonation {
+            get {
+                object obj = ResourceManager.GetObject("DefaultLastDonation", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap DefaultLastFollower {
+            get {
+                object obj = ResourceManager.GetObject("DefaultLastFollower", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap DefaultLastGiftSub {
+            get {
+                object obj = ResourceManager.GetObject("DefaultLastGiftSub", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap DefaultLastInRaid {
+            get {
+                object obj = ResourceManager.GetObject("DefaultLastInRaid", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap DefaultLastSubscriber {
+            get {
+                object obj = ResourceManager.GetObject("DefaultLastSubscriber", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to https://github.com/WrithemTwine/TwineChatBot/releases/.
         /// </summary>
         public static string GitHubLatestLink {
@@ -120,6 +180,16 @@ namespace StreamerBotLib.Properties {
         public static string GitHubWikiLink {
             get {
                 return ResourceManager.GetString("GitHubWikiLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap seconds {
+            get {
+                object obj = ResourceManager.GetObject("seconds", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

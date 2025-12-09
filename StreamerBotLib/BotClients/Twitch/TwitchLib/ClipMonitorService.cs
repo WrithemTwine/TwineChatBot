@@ -195,24 +195,29 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
             return [.. resultset.Clips.Reverse()];
         }
 
-        public async Task<CreatedClipResponse> CreateClip(string channelId)
+        public void CreateClip(string channelId)
         {
             try
             {
 #if DEBUG
                 LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.SpecialPurpose, $"Creating clip for channel ID: {channelId}");
 #endif
-                return await _api.Helix.Clips.CreateClipAsync(channelId);
+                var ClipResult = _api.Helix.Clips.CreateClipAsync(channelId).Result;
+
+                if (ClipResult.CreatedClips.Length > 0)
+                {
+                    var GetClips = _api.Helix.Clips.GetClipsAsync(clipIds: [.. ClipResult.CreatedClips.Select(c => c.Id)]).Result;
+
+                    OnNewClipFound?.Invoke(this, new OnNewClipsDetectedArgs() { Channel = channelId, Clips = [.. GetClips.Clips] });
+                }
             }
             catch (BadScopeException)
             {
                 AccessTokenUnauthorized?.Invoke(this, new(() => _api.Helix.Clips.CreateClipAsync(channelId)));
-                return null;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, "CreateClip");
-                return null;
             }
         }
     }

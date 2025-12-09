@@ -11,8 +11,9 @@ namespace StreamerBotLib.Systems.MLearning
             "Best followers, primes and viewers on mountviewers.com(remove the space)",
             "Wanna become famous? Buy followers, primes and views on bigfollows .com",
             "Best followers, primes and viewers on mystrm .store (remove the space)" ,
-            "Yo bruh, love ❤ your stream, let's sometimes play together and share tips and ideas. Let's connect on discord",
-            "Yo bruh, love ❤️ your stream, let's sometimes play together and share tips and ideas Let's connect on Discord"
+            "Best viewers on streamboo .com (remove the space) @LFawWyCq",
+            "Yo bruh, love ❤ your stream, let's sometimes play together and share tips and ideas. Let's connect on discord 👉 optivoxe  ",
+            "Yo bruh, love ❤️ your stream, let's sometimes play together and share tips and ideas Let's connect on Discord: zekiel776"
         ];
 
         public static List<LearnedMessage> PrimerList

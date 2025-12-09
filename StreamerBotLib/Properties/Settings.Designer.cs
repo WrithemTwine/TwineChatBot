@@ -2645,5 +2645,17 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayClipHeight"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayTickerIcons {
+            get {
+                return ((bool)(this["MediaOverlayTickerIcons"]));
+            }
+            set {
+                this["MediaOverlayTickerIcons"] = value;
+            }
+        }
     }
 }

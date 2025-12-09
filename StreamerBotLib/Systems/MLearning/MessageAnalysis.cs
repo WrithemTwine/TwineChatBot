@@ -952,13 +952,16 @@ zero
         {
             try
             {
-#if !UPDATELEARN
+#if UPDATELEARN
                 KNearest = new(k: 2, distance: new Levenshtein());
 
                 KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
+
+                return (MsgTypes)KNearest.Decide(PrepString(PredictText));
+#else
+                return MsgTypes.Allow;
 #endif
 
-                return MsgTypes.Allow; // (MsgTypes)KNearest.Decide(PrepString(PredictText));
             }
             catch (Exception ex)
             {

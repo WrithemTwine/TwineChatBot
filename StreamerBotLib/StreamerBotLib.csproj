@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.0.0.1</Version>
+		<Version>2.0.0.2</Version>
 		<TargetFramework>net9.0-windows7.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<UseWPF>true</UseWPF>
@@ -73,6 +73,28 @@
 	  <Optimize>True</Optimize>
 	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Systems\Overlay\img\DefaultLastBits.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastDonation.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastFollower.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastGiftSub.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastInRaid.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastSubscriber.png" />
+	  <None Remove="Systems\Overlay\img\seconds.png" />
+	  <None Remove="Systems\Overlay\seconds.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastBits.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastDonation.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastFollower.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastGiftSub.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastInRaid.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastSubscriber.png" />
+	  <Resource Include="Systems\Overlay\img\seconds.png" />
+	  <Resource Include="Systems\Overlay\seconds.png" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<Folder Include="Systems\MultiLive\Culture\" />
@@ -116,10 +138,6 @@
 		<PackageReference Include="TwitchLib.Api.Helix" Version="3.10.2" />
 		<PackageReference Include="TwitchLib.EventSub.Core" Version="3.0.0-preview.68.b035bbb" />
 		<PackageReference Include="TwitchLib.EventSub.Websockets" Version="0.7.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Resource Include="Systems\Overlay\img\seconds.png" />
 	</ItemGroup>
 
 	<ItemGroup>

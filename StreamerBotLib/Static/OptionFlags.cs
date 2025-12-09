@@ -2,6 +2,8 @@
 using StreamerBotLib.Properties;
 
 using System.Collections.Specialized;
+using System.Drawing;
+using System.Windows.Media;
 
 namespace StreamerBotLib.Static
 {
@@ -10,6 +12,61 @@ namespace StreamerBotLib.Static
     /// </summary>
     public static class OptionFlags
     {
+        #region Resources
+
+        #region Twitch Credential Scopes
+
+        /// <summary>
+        /// Retrieves the Twitch Credential Scope Resource for when using a bot account different than streamer account - this is the bot access token scope listing
+        /// </summary>
+        public static string CredentialsTwitchScopesDiffOauthBot => Resources.CredentialsTwitchScopesDiffOauthBot;
+
+        /// <summary>
+        /// Retrieves the Twitch Credential Scope Resource for using a bot account different than streamer account - this is the channel access token scope listing
+        /// </summary>
+        public static string CredentialsTwitchScopesDiffOauthChannel => Resources.CredentialsTwitchScopesDiffOauthChannel;
+
+        /// <summary>
+        /// Retrieves the Twitch Credential Scope Resource for using a bot account the same as streamer account - this is the full access token scope listing
+        /// </summary>
+        public static string CredentialsTwitchScopesOauthSame => Resources.CredentialsTwitchScopesOauthSame;
+
+        #endregion
+
+        #region GitHub links
+
+        /// <summary>
+        /// Specifies the GitHub link to the stable application version.
+        /// </summary>
+        public static string GitHubStableLink => Resources.GitHubStableLink;
+        /// <summary>
+        /// Specifies the GitHub link to the latest application version.
+        /// </summary>
+        public static string GitHubLatestLink => Resources.GitHubLatestLink;
+        /// <summary>
+        /// Specifies the GitHub link to the application Wiki
+        /// </summary>
+        public static string GitHubWikiLink => Resources.GitHubWikiLink;
+
+        #endregion
+
+        #region Images
+
+        //public static Image Seconds = Resources.seconds;
+        //public static Image DefaultLastBits = Resources.DefaultLastBits;
+        //public static Image DefaultLastDonation = Resources.DefaultLastDonation;
+        //public static Image DefaultLastFollower = Resources.DefaultLastFollower;
+        //public static Image DefaultLastGiftSub = Resources.DefaultLastGiftSub;
+        //public static Image DefaultLastInRaid = Resources.DefaultLastInRaid;
+        //public static Image DefaultLastSubscriber = Resources.DefaultLastSubscriber;
+
+        #endregion
+
+        #endregion
+
+        #region Settings
+
+
         /// <summary>
         /// Indicates database xml file successfully loaded.
         /// </summary>
@@ -57,24 +114,6 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchTokenUseAuth => Settings.Default.TwitchTokenUseAuth;
 
-        #region Twitch Credential Scopes
-
-        /// <summary>
-        /// Retrieves the Twitch Credential Scope Resource for when using a bot account different than streamer account - this is the bot access token scope listing
-        /// </summary>
-        public static string CredentialsTwitchScopesDiffOauthBot => Resources.CredentialsTwitchScopesDiffOauthBot;
-
-        /// <summary>
-        /// Retrieves the Twitch Credential Scope Resource for using a bot account different than streamer account - this is the channel access token scope listing
-        /// </summary>
-        public static string CredentialsTwitchScopesDiffOauthChannel => Resources.CredentialsTwitchScopesDiffOauthChannel;
-
-        /// <summary>
-        /// Retrieves the Twitch Credential Scope Resource for using a bot account the same as streamer account - this is the full access token scope listing
-        /// </summary>
-        public static string CredentialsTwitchScopesOauthSame => Resources.CredentialsTwitchScopesOauthSame;
-
-        #endregion
 
         /// <summary>
         /// Specifies whether to record bot status messages in the log file.
@@ -776,7 +815,6 @@ namespace StreamerBotLib.Static
         /// Manages user preference whether the Overlay http server should start upon the Overlay bot start.
         /// </summary>
         public static bool MediaOverlayAutoServerStart => Settings.Default.MediaOverlayAutoServerStart;
-
         /// <summary>
         /// Defines using the ticker in single pages for each ticker item
         /// </summary>
@@ -785,7 +823,10 @@ namespace StreamerBotLib.Static
         /// Defines using the ticker with multiple items visible
         /// </summary>
         public static bool MediaOverlayTickerMulti => Settings.Default.MediaOverlayTickerMulti;
-
+        /// <summary>
+        /// Defines whether the ticker categories use images (True) or words (False), e.g. LastFollower, LastSubscriber etc.
+        /// </summary>
+        public static bool MediaOverlayTickerIcons => Settings.Default.MediaOverlayTickerIcons;
         /// <summary>
         /// Defines a ticker where all elements stand in place
         /// </summary>
@@ -946,18 +987,6 @@ namespace StreamerBotLib.Static
             get => Settings.Default.GitHubCheckStable;
             set => Settings.Default.GitHubCheckStable = value;
         }
-        /// <summary>
-        /// Specifies the GitHub link to the stable application version.
-        /// </summary>
-        public static string GitHubStableLink => Resources.GitHubStableLink;
-        /// <summary>
-        /// Specifies the GitHub link to the latest application version.
-        /// </summary>
-        public static string GitHubLatestLink => Resources.GitHubLatestLink;
-        /// <summary>
-        /// Specifies the GitHub link to the application Wiki
-        /// </summary>
-        public static string GitHubWikiLink => Resources.GitHubWikiLink;
 
         #endregion
 
@@ -1050,6 +1079,8 @@ namespace StreamerBotLib.Static
             Settings.Default.UserPartyStart = Start;
             Settings.Default.UserPartyStop = !Start;
         }
+
+        #endregion
 
         /// <summary>
         /// Provides deference between the provided date and "Now".

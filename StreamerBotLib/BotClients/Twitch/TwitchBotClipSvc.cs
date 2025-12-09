@@ -162,8 +162,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, "Creating a new clip.");
 
                 // if create clip fails due to token, the token event will re-call this method
-                await ClipMonitorService?.CreateClip(OptionFlags.TwitchStreamerUserId);
-                await ClipMonitorService?.MonitorNewClips(); // attempt to refresh current clip list
+                ClipMonitorService?.CreateClip(OptionFlags.TwitchStreamerUserId);
             }
         }
     }

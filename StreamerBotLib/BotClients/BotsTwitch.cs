@@ -78,11 +78,22 @@ namespace StreamerBotLib.BotClients
         {
             get
             {
-                _CurrStream ??= GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId).Streams[0];
+                if (_CurrStream == null)
+                {
+                    var GetCurr = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
+                    if (GetCurr?.Streams != null)
+                    {
+                        var FirstStream = GetCurr.Streams.FirstOrDefault();
+                        if (FirstStream != null)
+                        {
+                            _CurrStream = FirstStream;
+                        }
+                    }
+                }
+
                 return _CurrStream;
             }
         }
-
 
 #if USEQUEUELOGGER
         private ConcurrentQueue<string> StatusMessages;
@@ -304,16 +315,23 @@ namespace StreamerBotLib.BotClients
                 {
                     var response = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
 
-                    if (response != null && response.Streams.Length > 0)
+                    if (response?.Streams != null && response.Streams.Length > 0)
                     {
-                        LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
-                        OptionFlags.IsStreamOnline = true;
+                        var CurrStream = response.Streams.FirstOrDefault();
 
-                        InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
-                        ActiveUsers();
-                        TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
-                        ManageStreamOnlineOfflineStatus(true);
-                        StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+                        if(CurrStream != null)
+                        {
+                            _CurrStream = CurrStream;
+
+                            LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
+                            OptionFlags.IsStreamOnline = true;
+
+                            InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
+                            ActiveUsers();
+                            TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
+                            ManageStreamOnlineOfflineStatus(true);
+                            StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+                        }
                     }
                 });
             }
@@ -452,7 +470,6 @@ namespace StreamerBotLib.BotClients
         private void TwitchStreamerEventSubBot_NewStreamOnline(object sender, NewStreamOnlineEventArgs e)
         {
             OptionFlags.IsStreamOnline = true;
-
             InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
             ActiveUsers();
@@ -1304,33 +1321,37 @@ namespace StreamerBotLib.BotClients
         private bool ShoutOutTaskActive = false;
         private readonly List<ShoutOutLiveUser> ShoutOutUsers = [];
 
+        /// <summary>
+        /// NewUserEntry: Different users can only be shoutout once every 2 minutes
+        /// -LastShoutOut = null, NextShoutOut = null => first shoutout occurs asap
+        /// 
+        /// ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
+        /// -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
+        /// -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
+        ///
+        /// After an hour without shoutout, remove user from list
+        /// </summary>
+        /// <returns></returns>
         private Task EvaluateShoutOutUsers()
         {
-            // NewUserEntry: Different users can only be shoutout once every 2 minutes
-            // -LastShoutOut = null, NextShoutOut = null => first shoutout occurs asap
-            // 
-            // ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
-            // -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
-            // -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
-            //
-            // After an hour without shoutout, remove user from list
-
             return Task.Run(async () =>
             {
                 try
                 {
                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, "Starting the shoutout evaluation thread.");
-                    DateTime lastShoutOut = DateTime.MinValue;
-                    IEnumerable<ShoutOutLiveUser> hourDeleteUsers = [];
+                    DateTime lastShoutOutDateTime = DateTime.MinValue;
                     DateTime Curr;
 
                     while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline && ShoutOutUsers.Count != 0)
                     {
                         Curr = DateTime.Now;
-                        ShoutOutLiveUser nextShoutOut = null;
+                        ShoutOutLiveUser nextShoutOutUser = null;
                         LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shoutout users to evaluate: {ShoutOutUsers.Count}.");
                         lock (ShoutOutUsers)
                         {
+                            // remove any user without a shoutout in the ast hour
+                            ShoutOutUsers.RemoveAll(a => a.HourSinceLastShoutOut);
+
                             foreach (var S in ShoutOutUsers)
                             {
                                 LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Evaluating shoutout user {S.User.UserName}, " +
@@ -1339,61 +1360,52 @@ namespace StreamerBotLib.BotClients
                                 if (S.LastShoutOut == null && S.NextShoutOut == null)
                                 {
                                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Selected shoutout user {S.User.UserName} for immediate shoutout.");
-                                    nextShoutOut ??= S;
+                                    nextShoutOutUser ??= S;
                                     break;
                                 }
                                 else if (S.NextShoutOut != null)
                                 {
                                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Selected shoutout user {S.User.UserName} for scheduled shoutout.");
-                                    nextShoutOut ??= S;
+                                    nextShoutOutUser ??= S;
                                     break;
                                 }
                             }
+
                         }
-                        if (nextShoutOut != null)
+                        if (nextShoutOutUser != null)
                         {
-                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Preparing to shoutout user {nextShoutOut.User.UserName}.");
+                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Preparing to shoutout user {nextShoutOutUser.User.UserName}.");
 
 //#if DEBUG
-//                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"NextShoutOut: {nextShoutOut.NextShoutOut}; LastShoutOut (w/2 min): {lastShoutOut.AddMinutes(2)}.");
+//                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"NextShoutOut: {nextShoutOutUser.NextShoutOut}; LastShoutOut (w/2 min): {lastShoutOutDateTime.AddMinutes(2)}.");
 //#endif
 
-                            if (nextShoutOut.NextShoutOut == null && lastShoutOut.AddMinutes(2) <= Curr)
+                            if (nextShoutOutUser.NextShoutOut == null && lastShoutOutDateTime.AddMinutes(2) <= Curr)
                             { // new shoutout user, allowed per Twitch API every 2 minutes
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOut.User.UserName}.");
-                                TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOutUser.User.UserName}.");
+                                TwitchHelixBot.SendShoutOut(nextShoutOutUser.User.UserId, nextShoutOutUser.User.UserName);
 
                                 lock (ShoutOutUsers)
                                 {
-                                    nextShoutOut.LastShoutOut = Curr;
+                                    nextShoutOutUser.LastShoutOut = Curr;
                                 }
 
-                                lastShoutOut = Curr;
+                                lastShoutOutDateTime = Curr;
                             }
-                            else if (lastShoutOut.AddHours(1) <= Curr && nextShoutOut.NextShoutOut < Curr)
+                            else if (lastShoutOutDateTime.AddHours(1) <= Curr && nextShoutOutUser.NextShoutOut < Curr)
                             { // existing shoutout user, allowed per Twitch API every 60 minutes
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOut.User.UserName}.");
-                                TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOutUser.User.UserName}.");
+                                TwitchHelixBot.SendShoutOut(nextShoutOutUser.User.UserId, nextShoutOutUser.User.UserName);
 
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Updating shoutout user {nextShoutOut.User.UserName} last and next shoutout times.");
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Updating shoutout user {nextShoutOutUser.User.UserName} last and next shoutout times.");
                                 lock (ShoutOutUsers)
                                 {
-                                    nextShoutOut.LastShoutOut = Curr;
-                                    nextShoutOut.NextShoutOut = null;
+                                    nextShoutOutUser.LastShoutOut = Curr;
+                                    nextShoutOutUser.NextShoutOut = null;
                                 }
 
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Completed shoutout for user {nextShoutOut.User.UserName}.");
-                                lastShoutOut = Curr;
-                            }
-                        }
-
-                        lock (ShoutOutUsers)
-                        {
-                            hourDeleteUsers = ShoutOutUsers.Where(S => S.LastShoutOut != null && S.LastShoutOut.Value.AddHours(1) <= Curr && S.NextShoutOut == null);
-                            foreach (var del in hourDeleteUsers)
-                            {
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Removing shoutout user {del.User.UserName} after 1 hour of no shoutouts.");
-                                ShoutOutUsers.Remove(del);
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Completed shoutout for user {nextShoutOutUser.User.UserName}.");
+                                lastShoutOutDateTime = Curr;
                             }
                         }
 
