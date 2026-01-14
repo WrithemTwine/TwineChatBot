@@ -237,7 +237,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
                     NewStreamOnline?.Invoke(this, new(args.Payload.Event));
                     AddSubscriptions();
-                    DeleteEventSubSubscription("stream.offline");
+                    DeleteEventSubSubscription("stream.online"); // remove the connection subscription
                 }
             });
         }

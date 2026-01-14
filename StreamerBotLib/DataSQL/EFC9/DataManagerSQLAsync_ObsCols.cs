@@ -14,43 +14,43 @@ namespace StreamerBotLib.DataSQL.EFC9
 {
     internal partial class DataManagerSQLAsync
     {
-        private SQLDBContext GUIContext;
+        private readonly SQLDBContext GUIContext;
 
         #region Binding Collections
 
-        private ObservableCollection<Users> Users = [];
-        private ObservableCollection<Followers> Followers = [];
-        private ObservableCollection<CommandsUser> CommandsUser = [];
-        private ObservableCollection<Commands> Commands = [];
+        private readonly ObservableCollection<Users> Users = [];
+        private readonly ObservableCollection<Followers> Followers = [];
+        private readonly ObservableCollection<CommandsUser> CommandsUser = [];
+        private readonly ObservableCollection<Commands> Commands = [];
 
-        private ObservableCollection<BanRules> BanRules = [];
-        private ObservableCollection<Models.BanReasons> BanReasons = [];
-        private ObservableCollection<CategoryList> CategoryList = [];
-        private ObservableCollection<ChannelEvents> ChannelEvents = [];
-        private ObservableCollection<Clips> Clips = [];
-        private ObservableCollection<Currency> Currency = [];
-        private ObservableCollection<Models.CurrencyType> CurrencyType = [];
-        private ObservableCollection<CustomWelcome> CustomWelcome = [];
-        private ObservableCollection<GameDeadCounter> GameDeadCounter = [];
-        private ObservableCollection<GiveawayUserData> GiveawayUserData = [];
-        private ObservableCollection<InRaidData> InRaidData = [];
-        private ObservableCollection<LearnMsgs> LearnMsgs = [];
-        private ObservableCollection<ModeratorApprove> ModeratorApprove = [];
-        private ObservableCollection<OldFollowUsers> OldFollowUsers = [];
-        private ObservableCollection<OutRaidData> OutRaidData = [];
-        private ObservableCollection<OverlayServices> OverlayServices = [];
-        private ObservableCollection<OverlayTicker> OverlayTicker = [];
-        private ObservableCollection<Quotes> Quotes = [];
-        private ObservableCollection<ShoutOuts> ShoutOuts = [];
-        private ObservableCollection<StreamStats> StreamStats = [];
-        private ObservableCollection<UserStats> UserStats = [];
-        private ObservableCollection<Webhooks> Webhooks = [];
+        private readonly ObservableCollection<BanRules> BanRules = [];
+        private readonly ObservableCollection<Models.BanReasons> BanReasons = [];
+        private readonly ObservableCollection<CategoryList> CategoryList = [];
+        private readonly ObservableCollection<ChannelEvents> ChannelEvents = [];
+        private readonly ObservableCollection<Clips> Clips = [];
+        private readonly ObservableCollection<Currency> Currency = [];
+        private readonly ObservableCollection<Models.CurrencyType> CurrencyType = [];
+        private readonly ObservableCollection<CustomWelcome> CustomWelcome = [];
+        private readonly ObservableCollection<GameDeadCounter> GameDeadCounter = [];
+        private readonly ObservableCollection<GiveawayUserData> GiveawayUserData = [];
+        private readonly ObservableCollection<InRaidData> InRaidData = [];
+        private readonly ObservableCollection<LearnMsgs> LearnMsgs = [];
+        private readonly ObservableCollection<ModeratorApprove> ModeratorApprove = [];
+        private readonly ObservableCollection<OldFollowUsers> OldFollowUsers = [];
+        private readonly ObservableCollection<OutRaidData> OutRaidData = [];
+        private readonly ObservableCollection<OverlayServices> OverlayServices = [];
+        private readonly ObservableCollection<OverlayTicker> OverlayTicker = [];
+        private readonly ObservableCollection<Quotes> Quotes = [];
+        private readonly ObservableCollection<ShoutOuts> ShoutOuts = [];
+        private readonly ObservableCollection<StreamStats> StreamStats = [];
+        private readonly ObservableCollection<UserStats> UserStats = [];
+        private readonly ObservableCollection<Webhooks> Webhooks = [];
 
         #region MultiLive Collections
-        private ObservableCollection<MultiWebhooks> MultiWebhooks = [];
-        private ObservableCollection<MultiChannels> MultiChannels = [];
-        private ObservableCollection<MultiLiveStreams> MultiLiveStreams = [];
-        private ObservableCollection<MultiSummaryLiveStreams> MultiSummaryLiveStreams = [];
+        private readonly ObservableCollection<MultiWebhooks> MultiWebhooks = [];
+        private readonly ObservableCollection<MultiChannels> MultiChannels = [];
+        private readonly ObservableCollection<MultiLiveStreams> MultiLiveStreams = [];
+        private readonly ObservableCollection<MultiSummaryLiveStreams> MultiSummaryLiveStreams = [];
         #endregion
         #endregion
 

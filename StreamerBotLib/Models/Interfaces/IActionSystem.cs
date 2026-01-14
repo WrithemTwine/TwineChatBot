@@ -25,7 +25,7 @@ namespace StreamerBotLib.Models.Interfaces
         // Overlay
         void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> overlayHandler, EventHandler<UpdatedTickerItemsEventArgs> tickerHandler);
         void CheckForOverlayEvent(OverlayTypes overlayType, ChannelEventActions eventAction, LiveUser user, string UserMsg = null);
-        void ClipHelper(List<Clip> clips);
+        void ClipHelper(bool AllClips, List<Clip> clips);
 
         // Stats
         void UpdatedStat(params StreamStatType[] statTypes);

@@ -234,9 +234,9 @@ namespace EFEntityEntryTesting.EF
 
         internal event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataCollectionChanged;
 
-        private ObservableCollection<Users> UsersList = [];
-        private ObservableCollection<Currency> CurrencyList = [];
-        private ObservableCollection<CurrencyType> CurrencyTypeList = [];
+        private readonly ObservableCollection<Users> UsersList = [];
+        private readonly ObservableCollection<Currency> CurrencyList = [];
+        private readonly ObservableCollection<CurrencyType> CurrencyTypeList = [];
 
         public DataManager()
         {
@@ -336,7 +336,7 @@ namespace EFEntityEntryTesting.EF
 
         #region Posting Data
 
-        private Random RandomUsers = new();
+        private readonly Random RandomUsers = new();
 
         public List<string> GetUsers(int count)
         {

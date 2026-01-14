@@ -1,9 +1,18 @@
-﻿#define UPDATELEARN
+﻿//#define USE_ACCORD  // use Accord.NET for machine learning
+#define USE_MLNET   // use ML.NET for machine learning
 
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
+using Microsoft.ML.Data;
+using Microsoft.ML.Transforms;
+
+
+#if USE_ACCORD
 using StreamerBotLib.Systems.MLearning.Accord.KNN;
+#elif USE_MLNET
+using Microsoft.ML;
+#endif
 
 namespace StreamerBotLib.Systems.MLearning
 {
@@ -12,9 +21,6 @@ namespace StreamerBotLib.Systems.MLearning
         private static List<BotModAction> ModActions { get; set; } = [];
         private static List<string> StopWords { get; set; } = [];
         private static List<string> Punctuation { get; } = ["!", "­¡", "?", "¿", "(", ")", "[", "]", "{", "}", "+", "-", "*", "/", "\"", "<", ">", "'", ":", ";", "&", "|", "@", "#", "$", "%", "^", "~", "`", "_", "\\"];
-
-        private static List<string> PreppedInputs { get; set; } = [];
-        private static List<int> PreppedOutputs { get; set; } = [];
 
         static MessageAnalysis()
         {
@@ -926,6 +932,11 @@ zero
             LearnModel();
         }
 
+#if USE_ACCORD
+        
+        private static List<string> PreppedInputs { get; set; } = [];
+        private static List<int> PreppedOutputs { get; set; } = [];
+
         private static void LearnModel()
         {
 
@@ -938,13 +949,10 @@ zero
                 PreppedOutputs.Add((int)action.ModActions);
             }
 
-#if UPDATELEARN
             KNearest = new(k: 3, distance: new Levenshtein());
 
             KNearest.Learn([.. PreppedInputs], PreppedOutputs.ToArray());
-#endif
         }
-
 
         private static KNearestNeighbors<string> KNearest { get; set; }
 
@@ -952,15 +960,12 @@ zero
         {
             try
             {
-#if UPDATELEARN
-                KNearest = new(k: 2, distance: new Levenshtein());
+                // KNearest = new(k: 2, distance: new Levenshtein());
 
                 KNearest.Learn(PreppedInputs.ToArray(), PreppedOutputs.ToArray());
 
                 return (MsgTypes)KNearest.Decide(PrepString(PredictText));
-#else
-                return MsgTypes.Allow;
-#endif
+                //return MsgTypes.Allow;
 
             }
             catch (Exception ex)
@@ -970,6 +975,29 @@ zero
                 return MsgTypes.LearnMore;
             }
         }
+#elif USE_MLNET
 
+        private static MLContext MlContext { get; } = new MLContext();
+        private static TransformerChain<KeyToValueMappingTransformer> model;
+
+        private static void LearnModel()
+        {
+            var trainer = MlContext.Data.LoadFromEnumerable(ModActions);
+
+            var pipeline = MlContext.Transforms.Text.FeaturizeText("Features", nameof(BotModAction.LearnMsg))
+                .Append(MlContext.Transforms.Conversion.MapValueToKey("Label", nameof(BotModAction.ModActions)))
+                .Append(MlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy("Label", "Features"))
+                .Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
+
+            model = pipeline.Fit(trainer);
+        }
+
+        public static MsgTypes Predict(string PredictText)
+        {
+            var result = model.Transform(MlContext.Data.LoadFromEnumerable([new BotModAction { LearnMsg = PrepString(PredictText) }]));
+
+            return Enum.Parse<MsgTypes>( result.GetColumn<string>("PredictedLabel").FirstOrDefault());
+        }
+#endif
     }
 }

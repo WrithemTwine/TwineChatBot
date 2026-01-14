@@ -48,6 +48,16 @@ namespace StreamerBot
         {
             Controller.HandleOnDataCollectionUpdated(DataManager_OnDataCollectionUpdated);
             BotController.DataBot.InitializeDataManagerViews(GUIDataManagerViews);
+
+            ContextMenu LrnMsgMenuItems = Resources["DataGrid_LearnMsgsContextMenu"] as ContextMenu;
+            // setup the LearnMsgs context menu for showing "MsgTypes" items so the user can bulk update data rows for a certain message type
+            foreach (string LM in Enum.GetNames<MsgTypes>())
+            {
+                MenuItem temp = new() { Header = LM };
+                temp.Click += MenuItem_LearnMsgTypeClick;
+
+                LrnMsgMenuItems.Items.Add(temp);
+            }
         }
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
@@ -273,6 +283,18 @@ namespace StreamerBot
 
             Controller.DeleteDataRows((IEnumerable<object>)item.SelectedItems, GetTableName(item));
         }
+        private void MenuItem_LearnMsgTypeClick(object sender, RoutedEventArgs e)
+        {
+            DataGrid CurrLrnMsg = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            MsgTypes SelectedType = Enum.Parse<MsgTypes>((string)(sender as MenuItem).Header);
+
+            foreach( LearnMsgs row in CurrLrnMsg.SelectedItems)
+            {
+                row.MsgType = SelectedType;
+            }
+
+            Controller.GUISaveDataGridEdits(false, GetTableName(CurrLrnMsg));
+        }
 
         private void DG_PreviewKeyDown_Click(object sender, System.Windows.Input.KeyEventArgs e)
         {
@@ -282,12 +304,10 @@ namespace StreamerBot
                 Controller.DeleteDataRows((IEnumerable<object>)item.SelectedItems, GetTableName(item));
             }
         }
-
         private void MultiLive_DG_PreviewKeyDown_Click(object sender, PreviewKeyDownDeleteRowsEventArgs e)
         {
             DG_PreviewKeyDown_Click(e.DataGridSender, e.e);
         }
-
         private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
@@ -327,7 +347,6 @@ namespace StreamerBot
                 Controller.UpdatedIsEnabledRows(GetTableName(item));
             }
         }
-
         private string GetTableName(DataGrid item)
         {
             return item.Name switch
@@ -365,7 +384,6 @@ namespace StreamerBot
                 _ => ""
             };
         }
-
         private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;

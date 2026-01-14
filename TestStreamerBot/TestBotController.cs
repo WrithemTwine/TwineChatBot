@@ -24,12 +24,13 @@ namespace TestStreamerBot
         [Required]
         private BotController botController;
         [Required]
-        private IDataManagerTestMethods dataManager;
+        private readonly IDataManagerTestMethods dataManager;
 
         private Random Random { get; set; } = new();
 
         public TestBotController()
         {
+            botController = new(null);
             Initialize();
             dataManager = BotController.DataBot.GetDataManager() as IDataManagerTestMethods;
         }
@@ -57,20 +58,19 @@ namespace TestStreamerBot
                     OptionFlags.MediaOverlayChannelPoints = true;
                     OptionFlags.MediaOverlayShoutoutClips = true;
 
-                    Initialized = true;
-
                     if (File.Exists(DatabaseName))
                     {
                         File.Delete(DatabaseName);
                     }
-                    botController = new(null);
 
                     botController.OutputSentToBots += BotController_OutputSentToBots;
+
+                    Initialized = true;
                 }
             }
         }
 
-        private OnGetChannelGameNameEventArgs GetRandomGameIdName()
+        private FindChannelCategoryEventArgs GetRandomGameIdName()
         {
             if (!Initialized)
             {
@@ -130,7 +130,7 @@ namespace TestStreamerBot
                 string Title = "Let's try this stream test!";
                 DateTime onlineTime = DateTime.Now.ToLocalTime();
 
-                OnGetChannelGameNameEventArgs random = GetRandomGameIdName();
+                FindChannelCategoryEventArgs random = GetRandomGameIdName();
 
                 string Id = random.GameId;
                 string Category = random.GameName;
@@ -296,7 +296,7 @@ namespace TestStreamerBot
                 new()
                 {
                     ClipId = "3489249",
-                    CreatedAt = DateTime.Now.ToString(),
+                    CreatedAt = DateTime.Now,
                     Duration = 20.5F,
                     GameId = "7193",
                     Url = "http://www.flightsimulator.com",
@@ -307,9 +307,9 @@ namespace TestStreamerBot
                 }
             ];
 
-                botController.HandleBotEventPostNewClip(clips);
+                botController.HandleBotEventPostNewClip(false, clips);
 
-                Assert.False(dataManager.PostClip(clips[0].ClipId, DateTime.Parse(clips[0].CreatedAt), Convert.ToDecimal(clips[0].Duration), clips[0].GameId, clips[0].Language, clips[0].Title, clips[0].Url, clips[0].FromUserId, clips[0].FromUserName));
+                Assert.False(dataManager.PostClip(clips[0].ClipId, clips[0].CreatedAt, Convert.ToDecimal(clips[0].Duration), clips[0].GameId, clips[0].Language, clips[0].Title, clips[0].Url, clips[0].FromUserId, clips[0].FromUserName, true));
             }
         }
 
@@ -430,7 +430,7 @@ namespace TestStreamerBot
             Initialize();
             lock (DatabaseName)
             {
-                OnGetChannelGameNameEventArgs randomGame = GetRandomGameIdName();
+                FindChannelCategoryEventArgs randomGame = GetRandomGameIdName();
                 botController.HandleOnStreamOnline("writhemtwine", "Test Giveaway", DateTime.Now.ToLocalTime(), new(randomGame.GameId, randomGame.GameName));
 
                 OptionFlags.GiveawayBegMsg = "Test Project Begin the Giveaway";
@@ -481,7 +481,7 @@ namespace TestStreamerBot
                 Assert.False(dataManager.PostStream(onlineTime, Category));
                 Assert.False(dataManager.PostCategory(new(Id, Category)));
 
-                OnGetChannelGameNameEventArgs randomGame = GetRandomGameIdName();
+                FindChannelCategoryEventArgs randomGame = GetRandomGameIdName();
 
                 botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch, userId), DateTime.Now, Random.Next(5, Viewers), new(randomGame.GameId, randomGame.GameName));
                 Thread.Sleep(5000); // wait for category
@@ -512,7 +512,7 @@ namespace TestStreamerBot
                 Clip TestClip = new()
                 {
                     ClipId = ClipName,
-                    CreatedAt = DateTime.Now.ToString(),
+                    CreatedAt = DateTime.Now,
                     Duration = Random.Next(30),
                     GameId = GetRandomGameIdName().GameId,
                     Language = "English",
@@ -522,20 +522,21 @@ namespace TestStreamerBot
                     FromUserName = "Queenmeteor"
                 };
 
-                botController.HandleBotEventPostNewClip([TestClip]);
+                botController.HandleBotEventPostNewClip(false, [TestClip]);
 
                 Thread.Sleep(2000);
 
                 Assert.False(
                     dataManager.PostClip(TestClip.ClipId,
-                                         DateTime.Parse(TestClip.CreatedAt),
+                                         TestClip.CreatedAt,
                                          Convert.ToDecimal(TestClip.Duration),
                                          TestClip.GameId,
                                          TestClip.Language,
                                          TestClip.Title,
                                          TestClip.Url,
                                          TestClip.FromUserId,
-                                         TestClip.FromUserName)
+                                         TestClip.FromUserName, 
+                                         true)
                     );
             }
         }

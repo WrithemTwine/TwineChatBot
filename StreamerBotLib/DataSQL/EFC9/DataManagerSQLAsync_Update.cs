@@ -67,19 +67,21 @@ namespace StreamerBotLib.DataSQL.EFC9
             await UpdateWatchTime(Users, dateTime);
         }
 
+        private List<LearnMsgRecord> _cachedLearnMsgRecords = null;
+
         internal async Task<List<LearnMsgRecord>> UpdateLearnedMsgs()
         {
-            if (!LearnMsgChanged)
+            if (LearnMsgChanged)
             {
-                return (List<LearnMsgRecord>)null;
+                LearnMsgChanged = false;
+
+                using var context = BuildDataContext();
+                _cachedLearnMsgRecords = await context.LearnMsgs
+                    .Select(L => new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg))
+                    .ToListAsync();
             }
 
-            LearnMsgChanged = false;
-
-            using var context = BuildDataContext();
-            return await context.LearnMsgs
-                .Select(L => new LearnMsgRecord(L.Id, L.MsgType.ToString(), L.TeachingMsg))
-                .ToListAsync();
+            return _cachedLearnMsgRecords;
         }
 
         internal async Task UpdateOverlayTicker(OverlayTickerItem item, string name)

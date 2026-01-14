@@ -1,3 +1,5 @@
+#define POST_ALL_CLIPS
+
 using StreamerBotLib.BotClients;
 using StreamerBotLib.DataSQL;
 using StreamerBotLib.Models;
@@ -275,12 +277,6 @@ namespace StreamerBotLib.Systems
         }
 
         #endregion
-
-        public bool AddClip(Clip c, bool LastClip)
-        {
-            LogWriter.DebugLog("AddClip", DebugLogTypes.CommonSystem, $"Adding Clip: {c.Title}");
-            return DataManage.PostClip(c.ClipId, DateTime.Parse(c.CreatedAt).ToLocalTime(), (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName, LastClip);
-        }
 
         /// <summary>
         /// Retrieves the current users within the channel during the stream.
@@ -841,9 +837,50 @@ namespace StreamerBotLib.Systems
         #endregion
 
         #region Clips
-        public void ClipHelper(IEnumerable<Clip> Clips)
+        public bool AddClip(Clip c, bool LastClip)
+        {
+            LogWriter.DebugLog("AddClip", DebugLogTypes.CommonSystem, $"Adding Clip: {c.Title}");
+            return DataManage.PostClip(c.ClipId, c.CreatedAt, (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName, LastClip);
+        }
+
+        public void ClipHelper(bool AllClips, IEnumerable<Clip> Clips)
         {
             LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Processing clips.");
+
+#if POST_ALL_CLIPS
+            List<Clip> reportNewClips = [.. DataManage.SyncClips(AllClips, Clips)];
+            if (reportNewClips.Count != 0)
+            {
+                foreach (Clip c in reportNewClips)
+                {
+                    if (OptionFlags.TwitchClipPostChat)
+                    {
+                        LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Posting clip to chat.");
+                        lock (ProcMsgQueue)
+                        {
+                            ProcMsgQueue.Enqueue(new Task(() =>
+                            {
+                                SendMessage(c.Url);
+                            }));
+                        }
+                    }
+
+                    if (OptionFlags.TwitchClipPostDiscord)
+                    {
+                        LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Posting clip to Discord.");
+                        foreach (Tuple<bool, Uri> u in GetDiscordWebhooks(WebhooksSource.Discord, WebhooksKind.Clips))
+                        {
+                            // TODO: add into database->enable adding data
+                            DiscordWebhook.SendMessage(u.Item2, c.Url);
+                            UpdatedStat(StreamStatType.Discord, StreamStatType.AutoEvents); // count how many times posted to WebHooks
+                        }
+                    }
+
+                    LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Updating statistics.");
+                    UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
+                }
+            }
+#else
             foreach (Clip c in Clips)
             {
                 if (AddClip(c, Clips.Last() == c))
@@ -877,8 +914,10 @@ namespace StreamerBotLib.Systems
                     // CheckForOverlayEvent(OverlayTypes.Clip, OverlayTypes.Clip, ProvidedURL: c.Url);
                 }
             }
+#endif
+
         }
 
-        #endregion
+#endregion
     }
 }

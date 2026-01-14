@@ -621,7 +621,8 @@ namespace StreamerBotLib.DataSQL.EFC9
             await RefreshStreamStatsList(true);
         }
 
-        internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip)
+        internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, 
+            string Url, string fromUserId, string fromUserName, bool LastClip)
         {
             bool result;
             using var context = BuildDataContext();
@@ -633,7 +634,8 @@ namespace StreamerBotLib.DataSQL.EFC9
             if (!found)
             {
                 await context.Database.BeginTransactionAsync();
-                await context.Clips.AddAsync(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, language: Language, duration: (float)Duration, url: Url));
+                await context.Clips.AddAsync(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, 
+                    language: Language, duration: (float)Duration, url: Url));
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);
                 result = true;
@@ -652,6 +654,70 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Synchronizes the provided collection of clips with the database, adding new clips and optionally removing
+        /// clips that are no longer present.
+        /// </summary>
+        /// <remarks>If <paramref name="AllClips"/> is <see langword="true"/>, any clips in the database
+        /// that are not present in the input collection will be removed. The method performs all changes within a
+        /// transaction and refreshes the clips list after completion.</remarks>
+        /// <param name="AllClips">A value indicating whether the synchronization should treat the provided clips as the complete set. If <see
+        /// langword="true"/>, clips not present in the input will be removed from the database.</param>
+        /// <param name="clips">The collection of clips to synchronize with the database. Each clip should contain valid identifying and
+        /// metadata information.</param>
+        /// <returns>An enumerable collection of clips that were newly added to the database during synchronization. The
+        /// collection will be empty if no new clips were added.</returns>
+        internal async Task<IEnumerable<Clip>> SyncClips(bool AllClips, IEnumerable<Clip> clips)
+        {
+            using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
+
+            List<Clip> existingClips = await context.Clips
+                                                        .Select(C => new Clip
+                                                        {
+                                                            ClipId = C.ClipId,
+                                                            CreatedAt = C.CreatedAt,
+                                                            Duration = C.Duration,
+                                                            GameId = C.CategoryId,
+                                                            Language = C.Language,
+                                                            Title = C.Title,
+                                                            Url = C.Url
+                                                        })
+                                                        .ToListAsync();
+
+            List<Clip> newClips = [.. clips.ExceptBy(existingClips.Select(e=>e.ClipId), (c)=>c.ClipId)]; // incoming clips, remove existing clips
+
+            // if AllClips is true, remove any existing clips that are not in the incoming clips list
+            if (AllClips)
+            {
+                List<Clip> removeClips = [.. existingClips.ExceptBy(clips.Select(e => e.ClipId), (c) => c.ClipId)]; // existing clips, remove incoming clips
+
+                if (removeClips.Count > 0)
+                {
+                    context.Clips.RemoveRange(context.Clips.Where(C => removeClips.Select(RC => RC.ClipId).Contains(C.ClipId)));
+                }
+            }
+
+            if(newClips.Count > 0)
+            {
+                foreach (var clip in newClips)
+                {
+                    await context.Clips.AddAsync(new(clipId: clip.ClipId, createdAt: clip.CreatedAt, title: clip.Title,
+                                                     categoryId: clip.GameId, language: clip.Language, duration: clip.Duration, url: clip.Url));
+                }
+            }
+
+            await context.Database.CommitTransactionAsync();
+            await context.SaveChangesAsync(true);
+
+            ThreadManager.AddTaskToGUIDispatcher(async () =>
+            {
+                await RefreshClipsList(true);
+            });
+            
+            return newClips;
         }
 
         internal async Task<string> PostCommand(string cmd, CommandParams Params)

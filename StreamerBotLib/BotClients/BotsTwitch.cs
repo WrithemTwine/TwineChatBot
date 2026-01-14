@@ -56,16 +56,14 @@ namespace StreamerBotLib.BotClients
         private Thread BulkLoadClips;
 
         public static event EventHandler<EventArgs> RaidCompleted;
-        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOnline;
-        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamUpdated;
-        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOffline;
+        //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOnline;
+        //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamUpdated;
+        //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOffline;
 
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidTwitchAccess;
 
         public static event EventHandler<TwitchAuthCodeExpiredEventArgs> BotAuthCodeExpired;
         public static event EventHandler<TwitchAuthCodeExpiredEventArgs> StreamerAuthCodeExpired;
-
-
 
         /// <summary>
         /// This event relates to app starting up and notifies when the Helix apis 
@@ -263,7 +261,7 @@ namespace StreamerBotLib.BotClients
             {
                 LogWriter.DebugLog("RegisterHandlers", DebugLogTypes.TwitchBots, "Adding event handlers to clip service.");
 
-                TwitchBotClipSvc.ClipMonitorService.OnNewClipFound += ClipMonitorServiceOnNewClipFound;
+                TwitchBotClipSvc.OnNewClipFound += ClipMonitorServiceOnNewClipFound;
 
                 TwitchBotClipSvc.HandlersAdded = true;
             }
@@ -313,11 +311,11 @@ namespace StreamerBotLib.BotClients
             {
                 ThreadManager.CreateThreadStart("TwitchEventSubStreamer_OnBotStarted", () =>
                 {
-                    var response = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
+                    //var response = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
 
-                    if (response?.Streams != null && response.Streams.Length > 0)
-                    {
-                        var CurrStream = response.Streams.FirstOrDefault();
+                    //if (response?.Streams != null && response.Streams.Length > 0)
+                    //{
+                    //    var CurrStream = response.Streams.FirstOrDefault();
 
                         if(CurrStream != null)
                         {
@@ -326,13 +324,16 @@ namespace StreamerBotLib.BotClients
                             LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
                             OptionFlags.IsStreamOnline = true;
 
-                            InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
-                            ActiveUsers();
-                            TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
-                            ManageStreamOnlineOfflineStatus(true);
-                            StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+                            InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(CurrStream));
+                        LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
+                        ActiveUsers();
+                        LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Sent the current viewership list.");
+                        TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
+                        LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying GUI and data system the streamer channel is now online.");
+                        ManageStreamOnlineOfflineStatus(true);
+                            //StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
                         }
-                    }
+                    //}
                 });
             }
 
@@ -470,23 +471,32 @@ namespace StreamerBotLib.BotClients
         private void TwitchStreamerEventSubBot_NewStreamOnline(object sender, NewStreamOnlineEventArgs e)
         {
             OptionFlags.IsStreamOnline = true;
+
+            int x = 0;
+
+            while(CurrStream == null && x <= 5)
+            { // at this point, we received a stream online, but we might be checking for a the stream info too fast
+                x++;
+                Task.Delay(x * 200).Wait(); // back off each loop
+            }
+
             InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
             ActiveUsers();
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Sent the current viewership list.");
             TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
 
-            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying streamer channel is now online.");
+            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying GUI and data system the streamer channel is now online.");
             ManageStreamOnlineOfflineStatus(true);
 
-            StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+            //StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
         }
         private void TwitchStreamerEventSubBot_NewChannelUpdate(object sender, NewChannelUpdateEventArgs e)
         {
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelUpdate", DebugLogTypes.TwitchBots, $"Registered a stream update, {e.ChannelUpdate.BroadcasterUserName}.");
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelUpdate", DebugLogTypes.TwitchBots, $"Received, {e.ChannelUpdate.BroadcasterUserName} has a stream update notification.");
 
-            StreamUpdated?.Invoke(this, new(categoryName: e.ChannelUpdate.CategoryName));
+            //StreamUpdated?.Invoke(this, new(categoryName: e.ChannelUpdate.CategoryName));
 
             InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
         }
@@ -498,7 +508,7 @@ namespace StreamerBotLib.BotClients
             ManageStreamOnlineOfflineStatus(false);
             InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
 
-            StreamOffline?.Invoke(this, new());
+            //StreamOffline?.Invoke(this, new());
         }
         private void TwitchStreamerEventSubBot_NewChannelRaid(object sender, NewChannelRaidEventArgs e)
         {
@@ -873,6 +883,9 @@ namespace StreamerBotLib.BotClients
             TwitchTokenBot.UpdateActiveTokens(BotType.BotAccount, bottoken);
             TwitchTokenBot.UpdateActiveTokens(BotType.StreamerAccount, streamertoken);
             TwitchTokenBot.UpdateActiveTokens(BotType.StreamerNoScopes, streamernoscopestoken);
+
+            LogWriter.DebugLog("CheckActiveBots", DebugLogTypes.TwitchBots, $"Checked active bots. Streamer token active={streamertoken}, " +
+                $"streamer no scopes token active={streamernoscopestoken}, bot token active={bottoken}.");
         }
 
         public static void TwitchActivateAuthCode(string clientId, bool NoScopes, Action<string> OpenBrowser, Action AuthenticationFinished)
@@ -1151,10 +1164,10 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog("TwitchBotClipSvc_OnBotStarted", DebugLogTypes.TwitchBots, "Found clip bot started, now adding handlers.");
             RegisterHandlers();
 
-            // start thread to retrieve all clips
-            BulkLoadClips = ThreadManager.CreateThread("TwitchBotClipSvc_OnBotStarted", ProcessClipsAsync);
-            MultiThreadOps.Add(BulkLoadClips);
-            BulkLoadClips.Start();
+            //// start thread to retrieve all clips
+            //BulkLoadClips = ThreadManager.CreateThread("TwitchBotClipSvc_OnBotStarted", ProcessClipsAsync);
+            //MultiThreadOps.Add(BulkLoadClips);
+            //BulkLoadClips.Start();
         }
 
         private void TwitchBotClipSvc_OnBotStopped(object sender, EventArgs e)
@@ -1164,24 +1177,20 @@ namespace StreamerBotLib.BotClients
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
         {
-            LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, $"Detected a new clip, {e.Clips.Count}, to post, Id: {e?.Clips[0].Id}.");
-
-            if (e != null)
-            {
+                LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, $"Detected a new clip to post.");
                 InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
-            }
         }
 
-        /// <summary>
-        /// Get the clips for a specific user channel.
-        /// </summary>
-        /// <param name="ChannelName">Channel to get the clips.</param>
-        /// <param name="ReturnData">The callback method when the clips are found.</param>
-        public void GetChannelClips(Action<List<Models.Clip>> ReturnData)
-        {
-            LogWriter.DebugLog("GetChannelClips", DebugLogTypes.TwitchBots, "Performing a request to get channel clips.");
-            ThreadManager.CreateThreadStart("GetChannelClips", () => ProcessChannelClipsAsync(ReturnData));
-        }
+        ///// <summary>
+        ///// Get the clips for a specific user channel.
+        ///// </summary>
+        ///// <param name="ChannelName">Channel to get the clips.</param>
+        ///// <param name="ReturnData">The callback method when the clips are found.</param>
+        //public void GetChannelClips(Action<List<Models.Clip>> ReturnData)
+        //{
+        //    LogWriter.DebugLog("GetChannelClips", DebugLogTypes.TwitchBots, "Performing a request to get channel clips.");
+        //    ThreadManager.CreateThreadStart("GetChannelClips", () => ProcessChannelClipsAsync(ReturnData));
+        //}
 
         public void GetUserChannelClips(string UserName, Action<List<Clip>> callback)
         {
@@ -1281,42 +1290,38 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        private List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> ClipList { get; set; }
+        //private List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> ClipList { get; set; }
 
-        private bool StartClips { get; set; }
+        //private bool StartClips { get; set; }
 
-        private async void ProcessClipsAsync()
-        {
-            if (!StartClips)
-            {
-                LogWriter.DebugLog("ProcessClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
+        //private async void ProcessClipsAsync()
+        //{
+        //    if (!StartClips)
+        //    {
+        //        LogWriter.DebugLog("ProcessClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
 
-                StartClips = true;
-                ClipList = await TwitchBotClipSvc.GetAllClipsAsync();
+        //        StartClips = true;
+        //        ClipList = await TwitchBotClipSvc.GetAllClipsAsync();
 
-                if (ClipList != null)
-                {
-                    InvokeBotEvent(this, BotEvents.TwitchClipSvcOnClipFound, new ClipFoundEventArgs() { ClipList = ClipList });
-                }
-                StartClips = false;
-            }
-        }
+        //        if (ClipList != null)
+        //        {
+        //            InvokeBotEvent(this, BotEvents.TwitchClipSvcOnClipFound, new ClipFoundEventArgs() { ClipList = ClipList });
+        //        }
+        //        StartClips = false;
+        //    }
+        //}
 
-        private async void ProcessChannelClipsAsync(Action<List<Models.Clip>> ActionCallback)
-        {
-            LogWriter.DebugLog("ProcessChannelClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
+        //private async void ProcessChannelClipsAsync(Action<List<Models.Clip>> ActionCallback)
+        //{
+        //    LogWriter.DebugLog("ProcessChannelClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
 
-            List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> result = [];
-            TwitchBotClipSvc ChannelClips = new(TwitchTokenBot);
-            await ChannelClips.StartBot();
-            if (ChannelClips.IsActive == true)
-            {
-                result = await ChannelClips.GetAllClipsAsync();
-                await ChannelClips.StopBot();
-            }
+        //    List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> result = await TwitchBotClipSvc.GetAllClipsAsync();
 
-            ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
-        }
+        //    if (result != null && result.Count > 0)
+        //    {
+        //        ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
+        //    }
+        //}
 
         private bool ShoutOutTaskActive = false;
         private readonly List<ShoutOutLiveUser> ShoutOutUsers = [];

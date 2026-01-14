@@ -733,6 +733,22 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        /// <summary>
+        /// Synchronizes the specified collection of clips with the data manager and returns the resulting set of
+        /// synchronized clips.
+        /// </summary>
+        /// <param name="AllClips">true to synchronize all available clips; otherwise, false to synchronize only the specified clips.</param>
+        /// <param name="clips">The collection of clips to be synchronized. If AllClips is false, only these clips will be synchronized.</param>
+        /// <returns>An enumerable collection of Clip objects representing the new clips.</returns>
+        public IEnumerable<Clip> SyncClips(bool AllClips, IEnumerable<Clip> clips)
+        {
+            LogWriter.DebugLog("SyncClips", DebugLogTypes.DataManager, "Syncing clips.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.SyncClips(AllClips, clips).Result;
+            }
+        }
+
         public string PostCommand(string cmd, CommandParams Params)
         {
             LogWriter.DebugLog("PostCommand", DebugLogTypes.DataManager, "Posting command.");

@@ -304,15 +304,21 @@ namespace StreamerBotLib.Systems.Overlay
 
         private void OverlayLink_Click(object sender, RoutedEventArgs e)
         {
-            try
+            for (int x = 0; x < 10; x++)
             {
-                Clipboard.SetText(((Button)sender).Content.ToString());
+                try
+                {
+                    Clipboard.SetText(((Button)sender).Content.ToString());
 
-                TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
-            }
-            catch (COMException ex)
-            {
-                LogWriter.LogException(ex, "OverlayLink_Click");
+                    TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
+                    break; // if we reached here, the clipboard copy worked - break out of for loop
+                }
+                catch (COMException ex)
+                {
+                    LogWriter.LogException(ex, "OverlayLink_Click");
+                    Clipboard.Clear();
+                }
+                Thread.Sleep(40); // wait a bit before retrying
             }
         }
 

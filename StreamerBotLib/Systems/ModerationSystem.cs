@@ -24,7 +24,7 @@ namespace StreamerBotLib.Systems
                                                         select new BotModAction()
                                                         {
                                                             LearnMsg = M.TeachingMsg,
-                                                            ModActions = Enum.Parse<MsgTypes>(M.MsgType)
+                                                            ModActions = M.MsgType
                                                         })]);
                 }
             });

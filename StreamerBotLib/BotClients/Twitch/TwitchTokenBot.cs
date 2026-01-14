@@ -41,8 +41,6 @@ namespace StreamerBotLib.BotClients.Twitch
         private Dictionary<BotType, bool> ActiveBotTokens { get; set; }
 
 
-        //private readonly IDataManagerReadOnly DataManager = SystemsController.DataManage;
-
         private bool TokenRenewalStarted; // flag to use a single thread for checking AuthCode access tokens
         private bool InitializeTokens;
 
@@ -306,7 +304,6 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 LogWriter.DebugLog("CheckToken", DebugLogTypes.TwitchTokenBot, $"Checking if all tokens, active/inactive, are valid: {Override}");
 
-
                 if (IsActive == true) // only calculate if bot is started, meaning the User is using this operation mode.
                 {
                     lock (TokenLock)
@@ -341,7 +338,6 @@ namespace StreamerBotLib.BotClients.Twitch
                             {
                                 BotAccessTokenUnChanged?.Invoke(this, EventArgs.Empty);
                             }
-
                         }
 
                         if (Override || (ActiveBotTokens[BotType.StreamerNoScopes] && (DateTime.Now - StreamerNoScopesAccessTokenLastCheckedDate).TotalSeconds > TokenCheckTimeWindow))

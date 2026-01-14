@@ -57,26 +57,35 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
         {
-            LogWriter.DebugLog("TokenBot_StreamerAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
-            ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerAccount);
-            RefreshSubscriptions(subscription);
-            TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            if (IsActive == true)
+            { // LiveMonitor & ClipBot & EventSub use this token, one active might cause this event, but the bot is not active
+                LogWriter.DebugLog("TokenBot_StreamerAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
+                ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerAccount);
+                RefreshSubscriptions(subscription);
+                TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            }
         }
 
         private void TokenBot_StreamerNoScopesAccessTokenChanged(object sender, EventArgs e)
         {
-            LogWriter.DebugLog("TokenBot_StreamerNoScopesAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
-            ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerNoScopes);
-            RefreshSubscriptions(subscription);
-            TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            if (IsActive == true)
+            { // only reset if bot is active, token may be used elsewhere
+                LogWriter.DebugLog("TokenBot_StreamerNoScopesAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
+                ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerNoScopes);
+                RefreshSubscriptions(subscription);
+                TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            }
         }
 
         private void TokenBot_BotAccessTokenChanged(object sender, EventArgs e)
         {
-            LogWriter.DebugLog("TokenBot_BotAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
-            ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.BotAccount);
-            RefreshSubscriptions(subscription);
-            TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            if (IsActive == true)
+            {  // only reset if bot is active, token may be used elsewhere
+                LogWriter.DebugLog("TokenBot_BotAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
+                ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.BotAccount);
+                RefreshSubscriptions(subscription);
+                TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            }
         }
 
         private void RefreshSubscriptions(ITwitchBotEventSubSubscriptions subscriptions)

@@ -1,11 +1,11 @@
-﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
+﻿
+using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 using System.Diagnostics.CodeAnalysis;
 
 using TwitchLib.Api.Core.Exceptions;
-using TwitchLib.Api.Helix.Models.Clips.CreateClip;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Interfaces;
 
@@ -204,11 +204,32 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
 #endif
                 var ClipResult = _api.Helix.Clips.CreateClipAsync(channelId).Result;
 
-                if (ClipResult.CreatedClips.Length > 0)
-                {
-                    var GetClips = _api.Helix.Clips.GetClipsAsync(clipIds: [.. ClipResult.CreatedClips.Select(c => c.Id)]).Result;
+                LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.TwitchClipBot, $"Clip created with ID: {ClipResult?.CreatedClips?[0]?.Id}");
 
-                    OnNewClipFound?.Invoke(this, new OnNewClipsDetectedArgs() { Channel = channelId, Clips = [.. GetClips.Clips] });
+                List<string> clipIds = [.. ClipResult.CreatedClips.Select(c => c.Id)];
+
+                if (clipIds.Count > 0)
+                {
+                    Task.Delay(5000).Wait(); // wait a moment for Twitch to process the clip so it can be retrieved
+                    int x = 0;
+
+                    GetClipsResponse GetClips = null;
+
+                    do
+                    {
+                        GetClips = _api.Helix.Clips.GetClipsAsync(clipIds: clipIds).Result;
+
+
+                        Task.Delay(x * 1500).Wait(); // incremental delay to wait a little longer each try
+                    } while (++x < 5 && GetClips == null);
+
+                    LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.TwitchClipBot, $"Retrieved {GetClips?.Clips?.Length ?? 0} clips for created clip IDs.");
+
+                    if (GetClips != null && GetClips.Clips.Length > 0)
+                    {
+                        LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.TwitchClipBot, $"Invoking OnNewClipFound event for channel ID: {channelId}");
+                        OnNewClipFound?.Invoke(this, new OnNewClipsDetectedArgs() { Channel = channelId, Clips = [.. GetClips.Clips] });
+                    }
                 }
             }
             catch (BadScopeException)

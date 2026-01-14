@@ -293,9 +293,9 @@ namespace StreamerBot
 
                 // set earliest token expiration date
 
-                List<DateTime> RefreshTokenDateExpiry = (from R in (ICollection<DateTime>)[OptionFlags.TwitchBotTokenDate, OptionFlags.TwitchStreamerTokenDate]
+                List<DateTime> RefreshTokenDateExpiry = [.. (from R in (ICollection<DateTime>)[OptionFlags.TwitchBotTokenDate, OptionFlags.TwitchStreamerTokenDate]
                                                          where OptionFlags.CurrentToTwitchRefreshDate(R) > new TimeSpan(0, 5, 2)
-                                                         select R).ToList();
+                                                         select R)];
                 StatusBarItem_TokenDate.Content = OptionFlags.TwitchTokenUseAuth ?
                     "Auth Code Refresh" :
                     RefreshTokenDateExpiry.Count != 0 ?

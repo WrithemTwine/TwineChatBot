@@ -477,7 +477,7 @@ namespace StreamerBotImport.Import
                                                   message: C.Message,
                                                   repeatTimer: C.RepeatTimer,
                                                   sendMsgCount: C.SendMsgCount,
-                                                  category: new List<string>(C.Category.Split(",")),
+                                                  category: [.. C.Category.Split(",")],
                                                   allowParam: C.AllowParam,
                                                   usage: C.Usage,
                                                   lookupData: C.lookupdata,
@@ -518,7 +518,7 @@ namespace StreamerBotImport.Import
                                               message: C.Message,
                                               repeatTimer: C.RepeatTimer,
                                               sendMsgCount: C.SendMsgCount,
-                                              category: new List<string>(C.Category.Split(",")),
+                                              category: [.. C.Category.Split(",")],
                                               allowParam: C.AllowParam,
                                               usage: C.Usage,
                                               lookupData: C.lookupdata,
@@ -738,8 +738,8 @@ namespace StreamerBotImport.Import
                 foreach (InRaidDataRow A in from IR in _DataSource.InRaidData
                                             select IR)
                 {
-                    string uId = ((UsersRow)_DataSource.Users.Select($"[UserName]='{A.UserName}'").FirstOrDefault())?.UserId;
-                    string categoryId = ((CategoryListRow)_DataSource.CategoryList.Select($"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{A.Category}'").FirstOrDefault()).CategoryId;
+                    string? uId = ((UsersRow?)_DataSource.Users.Select($"[UserName]='{A.UserName}'").FirstOrDefault())?.UserId;
+                    string? categoryId = ((CategoryListRow?)_DataSource.CategoryList.Select($"{_DataSource.CategoryList.CategoryColumn.ColumnName}='{A.Category}'").FirstOrDefault())?.CategoryId;
 
                     if (string.IsNullOrEmpty(uId) || string.IsNullOrEmpty(categoryId))
                     {
