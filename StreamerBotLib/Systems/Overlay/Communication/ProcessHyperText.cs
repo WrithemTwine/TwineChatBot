@@ -126,8 +126,8 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                     OverlayType = tickerItem.OverlayTickerItem.ToString(),
                     OverlayHyperText = ProcessPage(
                         style + "\n" + tickericonstyle + (from OverlayStyle O in overlayStyles
-                                 where O.OverlayType == tickerItem.OverlayTickerItem.ToString()
-                                 select O).FirstOrDefault()?.OverlayStyleText ?? "",
+                                                          where O.OverlayType == tickerItem.OverlayTickerItem.ToString()
+                                                          select O).FirstOrDefault()?.OverlayStyleText ?? "",
                         ProcessTicker(tickerItem.OverlayTickerItem, tickerItem.UserName).ToString()
                         , 5)
                 };
@@ -139,12 +139,12 @@ namespace StreamerBotLib.Systems.Overlay.Communication
             {
                 int size = 50;
 
-                return new XElement("div", 
+                return new XElement("div",
                                     new XAttribute("class", tickerItem),
-                            new XElement("img", 
-                                new XAttribute("id", tickerItem.ToString()), 
-                                new XAttribute("alt", $"{tickerItem} icon"), 
-                                new XAttribute("width", size), 
+                            new XElement("img",
+                                new XAttribute("id", tickerItem.ToString()),
+                                new XAttribute("alt", $"{tickerItem} icon"),
+                                new XAttribute("width", size),
                                 new XAttribute("height", size)),
                             new XElement("span", $": {UserName}"));
             }
@@ -167,16 +167,16 @@ namespace StreamerBotLib.Systems.Overlay.Communication
 
                 if (File.Exists(iconstyle))
                 { // read existing file
-                    using(StreamReader reader = new(iconstyle))
+                    using (StreamReader reader = new(iconstyle))
                     {
                         IconFile = reader.ReadToEnd().Split('}');
                     }
                 }
 
-                foreach(TickerItem t in tickerItems)
+                foreach (TickerItem t in tickerItems)
                 {
                     string found = "";
-                    foreach(string s in IconFile)
+                    foreach (string s in IconFile)
                     { // check existing file for data
                         if (s.Contains(t.OverlayTickerItem.ToString()))
                         {
@@ -184,7 +184,7 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                         }
                     }
 
-                    if(found == "")
+                    if (found == "")
                     { // build a default style
                         found = $"#{t.OverlayTickerItem} {{\n    content: Url('{PublicConstants.DefaultTickerIcons[t.OverlayTickerItem.ToString()]}');\n    float: left;\n}}\n\n ";
                     }
@@ -289,8 +289,8 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                     OverlayType = "All",
                     OverlayHyperText = ProcessPage(
                         style + "\n" + tickericonstyle + "\n" + ((from OverlayStyle O in overlayStyles
-                                  where O.OverlayType == PublicConstants.OverlayAllTickers
-                                  select O).FirstOrDefault()?.OverlayStyleText ?? "") + marqueeStyle,
+                                                                  where O.OverlayType == PublicConstants.OverlayAllTickers
+                                                                  select O).FirstOrDefault()?.OverlayStyleText ?? "") + marqueeStyle,
                         body
                         , reloadtime, false, "", "")
                 };

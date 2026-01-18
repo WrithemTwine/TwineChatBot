@@ -288,7 +288,7 @@ namespace StreamerBot
             DataGrid CurrLrnMsg = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
             MsgTypes SelectedType = Enum.Parse<MsgTypes>((string)(sender as MenuItem).Header);
 
-            foreach( LearnMsgs row in CurrLrnMsg.SelectedItems)
+            foreach (LearnMsgs row in CurrLrnMsg.SelectedItems)
             {
                 row.MsgType = SelectedType;
             }

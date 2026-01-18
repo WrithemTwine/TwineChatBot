@@ -621,7 +621,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             await RefreshStreamStatsList(true);
         }
 
-        internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, 
+        internal async Task<bool> PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title,
             string Url, string fromUserId, string fromUserName, bool LastClip)
         {
             bool result;
@@ -634,7 +634,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             if (!found)
             {
                 await context.Database.BeginTransactionAsync();
-                await context.Clips.AddAsync(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId, 
+                await context.Clips.AddAsync(new(clipId: ClipId, createdAt: CreatedAt, title: Title, categoryId: GameId,
                     language: Language, duration: (float)Duration, url: Url));
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);
@@ -687,7 +687,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                                                         })
                                                         .ToListAsync();
 
-            List<Clip> newClips = [.. clips.ExceptBy(existingClips.Select(e=>e.ClipId), (c)=>c.ClipId)]; // incoming clips, remove existing clips
+            List<Clip> newClips = [.. clips.ExceptBy(existingClips.Select(e => e.ClipId), (c) => c.ClipId)]; // incoming clips, remove existing clips
 
             // if AllClips is true, remove any existing clips that are not in the incoming clips list
             if (AllClips)
@@ -700,7 +700,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 }
             }
 
-            if(newClips.Count > 0)
+            if (newClips.Count > 0)
             {
                 foreach (var clip in newClips)
                 {
@@ -716,7 +716,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             {
                 await RefreshClipsList(true);
             });
-            
+
             return newClips;
         }
 

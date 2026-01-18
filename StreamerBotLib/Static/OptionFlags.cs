@@ -2,8 +2,6 @@
 using StreamerBotLib.Properties;
 
 using System.Collections.Specialized;
-using System.Drawing;
-using System.Windows.Media;
 
 namespace StreamerBotLib.Static
 {

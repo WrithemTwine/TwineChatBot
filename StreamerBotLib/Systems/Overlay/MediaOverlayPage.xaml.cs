@@ -357,7 +357,7 @@ namespace StreamerBotLib.Systems.Overlay
                     }
                 }
 
-                foreach(SelectedTickerItem S in ((SelectedTickerItems)Resources["TickerSelectedItems"]).TickerItems)
+                foreach (SelectedTickerItem S in ((SelectedTickerItems)Resources["TickerSelectedItems"]).TickerItems)
                 {
                     S.SetIcon();
                 }

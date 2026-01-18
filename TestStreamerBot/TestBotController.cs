@@ -535,7 +535,7 @@ namespace TestStreamerBot
                                          TestClip.Title,
                                          TestClip.Url,
                                          TestClip.FromUserId,
-                                         TestClip.FromUserName, 
+                                         TestClip.FromUserName,
                                          true)
                     );
             }

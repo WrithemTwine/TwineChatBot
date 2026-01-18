@@ -317,22 +317,22 @@ namespace StreamerBotLib.BotClients
                     //{
                     //    var CurrStream = response.Streams.FirstOrDefault();
 
-                        if(CurrStream != null)
-                        {
-                            _CurrStream = CurrStream;
+                    if (CurrStream != null)
+                    {
+                        _CurrStream = CurrStream;
 
-                            LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
-                            OptionFlags.IsStreamOnline = true;
+                        LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
+                        OptionFlags.IsStreamOnline = true;
 
-                            InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(CurrStream));
+                        InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(CurrStream));
                         LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
                         ActiveUsers();
                         LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Sent the current viewership list.");
                         TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
                         LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying GUI and data system the streamer channel is now online.");
                         ManageStreamOnlineOfflineStatus(true);
-                            //StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
-                        }
+                        //StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+                    }
                     //}
                 });
             }
@@ -474,7 +474,7 @@ namespace StreamerBotLib.BotClients
 
             int x = 0;
 
-            while(CurrStream == null && x <= 5)
+            while (CurrStream == null && x <= 5)
             { // at this point, we received a stream online, but we might be checking for a the stream info too fast
                 x++;
                 Task.Delay(x * 200).Wait(); // back off each loop
@@ -1177,8 +1177,8 @@ namespace StreamerBotLib.BotClients
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
         {
-                LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, $"Detected a new clip to post.");
-                InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
+            LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, $"Detected a new clip to post.");
+            InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
         }
 
         ///// <summary>
@@ -1381,9 +1381,9 @@ namespace StreamerBotLib.BotClients
                         {
                             LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Preparing to shoutout user {nextShoutOutUser.User.UserName}.");
 
-//#if DEBUG
-//                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"NextShoutOut: {nextShoutOutUser.NextShoutOut}; LastShoutOut (w/2 min): {lastShoutOutDateTime.AddMinutes(2)}.");
-//#endif
+                            //#if DEBUG
+                            //                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"NextShoutOut: {nextShoutOutUser.NextShoutOut}; LastShoutOut (w/2 min): {lastShoutOutDateTime.AddMinutes(2)}.");
+                            //#endif
 
                             if (nextShoutOutUser.NextShoutOut == null && lastShoutOutDateTime.AddMinutes(2) <= Curr)
                             { // new shoutout user, allowed per Twitch API every 2 minutes

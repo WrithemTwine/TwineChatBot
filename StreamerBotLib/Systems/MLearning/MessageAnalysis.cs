@@ -1,17 +1,16 @@
-﻿//#define USE_ACCORD  // use Accord.NET for machine learning
-#define USE_MLNET   // use ML.NET for machine learning
+﻿#define USE_ACCORD  // use Accord.NET for machine learning
+//#define USE_MLNET   // use ML.NET for machine learning
 
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
-using Microsoft.ML.Data;
-using Microsoft.ML.Transforms;
-
 
 #if USE_ACCORD
 using StreamerBotLib.Systems.MLearning.Accord.KNN;
 #elif USE_MLNET
 using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Transforms;
 #endif
 
 namespace StreamerBotLib.Systems.MLearning
@@ -946,7 +945,7 @@ zero
             foreach (BotModAction action in ModActions)
             {
                 PreppedInputs.Add(string.Join(" ", PrepString(action.LearnMsg)));
-                PreppedOutputs.Add((int)action.ModActions);
+                PreppedOutputs.Add((int)Enum.Parse<MsgTypes>(action.ModActions));
             }
 
             KNearest = new(k: 3, distance: new Levenshtein());
@@ -989,14 +988,14 @@ zero
                 .Append(MlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy("Label", "Features"))
                 .Append(MlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
 
-            model = pipeline.Fit(trainer);
+            //model = pipeline.Fit(trainer);
         }
 
         public static MsgTypes Predict(string PredictText)
         {
-            var result = model.Transform(MlContext.Data.LoadFromEnumerable([new BotModAction { LearnMsg = PrepString(PredictText) }]));
+            var result = model?.Transform(MlContext.Data.LoadFromEnumerable([new BotModAction { LearnMsg = PrepString(PredictText) }]));
 
-            return Enum.Parse<MsgTypes>( result.GetColumn<string>("PredictedLabel").FirstOrDefault());
+            return Enum.Parse<MsgTypes>(result.GetColumn<string>("PredictedLabel").FirstOrDefault());
         }
 #endif
     }

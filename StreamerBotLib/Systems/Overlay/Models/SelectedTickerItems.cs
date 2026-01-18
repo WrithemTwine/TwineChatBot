@@ -168,7 +168,7 @@ namespace StreamerBotLib.Systems.Overlay.Models
                 writer.WriteLine($"     float: left;");
                 writer.WriteLine($"}}");
                 writer.WriteLine("");
-            } 
+            }
             else
             {
                 string StyleFile;
@@ -177,7 +177,7 @@ namespace StreamerBotLib.Systems.Overlay.Models
                     StyleFile = reader.ReadToEnd();
                 }
 
-                StreamWriter writer = new(iconstyle,false);
+                StreamWriter writer = new(iconstyle, false);
 
                 if (!StyleFile.Contains(OverlayTickerItem)) // no existing style content
                 {
@@ -187,14 +187,14 @@ namespace StreamerBotLib.Systems.Overlay.Models
                     writer.WriteLine($"     float: left;");
                     writer.WriteLine($"}}");
                     writer.WriteLine("");
-                } 
+                }
                 else // replace existing style content
                 {
                     List<string> rows = [.. StyleFile.Split('\n')];
                     int idx = rows.FindIndex(r => r.Contains(OverlayTickerItem));
                     rows[idx + 1] = $"     content: url('{IconFile}');";
 
-                    foreach(string r in rows)
+                    foreach (string r in rows)
                     {
                         writer.WriteLine(r);
                     }

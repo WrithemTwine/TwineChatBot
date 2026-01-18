@@ -1,7 +1,5 @@
 ﻿using StreamerBotLib.Systems.Overlay.Enums;
 
-using System.IO;
-
 namespace StreamerBotLib.Systems.Overlay.Static
 {
     public static class PublicConstants
@@ -35,9 +33,9 @@ namespace StreamerBotLib.Systems.Overlay.Static
         };
 
         public readonly static Dictionary<string, string> DefaultTickerIcons = (from S in Enum.GetNames<OverlayTickerItem>()
-                                                                        select new Tuple<string, string>(
-                                                                            S, 
-                                                                            $"{BaseTickerIconPath}/Default{S}.png")).ToDictionary(k => k.Item1, e => e.Item2);
+                                                                                select new Tuple<string, string>(
+                                                                                    S,
+                                                                                    $"{BaseTickerIconPath}/Default{S}.png")).ToDictionary(k => k.Item1, e => e.Item2);
 
     }
 }

@@ -76,7 +76,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 InvokeBotStarted();
             });
         }
-    
+
         /// <summary>
         /// Stop all of the services attached to the client.
         /// </summary>
@@ -139,7 +139,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 while (OptionFlags.ActiveToken && IsActive == true)
                 {
-                    if(DateTime.Now >= currCheck.AddSeconds(OptionFlags.TwitchFrequencyClipTime)) // only check at specific intervals
+                    if (DateTime.Now >= currCheck.AddSeconds(OptionFlags.TwitchFrequencyClipTime)) // only check at specific intervals
                     {  // time to check for new clips
                         var latestClips = await GetLatestClipsAsync(); // get the current stream clips
                         latestClips.RemoveAll((c) => KnownClips.Contains(c, new ClipsComparer()));  // new clips are those not in known list
@@ -185,18 +185,18 @@ namespace StreamerBotLib.BotClients.Twitch
                         LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, $"Created clip ID: {clipResponse.CreatedClips[0].Id}, starting verification loop.");
                         do
                         {
-                            data = await twitchAPI.Helix.Clips.GetClipsAsync([..clipResponse.CreatedClips.Select(c => c.Id)], startedAt: startedAt);
+                            data = await twitchAPI.Helix.Clips.GetClipsAsync([.. clipResponse.CreatedClips.Select(c => c.Id)], startedAt: startedAt);
 
-                            LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, $"Checking for created clip, attempt {x+1}.");
+                            LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, $"Checking for created clip, attempt {x + 1}.");
                             if (data != null && data.Clips.Length > 0)
                             {
                                 LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, $"Created clip found: {data.Clips[0].Id}");
-                                OnNewClipFound?.Invoke(this, new() { AllClips = false, Clips = [..data.Clips] }); // notify of new clip
+                                OnNewClipFound?.Invoke(this, new() { AllClips = false, Clips = [.. data.Clips] }); // notify of new clip
                             }
                             else
                             {
-                                await Task.Delay(x*1200); // wait longer each time and try again
-                                LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, $"Created clip not found yet, retrying... Attempt {x+1}");
+                                await Task.Delay(x * 1200); // wait longer each time and try again
+                                LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchClipBot, $"Created clip not found yet, retrying... Attempt {x + 1}");
                             }
                         } while (data == null && x++ < 5);
                     }

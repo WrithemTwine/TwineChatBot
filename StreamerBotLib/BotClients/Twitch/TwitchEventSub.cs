@@ -143,8 +143,9 @@ namespace StreamerBotLib.BotClients.Twitch
                  $"Exception: {args.Exception}\r\n" +
                  $"Message: {args.Message}");
 
-                InvokeBotStopped();
                 ErrorFound = true;
+                IsActive = false;
+                InvokeBotStopped();
             });
         }
 
@@ -186,7 +187,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     if (IsActive == true && !ErrorFound)
                     {
                         await StopBot();
-                        Thread.Sleep(1000);
+                        Thread.Sleep(1500);
                         await StartBot();
                         InvokeBotStarted();
                     }
@@ -244,7 +245,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
                         await StartAsync(new());
 
-                        IsActive = true;
+                        //IsActive = true;
                         _EventSubMessageIdsLogger.MsgLogging |= IsActive == true;
                     }
                 }
@@ -277,6 +278,8 @@ namespace StreamerBotLib.BotClients.Twitch
                         await StopAsync(new());
 
                         IsActive = false;
+                        ErrorFound = false; // clear error found on stop
+                        _EventSubMessageIdsLogger.MsgLogging = false;
 
                         LogWriter.DebugLog("StopBot", DebugLogTypes.TwitchEventSub, "Notifying the GUI the bot stopped.");
                         InvokeBotStopped();

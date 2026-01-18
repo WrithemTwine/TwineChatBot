@@ -234,10 +234,11 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
                 )
                 {
                     LogWriter.DebugLog("StreamOnline", DebugLogTypes.TwitchStreamerNoScopesEventSubBot, "Stream is online.");
+                    DeleteEventSubSubscription("stream.online"); // remove the connection subscription
 
                     NewStreamOnline?.Invoke(this, new(args.Payload.Event));
+                    RemoveSubscriptions();
                     AddSubscriptions();
-                    DeleteEventSubSubscription("stream.online"); // remove the connection subscription
                 }
             });
         }
