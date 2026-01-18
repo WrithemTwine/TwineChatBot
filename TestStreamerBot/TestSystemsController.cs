@@ -13,7 +13,7 @@ namespace TestStreamerBot
         private string result = string.Empty;
 
         private readonly DataBot dataBot;
-        private DataManagerSQL DataManage;
+        private readonly DataManagerSQL DataManage;
 
         public TestSystemsController()
         {

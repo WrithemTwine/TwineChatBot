@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32421.90
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StreamerBot", "StreamerBot\StreamerBot.csproj", "{C807A207-AC56-4AA4-BFF1-F3D4853F817C}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -33,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFContextTest", "EFContextTest\EFContextTest.csproj", "{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamerBotImport", "StreamerBotImport\StreamerBotImport.csproj", "{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test and Tools", "Test and Tools", "{A310FC30-D3E0-4DE4-8762-B361E91C90FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,7 +170,7 @@ Global
 		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Release_Sqlite|Any CPU.ActiveCfg = Release|Any CPU
 		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Release_SqlServer|Any CPU.ActiveCfg = Release|Any CPU
 		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Update_Nuget_Only|Any CPU.ActiveCfg = Debug_EFEETesting|Any CPU
+		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB}.Update_Nuget_Only|Any CPU.ActiveCfg = Update_Nuget_Only|Any CPU
 		{5383324F-E023-40B6-8355-DCE137DAC401}.Debug_EFEETesting|Any CPU.ActiveCfg = Debug|Any CPU
 		{5383324F-E023-40B6-8355-DCE137DAC401}.Debug_ViewXAML|Any CPU.ActiveCfg = Debug_ViewXAML|Any CPU
 		{5383324F-E023-40B6-8355-DCE137DAC401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -203,7 +205,7 @@ Global
 		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Release_SqlServer|Any CPU.Build.0 = Release|Any CPU
 		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Update_Nuget_Only|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4}.Update_Nuget_Only|Any CPU.ActiveCfg = Update_Nuget_Only|Any CPU
 		{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2}.Debug_EFEETesting|Any CPU.ActiveCfg = Debug|Any CPU
 		{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2}.Debug_EFEETesting|Any CPU.Build.0 = Debug|Any CPU
 		{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2}.Debug_ViewXAML|Any CPU.ActiveCfg = Debug_ViewXAML|Any CPU
@@ -231,6 +233,16 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5BBA6290-982F-423B-B92F-AA02702527A5} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{7C2D0A88-0D74-4E4C-9058-D3945119E3AF} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{F735F8FE-6259-4FB7-A980-FF9250CD4650} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{8A80EEB4-1300-4DEE-9FC6-2A7E7C6AF9E2} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{6512B54C-DE6B-4B9D-A7F5-8D7A145859D4} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{CE94F9A1-256C-4A7D-B8F1-0189D42E6CBB} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{5383324F-E023-40B6-8355-DCE137DAC401} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{ABD8635A-9C8B-464A-BF23-3A6AD1AB47D4} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2590D191-DDC6-433E-9B3A-4EC8148CA900}

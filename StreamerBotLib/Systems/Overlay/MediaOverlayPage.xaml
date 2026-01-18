@@ -12,6 +12,7 @@
     UseLayoutRounding="True" 
     SnapsToDevicePixels="True" 
     Title="MediaOverlayPage"
+      Loaded="MediaOverlayLoaded"
       >
     <Page.Resources>
         <ResourceDictionary>
@@ -88,7 +89,7 @@
                             </GroupBox>
                             <GroupBox Header="Animation" Width="Auto">
                                 <GroupBox.Resources>
-                                    <BitmapImage x:Key="ImageSeconds" UriSource="/StreamerBotLib;component/Systems/Overlay/img/seconds.png" />
+                                    <ImageBrush x:Key="ImageSeconds" ImageSource="/StreamerBotLib;component/Systems/Overlay/seconds.png" />
                                 </GroupBox.Resources>
                                 <StackPanel>
                                     <RadioButton IsChecked="{Binding MediaOverlayTickerStatic}" Click="TickerSpecChanges" >
@@ -98,11 +99,8 @@
                                         <RadioButton.Content>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock>Rotation Cycle</TextBlock>
-                                                <TextBox Width="50" Text="{Binding MediaOverlayTickerRotateTime}" LostFocus="MarqueeTypeSecondsLostFocus">
-                                                    <TextBox.Background>
-                                                        <ImageBrush ImageSource="{StaticResource ImageSeconds}"/>
-                                                    </TextBox.Background>
-                                                </TextBox>
+                                                <TextBox Width="30" Text="{Binding MediaOverlayTickerRotateTime}" LostFocus="MarqueeTypeSecondsLostFocus" />
+                                                <Label Width="30" Background="{StaticResource ImageSeconds}" />
                                             </StackPanel>
                                         </RadioButton.Content>
                                     </RadioButton>
@@ -110,11 +108,8 @@
                                         <RadioButton.Content>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock>Marquee Scroll</TextBlock>
-                                                <TextBox Width="50" Text="{Binding MediaOverlayTickerMarqueeTime}" LostFocus="MarqueeTypeSecondsLostFocus">
-                                                    <TextBox.Background>
-                                                        <ImageBrush ImageSource="{StaticResource ImageSeconds}"/>
-                                                    </TextBox.Background>
-                                                </TextBox>
+                                                <TextBox Width="30" Text="{Binding MediaOverlayTickerMarqueeTime}" LostFocus="MarqueeTypeSecondsLostFocus" />
+                                                <Label Width="30" Background="{StaticResource ImageSeconds}" />
                                             </StackPanel>
                                         </RadioButton.Content>
                                     </RadioButton>
@@ -141,7 +136,51 @@
                             </ListBox>
                         </StackPanel>
                     </GroupBox>
+                    <GroupBox Header="Ticker Icons" Padding="6">
+                        <StackPanel>
+                            <RadioButton Content="Words" IsChecked="True" 
+                                         Click="TickerIcons_Clicked" 
+                                         Checked="TickerIcons_Clicked" />
+                            <RadioButton Content="Icons" IsChecked="{Binding MediaOverlayTickerIcons, Mode=TwoWay}"
+                                         Click="TickerIcons_Clicked" 
+                                         Checked="TickerIcons_Clicked" />
+                        </StackPanel>
+                    </GroupBox>
                 </WrapPanel>
+            </TabItem>
+            <TabItem x:Name="TabItem_TickerIcons" Header="Ticker Icons" Visibility="Collapsed">
+                <DockPanel Width="500" HorizontalAlignment="Left">
+                    <TextBlock 
+                        TextWrapping="Wrap"
+                        Margin="6"
+                        DockPanel.Dock="Top">
+                        Each category below has a default icon used within the ticker unless you select an icon. Click the textbox next to each category to specify your own category icon. This will replace your previous icon.
+                    </TextBlock>
+
+                    <ListBox 
+                        DockPanel.Dock="Top"
+                        DataContext="{Binding Source={StaticResource TickerSelectedItems}}" 
+                        ItemsSource="{Binding TickerItems}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="M:SelectedTickerItem">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock 
+                                        Text="{Binding OverlayTickerItem}" 
+                                        Width="100"/>
+                                    <TextBlock 
+                                        Width="30"
+                                        Background="{Binding ShowIcon}" />
+                                    <TextBox 
+                                        Width="300" 
+                                        Text="{Binding Icon}" 
+                                        PreviewMouseLeftButtonDown="TickerIcon_SourceTextBox_PreviewMouseLeftButtonDown" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                </DockPanel>
+
             </TabItem>
             <TabItem x:Name="TabItem_Links" Header="Links">
                 <DockPanel>
@@ -154,7 +193,7 @@
                     <TextBlock x:Name="TextBlock_OverlayLink_Msg_Copied" DockPanel.Dock="Top" Foreground="{DynamicResource BrightGo}" Visibility="Hidden">Link copied!</TextBlock>
                     <ListView x:Name="ListView_OverlayLink_List" DataContext="{Binding Mode=OneWay, Source={StaticResource GUIAppData}}" 
                               ItemsSource="{Binding OverlayLinks}">
-                              <!--ContextMenu="{StaticResource OverlayLink_Menu}" SelectionMode="Single"-->
+                        <!--ContextMenu="{StaticResource OverlayLink_Menu}" SelectionMode="Single"-->
                         <ListView.Resources>
                             <DataTemplate x:Key="OverlayLink">
                                 <Button Content="{Binding OverlayHyperText}" Click="OverlayLink_Click" />

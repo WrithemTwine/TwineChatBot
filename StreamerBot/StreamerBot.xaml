@@ -41,6 +41,8 @@
                 <MenuItem x:Name="DataGridContextMenu_EnableItems" Header="Enable Selected Row(s)" Click="DataGridContextMenu_EnableItems_Click" />
                 <MenuItem x:Name="DataGridContextMenu_DisableItems" Header="Disable Selected Row(s)" Click="DataGridContextMenu_DisableItems_Click" />
             </ContextMenu>
+            <ContextMenu x:Key="DataGrid_LearnMsgsContextMenu" Name="DataGrid_LearnMsgsContextMenu" />
+
             <Style TargetType="{x:Type DataGrid}" BasedOn="{StaticResource {x:Type DataGrid}}">
                 <Setter Property="ContextMenu" Value="{DynamicResource DataGrid_ContextMenu}"/>
             </Style>
@@ -1354,7 +1356,7 @@
                         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                             <DockPanel Margin="10" ScrollViewer.CanContentScroll="True">
                                 <WrapPanel Orientation="Vertical" DockPanel.Dock="Left">
-                                    <GroupBox Header="Bot Management - Debug Mode" Width="auto" 
+                                    <GroupBox Header="Bot Management - Debug Mode" Width="auto"
                                               ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                                         <DockPanel>
                                             <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
@@ -1574,7 +1576,7 @@
                                                 </StackPanel>
                                             </GroupBox>
 
-                                            <TextBlock>Currently not enabled-working on machine learning</TextBlock>
+                                            <TextBlock Visibility="Collapsed">Currently not enabled-working on machine learning</TextBlock>
                                             <CheckBox IsChecked="{Binding ModerateUserLearnMsgs}">
                                                 <TextBlock>The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</TextBlock>
                                             </CheckBox>
@@ -2214,7 +2216,7 @@
                                           PreviewKeyDown="DG_PreviewKeyDown_Click"
                                                   CanUserDeleteRows="False" CanUserAddRows="False" 
                                                   HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" 
-                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening"  >
+                                                  RowEditEnding="DataGrid_RowEditEnding" ContextMenuOpening="DG_Edit_ContextMenuOpening" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="Msg Type"
@@ -2261,7 +2263,9 @@
                                         <DataGrid x:Name="DG_Mod_LearnMsgs" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,5,5,5" 
                                                   ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_LearnMsgs_CVS}}" 
                                           PreviewKeyDown="DG_PreviewKeyDown_Click"
-                                                  ContextMenuOpening="DG_Edit_ContextMenuOpening" IsReadOnly="False" RowEditEnding="DataGrid_RowEditEnding" >
+                                                  ContextMenu="{StaticResource DataGrid_LearnMsgsContextMenu}"
+                                                  IsReadOnly="False" 
+                                                  RowEditEnding="DataGrid_RowEditEnding" >
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
                                                 <DataGridComboBoxColumn Header="Msg Type" 

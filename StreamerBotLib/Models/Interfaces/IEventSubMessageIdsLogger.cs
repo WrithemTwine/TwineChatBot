@@ -4,7 +4,7 @@ namespace StreamerBotLib.Models.Interfaces
 {
     public interface IEventSubMessageIdsLogger
     {
-        public static List<WebsocketEventSubMetadata> MessageIdLog = [];
+        public static List<WebsocketEventSubMetadata> MessageIdLog { get; } = [];
 
         bool MsgLogging { get; set; }
 

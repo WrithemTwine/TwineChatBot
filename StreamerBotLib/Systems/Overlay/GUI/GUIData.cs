@@ -46,7 +46,7 @@ namespace StreamerBotLib.Systems.Overlay.GUI
             OverlayEditStyles.Add(new OverlayStyle(OverlayTypes.None.ToString()));
 #endif
 
-            foreach (string T in Enum.GetNames(typeof(OverlayTypes)))
+            foreach (string T in Enum.GetNames<OverlayTypes>())
             {
                 if (T != OverlayTypes.None.ToString())
                 {

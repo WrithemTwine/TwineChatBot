@@ -34,7 +34,7 @@ namespace StreamerBotLib.Systems.Overlay.Server
             }
             else
             {
-                foreach (string A in Enum.GetNames(typeof(OverlayTypes)))
+                foreach (string A in Enum.GetNames<OverlayTypes>())
                 {
                     if (A != "None")
                     {

@@ -37,21 +37,21 @@ namespace StreamerBotLib.Models.Converters
             {
                 checkBoxes.Add(new() { Content = "All", IsChecked = false }); // add "All" selection first
 
-                checkBoxes.AddRange((from (string, bool) C in
+                checkBoxes.AddRange([.. (from (string, bool) C in
                                          from Cat in GUIDataManagerViews.CurrCategoryList
                                              // ignore "All" category item
                                          where Cat.Category != "All" && categories.Contains(FormatData.RemoveEscapeFormat(Cat.Category))
                                          orderby Cat.Category  // sort by category name for easier search
                                          select (Cat.Category, true)
-                                     select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Item1), IsChecked = C.Item2 }).ToList());
+                                     select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Item1), IsChecked = C.Item2 })]);
 
-                checkBoxes.AddRange((from (string, bool) C in
+                checkBoxes.AddRange([.. (from (string, bool) C in
                                          from Cat in GUIDataManagerViews.CurrCategoryList
                                              // ignore "All" category item
                                          where Cat.Category != "All" && !categories.Contains(FormatData.RemoveEscapeFormat(Cat.Category))
                                          orderby Cat.Category  // sort by category name for easier search
                                          select (Cat.Category, false)
-                                     select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Item1), IsChecked = C.Item2 }).ToList());
+                                     select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Item1), IsChecked = C.Item2 })]);
             }
 
             // add Click event handler to each checkbox

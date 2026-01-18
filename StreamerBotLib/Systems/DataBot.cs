@@ -188,12 +188,12 @@ namespace StreamerBotLib.Systems
         #endregion
 
         #region Helpers
-        public void ClipHelper(List<Clip> clips)
+        public void ClipHelper(bool AllClips, List<Clip> clips)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("ClipHelper", DebugLogTypes.DataBot, $"Processing clips count: {clips?.Count ?? 0}.");
-                SystemAction.ClipHelper(clips);
+                SystemAction.ClipHelper(AllClips, clips);
             }));
         }
         public void UpdatedStat(params StreamStatType[] statTypes)

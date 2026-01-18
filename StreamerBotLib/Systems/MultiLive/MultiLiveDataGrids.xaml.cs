@@ -8,7 +8,6 @@ using StreamerBotLib.Static;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Input;
 
 namespace StreamerBotLib.Systems.MultiLive
 {
@@ -19,7 +18,7 @@ namespace StreamerBotLib.Systems.MultiLive
     {
         public event EventHandler<MultiLiveSummarizeEventArgs> SummarizeChannels;
 
-        private event EventHandler<RoutedEventArgs> m_Routed;
+        private event EventHandler<RoutedEventArgs> Routed;
         //private EventHandler<TextChangedEventArgs> m_TextChanged;
 
         public Action<bool, string> GUISaveEdits;
@@ -72,7 +71,7 @@ namespace StreamerBotLib.Systems.MultiLive
         {
             LogWriter.DebugLog("SetHandlers", DebugLogTypes.GUIMultiLive, "Setting handlers for textbox and lost focus.");
 
-            m_Routed += SettingsLostFocus;
+            Routed += SettingsLostFocus;
         }
 
         //private void DG_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -120,7 +119,7 @@ namespace StreamerBotLib.Systems.MultiLive
             {
                 e.Handled = true;
 
-                m_Routed?.Invoke(sender, e);
+                Routed?.Invoke(sender, e);
             }
         }
 

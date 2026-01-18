@@ -39,10 +39,10 @@ namespace StreamerBotLib.DataSQL
         {
             _dataManager = new DataManagerSQLAsync();
 
-            _dataManager.OnDataCollectionUpdated += _dataManager_OnDataCollectionUpdated;
-            _dataManager.OnBulkFollowersAddFinished += _dataManager_OnBulkFollowersAddFinished;
-            _dataManager.UpdatedMonitoringChannels += _dataManager_UpdatedMonitoringChannels;
-            _dataManager.OnLoadCompleted += _dataManager_OnLoadCompleted;
+            _dataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
+            _dataManager.OnBulkFollowersAddFinished += DataManager_OnBulkFollowersAddFinished;
+            _dataManager.UpdatedMonitoringChannels += DataManager_UpdatedMonitoringChannels;
+            _dataManager.OnLoadCompleted += DataManager_OnLoadCompleted;
         }
 
         public async Task InitializeDataManager()
@@ -50,25 +50,25 @@ namespace StreamerBotLib.DataSQL
             await _dataManager.InitializeDataBaseAsync();
         }
 
-        private void _dataManager_OnLoadCompleted(object sender, EventArgs e)
+        private void DataManager_OnLoadCompleted(object sender, EventArgs e)
         {
             OnLoadCompleted?.Invoke(sender, e);
         }
 
-        private void _dataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
+        private void DataManager_UpdatedMonitoringChannels(object sender, EventArgs e)
         {
             LogWriter.DebugLog("_dataManager_UpdatedMonitoringChannels", DebugLogTypes.DataManager, "UpdatedMonitoringChannels event triggered.");
 
             UpdatedMonitoringChannels?.Invoke(this, e);
         }
 
-        private void _dataManager_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
+        private void DataManager_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
         {
             LogWriter.DebugLog("_dataManager_OnBulkFollowersAddFinished", DebugLogTypes.DataManager, "OnBulkFollowersAddFinished event triggered.");
             OnBulkFollowersAddFinished?.Invoke(this, e);
         }
 
-        private void _dataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
+        private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
             LogWriter.DebugLog("_dataManager_OnDataCollectionUpdated", DebugLogTypes.DataManager, "OnDataCollectionUpdated event triggered.");
             OnDataCollectionUpdated?.Invoke(this, e);
@@ -722,7 +722,7 @@ namespace StreamerBotLib.DataSQL
 
         public bool PostClip
             (
-            string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, 
+            string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language,
             string Title, string Url, string fromUserId, string fromUserName, bool LastClip
             )
         {
@@ -730,6 +730,22 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PostClip(ClipId, CreatedAt, Duration, GameId, Language, Title, Url, fromUserId, fromUserName, LastClip).Result;
+            }
+        }
+
+        /// <summary>
+        /// Synchronizes the specified collection of clips with the data manager and returns the resulting set of
+        /// synchronized clips.
+        /// </summary>
+        /// <param name="AllClips">true to synchronize all available clips; otherwise, false to synchronize only the specified clips.</param>
+        /// <param name="clips">The collection of clips to be synchronized. If AllClips is false, only these clips will be synchronized.</param>
+        /// <returns>An enumerable collection of Clip objects representing the new clips.</returns>
+        public IEnumerable<Clip> SyncClips(bool AllClips, IEnumerable<Clip> clips)
+        {
+            LogWriter.DebugLog("SyncClips", DebugLogTypes.DataManager, "Syncing clips.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.SyncClips(AllClips, clips).Result;
             }
         }
 

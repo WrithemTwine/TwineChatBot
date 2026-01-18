@@ -9,7 +9,7 @@ namespace TestStreamerBot
         private bool TestActive = false;
 
         private bool ShoutOutTaskActive = false;
-        private List<ShoutOutLiveUser> ShoutOutUsers = [];
+        private readonly List<ShoutOutLiveUser> ShoutOutUsers = [];
 
         private bool shoutTest = false, firstTest = false, repeatTest = false;
         private string TestUserName = "";

@@ -19,7 +19,7 @@ namespace StreamerBotLib.Static
                 x += Prefix + m.ToString() + ",";
             }
 
-            return x.Remove(x.LastIndexOf(','));
+            return x[..x.LastIndexOf(',')];
         }
 
         /// <summary>

@@ -118,14 +118,16 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                             $"}}\n" +
                             $"\n";
 
+            string tickericonstyle = ParseTickerIconStyle([tickerItem]);
+
             return
                 new OverlayPage()
                 {
                     OverlayType = tickerItem.OverlayTickerItem.ToString(),
                     OverlayHyperText = ProcessPage(
-                        style + (from OverlayStyle O in overlayStyles
-                                 where O.OverlayType == tickerItem.OverlayTickerItem.ToString()
-                                 select O).FirstOrDefault()?.OverlayStyleText ?? "",
+                        style + "\n" + tickericonstyle + (from OverlayStyle O in overlayStyles
+                                                          where O.OverlayType == tickerItem.OverlayTickerItem.ToString()
+                                                          select O).FirstOrDefault()?.OverlayStyleText ?? "",
                         ProcessTicker(tickerItem.OverlayTickerItem, tickerItem.UserName).ToString()
                         , 5)
                 };
@@ -133,9 +135,69 @@ namespace StreamerBotLib.Systems.Overlay.Communication
 
         private static XElement ProcessTicker(OverlayTickerItem tickerItem, string UserName)
         {
-            return new XElement("span",
-                            new XAttribute("class", tickerItem),
-                            $"{tickerItem}: {UserName}");
+            if (OptionFlags.MediaOverlayTickerIcons)
+            {
+                int size = 50;
+
+                return new XElement("div",
+                                    new XAttribute("class", tickerItem),
+                            new XElement("img",
+                                new XAttribute("id", tickerItem.ToString()),
+                                new XAttribute("alt", $"{tickerItem} icon"),
+                                new XAttribute("width", size),
+                                new XAttribute("height", size)),
+                            new XElement("span", $": {UserName}"));
+            }
+            else
+            {
+                return new XElement("span",
+                          new XAttribute("class", tickerItem),
+                                         $"{tickerItem}: {UserName}");
+            }
+        }
+
+        private static string ParseTickerIconStyle(IEnumerable<TickerItem> tickerItems)
+        {
+            if (OptionFlags.MediaOverlayTickerIcons)
+            { // use icons, build style
+                string CompiledStyle = "";
+
+                string[] IconFile = [];
+                string iconstyle = Path.Combine(PublicConstants.BaseTickerPath, PublicConstants.BaseTickerIconPath, PublicConstants.TickerIconsStyle);
+
+                if (File.Exists(iconstyle))
+                { // read existing file
+                    using (StreamReader reader = new(iconstyle))
+                    {
+                        IconFile = reader.ReadToEnd().Split('}');
+                    }
+                }
+
+                foreach (TickerItem t in tickerItems)
+                {
+                    string found = "";
+                    foreach (string s in IconFile)
+                    { // check existing file for data
+                        if (s.Contains(t.OverlayTickerItem.ToString()))
+                        {
+                            found = s + "}\n"; // the split removes the closing }
+                        }
+                    }
+
+                    if (found == "")
+                    { // build a default style
+                        found = $"#{t.OverlayTickerItem} {{\n    content: Url('{PublicConstants.DefaultTickerIcons[t.OverlayTickerItem.ToString()]}');\n    float: left;\n}}\n\n ";
+                    }
+
+                    CompiledStyle += found;
+                }
+
+                return CompiledStyle;
+            }
+            else
+            { // no icon style
+                return "";
+            }
         }
 
         public static OverlayPage ProcessTicker(IEnumerable<TickerItem> tickerItems, IEnumerable<OverlayStyle> overlayStyles)
@@ -176,6 +238,8 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                             $"  text-align: left;\n" +
                             $"}}\n";
 
+            string tickericonstyle = ParseTickerIconStyle(tickerItems);
+
             string marqueeStyle = "";
 
             int reloadtime = 5;
@@ -195,8 +259,8 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                 reloadtime = OptionFlags.MediaOverlayTickerMarqueeTime;
             }
 
-            List<XElement> spans = new(from TickerItem T in tickerItems
-                                       select ProcessTicker(T.OverlayTickerItem, T.UserName));
+            List<XElement> spans = [.. from TickerItem T in tickerItems
+                                       select ProcessTicker(T.OverlayTickerItem, T.UserName)];
 
             string body = "";
 
@@ -224,9 +288,9 @@ namespace StreamerBotLib.Systems.Overlay.Communication
                 {
                     OverlayType = "All",
                     OverlayHyperText = ProcessPage(
-                        style + ((from OverlayStyle O in overlayStyles
-                                  where O.OverlayType == PublicConstants.OverlayAllTickers
-                                  select O).FirstOrDefault()?.OverlayStyleText ?? "") + marqueeStyle,
+                        style + "\n" + tickericonstyle + "\n" + ((from OverlayStyle O in overlayStyles
+                                                                  where O.OverlayType == PublicConstants.OverlayAllTickers
+                                                                  select O).FirstOrDefault()?.OverlayStyleText ?? "") + marqueeStyle,
                         body
                         , reloadtime, false, "", "")
                 };

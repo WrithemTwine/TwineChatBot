@@ -291,7 +291,7 @@ namespace StreamerBotLib.BotClients
         {
         }
 
-        void IBotTypes.Send(string s, bool Announcement = false)
+        void IBotTypes.Send(string s, bool Announcement)
         {
 
         }

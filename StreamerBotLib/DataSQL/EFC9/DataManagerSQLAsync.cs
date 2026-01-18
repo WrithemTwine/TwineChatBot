@@ -62,13 +62,6 @@ namespace StreamerBotLib.DataSQL.EFC9
             await initialcontext.SaveChangesAsync(true);
             initialcontext.Dispose();
 
-            try
-            {
-                using var context1 = BuildDataContext();
-                context1.Database.Migrate();
-                await context1.SaveChangesAsync();
-            }
-            catch { /* ignore */ }
             await Initialize();
 
             OnLoadCompleted?.Invoke(this, EventArgs.Empty);

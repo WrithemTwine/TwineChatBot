@@ -64,6 +64,7 @@ namespace StreamerBotLib.Models.Interfaces
         bool PostCategory(CategoryData categoryData);
         public void PostCategoryStream(CategoryData category, int StreamCount = 0);
         bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip);
+        IEnumerable<Clip> SyncClips(bool AllClips, IEnumerable<Clip> clips);
         string PostCommand(string cmd, CommandParams Params);
         void PostCurrencyType(DataSQL.Models.CurrencyType currencyType);
         void PostCurrencyUpdate(LiveUser User, double value, string CurrencyName);

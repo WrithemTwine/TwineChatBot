@@ -56,16 +56,14 @@ namespace StreamerBotLib.BotClients
         private Thread BulkLoadClips;
 
         public static event EventHandler<EventArgs> RaidCompleted;
-        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOnline;
-        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamUpdated;
-        public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOffline;
+        //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOnline;
+        //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamUpdated;
+        //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOffline;
 
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidTwitchAccess;
 
         public static event EventHandler<TwitchAuthCodeExpiredEventArgs> BotAuthCodeExpired;
         public static event EventHandler<TwitchAuthCodeExpiredEventArgs> StreamerAuthCodeExpired;
-
-
 
         /// <summary>
         /// This event relates to app starting up and notifies when the Helix apis 
@@ -78,11 +76,22 @@ namespace StreamerBotLib.BotClients
         {
             get
             {
-                _CurrStream ??= GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId).Streams[0];
+                if (_CurrStream == null)
+                {
+                    var GetCurr = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
+                    if (GetCurr?.Streams != null)
+                    {
+                        var FirstStream = GetCurr.Streams.FirstOrDefault();
+                        if (FirstStream != null)
+                        {
+                            _CurrStream = FirstStream;
+                        }
+                    }
+                }
+
                 return _CurrStream;
             }
         }
-
 
 #if USEQUEUELOGGER
         private ConcurrentQueue<string> StatusMessages;
@@ -252,7 +261,7 @@ namespace StreamerBotLib.BotClients
             {
                 LogWriter.DebugLog("RegisterHandlers", DebugLogTypes.TwitchBots, "Adding event handlers to clip service.");
 
-                TwitchBotClipSvc.ClipMonitorService.OnNewClipFound += ClipMonitorServiceOnNewClipFound;
+                TwitchBotClipSvc.OnNewClipFound += ClipMonitorServiceOnNewClipFound;
 
                 TwitchBotClipSvc.HandlersAdded = true;
             }
@@ -302,19 +311,29 @@ namespace StreamerBotLib.BotClients
             {
                 ThreadManager.CreateThreadStart("TwitchEventSubStreamer_OnBotStarted", () =>
                 {
-                    var response = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
+                    //var response = GetStreamDetail(UserId: OptionFlags.TwitchStreamerUserId);
 
-                    if (response != null && response.Streams.Length > 0)
+                    //if (response?.Streams != null && response.Streams.Length > 0)
+                    //{
+                    //    var CurrStream = response.Streams.FirstOrDefault();
+
+                    if (CurrStream != null)
                     {
+                        _CurrStream = CurrStream;
+
                         LogWriter.DebugLog($"TwitchEventSubStreamer_OnBotStarted-StartMoreServices", DebugLogTypes.TwitchBots, "Found existing online stream for streamer channel.");
                         OptionFlags.IsStreamOnline = true;
 
-                        InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(response.Streams[0]));
+                        InvokeBotEvent(this, BotEvents.TwitchResumeStreamOnline, new ResumeStreamOnlineEventArgs(CurrStream));
+                        LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
                         ActiveUsers();
+                        LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Sent the current viewership list.");
                         TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
+                        LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying GUI and data system the streamer channel is now online.");
                         ManageStreamOnlineOfflineStatus(true);
-                        StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+                        //StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
                     }
+                    //}
                 });
             }
 
@@ -453,24 +472,31 @@ namespace StreamerBotLib.BotClients
         {
             OptionFlags.IsStreamOnline = true;
 
+            int x = 0;
+
+            while (CurrStream == null && x <= 5)
+            { // at this point, we received a stream online, but we might be checking for a the stream info too fast
+                x++;
+                Task.Delay(x * 200).Wait(); // back off each loop
+            }
+
             InvokeBotEvent(this, BotEvents.TwitchStreamOnline, e);
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Getting a list of all current viewers in the stream to register in the system.");
             ActiveUsers();
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Sent the current viewership list.");
             TwitchEventSubStreamer.AddStreamOnlineSubscriptions();
 
-            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying streamer channel is now online.");
+            LogWriter.DebugLog("TwitchStreamerEventSubBot_NewStreamOnline", DebugLogTypes.TwitchBots, "Notifying GUI and data system the streamer channel is now online.");
             ManageStreamOnlineOfflineStatus(true);
 
-            StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
+            //StreamOnline?.Invoke(this, new() { CategoryName = CurrStream.GameName });
         }
-
         private void TwitchStreamerEventSubBot_NewChannelUpdate(object sender, NewChannelUpdateEventArgs e)
         {
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelUpdate", DebugLogTypes.TwitchBots, $"Registered a stream update, {e.ChannelUpdate.BroadcasterUserName}.");
             LogWriter.DebugLog("TwitchStreamerEventSubBot_NewChannelUpdate", DebugLogTypes.TwitchBots, $"Received, {e.ChannelUpdate.BroadcasterUserName} has a stream update notification.");
 
-            StreamUpdated?.Invoke(this, new(categoryName: e.ChannelUpdate.CategoryName));
+            //StreamUpdated?.Invoke(this, new(categoryName: e.ChannelUpdate.CategoryName));
 
             InvokeBotEvent(this, BotEvents.TwitchStreamUpdate, e);
         }
@@ -482,7 +508,7 @@ namespace StreamerBotLib.BotClients
             ManageStreamOnlineOfflineStatus(false);
             InvokeBotEvent(this, BotEvents.TwitchStreamOffline, e);
 
-            StreamOffline?.Invoke(this, new());
+            //StreamOffline?.Invoke(this, new());
         }
         private void TwitchStreamerEventSubBot_NewChannelRaid(object sender, NewChannelRaidEventArgs e)
         {
@@ -499,7 +525,6 @@ namespace StreamerBotLib.BotClients
                     LiveUser = new(e.ChannelRaid.FromBroadcasterUserName, Platform.Twitch, e.ChannelRaid.FromBroadcasterUserId)
                 });
         }
-
         private void TwitchStreamerEventSubBotNoScopes_OutChannelRaid(object sender, NewChannelRaidEventArgs e)
         {
             LogWriter.DebugLog("TwitchStreamerEventSubBotNoScopes_OutChannelRaid", DebugLogTypes.TwitchBots, $"EventSub bot received an outgoing raid notification to channel {e.ChannelRaid.ToBroadcasterUserName}.");
@@ -858,6 +883,9 @@ namespace StreamerBotLib.BotClients
             TwitchTokenBot.UpdateActiveTokens(BotType.BotAccount, bottoken);
             TwitchTokenBot.UpdateActiveTokens(BotType.StreamerAccount, streamertoken);
             TwitchTokenBot.UpdateActiveTokens(BotType.StreamerNoScopes, streamernoscopestoken);
+
+            LogWriter.DebugLog("CheckActiveBots", DebugLogTypes.TwitchBots, $"Checked active bots. Streamer token active={streamertoken}, " +
+                $"streamer no scopes token active={streamernoscopestoken}, bot token active={bottoken}.");
         }
 
         public static void TwitchActivateAuthCode(string clientId, bool NoScopes, Action<string> OpenBrowser, Action AuthenticationFinished)
@@ -1136,10 +1164,10 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog("TwitchBotClipSvc_OnBotStarted", DebugLogTypes.TwitchBots, "Found clip bot started, now adding handlers.");
             RegisterHandlers();
 
-            // start thread to retrieve all clips
-            BulkLoadClips = ThreadManager.CreateThread("TwitchBotClipSvc_OnBotStarted", ProcessClipsAsync);
-            MultiThreadOps.Add(BulkLoadClips);
-            BulkLoadClips.Start();
+            //// start thread to retrieve all clips
+            //BulkLoadClips = ThreadManager.CreateThread("TwitchBotClipSvc_OnBotStarted", ProcessClipsAsync);
+            //MultiThreadOps.Add(BulkLoadClips);
+            //BulkLoadClips.Start();
         }
 
         private void TwitchBotClipSvc_OnBotStopped(object sender, EventArgs e)
@@ -1149,24 +1177,20 @@ namespace StreamerBotLib.BotClients
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)
         {
-            LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, "Detected a new clip to post.");
-
-            if (e != null)
-            {
-                InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
-            }
+            LogWriter.DebugLog("ClipMonitorServiceOnNewClipFound", DebugLogTypes.TwitchBots, $"Detected a new clip to post.");
+            InvokeBotEvent(this, BotEvents.TwitchPostNewClip, e);
         }
 
-        /// <summary>
-        /// Get the clips for a specific user channel.
-        /// </summary>
-        /// <param name="ChannelName">Channel to get the clips.</param>
-        /// <param name="ReturnData">The callback method when the clips are found.</param>
-        public void GetChannelClips(Action<List<Models.Clip>> ReturnData)
-        {
-            LogWriter.DebugLog("GetChannelClips", DebugLogTypes.TwitchBots, "Performing a request to get channel clips.");
-            ThreadManager.CreateThreadStart("GetChannelClips", () => ProcessChannelClipsAsync(ReturnData));
-        }
+        ///// <summary>
+        ///// Get the clips for a specific user channel.
+        ///// </summary>
+        ///// <param name="ChannelName">Channel to get the clips.</param>
+        ///// <param name="ReturnData">The callback method when the clips are found.</param>
+        //public void GetChannelClips(Action<List<Models.Clip>> ReturnData)
+        //{
+        //    LogWriter.DebugLog("GetChannelClips", DebugLogTypes.TwitchBots, "Performing a request to get channel clips.");
+        //    ThreadManager.CreateThreadStart("GetChannelClips", () => ProcessChannelClipsAsync(ReturnData));
+        //}
 
         public void GetUserChannelClips(string UserName, Action<List<Clip>> callback)
         {
@@ -1181,7 +1205,7 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog("CreateClip", DebugLogTypes.TwitchBots, "Performing a request to create a clip.");
 
-            TwitchBotClipSvc.CreateClip();
+            _ = TwitchBotClipSvc.CreateClipAsync();
         }
 
         #endregion
@@ -1266,68 +1290,73 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        private List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> ClipList { get; set; }
+        //private List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> ClipList { get; set; }
 
-        private bool StartClips { get; set; }
+        //private bool StartClips { get; set; }
 
-        private async void ProcessClipsAsync()
-        {
-            if (!StartClips)
-            {
-                LogWriter.DebugLog("ProcessClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
+        //private async void ProcessClipsAsync()
+        //{
+        //    if (!StartClips)
+        //    {
+        //        LogWriter.DebugLog("ProcessClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
 
-                StartClips = true;
-                ClipList = await TwitchBotClipSvc.GetAllClipsAsync();
+        //        StartClips = true;
+        //        ClipList = await TwitchBotClipSvc.GetAllClipsAsync();
 
-                if (ClipList != null)
-                {
-                    InvokeBotEvent(this, BotEvents.TwitchClipSvcOnClipFound, new ClipFoundEventArgs() { ClipList = ClipList });
-                }
-                StartClips = false;
-            }
-        }
+        //        if (ClipList != null)
+        //        {
+        //            InvokeBotEvent(this, BotEvents.TwitchClipSvcOnClipFound, new ClipFoundEventArgs() { ClipList = ClipList });
+        //        }
+        //        StartClips = false;
+        //    }
+        //}
 
-        private async void ProcessChannelClipsAsync(Action<List<Models.Clip>> ActionCallback)
-        {
-            LogWriter.DebugLog("ProcessChannelClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
+        //private async void ProcessChannelClipsAsync(Action<List<Models.Clip>> ActionCallback)
+        //{
+        //    LogWriter.DebugLog("ProcessChannelClipsAsync", DebugLogTypes.TwitchBots, "Retrieving all clips for the channel.");
 
-            List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> result = [];
-            TwitchBotClipSvc ChannelClips = new(TwitchTokenBot);
-            await ChannelClips.StartBot();
-            if (ChannelClips.IsActive == true)
-            {
-                result = await ChannelClips.GetAllClipsAsync();
-                await ChannelClips.StopBot();
-            }
+        //    List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> result = await TwitchBotClipSvc.GetAllClipsAsync();
 
-            ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
-        }
+        //    if (result != null && result.Count > 0)
+        //    {
+        //        ActionCallback?.Invoke(BotIOController.BotController.ConvertClips(result));
+        //    }
+        //}
 
         private bool ShoutOutTaskActive = false;
-        private List<ShoutOutLiveUser> ShoutOutUsers = [];
+        private readonly List<ShoutOutLiveUser> ShoutOutUsers = [];
 
+        /// <summary>
+        /// NewUserEntry: Different users can only be shoutout once every 2 minutes
+        /// -LastShoutOut = null, NextShoutOut = null => first shoutout occurs asap
+        /// 
+        /// ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
+        /// -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
+        /// -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
+        ///
+        /// After an hour without shoutout, remove user from list
+        /// </summary>
+        /// <returns></returns>
         private Task EvaluateShoutOutUsers()
         {
-            // NewUserEntry: Different users can only be shoutout once every 2 minutes
-            // -LastShoutOut = null, NextShoutOut = null => first shoutout occurs asap
-            // 
-            // ExistingUserEntry: Same user can only be shoutout after at least every 60 minutes
-            // -LastShoutOut = value, NextShoutOut = null => no shoutout scheduled
-            // -LastShoutOUt = value, NextShoutOut = value => computed next shoutout to perform
-
             return Task.Run(async () =>
             {
                 try
                 {
                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, "Starting the shoutout evaluation thread.");
-                    DateTime lastShoutOut = DateTime.MinValue;
+                    DateTime lastShoutOutDateTime = DateTime.MinValue;
+                    DateTime Curr;
 
-                    while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline)
+                    while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline && ShoutOutUsers.Count != 0)
                     {
-                        ShoutOutLiveUser nextShoutOut = null;
+                        Curr = DateTime.Now;
+                        ShoutOutLiveUser nextShoutOutUser = null;
                         LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shoutout users to evaluate: {ShoutOutUsers.Count}.");
                         lock (ShoutOutUsers)
                         {
+                            // remove any user without a shoutout in the ast hour
+                            ShoutOutUsers.RemoveAll(a => a.HourSinceLastShoutOut);
+
                             foreach (var S in ShoutOutUsers)
                             {
                                 LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Evaluating shoutout user {S.User.UserName}, " +
@@ -1336,49 +1365,55 @@ namespace StreamerBotLib.BotClients
                                 if (S.LastShoutOut == null && S.NextShoutOut == null)
                                 {
                                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Selected shoutout user {S.User.UserName} for immediate shoutout.");
-                                    nextShoutOut ??= S;
+                                    nextShoutOutUser ??= S;
                                     break;
                                 }
                                 else if (S.NextShoutOut != null)
                                 {
                                     LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Selected shoutout user {S.User.UserName} for scheduled shoutout.");
-                                    nextShoutOut ??= S;
+                                    nextShoutOutUser ??= S;
                                     break;
                                 }
                             }
-                        }
 
-                        DateTime Curr = DateTime.Now;
-                        if (nextShoutOut != null)
+                        }
+                        if (nextShoutOutUser != null)
                         {
-                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Preparing to shoutout user {nextShoutOut.User.UserName}.");
-                            if (nextShoutOut.NextShoutOut == null && lastShoutOut.AddMinutes(2) <= Curr)
+                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Preparing to shoutout user {nextShoutOutUser.User.UserName}.");
+
+                            //#if DEBUG
+                            //                            LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"NextShoutOut: {nextShoutOutUser.NextShoutOut}; LastShoutOut (w/2 min): {lastShoutOutDateTime.AddMinutes(2)}.");
+                            //#endif
+
+                            if (nextShoutOutUser.NextShoutOut == null && lastShoutOutDateTime.AddMinutes(2) <= Curr)
                             { // new shoutout user, allowed per Twitch API every 2 minutes
-                                TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOutUser.User.UserName}.");
+                                TwitchHelixBot.SendShoutOut(nextShoutOutUser.User.UserId, nextShoutOutUser.User.UserName);
 
                                 lock (ShoutOutUsers)
                                 {
-                                    nextShoutOut.LastShoutOut = Curr;
+                                    nextShoutOutUser.LastShoutOut = Curr;
                                 }
 
-                                lastShoutOut = Curr;
+                                lastShoutOutDateTime = Curr;
                             }
-                            else if (lastShoutOut.AddHours(1) <= Curr && nextShoutOut.NextShoutOut < Curr)
+                            else if (lastShoutOutDateTime.AddHours(1) <= Curr && nextShoutOutUser.NextShoutOut < Curr)
                             { // existing shoutout user, allowed per Twitch API every 60 minutes
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOut.User.UserName}.");
-                                TwitchHelixBot.SendShoutOut(nextShoutOut.User.UserId, nextShoutOut.User.UserName);
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Shouting out user {nextShoutOutUser.User.UserName}.");
+                                TwitchHelixBot.SendShoutOut(nextShoutOutUser.User.UserId, nextShoutOutUser.User.UserName);
 
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Updating shoutout user {nextShoutOut.User.UserName} last and next shoutout times.");
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Updating shoutout user {nextShoutOutUser.User.UserName} last and next shoutout times.");
                                 lock (ShoutOutUsers)
                                 {
-                                    nextShoutOut.LastShoutOut = Curr;
-                                    nextShoutOut.NextShoutOut = null;
+                                    nextShoutOutUser.LastShoutOut = Curr;
+                                    nextShoutOutUser.NextShoutOut = null;
                                 }
 
-                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Completed shoutout for user {nextShoutOut.User.UserName}.");
-                                lastShoutOut = Curr;
+                                LogWriter.DebugLog("EvaluateShoutOutUsers", DebugLogTypes.TwitchBots, $"Completed shoutout for user {nextShoutOutUser.User.UserName}.");
+                                lastShoutOutDateTime = Curr;
                             }
                         }
+
                         await Task.Delay(5000);
                     }
 

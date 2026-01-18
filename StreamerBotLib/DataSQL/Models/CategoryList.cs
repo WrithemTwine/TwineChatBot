@@ -30,7 +30,9 @@ namespace StreamerBotLib.DataSQL.Models
 
         public int StreamCount { get; set; } = streamCount;
 
+#pragma warning disable CS8632 // GameDeadCounter are an EFC navigation property
         public GameDeadCounter? GameDeadCounter { get; set; }
+#pragma warning restore CS8632
 
         public ICollection<Followers> Followers { get; } = [];
 

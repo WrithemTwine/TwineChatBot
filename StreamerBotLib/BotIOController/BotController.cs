@@ -108,7 +108,7 @@ namespace StreamerBotLib.BotIOController
                                });
                                waitHandle.Wait();
                            }
-                           return result ?? Enumerable.Empty<string>();
+                           return result ?? [];
                        }
                        )
                     );
@@ -827,7 +827,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchClipSvcOnClipFound(ClipFoundEventArgs clips)
         {
-            HandleBotEventPostNewClip(ConvertClips(clips.ClipList));
+            HandleBotEventPostNewClip(clips.AllClips, ConvertClips(clips.ClipList));
         }
 
         public static List<Models.Clip> ConvertClips(List<TwitchLib.Api.Helix.Models.Clips.GetClips.Clip> clips)
@@ -837,7 +837,7 @@ namespace StreamerBotLib.BotIOController
                 return new Models.Clip()
                 {
                     ClipId = SrcClip.Id,
-                    CreatedAt = SrcClip.CreatedAt,
+                    CreatedAt = DateTime.Parse(SrcClip.CreatedAt).ToLocalTime(),
                     Duration = SrcClip.Duration,
                     GameId = SrcClip.GameId,
                     Language = SrcClip.Language,
@@ -852,7 +852,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchPostNewClip(OnNewClipsDetectedArgs clips)
         {
-            HandleBotEventPostNewClip(ConvertClips(clips.Clips));
+            HandleBotEventPostNewClip(clips.AllClips, ConvertClips(clips.Clips));
         }
 
         /// <summary>
@@ -869,12 +869,15 @@ namespace StreamerBotLib.BotIOController
         {
             Stream CurrStream = TwitchBots.CurrStream;
 
-            HandleOnStreamOnline(
-                e.StreamOnline.BroadcasterUserName,
-                CurrStream.Title,
-                CurrStream.StartedAt.ToLocalTime(),
-                new(CurrStream.GameId, CurrStream.GameName)
-                );
+            if (CurrStream != null)
+            {
+                HandleOnStreamOnline(
+                    e.StreamOnline.BroadcasterUserName,
+                    CurrStream.Title,
+                    CurrStream.StartedAt.ToLocalTime(),
+                    new(CurrStream.GameId, CurrStream.GameName)
+                    );
+            } // else; should not happen, but if it does, what should we do here?
         }
 
         internal void TwitchResumeStreamOnline(ResumeStreamOnlineEventArgs e)
@@ -1105,9 +1108,9 @@ namespace StreamerBotLib.BotIOController
 
         #region Clips
 
-        public void HandleBotEventPostNewClip(List<Models.Clip> clips)
+        public void HandleBotEventPostNewClip(bool AllClips, List<Models.Clip> clips)
         {
-            DataBot.ClipHelper(clips);
+            DataBot.ClipHelper(AllClips, clips);
         }
 
         public void HandleGetUserClips(object sender, GetChannelClipsEventArgs e)
@@ -1219,7 +1222,9 @@ namespace StreamerBotLib.BotIOController
 
                 ManageBotsStreamStatusChanged(true);
 
-                DataBot.StreamOnline(StartedAt, Category, (isOnline) => callbackHandleOnStreamOnline(isOnline, ChannelName, Title, StartedAt, Category, platform, Debug)); // a callback to finish the stream online process
+                OnStreamCategoryChanged?.Invoke(this, new() { GameId = Category.CategoryId, GameName = Category.CategoryName });
+
+                DataBot.StreamOnline(StartedAt, Category, (isOnline) => CallbackHandleOnStreamOnline(isOnline, ChannelName, Title, StartedAt, Category, platform, Debug)); // a callback to finish the stream online process
             }
             catch (Exception ex)
             {
@@ -1227,7 +1232,7 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
-        private void callbackHandleOnStreamOnline(bool Started, string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
+        private void CallbackHandleOnStreamOnline(bool Started, string ChannelName, string Title, DateTime StartedAt, CategoryData Category, Platform platform = Platform.Twitch, bool Debug = false)
         {
             try
             {

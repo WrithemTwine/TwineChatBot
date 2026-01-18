@@ -1,10 +1,8 @@
-﻿using StreamerBotLib.Models.Enums;
-
-namespace StreamerBotLib.Models
+﻿namespace StreamerBotLib.Models
 {
     public class BotModAction
     {
         public string LearnMsg { get; set; }
-        public MsgTypes ModActions { get; set; }
+        public string ModActions { get; set; }
     }
 }

@@ -146,7 +146,7 @@ namespace StreamerBotLib.DataSQL.EFC9
             }
 
             // add each of the social commands
-            foreach (DefaultSocials social in Enum.GetValues(typeof(DefaultSocials)))
+            foreach (DefaultSocials social in Enum.GetValues<DefaultSocials>())
             {
                 if (!Refcontext.CommandsBase.Any(c => c.CmdName == social.ToString()))
                 {
@@ -274,10 +274,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 }
                 else if (stat.Category.Count > 1)
                 {
-                    if (stat.Category.Contains("''''"))
-                    {
-                        stat.Category.Remove("''''");
-                    }
+                    stat.Category.Remove("''''");
                 }
             }
         }

@@ -45,9 +45,9 @@ namespace StreamerBotLib.GUI.Windows
         private ComboBox CurrencyFieldElement;
 
         private ComboBox ModActionTypeElement;
-        private ComboBox ModActionElement;
+        private readonly ComboBox ModActionElement;
         private ComboBox ModPerformTypeElement;
-        private ComboBox ModPerformElement;
+        private readonly ComboBox ModPerformElement;
 
         private ComboBox OverlayTypeElement;
         private ComboBox OverlayActionTypeElement;
@@ -63,20 +63,20 @@ namespace StreamerBotLib.GUI.Windows
         private readonly Dictionary<string, Array> ColEnums =
                 new()
                 {
-                    { "Permission", Enum.GetValues(typeof(ViewerTypes)) },
-                    { "ViewerTypes", Enum.GetValues(typeof(ViewerTypes)) },
-                    { "Kind", Enum.GetValues(typeof(WebhooksKind)) },
-                    { "Action", Enum.GetValues(typeof(CommandAction)) },
-                    { "Sort", Enum.GetValues(typeof(CommandSort)) },
-                    { "ModAction", Enum.GetValues(typeof(ModActions)) },
-                    { "MsgType", Enum.GetValues(typeof(MsgTypes)) },
-                    { "BanReason", Enum.GetValues(typeof(Models.Enums.BanReasons)) },
-                    { "OverlayType", Enum.GetValues(typeof(OverlayTypes)) },
-                    { "ModActionType", Enum.GetValues(typeof(ModActionType)) },
-                    { "ModPerformType", Enum.GetValues(typeof(ModPerformType)) },
-                    { "TickerName", Enum.GetValues(typeof(OverlayTickerItem)) },
-                    { "Platform", Enum.GetValues(typeof(Platform)) },
-                    { "WebhooksSource", Enum.GetValues(typeof(WebhooksSource)) }
+                    { "Permission", Enum.GetValues<ViewerTypes>() },
+                    { "ViewerTypes", Enum.GetValues<ViewerTypes>() },
+                    { "Kind", Enum.GetValues<WebhooksKind>() },
+                    { "Action", Enum.GetValues<CommandAction>() },
+                    { "Sort", Enum.GetValues<CommandSort>() },
+                    { "ModAction", Enum.GetValues<ModActions>() },
+                    { "MsgType", Enum.GetValues<MsgTypes>() },
+                    { "BanReason", Enum.GetValues<BanReasons>() },
+                    { "OverlayType", Enum.GetValues<OverlayTypes>() },
+                    { "ModActionType", Enum.GetValues<ModActionType>() },
+                    { "ModPerformType", Enum.GetValues<ModPerformType>() },
+                    { "TickerName", Enum.GetValues<OverlayTickerItem>() },
+                    { "Platform", Enum.GetValues<Platform>() },
+                    { "WebhooksSource", Enum.GetValues<WebhooksSource>() }
                 };
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -166,14 +166,14 @@ namespace StreamerBotLib.GUI.Windows
 
                         ((TextBox)valueElement).MouseDoubleClick += FileBrowser_TextBox_MouseDoubleClick;
                     }
-                    else if (ColEnums.ContainsKey(Data))
+                    else if (ColEnums.TryGetValue(Data, out Array value))
                     {
                         valueElement = new ComboBox();
 
                         Binding selectedItem = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
 
                         ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, selectedItem);
-                        ((ComboBox)valueElement).ItemsSource = ColEnums[Data];
+                        ((ComboBox)valueElement).ItemsSource = value;
 
                         if (Data == "OverlayType")
                         {
@@ -429,7 +429,7 @@ namespace StreamerBotLib.GUI.Windows
             }
             else if (dataElement.GetType() == typeof(ListBox))
             {
-                List<string> selections = new();
+                List<string> selections = [];
                 foreach (CheckBox c in ((ListBox)dataElement).ItemsSource)
                 {
                     if (c.IsChecked == true)

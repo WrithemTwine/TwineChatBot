@@ -9,8 +9,8 @@ namespace StreamerBotLib.Models
 
         public static List<LearnedMessage> BuildList(string[] Msgs, MsgTypes msgType)
         {
-            return (from string M in Msgs
-                    select new LearnedMessage(M, msgType)).ToList();
+            return [.. (from string M in Msgs
+                    select new LearnedMessage(M, msgType))];
         }
     }
 }

@@ -126,7 +126,7 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("CheckDefaultCommand", DebugLogTypes.LocalizedMessages, $"Checking Default Command: {Command}");
             bool result = false;
-            foreach (var _ in from DefaultCommand d in Enum.GetValues(typeof(DefaultCommand))
+            foreach (var _ in from DefaultCommand d in Enum.GetValues<DefaultCommand>()
                               where Command == GetVar(d)
                               select new { })
             {
@@ -173,7 +173,7 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("GetCommandHelp", DebugLogTypes.LocalizedMessages, "Retrieving Command Help.");
             List<Command> temp = [];
 
-            foreach (MsgVars a in Enum.GetValues(typeof(MsgVars)))
+            foreach (MsgVars a in Enum.GetValues<MsgVars>())
             {
                 try // not every MsgVars has a help available
                 {

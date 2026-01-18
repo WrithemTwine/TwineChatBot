@@ -29,7 +29,7 @@ namespace StreamerBotLib.Models
         public bool Empty { get; set; } = false;
         public string Category { get; set; } = LocalizedMsgSystem.GetVar(Msg.MsgAllCategory);
 
-        public static CommandParams Parse(string ParamString) => Parse(new List<string>(MyRegex().Split(ParamString)));
+        public static CommandParams Parse(string ParamString) => Parse([.. MyRegex().Split(ParamString)]);
 
         public static CommandParams Parse(List<string> ParamList)
         {
@@ -81,7 +81,7 @@ namespace StreamerBotLib.Models
                             data.Unit = value;
                             break;
                         case "p":
-                            data.Permission = (ViewerTypes)Enum.Parse(typeof(ViewerTypes), value);
+                            data.Permission = Enum.Parse<ViewerTypes>(value);
                             break;
                         case "top":
                             data.Top = int.Parse(value);
@@ -154,7 +154,7 @@ namespace StreamerBotLib.Models
                         edit.Add("unit", value);
                         break;
                     case "p":
-                        edit.Add("Permission", (string)Enum.Parse(typeof(ViewerTypes), value));
+                        edit.Add("Permission", Enum.Parse<ViewerTypes>(value).ToString());
                         break;
                     case "top":
                         edit.Add("top", value);

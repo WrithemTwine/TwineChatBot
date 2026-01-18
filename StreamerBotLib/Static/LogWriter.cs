@@ -214,13 +214,13 @@ using System.Text;
                 {
                     try
                     {
-                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
+                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()}-{debugLogTypes}-{Method}-{Output}");
                     }
                     catch (ObjectDisposedException ex)
                     {
                         LogException(ex, "WriteLog");
                         DebugLogFileWriter = new(DebugLogFile, true) { AutoFlush = true };
-                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()}-{Method}-{debugLogTypes}-{Output}");
+                        DebugLogFileWriter.WriteLine($"{DateTime.Now.ToLocalTime()}-{debugLogTypes}-{Method}-{Output}");
                         DebugLogFileWriter.Close();
                     }
                 }

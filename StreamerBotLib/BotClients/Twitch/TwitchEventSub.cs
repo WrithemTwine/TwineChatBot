@@ -13,11 +13,11 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchEventSub : TwitchBotsBase
     {
-        private IEventSubMessageIdsLogger _EventSubMessageIdsLogger;
-        private EventSubWebsocketClient _EventSubWebsocketClient;
+        private readonly IEventSubMessageIdsLogger _EventSubMessageIdsLogger;
+        private readonly EventSubWebsocketClient _EventSubWebsocketClient;
         private readonly TwitchTokenBot tokenBot;
 
-        private List<ITwitchBotEventSubSubscriptions> SubscriptionHandlers = [];
+        private readonly List<ITwitchBotEventSubSubscriptions> SubscriptionHandlers = [];
 
         internal event EventHandler OnInitialBotStartupSubHandlers;
         public event EventHandler TokenUpdatedEventSubUpdated;
@@ -57,26 +57,35 @@ namespace StreamerBotLib.BotClients.Twitch
 
         private void TokenBot_StreamerAccessTokenChanged(object sender, EventArgs e)
         {
-            LogWriter.DebugLog("TokenBot_StreamerAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
-            ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerAccount);
-            RefreshSubscriptions(subscription);
-            TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            if (IsActive == true)
+            { // LiveMonitor & ClipBot & EventSub use this token, one active might cause this event, but the bot is not active
+                LogWriter.DebugLog("TokenBot_StreamerAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
+                ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerAccount);
+                RefreshSubscriptions(subscription);
+                TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            }
         }
 
         private void TokenBot_StreamerNoScopesAccessTokenChanged(object sender, EventArgs e)
         {
-            LogWriter.DebugLog("TokenBot_StreamerNoScopesAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
-            ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerNoScopes);
-            RefreshSubscriptions(subscription);
-            TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            if (IsActive == true)
+            { // only reset if bot is active, token may be used elsewhere
+                LogWriter.DebugLog("TokenBot_StreamerNoScopesAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
+                ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.StreamerNoScopes);
+                RefreshSubscriptions(subscription);
+                TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            }
         }
 
         private void TokenBot_BotAccessTokenChanged(object sender, EventArgs e)
         {
-            LogWriter.DebugLog("TokenBot_BotAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
-            ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.BotAccount);
-            RefreshSubscriptions(subscription);
-            TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            if (IsActive == true)
+            {  // only reset if bot is active, token may be used elsewhere
+                LogWriter.DebugLog("TokenBot_BotAccessTokenChanged", DebugLogTypes.TwitchEventSub, "Refreshing streamer scopes access token.");
+                ITwitchBotEventSubSubscriptions subscription = SubscriptionHandlers.Find((s) => s.CurrBot == BotType.BotAccount);
+                RefreshSubscriptions(subscription);
+                TokenUpdatedEventSubUpdated?.Invoke(this, new());
+            }
         }
 
         private void RefreshSubscriptions(ITwitchBotEventSubSubscriptions subscriptions)
@@ -134,8 +143,9 @@ namespace StreamerBotLib.BotClients.Twitch
                  $"Exception: {args.Exception}\r\n" +
                  $"Message: {args.Message}");
 
-                InvokeBotStopped();
                 ErrorFound = true;
+                IsActive = false;
+                InvokeBotStopped();
             });
         }
 
@@ -177,7 +187,7 @@ namespace StreamerBotLib.BotClients.Twitch
                     if (IsActive == true && !ErrorFound)
                     {
                         await StopBot();
-                        Thread.Sleep(1000);
+                        Thread.Sleep(1500);
                         await StartBot();
                         InvokeBotStarted();
                     }
@@ -235,7 +245,7 @@ namespace StreamerBotLib.BotClients.Twitch
 
                         await StartAsync(new());
 
-                        IsActive = true;
+                        //IsActive = true;
                         _EventSubMessageIdsLogger.MsgLogging |= IsActive == true;
                     }
                 }
@@ -268,6 +278,8 @@ namespace StreamerBotLib.BotClients.Twitch
                         await StopAsync(new());
 
                         IsActive = false;
+                        ErrorFound = false; // clear error found on stop
+                        _EventSubMessageIdsLogger.MsgLogging = false;
 
                         LogWriter.DebugLog("StopBot", DebugLogTypes.TwitchEventSub, "Notifying the GUI the bot stopped.");
                         InvokeBotStopped();

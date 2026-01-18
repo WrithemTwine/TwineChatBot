@@ -8,7 +8,7 @@ namespace StreamerBotLib.Systems
     {
         private static bool ElapsedThread;
 
-        private RepeatManager RepeatManager;
+        private readonly RepeatManager RepeatManager;
 
         public void ActivateRepeatTimers()
         {

@@ -182,7 +182,7 @@ namespace StreamerBotLib.Systems
                 response = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so), User, [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.so)), out short multi);
 
                 // handle when returned without #category in the message
-                if (response != "" && response != "/me ")
+                if (response is not "" and not "/me ")
                 {
                     OnProcessCommand(response, DataManage.GetCmdAnnounce(LocalizedMsgSystem.GetVar(DefaultCommand.so)), multi);
                     LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
@@ -629,7 +629,7 @@ namespace StreamerBotLib.Systems
                 string paramvalue = cmdrow.AllowParam
                     ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
                         ? User.UserName
-                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                        : arglist[0].Contains('@') ? arglist[0][1..] : arglist[0]
                     : User.UserName;
 
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Parameter value: {paramvalue}.");
@@ -716,7 +716,7 @@ namespace StreamerBotLib.Systems
                 string paramvalue = cmdrow.AllowParam
                     ? arglist == null || arglist.Count == 0 || arglist[0] == string.Empty
                         ? User.UserName
-                        : arglist[0].Contains('@') ? arglist[0].Remove(0, 1) : arglist[0]
+                        : arglist[0].Contains('@') ? arglist[0][1..] : arglist[0]
                     : User.UserName;
                 string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
 

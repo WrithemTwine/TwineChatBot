@@ -25,10 +25,12 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task<string> GetUserId(LiveUser User)
         {
             using var context = BuildDataContext();
+#pragma warning disable CA1862 // Using string.Equals comparisons within EFC 9 LINQ Where fails conversion for SQL. not sure of future EFC versions.
             return await context.Users
                 .Where(U => U.UserName == User.UserName || U.UserName.ToLower() == User.UserName.ToLower())
                 .Select(U => U.UserId)
                 .FirstOrDefaultAsync();
+#pragma warning restore CA1862
         }
 
         internal async Task<LiveUser> GetUserById(string UserId, Platform Platform)
@@ -176,7 +178,7 @@ namespace StreamerBotLib.DataSQL.EFC9
                 PostFollowsQueue();
                 using var context = BuildDataContext();
                 return (List<Follow>)[.. follows.Where(
-                                        F => !context.Followers.Any(DF => DF.UserId == F.FromUserId) 
+                                        F => !context.Followers.Any(DF => DF.UserId == F.FromUserId)
                                              && !context.OldFollowUsers.Any(OF=>OF.UserId == F.FromUserId)
                                     )];
             });
@@ -299,7 +301,7 @@ namespace StreamerBotLib.DataSQL.EFC9
 
                 oldFollowUsersToAdd.AddRange(usersWithoutFollowers);
 
-                if (oldFollowUsersToAdd.Any())
+                if (oldFollowUsersToAdd.Count != 0)
                 {
                     await context.OldFollowUsers.AddRangeAsync(oldFollowUsersToAdd);
                 }

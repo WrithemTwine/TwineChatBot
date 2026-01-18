@@ -10,7 +10,10 @@ namespace StreamerBotLib.Systems.MLearning
         [
             "Best followers, primes and viewers on mountviewers.com(remove the space)",
             "Wanna become famous? Buy followers, primes and views on bigfollows .com",
-            "Best followers, primes and viewers on mystrm .store (remove the space)"
+            "Best followers, primes and viewers on mystrm .store (remove the space)" ,
+            "Best viewers on streamboo .com (remove the space) @LFawWyCq",
+            "Yo bruh, love ❤ your stream, let's sometimes play together and share tips and ideas. Let's connect on discord 👉 optivoxe  ",
+            "Yo bruh, love ❤️ your stream, let's sometimes play together and share tips and ideas Let's connect on Discord: zekiel776"
         ];
 
         public static List<LearnedMessage> PrimerList
@@ -44,9 +47,9 @@ namespace StreamerBotLib.Systems.MLearning
             {
                 List<BanViewerRule> output = [];
 
-                foreach (ViewerTypes V in Enum.GetValues(typeof(ViewerTypes)))
+                foreach (ViewerTypes V in Enum.GetValues<ViewerTypes>())
                 {
-                    foreach (MsgTypes M in Enum.GetValues(typeof(MsgTypes)))
+                    foreach (MsgTypes M in Enum.GetValues<MsgTypes>())
                     {
                         BanViewerRule rule = new()
                         {

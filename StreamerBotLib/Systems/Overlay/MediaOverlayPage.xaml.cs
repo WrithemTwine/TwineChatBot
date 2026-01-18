@@ -7,10 +7,12 @@ using StreamerBotLib.Systems.Overlay.GUI;
 using StreamerBotLib.Systems.Overlay.Models;
 using StreamerBotLib.Systems.Overlay.Static;
 
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace StreamerBotLib.Systems.Overlay
 {
@@ -163,14 +165,14 @@ namespace StreamerBotLib.Systems.Overlay
             }
             else
             {
-                GUIData.AddEditPage(Enum.GetNames(typeof(OverlayTypes)));
+                GUIData.AddEditPage(Enum.GetNames<OverlayTypes>());
             }
 
             if (!OptionFlags.MediaOverlayTickerMulti)
             {
                 GUIData.AddEditPage(new List<OverlayTickerItem>(from SelectedTickerItem S in TickerFormatter.selectedTickerItems
                                                                 where S.IsSelected
-                                                                select (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)).ToArray());
+                                                                select Enum.Parse<OverlayTickerItem>(S.OverlayTickerItem)).ToArray());
             }
             else if (TickerFormatter.selectedTickerItems.Where(s => s.IsSelected).Select(s => s).Any())
             {
@@ -302,15 +304,21 @@ namespace StreamerBotLib.Systems.Overlay
 
         private void OverlayLink_Click(object sender, RoutedEventArgs e)
         {
-            try
+            for (int x = 0; x < 10; x++)
             {
-                Clipboard.SetText(((Button)sender).Content.ToString());
+                try
+                {
+                    Clipboard.SetText(((Button)sender).Content.ToString());
 
-                TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
-            }
-            catch (COMException ex)
-            {
-                LogWriter.LogException(ex, "OverlayLink_Click");
+                    TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Visible;
+                    break; // if we reached here, the clipboard copy worked - break out of for loop
+                }
+                catch (COMException ex)
+                {
+                    LogWriter.LogException(ex, "OverlayLink_Click");
+                    Clipboard.Clear();
+                }
+                Thread.Sleep(40); // wait a bit before retrying
             }
         }
 
@@ -319,5 +327,63 @@ namespace StreamerBotLib.Systems.Overlay
             TextBlock_OverlayLink_Msg_Copied.Visibility = Visibility.Hidden;
         }
 
+        private void TickerIcons_Clicked(object sender, RoutedEventArgs e)
+        {
+            SetTickerIcons();
+        }
+
+        private void SetTickerIcons()
+        {
+            if (OptionFlags.MediaOverlayTickerIcons)
+            { // rebuild default icons if not present
+                var Source = (from S in Enum.GetNames<OverlayTickerItem>()
+                              select
+                                  new Tuple<string, string, string>(
+                                      S,
+                                      $"StreamerBotLib.Systems.Overlay.img.Default{S}.png",
+                                      $"{Path.Combine(PublicConstants.BaseTickerPath, PublicConstants.BaseTickerIconPath, "Default" + S + ".png")}")
+                                  );
+
+                foreach (var item in Source)
+                {
+                    if (!File.Exists(item.Item3))
+                    {
+                        using Stream? resource = typeof(MediaOverlayPage).Assembly.GetManifestResourceStream(item.Item2);
+                        if (resource != null)
+                        {
+                            using FileStream file = new(item.Item3, FileMode.Create, FileAccess.Write);
+                            resource.CopyTo(file);
+                        }
+                    }
+                }
+
+                foreach (SelectedTickerItem S in ((SelectedTickerItems)Resources["TickerSelectedItems"]).TickerItems)
+                {
+                    S.SetIcon();
+                }
+            }
+            if (TabItem_TickerIcons != null)
+            {
+                TabItem_TickerIcons.Visibility = OptionFlags.MediaOverlayTickerIcons ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private void TickerIcon_SourceTextBox_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            DependencyObject parent = sender as DependencyObject;
+
+            while (parent.GetType() != typeof(ListBoxItem))
+            {
+                parent = VisualTreeHelper.GetParent((DependencyObject)parent);
+            }
+
+            ListBoxItem item = (ListBoxItem)parent;
+            ((SelectedTickerItem)item.Content).ProcessIcon();
+        }
+
+        private void MediaOverlayLoaded(object sender, RoutedEventArgs e)
+        {
+            SetTickerIcons();
+        }
     }
 }

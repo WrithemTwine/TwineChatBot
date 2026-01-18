@@ -1,11 +1,11 @@
-﻿using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
+﻿
+using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
 using System.Diagnostics.CodeAnalysis;
 
 using TwitchLib.Api.Core.Exceptions;
-using TwitchLib.Api.Helix.Models.Clips.CreateClip;
 using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Interfaces;
 
@@ -93,14 +93,14 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
                 if (!KnownClips.TryGetValue(channel, out List<Clip> Clipsknown))
                 {
                     newClips = latestClips;
-                    KnownClips[channel] = latestClips.Take(CacheSize).ToList();
+                    KnownClips[channel] = [.. latestClips.Take(CacheSize)];
                     _lastClipsDates[channel] = latestClips.Last().CreatedAt;
                 }
                 else
                 {
-                    HashSet<string> existingClips = new(Clipsknown.Select(f => f.Id));
+                    HashSet<string> existingClips = [.. Clipsknown.Select(f => f.Id)];
                     string latestKnownClipDate = _lastClipsDates[channel];
-                    newClips = latestClips.Except(Clipsknown, new ClipsComparer()).ToList();
+                    newClips = [.. latestClips.Except(Clipsknown, new ClipsComparer())];
                     latestKnownClipDate = latestClips.Last().CreatedAt;
                     Clipsknown.AddRange(newClips);
 
@@ -185,33 +185,60 @@ namespace StreamerBotLib.BotClients.Twitch.TwitchLib
         {
 #if DEBUG
             LogWriter.DebugLog("GetLatestClipsAsync", Models.Enums.DebugLogTypes.SpecialPurpose, $"Get latest clips for channel: {channel}");
+#else
+            LogWriter.DebugLog("GetLatestClipsAsync", Models.Enums.DebugLogTypes.TwitchClipBot, $"Get latest clips for channel: {channel}");
 #endif
 
             GetClipsResponse resultset = await _monitor.ActionAsync((c, param) => _api.Helix.Clips.GetClipsAsync(first: (int)param[0], broadcasterId: c),
                 channel, [QueryCountPerRequest]);
 
-            return resultset.Clips.Reverse().ToList();
+            return [.. resultset.Clips.Reverse()];
         }
 
-        public async Task<CreatedClipResponse> CreateClip(string channelId)
+        public void CreateClip(string channelId)
         {
             try
             {
 #if DEBUG
                 LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.SpecialPurpose, $"Creating clip for channel ID: {channelId}");
 #endif
+                var ClipResult = _api.Helix.Clips.CreateClipAsync(channelId).Result;
 
-                return await _api.Helix.Clips.CreateClipAsync(channelId);
+                LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.TwitchClipBot, $"Clip created with ID: {ClipResult?.CreatedClips?[0]?.Id}");
+
+                List<string> clipIds = [.. ClipResult.CreatedClips.Select(c => c.Id)];
+
+                if (clipIds.Count > 0)
+                {
+                    Task.Delay(5000).Wait(); // wait a moment for Twitch to process the clip so it can be retrieved
+                    int x = 0;
+
+                    GetClipsResponse GetClips = null;
+
+                    do
+                    {
+                        GetClips = _api.Helix.Clips.GetClipsAsync(clipIds: clipIds).Result;
+
+
+                        Task.Delay(x * 1500).Wait(); // incremental delay to wait a little longer each try
+                    } while (++x < 5 && GetClips == null);
+
+                    LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.TwitchClipBot, $"Retrieved {GetClips?.Clips?.Length ?? 0} clips for created clip IDs.");
+
+                    if (GetClips != null && GetClips.Clips.Length > 0)
+                    {
+                        LogWriter.DebugLog("CreateClip", Models.Enums.DebugLogTypes.TwitchClipBot, $"Invoking OnNewClipFound event for channel ID: {channelId}");
+                        OnNewClipFound?.Invoke(this, new OnNewClipsDetectedArgs() { Channel = channelId, Clips = [.. GetClips.Clips] });
+                    }
+                }
             }
             catch (BadScopeException)
             {
                 AccessTokenUnauthorized?.Invoke(this, new(() => _api.Helix.Clips.CreateClipAsync(channelId)));
-                return null;
             }
             catch (Exception ex)
             {
                 LogWriter.LogException(ex, "CreateClip");
-                return null;
             }
         }
     }

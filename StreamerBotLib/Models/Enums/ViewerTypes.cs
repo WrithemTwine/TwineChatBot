@@ -13,7 +13,7 @@
             {
                 string Data = "";
 
-                foreach (ViewerTypes s in Enum.GetValues(typeof(ViewerTypes)))
+                foreach (ViewerTypes s in Enum.GetValues<ViewerTypes>())
                 {
                     Data += s.ToString() + ", ";
                 }

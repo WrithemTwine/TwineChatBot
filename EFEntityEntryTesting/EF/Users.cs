@@ -3,7 +3,6 @@
 using Microsoft.EntityFrameworkCore;
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EFEntityEntryTesting.EF
 {
@@ -23,7 +22,10 @@ namespace EFEntityEntryTesting.EF
         public DateTime LastDateSeen { get; set; } = lastDateSeen;
 
         public ICollection<Currency> Currency { get; } = [];
+
+#pragma warning disable CS8632 // UserStats are an EFC navigation property
         public UserStats? UserStats { get; set; }
+#pragma warning restore CS8632
 
     }
 }

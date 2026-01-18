@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Version>2.0.1.0</Version>
 		<TargetFramework>net9.0-windows7.0</TargetFramework>
 		<Nullable>disable</Nullable>
 		<UseWPF>true</UseWPF>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Version>2.0.0.0</Version>
 		<PackageId>StreamerBotLib</PackageId>
 		<AssemblyName>StreamerBotLib</AssemblyName>
 		<Authors>WrithemTwine</Authors>
@@ -73,6 +73,28 @@
 	  <Optimize>True</Optimize>
 	  <DefineConstants>$(DefineConstants);EFC9</DefineConstants>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Systems\Overlay\img\DefaultLastBits.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastDonation.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastFollower.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastGiftSub.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastInRaid.png" />
+	  <None Remove="Systems\Overlay\img\DefaultLastSubscriber.png" />
+	  <None Remove="Systems\Overlay\img\seconds.png" />
+	  <None Remove="Systems\Overlay\seconds.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastBits.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastDonation.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastFollower.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastGiftSub.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastInRaid.png" />
+	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastSubscriber.png" />
+	  <Resource Include="Systems\Overlay\img\seconds.png" />
+	  <Resource Include="Systems\Overlay\seconds.png" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<Folder Include="Systems\MultiLive\Culture\" />
@@ -94,6 +116,8 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="9.0.10" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.10" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
+		<PackageReference Include="Microsoft.ML" Version="5.0.0" />
+		<PackageReference Include="Microsoft.ML.DataView" Version="5.0.0" />
 
 		<PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.6" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 		<PackageReference Include="MySqlConnector" Version="2.4.0" Condition="'$(Configuration)|$(Platform)'=='Release_MySql|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_PomeloMySql|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
@@ -104,22 +128,18 @@
 		
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" Condition="'$(Configuration)|$(Platform)'=='Release_PostGre|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.1" />
 
-		<PackageReference Include="System.Drawing.Common" Version="9.0.10" />
-		<PackageReference Include="System.Text.Json" Version="9.0.10" />
-		<PackageReference Include="TwitchLib.Api" Version="3.10.1-preview.197.eadb60e" />
-		<PackageReference Include="TwitchLib.Api.Core" Version="3.10.1-preview.197.eadb60e" />
-		<PackageReference Include="TwitchLib.Api.Helix" Version="3.10.1-preview.197.eadb60e" />
-		<PackageReference Include="TwitchLib.EventSub.Core" Version="3.0.0-preview.68.b035bbb" />
-		<PackageReference Include="TwitchLib.EventSub.Websockets" Version="0.7.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Resource Include="Systems\Overlay\img\seconds.png" />
+		<PackageReference Include="System.Drawing.Common" Version="10.0.1" />
+		<PackageReference Include="System.Text.Json" Version="10.0.1" />
+		<PackageReference Include="TwitchLib.Api" Version="3.10.2" />
+		<PackageReference Include="TwitchLib.Api.Core" Version="3.10.2" />
+		<PackageReference Include="TwitchLib.Api.Helix" Version="3.10.2" />
+		<PackageReference Include="TwitchLib.EventSub.Core" Version="3.0.0" />
+		<PackageReference Include="TwitchLib.EventSub.Websockets" Version="0.8.0" />
 	</ItemGroup>
 
 	<ItemGroup>

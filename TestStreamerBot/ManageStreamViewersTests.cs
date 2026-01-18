@@ -13,7 +13,7 @@ namespace TestStreamerBot
             var manageStreamViewers = new ManageStreamViewers();
             var liveUser = new LiveUser("User1", Platform.Twitch);
             var manageStreamViewer = new ManageStreamViewer(liveUser, true, true, true, true);
-            manageStreamViewers.AddUsersFirstJoinedChannel(new List<LiveUser> { liveUser });
+            manageStreamViewers.AddUsersFirstJoinedChannel([liveUser]);
 
             // Act
             manageStreamViewers.EndStreamResetList();

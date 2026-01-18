@@ -68,18 +68,16 @@ namespace StreamerBotLib.Systems.Overlay.Control
                 // fill up ticker data with blanks if not available
 
                 // convert a data collection into a single page
-                pages.Add(ProcessHyperText.ProcessTicker(new List<TickerItem>(
-                    from SelectedTickerItem S in selectedTickerItems
+                pages.Add(ProcessHyperText.ProcessTicker([.. from SelectedTickerItem S in selectedTickerItems
                     let newitem = new TickerItem()
                     {
-                        OverlayTickerItem = (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem),
+                        OverlayTickerItem = Enum.Parse < OverlayTickerItem >(S.OverlayTickerItem),
                         UserName = overlayTickerItemsData.Find(
-                            (f) => f.OverlayTickerItem == (OverlayTickerItem)Enum.Parse(typeof(OverlayTickerItem), S.OverlayTickerItem)
+                            (f) => f.OverlayTickerItem == Enum.Parse<OverlayTickerItem>(S.OverlayTickerItem)
                             )?.UserName
                         ?? "-"
                     }
-                    select newitem
-                    ), overlayStyles));
+                    select newitem], overlayStyles));
             }
 
             return pages;

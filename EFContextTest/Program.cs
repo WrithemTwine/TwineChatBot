@@ -8,13 +8,13 @@ namespace EFContextTest
 {
     public static class Program
     {
-        private static EFTestDataContext _GUIContext; // long-lived context for GUI operations
+        private static EFTestDataContext? _GUIContext; // long-lived context for GUI operations
 
         private static readonly int MaxUsers = 15;
 
         private static readonly int UserUpdateCount = 5; // Number of users to update currency for - **must be less than or equal to MaxUsers**
 
-        private static ObservableCollection<Users> UserObservable;
+        private static ObservableCollection<Users>? UserObservable;
 
         public static void Main(string[] args)
         {
@@ -156,17 +156,21 @@ namespace EFContextTest
 
                     TimeSpan clock = now - curruser.LastDateSeen;
 
-                    curruser.UserStats.WatchTime += clock;
-                    foreach (Currency currency in curruser.Currency)
+                    if (curruser != null && curruser.UserStats != null)
                     {
-                        currency.Value =
-                            Math.Min(
-                                currency.CurrencyType.MaxValue,
-                                Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt
-                                            * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
-                            );
+                        curruser.UserStats.WatchTime += clock;
+
+                        foreach (Currency currency in curruser.Currency)
+                        {
+                            currency.Value =
+                                Math.Min(
+                                    currency.CurrencyType.MaxValue,
+                                    Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt
+                                                * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
+                                );
+                        }
+                        curruser.LastDateSeen = now;
                     }
-                    curruser.LastDateSeen = now;
                 }
 
                 _context.SaveChanges(true);

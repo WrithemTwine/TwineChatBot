@@ -88,7 +88,7 @@ namespace StreamerBotLib.Systems.CurrencyGames
         /// </summary>
         internal void ReShuffleDeck()
         {
-            ShuffleDeck(new(playingCards));
+            ShuffleDeck([.. playingCards]);
         }
     }
 }
