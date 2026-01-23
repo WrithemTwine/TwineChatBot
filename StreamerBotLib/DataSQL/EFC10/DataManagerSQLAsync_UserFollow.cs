@@ -5,7 +5,9 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
-namespace StreamerBotLib.DataSQL.EFC9
+using System.Diagnostics;
+
+namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {
@@ -45,8 +47,12 @@ namespace StreamerBotLib.DataSQL.EFC9
 
         private async Task<Users> PostNewUser(SQLDBContext context, LiveUser User, DateTime FirstSeen)
         {
-            Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U).Include(S => S.UserStats).FirstOrDefault();
-            if (newuser == default)
+            Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U)
+                            .Include(S => S.UserStats)
+                            .Include(f => f.Follower)
+                            .FirstOrDefault();
+
+            if (newuser is null)
             {
                 newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,
                                                 platform: User.Platform, firstDateSeen: FirstSeen,
@@ -70,6 +76,12 @@ namespace StreamerBotLib.DataSQL.EFC9
                     await context.Currency.AddAsync(new(userId: newuser.UserId, platform: newuser.Platform, value: 0, currencyName: t.CurrencyName));
                 }
             }
+
+            // refresh the user including stats and follower info
+            newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U)
+                            .Include(S => S.UserStats)
+                            .Include(f => f.Follower)
+                            .FirstOrDefault();
 
             return newuser;
         }
@@ -102,6 +114,11 @@ namespace StreamerBotLib.DataSQL.EFC9
             await context.SaveChangesAsync(true);
             await RefreshUsersList(true);
             //await RefreshUserStatsList(true);
+
+#if DEBUG
+            var debugUsers = await context.Users.Where(u => Users.Contains(new(u.UserName, u.Platform, u.UserId))).Select(u => u).ToListAsync();
+            Debug.Assert(debugUsers.Count == Users.Count(), "Some of the input users didn't get added to the database.");
+#endif
         }
 
         internal async Task UserLeft(LiveUser User, DateTime LastSeen)
@@ -115,6 +132,10 @@ namespace StreamerBotLib.DataSQL.EFC9
                 .Include(U => U.Currency)
                 .ThenInclude(U => U.CurrencyType)
                 .FirstOrDefaultAsync();
+
+#if DEBUG
+            Debug.Assert(user != null, "UserLeft called for a user that does not exist in the database.");
+#endif
 
             if (LastSeen > user.LastDateSeen && LastSeen > CurrStreamStart)
             {
@@ -199,29 +220,33 @@ namespace StreamerBotLib.DataSQL.EFC9
                         //List<Followers> tempfollow = [];
                         foreach (Follow f in currUser)
                         {
-                            await PostNewUser(context, f.FromUser, f.FollowedAt);
-                            await context.SaveChangesAsync();
+                            Users currUserRow = await PostNewUser(context, f.FromUser, f.FollowedAt);
+                            //await context.SaveChangesAsync();
 
-                            Followers currFollow = (from UF in context.Followers
-                                                    where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
-                                                    select UF).FirstOrDefault();
+                            //Followers currFollow = (from UF in context.Followers
+                            //                        where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
+                            //                        select UF).FirstOrDefault();
+
+                            Followers currFollow = currUserRow?.Follower;
 
                             if (currFollow != null)
                             {
                                 currFollow.IsFollower = true;
                                 currFollow.FollowedDate = f.FollowedAt;
-                                currFollow.Category ??= f.Category;
+                                currFollow.Category ??= f.Category.CategoryName;
                             }
                             else
                             {
-                                var newFollow = new Followers(userId: f.FromUser.UserId,
+                                await PostCategory(f.Category);
+                                //tempfollow.Add(newFollow);
+                                await context.Followers.AddAsync(new(userId: f.FromUser.UserId,
                                                                      platform: f.FromUser.Platform,
                                                                      isFollower: true, followedDate: f.FollowedAt,
                                                                      statusChangeDate: f.FollowedAt, addDate: currtime,
-                                                                     category: f.Category);
-                                //tempfollow.Add(newFollow);
-                                await context.Followers.AddAsync(newFollow);
+                                                                     category: f.Category.CategoryName));
                             }
+
+                            //await context.SaveChangesAsync();
                         }
                     }
                     await context.SaveChangesAsync(true);

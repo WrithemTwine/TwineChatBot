@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.DataSQL;
-using StreamerBotLib.GUI.Windows;
+﻿using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
@@ -18,10 +17,10 @@ namespace StreamerBotLib.Systems
 
 #if DEBUG
 
-        public DataManagerSQL GetDataManager()
-        {
-            return ActionSystem.DataManage as DataManagerSQL;
-        }
+        //public DataManagerSQL GetDataManager()
+        //{
+        //    return ActionSystem.DataManage as DataManagerSQL;
+        //}
 
         public void SetPostChannelMessageHandler(EventHandler<PostChannelMessageEventArgs> handler)
         {

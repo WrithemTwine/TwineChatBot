@@ -4,6 +4,8 @@ using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
 
+using System.Diagnostics;
+
 namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem
@@ -44,6 +46,7 @@ namespace StreamerBotLib.Systems
                 LogWriter.DebugLog("SetCategory", DebugLogTypes.SystemController, "Updating category.");
                 CurrCategory = categoryData;
                 Category = categoryData.CategoryName;
+                DataManage.PostCategory(categoryData);
                 UpdateCategory();
             }
             LogWriter.DebugLog("SetCategory", DebugLogTypes.StatSystem, $"Current category is {CurrCategory.CategoryName}.");
@@ -357,11 +360,15 @@ namespace StreamerBotLib.Systems
             return DataManage.GetWebhooks(WebhooksSource.Discord, webhooksKind);
         }
 
+#if DEBUG
+        bool testAddFirstStream = false;
+#endif
+
         public bool StreamOnline(DateTime Started)
         {
             LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Detected a new livestream and starting up activites.");
 
-            CurrStream.Clear();
+            CurrStream = new(); // start over
 
             StartElapsedTimerThread();
 
@@ -379,6 +386,9 @@ namespace StreamerBotLib.Systems
                 // retrieve existing stream or start a new stream entry
                 if (DataManage.CheckStreamTime(Started))
                 {
+#if DEBUG
+                    Debug.Assert(testAddFirstStream == true, "The stream should've already been added.");
+#endif
                     LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Retrieving the stream data from the database.");
                     CurrStream = DataManage.GetStreamData(Started);
 
@@ -386,6 +396,11 @@ namespace StreamerBotLib.Systems
                 }
                 else
                 {
+#if DEBUG
+                    Debug.Assert(testAddFirstStream == false, "The stream should be new and not already added.");
+                    testAddFirstStream = true; // stream added
+#endif
+
                     LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Posting the stream data to the database.");
                     DataManage.PostStream(CurrStream.StreamStart, Category);
                     DataManage.PostCategoryStream(CurrCategory); // new stream, update category stream count
@@ -441,6 +456,8 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Wrap up clearing the stream stats.");
 
             ClearStreamStatState();
+
+            CurrStream = null; // detach any connected data
         }
 
         /// <summary>

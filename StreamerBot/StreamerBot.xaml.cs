@@ -280,14 +280,27 @@ namespace StreamerBot
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
         {
-            if (CheckBox_ManageUsers.IsChecked == true)
+            // to enable Followers, the Manage Users and Manage Categories (Stream Data) must be enabled first
+
+            if (CheckBox_ManageUsers.IsChecked == true && CheckBox_ManageStreamStat.IsChecked == true)
             {
                 CheckBox_ManageFollowers.IsEnabled = true;
             }
-            else
+            else if (CheckBox_ManageStreamStat.IsChecked == false)
             {
                 CheckBox_ManageFollowers.IsEnabled = false;
                 CheckBox_ManageFollowers.IsChecked = false; // requires the Manage Users to be enabled
+            }
+
+            if (CheckBox_ManageFollowers.IsChecked == true)
+            {
+                CheckBox_ManageUsers.IsEnabled = false;
+                CheckBox_ManageStreamStat.IsEnabled = false;
+            }
+            else
+            {
+                CheckBox_ManageUsers.IsEnabled = true;
+                CheckBox_ManageStreamStat.IsEnabled = true;
             }
 
             //if (CheckBox_ManageFollowers.IsChecked == true)

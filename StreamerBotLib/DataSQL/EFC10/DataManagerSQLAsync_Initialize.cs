@@ -5,7 +5,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.MLearning;
 
-namespace StreamerBotLib.DataSQL.EFC9
+namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {

@@ -11,6 +11,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Documents;
 
@@ -700,6 +701,14 @@ namespace StreamerBotLib.Systems
 
         #region Followers
 
+#if DEBUG
+
+        private bool AddTestFollowers = false;
+        // debug data for testing followers
+        private List<Follow> TestAddFollowers = [];
+
+#endif
+
         public void StartBulkFollowers()
         {
             LogWriter.DebugLog("StartBulkFollowers", DebugLogTypes.SystemController, "Starting bulk followers procedure.");
@@ -709,8 +718,22 @@ namespace StreamerBotLib.Systems
         public void UpdateFollowers(List<Follow> Follows)
         {
             LogWriter.DebugLog("UpdateFollowers", DebugLogTypes.SystemController, "Updating followers.");
-            Follows.ForEach((f) => { f.Category = CurrCategory.CategoryName; });
+            Follows.ForEach((f) => { f.Category = CurrCategory; });
             DataManage.UpdateFollowers(Follows);
+
+#if DEBUG
+            if (!AddTestFollowers)
+            {
+                Debug.Assert(TestAddFollowers.Count == 0, "TestAddFollowers should be empty on first call.");
+                AddTestFollowers = true;
+                TestAddFollowers.AddRange(Follows);
+            }
+            else
+            {
+                TestAddFollowers.UniqueAddRange(Follows);
+                Debug.Assert(TestAddFollowers.Any(), "TestAddFollowers should contain elements after adding the first time.");
+            }
+#endif
         }
 
         private void DataManage_OnBulkFollowersAddFinished(object sender, OnBulkFollowersAddFinishedEventArgs e)
@@ -731,7 +754,7 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("AddNewFollowers", DebugLogTypes.SystemController, "Adding new followers.");
             string msg = LocalizedMsgSystem.GetEventMsg(ChannelEventActions.NewFollow, out bool FollowEnabled, out _);
-            FollowList.ForEach((f) => { f.Category = Category; }); // add category into follow object(s)
+            FollowList.ForEach((f) => { f.Category = CurrCategory; }); // add category into follow object(s)
             ProcessFollow(FollowList, msg, FollowEnabled);
         }
 
@@ -763,6 +786,10 @@ namespace StreamerBotLib.Systems
                     {
                         if (OptionFlags.ManageFollowers)
                         {
+#if DEBUG
+                            Debug.Assert(!TestAddFollowers.UniqueAdd(f), "The follower should have been added already, but wasn't during bulk load.");
+
+#endif
                             LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Managing new followers.");
                             if (FollowEnabled)
                             {
@@ -843,16 +870,41 @@ namespace StreamerBotLib.Systems
             return DataManage.PostClip(c.ClipId, c.CreatedAt, (decimal)c.Duration, c.GameId, c.Language, c.Title, c.Url, c.FromUserId, c.FromUserName, LastClip);
         }
 
+#if DEBUG
+        bool testfirstloadclip = false;
+        List<Clip> testclips = [];
+#endif
+
         public void ClipHelper(bool AllClips, IEnumerable<Clip> Clips)
         {
             LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Processing clips.");
 
 #if POST_ALL_CLIPS
             List<Clip> reportNewClips = [.. DataManage.SyncClips(AllClips, Clips)];
+
+#if DEBUG
+            if (!testfirstloadclip)
+            {
+                testclips = [.. reportNewClips];
+            }
+#endif
+
             if (reportNewClips.Count != 0)
             {
                 foreach (Clip c in reportNewClips)
                 {
+
+#if DEBUG
+                    if (!testfirstloadclip)
+                    { // the first time, the return clips should be the same as input clips
+                        Debug.Assert(testclips.Contains(c), "The clip should be new and not exist in database.");
+                    }
+                    else
+                    { // the next time, the input clips should be in the database and not returned
+                        Debug.Assert(!testclips.Contains(c), "The clip should exist in database and already have been loaded.");
+                    }
+#endif
+
                     if (OptionFlags.TwitchClipPostChat)
                     {
                         LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Posting clip to chat.");
@@ -879,6 +931,10 @@ namespace StreamerBotLib.Systems
                     LogWriter.DebugLog("ClipHelper", DebugLogTypes.SystemController, "Updating statistics.");
                     UpdatedStat(StreamStatType.Clips, StreamStatType.AutoEvents);
                 }
+
+#if DEBUG
+                testfirstloadclip = true;
+#endif
             }
 #else
             foreach (Clip c in Clips)

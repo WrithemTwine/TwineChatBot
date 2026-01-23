@@ -1804,23 +1804,31 @@
                                             </Label>
                                             <CheckBox x:Name="CheckBox_AppData" IsChecked="{Binding AppCurrWorkingAppData}"
                                                       MouseEnter="TextBlock_MouseEnter_Visible" MouseLeave="TextBlock_MouseEnter_Hidden" >
-                                                <TextBlock TextWrapping="Wrap">Enable saving the data to the AppData location,
+                                                <Border BorderThickness="1" BorderBrush="{StaticResource ForegroundText}">
+                                                    <TextBlock TextWrapping="Wrap">Enable saving the data to the AppData location,
                                                     <TextBlock x:Name="TextBlock_AppDataDir" 
                                                                DataContext="{Binding Mode=OneWay, Source={StaticResource AppServices}}" 
                                                                Text="{Binding AppDataDirectory}" 
                                                                TextWrapping="Wrap" ToolTip="{Binding AppDataDirectory}" 
                                                                Visibility="Hidden"/> <LineBreak /> You will need to close the app, move the
                                                     save files, and re-open the app.</TextBlock>
+                                                </Border>
                                             </CheckBox>
-                                            <CheckBox x:Name="CheckBox_ManageUsers" IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
-                                                <TextBlock TextWrapping="Wrap">Manage channel viewers, including their watchtime.*</TextBlock>
-                                            </CheckBox>
-                                            <CheckBox x:Name="CheckBox_ManageFollowers" IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
-                                                <TextBlock TextWrapping="Wrap">Manage channel followers, including their followage. Requires User data.*</TextBlock>
-                                            </CheckBox>
-                                            <CheckBox x:Name="CheckBox_ManageStreamStat" IsChecked="{Binding ManageStreamStats}" Click="CheckBox_ManageData_Click">
-                                                <TextBlock TextWrapping="Wrap">Record Stream Stats for each stream, including the categories table.*</TextBlock>
-                                            </CheckBox>
+                                            <GroupBox Header="Interlinked">
+                                                <StackPanel Orientation="Vertical">
+                                                    <TextBlock ToolTip="Follower data rows save related data to Users and Stream-Category tables.">
+                                                        To Manage Follower data, the Users and StreamStats data must be enabled.</TextBlock>
+                                                    <CheckBox x:Name="CheckBox_ManageUsers" IsChecked="{Binding ManageUsers}" Click="CheckBox_ManageData_Click">
+                                                        <TextBlock TextWrapping="Wrap">Manage channel viewers, including their watchtime.*</TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox x:Name="CheckBox_ManageFollowers" IsChecked="{Binding ManageFollowers}" Click="CheckBox_ManageData_Click">
+                                                        <TextBlock TextWrapping="Wrap">Manage channel followers, including their followage. Requires User data.*</TextBlock>
+                                                    </CheckBox>
+                                                    <CheckBox x:Name="CheckBox_ManageStreamStat" IsChecked="{Binding ManageStreamStats}" Click="CheckBox_ManageData_Click">
+                                                        <TextBlock TextWrapping="Wrap">Record Stream Stats for each stream, including the categories table.*</TextBlock>
+                                                    </CheckBox>
+                                                </StackPanel>
+                                            </GroupBox>
                                             <CheckBox x:Name="CheckBox_ManageRaidData" IsChecked="{Binding ManageRaidData}" Click="CheckBox_ManageData_Click">
                                                 <TextBlock TextWrapping="Wrap">Record Raid Stats for incoming raids.*</TextBlock>
                                             </CheckBox>
@@ -1947,10 +1955,10 @@
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding MediaOverlayShoutoutClips}">
                                                 <StackPanel Orientation="Vertical">
-                                                  <TextBlock>Show a random user clip during shoutout (Enable Media Overlay Server)</TextBlock>
+                                                    <TextBlock>Show a random user clip during shoutout (Enable Media Overlay Server)</TextBlock>
                                                     <TextBlock>Clip size in overlay alert:</TextBlock>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Width="50">Width: </TextBlock>
+                                                        <TextBlock Width="50">Width:</TextBlock>
                                                         <TextBox Text="{Binding MediaOverlayClipWidth, FallbackValue=400}" Width="40" Height="20" />
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal">
@@ -3127,7 +3135,7 @@ RowEditEnding="DataGrid_RowEditEnding" >
                                             <RowDefinition Height="25" />
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
-                                        
+
                                         <StackPanel x:Name="StackPanel_DebugLivestream" Orientation="Horizontal" Grid.Row="0">
                                             <Button Content="Add Random Test Stream" Height="20" Margin="10,0" 
                                                     ToolTip="Will activate in debug mode, won't post to social media." Click="StartDebugStream_Click"/>

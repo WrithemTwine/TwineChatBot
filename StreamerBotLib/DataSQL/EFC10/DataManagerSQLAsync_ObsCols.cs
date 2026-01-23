@@ -10,7 +10,7 @@ using StreamerBotLib.Static;
 
 using System.Collections.ObjectModel;
 
-namespace StreamerBotLib.DataSQL.EFC9
+namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {

@@ -4,7 +4,7 @@ namespace StreamerBotLib.Models
 {
     public record Follow
     {
-        public Follow(DateTime followedAt, string fromUserId, string fromUserName, Platform platform, string category)
+        public Follow(DateTime followedAt, string fromUserId, string fromUserName, Platform platform, CategoryData category)
         {
             FollowedAt = followedAt;
             FromUserId = fromUserId;
@@ -17,7 +17,7 @@ namespace StreamerBotLib.Models
         public string FromUserId { get; set; }
         public string FromUserName { get; set; }
         public LiveUser FromUser { get; set; }
-        public string Category { get; set; }
+        public CategoryData Category { get; set; }
     }
 
 
