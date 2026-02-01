@@ -2657,5 +2657,185 @@ namespace StreamerBotLib.Properties {
                 this["MediaOverlayTickerIcons"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchAdsNotify {
+            get {
+                return ((bool)(this["TwitchAdsNotify"]));
+            }
+            set {
+                this["TwitchAdsNotify"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int TwitchAdsNotifySeconds {
+            get {
+                return ((int)(this["TwitchAdsNotifySeconds"]));
+            }
+            set {
+                this["TwitchAdsNotifySeconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FormatTimeTotalHours {
+            get {
+                return ((bool)(this["FormatTimeTotalHours"]));
+            }
+            set {
+                this["FormatTimeTotalHours"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FormatTimeIncludeSeconds {
+            get {
+                return ((bool)(this["FormatTimeIncludeSeconds"]));
+            }
+            set {
+                this["FormatTimeIncludeSeconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FormatTimeFullFormat {
+            get {
+                return ((bool)(this["FormatTimeFullFormat"]));
+            }
+            set {
+                this["FormatTimeFullFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FormatTimeTotalTime {
+            get {
+                return ((bool)(this["FormatTimeTotalTime"]));
+            }
+            set {
+                this["FormatTimeTotalTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool GiveawayAnnounceEndMsg {
+            get {
+                return ((bool)(this["GiveawayAnnounceEndMsg"]));
+            }
+            set {
+                this["GiveawayAnnounceEndMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool GiveawayAnnounceBegMsg {
+            get {
+                return ((bool)(this["GiveawayAnnounceBegMsg"]));
+            }
+            set {
+                this["GiveawayAnnounceBegMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool GiveawayAnnounceWinMsg {
+            get {
+                return ((bool)(this["GiveawayAnnounceWinMsg"]));
+            }
+            set {
+                this["GiveawayAnnounceWinMsg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthBotApproveScopes {
+            get {
+                return ((string)(this["TwitchAuthBotApproveScopes"]));
+            }
+            set {
+                this["TwitchAuthBotApproveScopes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerScopeApproveScopes {
+            get {
+                return ((string)(this["TwitchAuthStreamerScopeApproveScopes"]));
+            }
+            set {
+                this["TwitchAuthStreamerScopeApproveScopes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchAuthStreamerNoScopeApproveScopes {
+            get {
+                return ((string)(this["TwitchAuthStreamerNoScopeApproveScopes"]));
+            }
+            set {
+                this["TwitchAuthStreamerNoScopeApproveScopes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerNoScopesApproveScopes {
+            get {
+                return ((string)(this["TwitchStreamerNoScopesApproveScopes"]));
+            }
+            set {
+                this["TwitchStreamerNoScopesApproveScopes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchStreamerScopesApproveScopes {
+            get {
+                return ((string)(this["TwitchStreamerScopesApproveScopes"]));
+            }
+            set {
+                this["TwitchStreamerScopesApproveScopes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TwitchBotApproveScopes {
+            get {
+                return ((string)(this["TwitchBotApproveScopes"]));
+            }
+            set {
+                this["TwitchBotApproveScopes"] = value;
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Repeat;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -359,6 +360,11 @@ namespace StreamerBot
             //TextBlock_TwitchBotLog.ScrollToEnd();
         }
 
+        private void CheckBox_TwitchAdsNotify_Checked(object sender, RoutedEventArgs e)
+        {
+            Controller.StartTwitchAdNotifications();
+        }
+
         private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
         {
             ToggleButton TBSource = null;
@@ -478,7 +484,7 @@ namespace StreamerBot
 
         private void Button_Options_RepeatSeralCommandList_Remove_Click(object sender, RoutedEventArgs e)
         {
-            OptionFlags.RepeatSerialSaveData = (List<StreamerBotLib.Models.Repeat.RepeatCommandGUISelect>)ListBox_Options_RepeatSerialCommandList.ItemsSource;
+            OptionFlags.RepeatSerialSaveData = (List<RepeatCommandGUISelect>)ListBox_Options_RepeatSerialCommandList.ItemsSource;
             ListBox_Options_RepeatSerialCommandList.ItemsSource = OptionFlags.RepeatSerialSaveData;
             Controller.UpdateRepeatCommands();
         }
@@ -576,6 +582,23 @@ namespace StreamerBot
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             LogWriter.DebugLog("TextBox_SourceUpdated", DebugLogTypes.GUIEvents, "Text box source updated, check Twitch button enable status.");
+
+            if (sender == TB_Twitch_AccessToken)
+            {
+                if (!string.IsNullOrEmpty(TB_Twitch_AccessToken.Text))
+                {
+                    OptionFlags.TwitchBotApproveScopes = OptionFlags.TwitchStreamerUseToken ?
+                        OptionFlags.CredentialsTwitchScopesDiffOauthBot : OptionFlags.CredentialsTwitchScopesOauthSame;
+                }
+            } 
+            else if(sender == TB_TwitchStreamerAccessToken)
+            {
+                if(!string.IsNullOrEmpty(TB_TwitchStreamerAccessToken.Text))
+                {
+                    OptionFlags.TwitchStreamerScopesApproveScopes = OptionFlags.CredentialsTwitchScopesDiffOauthChannel;
+                }
+            }
+
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -646,5 +669,6 @@ namespace StreamerBot
             TwitchCheckFocusAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
+
     }
 }

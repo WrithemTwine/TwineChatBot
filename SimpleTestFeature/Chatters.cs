@@ -31,13 +31,13 @@ namespace SimpleTestFeature
             Thread thread = new(() =>
             {
 
-                List<string> chatlisting = new(from U in TestGetChatAsync(clientId, accesstoken, channelId, moderatorId).Data
-                                               select U.UserName);
+                List<string> chatlisting = [.. from U in TestGetChatAsync(clientId, accesstoken, channelId, moderatorId).Data
+                                               select U.UserName];
 
                 GetChatterCompleted?.Invoke(this, new() { Chatters = chatlisting });
 
-                List<string> chatlistingHelix = new(from U in TestHelixGetChatters(clientId, accesstoken, channelId, moderatorId).Data
-                                                    select U.UserName);
+                List<string> chatlistingHelix = [.. from U in TestHelixGetChatters(clientId, accesstoken, channelId, moderatorId).Data
+                                                    select U.UserName];
 
                 GetChatterCompleted?.Invoke(this, new() { Chatters = chatlistingHelix });
 
@@ -52,6 +52,7 @@ namespace SimpleTestFeature
         private void Chatters_GetChatterCompleted(object sender, GetChatterCompletedResponse e)
         {
             string a = "was getting exception here";
+            Console.WriteLine(a);
         }
 
         public static GetChattersResponse TestGetChatAsync(string clientId, string accesstoken, string channelId, string moderatorId)

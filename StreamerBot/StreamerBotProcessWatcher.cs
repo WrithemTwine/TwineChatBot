@@ -67,14 +67,15 @@ namespace StreamerBot
 
         #region Refresh Followers
 
-        private void GuiTwitchBot_OnFollowerBotStarted(object sender, EventArgs e)
+        private void GuiTwitchBot_OnBulkFollowerStopped(object sender, EventArgs e)
         {
             SetTwitchFollowerRefreshTime();
         }
 
         /// <summary>
         /// Initialize the DateTime used to refresh Twitch Followers in the Follower Refresh process after user specified hours.
-        /// Activates with constructor and when "follow bot" is started - to prevent null/non-sensible values - and spec is 'refresh every N hours after follow bot starts".
+        /// Refreshes after the bulk follow process completes, either after EventSub starts and performs the bulk follow 
+        /// loading or the user clicks the "Follower" button on the GUI to initiate a bulk follower load.
         /// </summary>
         private void SetTwitchFollowerRefreshTime()
         {

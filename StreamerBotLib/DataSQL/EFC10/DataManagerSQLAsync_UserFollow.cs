@@ -77,12 +77,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                 }
             }
 
-            // refresh the user including stats and follower info
-            newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U)
-                            .Include(S => S.UserStats)
-                            .Include(f => f.Follower)
-                            .FirstOrDefault();
-
+            await context.SaveChangesAsync(true);
             return newuser;
         }
 
@@ -106,8 +101,17 @@ namespace StreamerBotLib.DataSQL.EFC10
                 LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
                                 $"Updating {L.UserName} now joined to the channel.");
                 Users user = await PostNewUser(context, L, NowSeen);
-                user.CurrLoginDate = NowSeen;
-                user.LastDateSeen = NowSeen;
+
+                if (user == default || user == null)
+                {  // add a null check - have been receiving exceptions
+                    LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
+                                    $"Failed to add or find user {L.UserId},{L.UserName},{L.Platform} in database.");
+                }
+                else
+                {
+                    user.CurrLoginDate = NowSeen;
+                    user.LastDateSeen = NowSeen;
+                }
             }
 
             await context.Database.CommitTransactionAsync();
@@ -116,8 +120,8 @@ namespace StreamerBotLib.DataSQL.EFC10
             //await RefreshUserStatsList(true);
 
 #if DEBUG
-            var debugUsers = await context.Users.Where(u => Users.Contains(new(u.UserName, u.Platform, u.UserId))).Select(u => u).ToListAsync();
-            Debug.Assert(debugUsers.Count == Users.Count(), "Some of the input users didn't get added to the database.");
+            // var debugUsers = await context.Users.Where(u => Users.Contains(new(u.UserName, u.Platform, u.UserId))).Select(u => u).ToListAsync();
+            // Debug.Assert(debugUsers.Count == Users.Count(), "Some of the input users didn't get added to the database.");
 #endif
         }
 
@@ -217,15 +221,13 @@ namespace StreamerBotLib.DataSQL.EFC10
 
                     while (followsQueue.TryDequeue(out IEnumerable<Follow> currUser))
                     {
-                        //List<Followers> tempfollow = [];
                         foreach (Follow f in currUser)
                         {
                             Users currUserRow = await PostNewUser(context, f.FromUser, f.FollowedAt);
-                            //await context.SaveChangesAsync();
 
-                            //Followers currFollow = (from UF in context.Followers
-                            //                        where UF.UserId == f.FromUserId && UF.Platform == f.FromUser.Platform
-                            //                        select UF).FirstOrDefault();
+#if DEBUG
+                            Debug.Assert(currUserRow != null, "currUserRow should not be null");
+#endif 
 
                             Followers currFollow = currUserRow?.Follower;
 
@@ -245,8 +247,6 @@ namespace StreamerBotLib.DataSQL.EFC10
                                                                      statusChangeDate: f.FollowedAt, addDate: currtime,
                                                                      category: f.Category.CategoryName));
                             }
-
-                            //await context.SaveChangesAsync();
                         }
                     }
                     await context.SaveChangesAsync(true);

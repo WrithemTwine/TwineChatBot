@@ -52,6 +52,8 @@
         Pluralbe,
         be,
         viewrate,
-        username
+        username,
+        adduration,
+        adtime
     }
 }

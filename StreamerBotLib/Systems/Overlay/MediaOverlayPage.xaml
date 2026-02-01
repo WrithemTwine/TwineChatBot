@@ -100,7 +100,7 @@
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock>Rotation Cycle</TextBlock>
                                                 <TextBox Width="30" Text="{Binding MediaOverlayTickerRotateTime}" LostFocus="MarqueeTypeSecondsLostFocus" />
-                                                <Label Width="30" Background="{StaticResource ImageSeconds}" />
+                                                <TextBlock>seconds</TextBlock>
                                             </StackPanel>
                                         </RadioButton.Content>
                                     </RadioButton>
@@ -109,7 +109,7 @@
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock>Marquee Scroll</TextBlock>
                                                 <TextBox Width="30" Text="{Binding MediaOverlayTickerMarqueeTime}" LostFocus="MarqueeTypeSecondsLostFocus" />
-                                                <Label Width="30" Background="{StaticResource ImageSeconds}" />
+                                                <TextBlock>seconds</TextBlock>
                                             </StackPanel>
                                         </RadioButton.Content>
                                     </RadioButton>

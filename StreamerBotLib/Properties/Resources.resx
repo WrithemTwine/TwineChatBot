@@ -125,11 +125,11 @@
     <comment>use scope when app user uses a bot account different than streamer account</comment>
   </data>
   <data name="CredentialsTwitchScopesDiffOauthChannel" xml:space="preserve">
-    <value>bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts</value>
+    <value>bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts channel:read:ads</value>
     <comment>scopes for streamer account credentials when using a bot account</comment>
   </data>
   <data name="CredentialsTwitchScopesOauthSame" xml:space="preserve">
-    <value>user:read:chat user:write:chat bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts moderator:manage:announcements</value>
+    <value>user:read:chat user:write:chat bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts moderator:manage:announcements channel:read:ads</value>
     <comment>the scopes to use when app user has bot account same as streamer account</comment>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
@@ -159,9 +159,6 @@
   </data>
   <data name="GitHubWikiLink" xml:space="preserve">
     <value>https://github.com/WrithemTwine/TwineChatBot/wiki</value>
-  </data>
-  <data name="seconds" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Systems\Overlay\img\seconds.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="TwitchHomepage" xml:space="preserve">
     <value>https://twitch.tv/</value>

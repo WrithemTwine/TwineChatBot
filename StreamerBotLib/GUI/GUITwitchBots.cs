@@ -8,7 +8,7 @@ namespace StreamerBotLib.GUI
 {
     public class GUITwitchBots : GUIBotBase
     {
-        public static event EventHandler OnFollowerBotStarted;
+        public static event EventHandler OnBulkFollowerStopped;
 
         /// <summary>
         /// Specifically Twitch Lib chat bot.
@@ -20,8 +20,8 @@ namespace StreamerBotLib.GUI
         public static TwitchBotLiveMonitorSvc TwitchBotLiveMonitorSvc { get; private set; } = BotsTwitch.TwitchBotLiveMonitorSvc;
         public static TwitchBotClipSvc TwitchClip { get; private set; } = BotsTwitch.TwitchBotClipSvc;
         public static TwitchHelixBot TwitchHelixBot { get; private set; } = BotsTwitch.TwitchHelixBot;
-        //public static TwitchStreamerEventSubBotScopes TwitchStreamerEventSubBotScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotScopes;
-        //public static TwitchStreamerEventSubBotNoScopes TwitchStreamerEventSubBotNoScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotNoScopes;
+        //internal static TwitchStreamerEventSubBotScopes TwitchStreamerEventSubBotScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotScopes;
+        //internal static TwitchStreamerEventSubBotNoScopes TwitchStreamerEventSubBotNoScopes { get; private set; } = BotsTwitch.TwitchStreamerEventSubBotNoScopes;
         public GUITwitchBots()
         {
             LogWriter.DebugLog(".ctor_GUITwitchBots", DebugLogTypes.GUIBotComs, "Building the GUITwitchBots.");
@@ -46,6 +46,8 @@ namespace StreamerBotLib.GUI
             TwitchClip.OnBotStopped += TwitchBot_OnBotStopped;
             TwitchClip.OnBotFailedStart += TwitchBot_OnBotFailedStart;
 
+            TwitchHelixBot.BulkFollowsCompleted += TwitchHelixBot_BulkFollowsCompleted;
+
             //TwitchStreamerEventSubBotScopes.OnBotStarted += TwitchBot_OnBotStarted;
             //TwitchStreamerEventSubBotScopes.OnBotStopped += TwitchBot_OnBotStopped;
             //TwitchStreamerEventSubBotScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
@@ -53,6 +55,12 @@ namespace StreamerBotLib.GUI
             //TwitchStreamerEventSubBotNoScopes.OnBotStarted += TwitchBot_OnBotStarted;
             //TwitchStreamerEventSubBotNoScopes.OnBotStopped += TwitchBot_OnBotStopped;
             //TwitchStreamerEventSubBotNoScopes.OnBotFailedStart += TwitchBot_OnBotFailedStart;
+        }
+
+        private void TwitchHelixBot_BulkFollowsCompleted(object sender, EventArgs e)
+        {
+            LogWriter.DebugLog("TwitchHelixBot_BulkFollowsCompleted", DebugLogTypes.GUIBotComs, "Notify bulk follower fetch completed.");
+            OnBulkFollowerStopped?.Invoke(this, EventArgs.Empty);
         }
 
         public static void Send(string msg)

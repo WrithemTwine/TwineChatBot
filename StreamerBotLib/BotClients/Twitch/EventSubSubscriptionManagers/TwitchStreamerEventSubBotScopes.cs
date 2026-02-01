@@ -37,7 +37,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
 
         public event EventHandler<ChannelChatMessageEventArgs> OnChannelChatMessageReceived;
 
-        public event EventHandler OnNewLiveStreamStarted;
+        //public event EventHandler OnNewLiveStreamStarted;
 
         // handles the case when the bot account and streamer account are the same and this bot 
         // sets up the channelchatmessage subscription

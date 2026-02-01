@@ -100,6 +100,19 @@ namespace StreamerBotLib.DataSQL.EFC10
                     {
                         ChannelEventActions.BannedUser,
                         new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                    },
+                    {
+                        ChannelEventActions.AdSoon,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.AdSoon, out _, out _), VariableParser.ConvertVars([MsgVars.adduration, MsgVars.adtime]))
+
+                    },
+                    {
+                        ChannelEventActions.AdStart,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.AdStart, out _, out _), VariableParser.ConvertVars([MsgVars.adduration]))
+                    },
+                    {
+                        ChannelEventActions.AdEnd,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.AdEnd, out _, out _), VariableParser.ConvertVars([]))
                     }
                 };
 

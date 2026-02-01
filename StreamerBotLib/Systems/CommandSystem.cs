@@ -597,7 +597,7 @@ namespace StreamerBotLib.Systems
                 }
                 else if (arglist.Count == 0)
                 {
-                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No quote provided.");
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No quote number provided.");
                     int QuoteCount = DataManage.GetQuoteCount();
 
                     result = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(Msg.MsgQuoteNumber), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]

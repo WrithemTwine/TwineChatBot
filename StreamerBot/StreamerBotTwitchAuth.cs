@@ -209,7 +209,7 @@ namespace StreamerBot
                 // bot account data
 
                 bool UserBotTokenData = (from BUT in (ICollection<string>)[
-                                                        OptionFlags.TwitchBotUserName,
+                                                    OptionFlags.TwitchBotUserName,
                                                     OptionFlags.TwitchBotClientId,
                                                     OptionFlags.TwitchBotAccessToken,
                                                     OptionFlags.TwitchChannelName
@@ -220,26 +220,26 @@ namespace StreamerBot
                                              && !string.IsNullOrEmpty(OptionFlags.TwitchStreamerNoScopesAccessToken)) ||
                                              (from SUT in (ICollection<string>)[
                                                  OptionFlags.TwitchChannelName,
-                                             OptionFlags.TwitchStreamerClientId,
-                                             OptionFlags.TwitchStreamerAccessToken,
-                                             OptionFlags.TwitchStreamerNoScopesAccessToken
+                                                 OptionFlags.TwitchStreamerClientId,
+                                                 OptionFlags.TwitchStreamerAccessToken,
+                                                 OptionFlags.TwitchStreamerNoScopesAccessToken
                                                  ]
                                               select !string.IsNullOrEmpty(SUT)).All((st) => st == true);
                 // Auth token data
 
                 bool AuthBotTokenData = (from BAT in (ICollection<string>)[
                                                         OptionFlags.TwitchBotUserName,
-                                                    OptionFlags.TwitchAuthBotClientId,
-                                                    OptionFlags.TwitchAuthBotClientSecret,
-                                                    OptionFlags.TwitchChannelName
+                                                        OptionFlags.TwitchAuthBotClientId,
+                                                        OptionFlags.TwitchAuthBotClientSecret,
+                                                        OptionFlags.TwitchChannelName
                                                       ]
                                          select !string.IsNullOrEmpty(BAT)).All((bt) => bt == true);
 
                 bool AuthStreamerTokenData = (!OptionFlags.TwitchStreamerUseToken && UserBotTokenData) ||
                                             (from SUT in (ICollection<string>)[
                                             OptionFlags.TwitchChannelName,
-                                        OptionFlags.TwitchAuthStreamerClientId,
-                                        OptionFlags.TwitchAuthStreamerClientSecret
+                                            OptionFlags.TwitchAuthStreamerClientId,
+                                            OptionFlags.TwitchAuthStreamerClientSecret
                                             ]
                                              select !string.IsNullOrEmpty(SUT)).All((st) => st == true);
 
@@ -251,6 +251,8 @@ namespace StreamerBot
                 Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer.IsEnabled = OptionFlags.TwitchAuthStreamerNoScopesAuthCode == "";
 
                 // Twitch
+
+                SetBotValidAccessLabels();
 
                 if (OptionFlags.TwitchStreamerUseToken)
                 {
@@ -290,7 +292,6 @@ namespace StreamerBot
 
                     GroupBox_Twitch_StartBots_EventSubStreamer.Visibility = Visibility.Collapsed;
                 }
-
                 // set earliest token expiration date
 
                 List<DateTime> RefreshTokenDateExpiry = [.. (from R in (ICollection<DateTime>)[OptionFlags.TwitchBotTokenDate, OptionFlags.TwitchStreamerTokenDate]
@@ -329,6 +330,149 @@ namespace StreamerBot
                     BotController.NotifyInvalidTwitchTokens();
                 }
             });
+        }
+
+        private void SetBotValidAccessLabels()
+        {
+            if (OptionFlags.TwitchStreamerUseToken)
+            {
+                if ((OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode))
+                    || (!OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchBotAccessToken)))
+                {
+                    TextBlock_EventSubChat_AccessToken_Valid.Visibility = Visibility.Visible;
+                    TextBlock_EventSubChat_AccessToken_Invalid.Visibility = Visibility.Collapsed;
+
+                    if (OptionFlags.TwitchTokenUseAuth)
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    TextBlock_EventSubChat_AccessToken_Valid.Visibility = Visibility.Collapsed;
+                    TextBlock_EventSubChat_AccessToken_Invalid.Visibility = Visibility.Visible;
+
+                    if (OptionFlags.TwitchTokenUseAuth)
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Visible;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Visible;
+                    }
+                }
+
+                if ((OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerAuthCode))
+                    || (!OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchStreamerAccessToken)))
+                {
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Valid.Visibility = Visibility.Visible;
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Invalid.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Valid.Visibility = Visibility.Collapsed;
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Invalid.Visibility = Visibility.Visible;
+                }
+
+                if ((OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerNoScopesAuthCode))
+                    || (!OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchStreamerNoScopesAccessToken)))
+                {
+                    TextBlock_EventSubNotify_AccessToken_NoScopes_Valid.Visibility = Visibility.Visible;
+                    TextBlock_EventSubNotify_AccessToken_NoScopes_Invalid.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    TextBlock_EventSubNotify_AccessToken_NoScopes_Valid.Visibility = Visibility.Collapsed;  
+                    TextBlock_EventSubNotify_AccessToken_NoScopes_Invalid.Visibility = Visibility.Visible;
+                }
+
+
+                if (TextBlock_EventSubNotify_AccessToken_Scopes_Valid.Visibility == Visibility.Visible
+                    && TextBlock_EventSubNotify_AccessToken_NoScopes_Valid.Visibility == Visibility.Visible)
+                { // if both accesses are valid, then hide the invalid info
+                    if (OptionFlags.TwitchTokenUseAuth)
+                    {
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    if (OptionFlags.TwitchTokenUseAuth)
+                    {
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Visible;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Visible;
+                    }
+                }
+            }
+            else
+            {
+                if ((OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchAuthBotAuthCode) && !string.IsNullOrEmpty(OptionFlags.TwitchAuthStreamerNoScopesAuthCode))
+                    || (!OptionFlags.TwitchTokenUseAuth && !string.IsNullOrEmpty(OptionFlags.TwitchBotAccessToken)))
+                {
+                    TextBlock_EventSubChat_AccessToken_Valid.Visibility = Visibility.Visible;
+                    TextBlock_EventSubChat_AccessToken_Invalid.Visibility = Visibility.Collapsed;
+
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Valid.Visibility = Visibility.Visible;
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Invalid.Visibility = Visibility.Collapsed;
+
+                    if (OptionFlags.TwitchTokenUseAuth)
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Hidden;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Hidden;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Hidden;
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Hidden;
+                    }
+                }
+                else
+                {
+                    TextBlock_EventSubChat_AccessToken_Valid.Visibility = Visibility.Collapsed;
+                    TextBlock_EventSubChat_AccessToken_Invalid.Visibility = Visibility.Visible;
+
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Valid.Visibility = Visibility.Collapsed;
+                    TextBlock_EventSubNotify_AccessToken_Scopes_Invalid.Visibility = Visibility.Visible;
+
+                    if (OptionFlags.TwitchTokenUseAuth)
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Visible;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Visible;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        TextBlock_EventSubChat_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubChat_ManualToken_Info.Visibility = Visibility.Visible;
+                        TextBlock_EventSubNotify_AuthCode_Info.Visibility = Visibility.Collapsed;
+                        TextBlock_EventSubNotify_ManualToken_Info.Visibility = Visibility.Visible;
+                    }
+                }
+            }
         }
 
         private void SetBotRadioButtons(bool value, Platform platform)

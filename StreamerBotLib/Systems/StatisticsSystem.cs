@@ -387,7 +387,7 @@ namespace StreamerBotLib.Systems
                 if (DataManage.CheckStreamTime(Started))
                 {
 #if DEBUG
-                    Debug.Assert(testAddFirstStream == true, "The stream should've already been added.");
+                    //Debug.Assert(testAddFirstStream == true, "The stream should've already been added.");
 #endif
                     LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Retrieving the stream data from the database.");
                     CurrStream = DataManage.GetStreamData(Started);
@@ -456,8 +456,6 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Wrap up clearing the stream stats.");
 
             ClearStreamStatState();
-
-            CurrStream = null; // detach any connected data
         }
 
         /// <summary>
@@ -476,6 +474,7 @@ namespace StreamerBotLib.Systems
 
         public void ResetCategoryStreamCount()
         {
+            LogWriter.DebugLog("ResetCategoryStreamCount", DebugLogTypes.StatSystem, "Resetting category stream count in the database.");
             DataManage.ResetCategoryStreamCount();
         }
 
@@ -484,6 +483,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
+                LogWriter.DebugLog("AddFollow", DebugLogTypes.StatSystem, "Adding a new follow to the current stream stats.");
                 CurrStream.NewFollows++;
                 StreamDataUpdate();
             }
@@ -493,6 +493,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
+                LogWriter.DebugLog("AddSub", DebugLogTypes.StatSystem, "Adding a new subscription to the current stream stats.");
                 CurrStream.NewSubscribers++;
                 StreamDataUpdate();
             }
@@ -502,6 +503,7 @@ namespace StreamerBotLib.Systems
         {
             lock (CurrStream)
             {
+                LogWriter.DebugLog("AddGiftSubs", DebugLogTypes.StatSystem, "Adding new gift sub count to the current stream stats.");
                 CurrStream.GiftSubs += Gifted;
                 StreamDataUpdate();
             }

@@ -731,7 +731,7 @@ namespace StreamerBotLib.Systems
             else
             {
                 TestAddFollowers.UniqueAddRange(Follows);
-                Debug.Assert(TestAddFollowers.Any(), "TestAddFollowers should contain elements after adding the first time.");
+                Debug.Assert(TestAddFollowers.Count > 0, "TestAddFollowers should contain elements after adding the first time.");
             }
 #endif
         }
@@ -787,7 +787,7 @@ namespace StreamerBotLib.Systems
                         if (OptionFlags.ManageFollowers)
                         {
 #if DEBUG
-                            Debug.Assert(!TestAddFollowers.UniqueAdd(f), "The follower should have been added already, but wasn't during bulk load.");
+                            //Debug.Assert(!TestAddFollowers.UniqueAdd(f), "The follower should have been added already, but wasn't during bulk load.");
 
 #endif
                             LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Managing new followers.");

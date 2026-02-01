@@ -36,7 +36,7 @@ namespace StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers
         public event EventHandler<NewStreamOnlineEventArgs> NewStreamOnline;
         public event EventHandler<NewChannelUpdateEventArgs> NewChannelUpdate;
 
-        public event EventHandler OnNewLiveStreamStarted;
+        //public event EventHandler OnNewLiveStreamStarted;
 
         public ITwitchBotEventSubSubscriptions ConfigureMessageLogger(IEventSubMessageIdsLogger eventSubMessageIdsLogger)
         {

@@ -669,6 +669,33 @@ namespace StreamerBotLib.Systems
             }));
         }
 
+        public void NotifyAdSoon(int secondsUntilAd, TimeSpan AdDuration)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("NotifyAdSoon", DebugLogTypes.DataBot, "Notifying ad soon.");
+                SystemAction.NotifyAdSoon(secondsUntilAd, AdDuration);
+            }));
+        }
+
+        public void NotifyAdStart(TimeSpan AdDuration)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("NotifyAdStart", DebugLogTypes.DataBot, "Notifying ad started.");
+                SystemAction.NotifyAdStart(AdDuration);
+            }));
+        }
+
+        public void NotifyAdEnd()
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("NotifyAdEnd", DebugLogTypes.DataBot, "Notifying ad ended.");
+                SystemAction.NotifyAdEnd();
+            }));
+        }
+
 
         #endregion
 

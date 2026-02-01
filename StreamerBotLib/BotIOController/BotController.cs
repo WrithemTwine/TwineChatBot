@@ -35,6 +35,8 @@ namespace StreamerBotLib.BotIOController
         public event EventHandler<FindChannelCategoryEventArgs> OnStreamCategoryChanged;
         public event EventHandler OnStreamOffline;
 
+        internal event EventHandler OnBulkFollowerStarted;
+
         private readonly Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
                                                                                select new KeyValuePair<Platform, bool>(P, false));
 
@@ -73,6 +75,11 @@ namespace StreamerBotLib.BotIOController
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
+
+            TwitchBots.NotifyAdSoon += TwitchBots_NotifyAdSoon;
+            TwitchBots.NotifyAdStarted += TwitchBots_NotifyAdStarted;
+            TwitchBots.NotifyAdEnded += TwitchBots_NotifyAdEnded;
+
             OutputSentToBots += DataBot.GetPostChannelMessageHandler();
 
             ThreadManager.CreateThreadStart(".ctor_BotController", () =>
@@ -807,7 +814,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchBotEventSubStopping(EventArgs args = null)
         {
-            HandleChatBotStopped(Bots.TwitchEventSubBot, args);
+            HandleChatBotStopping(Bots.TwitchEventSubBot, args);
         }
 
         public void TwitchBotEventSubStopped(EventArgs args = null)
@@ -1091,6 +1098,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleBotEventStartBulkFollowers()
         {
+            OnBulkFollowerStarted?.Invoke(this, new());
             DataBot.StartBulkFollowers();
         }
 
@@ -1710,6 +1718,30 @@ namespace StreamerBotLib.BotIOController
         public void SetChannelRewardList(List<string> channelPointNames)
         {
             DataBot.SetChannelRewardList(channelPointNames);
+        }
+
+        #endregion
+
+        #region Ad Messages
+
+        public void StartTwitchAdNotifications()
+        {
+            TwitchBots.StartAdNotificationThread();
+        }
+
+        private void TwitchBots_NotifyAdEnded(object sender, EventArgs e)
+        {
+            DataBot.NotifyAdEnd();
+        }
+
+        private void TwitchBots_NotifyAdStarted(object sender, NotifyAdStartedEventArgs e)
+        {
+            DataBot.NotifyAdStart(e.AdDuration);
+        }
+
+        private void TwitchBots_NotifyAdSoon(object sender, NotifyAdSoonEventArgs e)
+        {
+            DataBot.NotifyAdSoon(e.SecondsUntilAd, e.AdDuration);
         }
 
         #endregion

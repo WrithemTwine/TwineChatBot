@@ -362,10 +362,7 @@ namespace StreamerBotLib.Systems.Overlay
                     S.SetIcon();
                 }
             }
-            if (TabItem_TickerIcons != null)
-            {
-                TabItem_TickerIcons.Visibility = OptionFlags.MediaOverlayTickerIcons ? Visibility.Visible : Visibility.Collapsed;
-            }
+            TabItem_TickerIcons?.Visibility = OptionFlags.MediaOverlayTickerIcons ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void TickerIcon_SourceTextBox_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

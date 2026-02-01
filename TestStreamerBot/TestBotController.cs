@@ -60,7 +60,7 @@ namespace TestStreamerBot
                         File.Delete(DatabaseName);
                     }
 
-                    Settings.Default.EFCConnectStringSqlite = $"Data Source={DatabaseName}{DateTime.Now.ToString("ddMMyyhhmmss")}.db";
+                    Settings.Default.EFCConnectStringSqlite = $"Data Source={DatabaseName}{DateTime.Now:ddMMyyhhmmss}.db";
                     OptionFlags.EFCDatabaseProviderSqlite = true;
                     OptionFlags.EFCDataImportedDataGram = true;
 

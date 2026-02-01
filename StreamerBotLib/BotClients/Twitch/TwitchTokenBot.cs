@@ -632,6 +632,11 @@ namespace StreamerBotLib.BotClients.Twitch
 
                     LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "URL generated.");
 
+                    // save the scopes used to generate the authcode to determine later if the scopes changed and the user needs to reauthorize with different scopes
+                    OptionFlags.TwitchAuthBotApproveScopes = OptionFlags.TwitchStreamerUseToken ?
+                        Resources.CredentialsTwitchScopesDiffOauthBot :
+                        Resources.CredentialsTwitchScopesOauthSame;
+
                     BotAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
                 }
                 else
@@ -645,6 +650,9 @@ namespace StreamerBotLib.BotClients.Twitch
                         clientId: clientId
                         );
                     LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "URL generated.");
+
+                    // save the scopes used to generate the authcode to determine later if the scopes changed and the user needs to reauthorize with different scopes
+                    OptionFlags.TwitchAuthStreamerScopeApproveScopes = Resources.CredentialsTwitchScopesDiffOauthChannel;
 
                     StreamerAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
                 }

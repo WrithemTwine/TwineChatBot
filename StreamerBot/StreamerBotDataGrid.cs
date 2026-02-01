@@ -20,9 +20,6 @@ namespace StreamerBot
     {
         #region DataGrid Columns and Editing
         private ManageWindows PopupWindows { get; set; } = new();
-
-        private event EventHandler<OnDataCollectionUpdatedEventArgs> OnDataGridUpdated;
-
         private Thread GUIDataGridUpdates { get; set; }
         private ConcurrentQueue<Task> GUIDataGridUpdateQueue { get; set; } = new();
 

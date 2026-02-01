@@ -25,7 +25,7 @@ namespace TestStreamerBot
         {
             if (!Initialized)
             {
-                dataBot.SetPostChannelMessageHandler(SystemsController_PostChannelMessage);
+                //dataBot.SetPostChannelMessageHandler(SystemsController_PostChannelMessage);
 
                 OptionFlags.FirstUserChatMsg = true;
                 OptionFlags.FirstUserJoinedMsg = false;

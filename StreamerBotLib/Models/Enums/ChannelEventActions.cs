@@ -20,6 +20,9 @@
         UserJoined,
         ReturnUserJoined,
         SupporterJoined,
-        BannedUser
+        BannedUser,
+        AdSoon, // Twitch "Ad Start Soon" notification
+        AdStart, // Twitch "Ad Started" notification
+        AdEnd // Twitch "Ad Ended" notification
     }
 }

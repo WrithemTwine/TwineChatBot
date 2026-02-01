@@ -227,6 +227,9 @@
     <value>dequeue</value>
     <comment>leave the player queue</comment>
   </data>
+  <data name="duration" xml:space="preserve">
+    <value>duration</value>
+  </data>
   <data name="editcommand" xml:space="preserve">
     <value>editcommand</value>
     <comment>default command, can be translated</comment>
@@ -264,6 +267,12 @@
   <data name="followage" xml:space="preserve">
     <value>followage</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="Helpadduration" xml:space="preserve">
+    <value>shows the duration of the ad(s)</value>
+  </data>
+  <data name="Helpadtime" xml:space="preserve">
+    <value>shows how much time until the ad starts</value>
   </data>
   <data name="Helpautohost" xml:space="preserve">
     <value>permits distinguishing if the channel is hosted or autohosted</value>
@@ -463,9 +472,21 @@
   </data>
   <data name="MsgAddCommandFailed" xml:space="preserve">
     <value>Command-{0}-already exists, not added. Instead, use !editcommand.</value>
+    <comment>Leave the "{0}" where the command name should be included.</comment>
   </data>
   <data name="Msgaddquote" xml:space="preserve">
     <value>Thank you for adding quote #quotenum.</value>
+  </data>
+  <data name="MsgAdEnd" xml:space="preserve">
+    <value>The ads have ended. Welcome back!</value>
+  </data>
+  <data name="MsgAdSoon" xml:space="preserve">
+    <value>It's that time for an ad break. The ads last #adtime and are upcoming in #adduration. So, please help support the channel and watch them. If you're subscribed, you can bypass any ads!</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
+  <data name="MsgAdStart" xml:space="preserve">
+    <value>Ads have started! We'll see you back in #adduration!</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="MsgAllCategory" xml:space="preserve">
     <value>All</value>
@@ -878,6 +899,7 @@
   </data>
   <data name="Pluralbe" xml:space="preserve">
     <value>is, are</value>
+    <comment>comma separated 'single, plural'</comment>
   </data>
   <data name="Pluralbits" xml:space="preserve">
     <value>bit, bits</value>
@@ -885,12 +907,15 @@
   </data>
   <data name="Pluralday" xml:space="preserve">
     <value>day, days</value>
+    <comment>comma separated 'single, plural'</comment>
   </data>
   <data name="Pluralhour" xml:space="preserve">
     <value>hour, hours</value>
+    <comment>comma separated 'single, plural'</comment>
   </data>
   <data name="Pluralminute" xml:space="preserve">
     <value>minute, minutes</value>
+    <comment>comma separated 'single, plural'</comment>
   </data>
   <data name="Pluralmonth" xml:space="preserve">
     <value>month, months</value>
@@ -898,6 +923,10 @@
   </data>
   <data name="Pluralquote" xml:space="preserve">
     <value>quote, quotes</value>
+    <comment>comma separated 'single, plural'</comment>
+  </data>
+  <data name="Pluralsecond" xml:space="preserve">
+    <value>second, seconds</value>
   </data>
   <data name="Pluralsub" xml:space="preserve">
     <value>subscription, subscriptions</value>
@@ -905,6 +934,7 @@
   </data>
   <data name="Pluraltime" xml:space="preserve">
     <value>time, times</value>
+    <comment>comma separated 'single, plural'</comment>
   </data>
   <data name="Pluralviewers" xml:space="preserve">
     <value>viewer, viewers</value>
@@ -912,6 +942,7 @@
   </data>
   <data name="Pluralyear" xml:space="preserve">
     <value>year, years</value>
+    <comment>comma separated 'single, plural'</comment>
   </data>
   <data name="qinfo" xml:space="preserve">
     <value>qinfo</value>
