@@ -756,7 +756,7 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
                                               DataContext="{Binding Source={x:Static s:Settings.Default}}" 
                                     Click="ToggleButton_ChooseTwitchAuth_Click" ClickMode="Press" Style="{StaticResource ToggleButtonTwitchTokenSelecter}"/>
                             </StackPanel>
-                            <GroupBox Header="Settings" Width="Auto" Height="Auto" DockPanel.Dock="Bottom">
+                            <GroupBox Header="Settings" Width="Auto" Height="Auto" DockPanel.Dock="Bottom" Visibility="Collapsed">
                                 <WrapPanel Orientation="Horizontal">
                                     <!--<GroupBox Header="Setup Follower Operations" Width="Auto">
                                         <StackPanel>
@@ -805,7 +805,7 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
 
                             <DockPanel DockPanel.Dock="Top" VerticalAlignment="Stretch">
                                 <DockPanel x:Name="StackPanel_TwitchTokenFlow" Visibility="Visible">
-                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                         <DockPanel>
                                             <WrapPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
                                                 <GroupBox x:Name="GroupBox_Twitch_BotCredentials" 
@@ -1009,6 +1009,7 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
                                                 <Expander
                                          IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay}" 
                                          ScrollViewer.CanContentScroll="True"
+                                                    Visibility="Collapsed"
                                          Width="Auto" MaxHeight="350">
                                                     <Expander.Header>
                                                         <TextBlock Text="{DynamicResource CredentialsHeader}"/>
@@ -1148,7 +1149,7 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
                                     </ScrollViewer>
                                 </DockPanel>
 
-                                <DockPanel x:Name="StackPanel_TwitchAuthCodeFlow" DockPanel.Dock="Right"  Visibility="Collapsed"
+                                <DockPanel x:Name="StackPanel_TwitchAuthCodeFlow" DockPanel.Dock="Right"  Visibility="Visible"
                                                VerticalAlignment="Stretch"
                                                HorizontalAlignment="Stretch">
                                     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -1186,10 +1187,21 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
                                                                         Content="Authorize Bot Token" 
                                                                         Width="160" Margin="5" 
                                                                         Click="Button_TwitchAuthCode_ApproveBotURL" />
+                                                            
                                                             <Button x:Name="Twitch_AuthCode_NoScopes_Button_AuthorizeBot" 
                                                                         Visibility="Collapsed" Content="Authorize No Scopes Token"
                                                                         Width="175" Margin="5"
                                                                         Click="Button_TwitchAuthCode_NoScopes_ApproveURL" />
+                                                            
+                                                            <Button x:Name="Twitch_AuthCode_Button_AuthorizeBot_Reauthorize" 
+                                                                    Content="Clear Bot Token" 
+                                                                    Width="160" Margin="5" 
+                                                                    Click="Button_TwitchAuthCode_ApproveBotURL" />
+                                                            
+                                                            <Button x:Name="Twitch_AuthCode_Button_NoScopesBot_Reauthorize" 
+                                                                    Visibility="Collapsed" Content="Clear No Scopes Token"
+                                                                    Width="175" Margin="5"
+                                                                    Click="Button_TwitchAuthCode_NoScopes_ApproveURL" />
                                                         </StackPanel>
                                                     </Expander>
                                                 </GroupBox>
@@ -1268,7 +1280,7 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
                                                         </StackPanel>
                                                     </StackPanel>
                                                 </GroupBox>
-                                                <Button DockPanel.Dock="Top" Content="Force Re-Authorization" Width="150" Margin="10"
+                                                <Button DockPanel.Dock="Top" Content="Force All Re-Authorization" Width="180" Margin="10"
                                                                     IsEnabled="True" Click="Button_TwitchAuthToken_ReAuthorize" />
                                                 <TextBlock Width="400">For 'Event Sub' bot to check for stream status and 
                                                                 incoming raids, we need a 'no-scope' access token. Click the below 

@@ -1670,7 +1670,7 @@ Ad chronology:
                         LastAdAtNotify = DateTime.MinValue; // reset the ad soon notify time
                     }
 
-                    if (CurrAd.SnoozeCount > 0 && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds + 5) >= CurrAd.NextAdAt)
+                    if (CurrAd != null && CurrAd.SnoozeCount > 0 && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds + 5) >= CurrAd.NextAdAt)
                     { // a snooze will shift the ad time by 5 minutes later, check for a snooze before notifying => reset the CurrAd and do it again
                         NextAdCheck = CurrTime.AddSeconds(5); // check again in 5 seconds
                     }
