@@ -145,7 +145,11 @@ namespace StreamerBotLib.Static
 
             string totaltime = output.Count == 0 ? "no time available" : string.Join(", ", output);
 
-            if (OptionFlags.FormatTimeFullFormat)
+            if (OptionFlags.FormatTimeFullFormatHoursFull)
+            {
+                returntime = string.Format(LocalizedMsgSystem.GetVar(MsgVars.or),totalhours, totaltime);
+            }
+            else if (OptionFlags.FormatTimeFullFormatFullHours)
             {
                 returntime = string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), totaltime, totalhours);
             }

@@ -1516,7 +1516,7 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
                                             </CheckBox>
                                         </StackPanel>
                                     </GroupBox>
-                                    <GroupBox Header="Data Formats">
+                                    <GroupBox Header="Date Formats">
                                         <StackPanel>
                                             <CheckBox IsChecked="{Binding FormatTimeIncludeSeconds}">
                                                 <CheckBox.ToolTip>
@@ -1525,11 +1525,17 @@ Use the "Authorize Token" button on Twitch tab to re-authorize the app.</TextBlo
                                                 <TextBlock>Enable seconds amount in time formats</TextBlock>
                                             </CheckBox>
 
-                                            <RadioButton IsChecked="{Binding FormatTimeFullFormat}">
+                                            <RadioButton IsChecked="{Binding FormatTimeFullFormatHoursFull}">
                                                 <RadioButton.ToolTip>
                                                     Enable this option to specify the full "'total hours' or years/months/days/hours/minutes" when formatting time.
                                                 </RadioButton.ToolTip>
                                                 <TextBlock>Enable full "hours or {time-breakdown}" format.</TextBlock>
+                                            </RadioButton>
+                                            <RadioButton IsChecked="{Binding FormatTimeFullFormatFullHours}">
+                                                <RadioButton.ToolTip>
+                                                    Enable this option to specify the full "years/months/days/hours/minutes or 'total hours'" when formatting time.
+                                                </RadioButton.ToolTip>
+                                                <TextBlock>Enable full "{time-breakdown} or hours" format.</TextBlock>
                                             </RadioButton>
                                             <RadioButton IsChecked="{Binding FormatTimeTotalHours}">
                                                 <RadioButton.ToolTip>

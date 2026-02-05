@@ -987,9 +987,13 @@ namespace StreamerBotLib.Static
         public static bool FormatTimeTotalHours => Settings.Default.FormatTimeTotalHours;
 
         /// <summary>
+        /// Enables the user choice to use "[total time] or total hours" in time formats 
+        /// </summary>
+        public static bool FormatTimeFullFormatFullHours => Settings.Default.FormatTimeFullFormatFullHours;
+        /// <summary>
         /// Enables the user choice to use "total hours or [total time]" in time formats 
         /// </summary>
-        public static bool FormatTimeFullFormat => Settings.Default.FormatTimeFullFormat;
+        public static bool FormatTimeFullFormatHoursFull => Settings.Default.FormatTimeFullFormatHoursFull;
 
         /// <summary>
         /// Enables the user choice to include "total time" in time formats 

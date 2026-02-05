@@ -674,8 +674,8 @@
     <Setting Name="FormatTimeIncludeSeconds" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="FormatTimeFullFormat" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="FormatTimeFullFormatFullHours" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="FormatTimeTotalTime" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -706,6 +706,9 @@
     </Setting>
     <Setting Name="TwitchBotApproveScopes" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="FormatTimeFullFormatHoursFull" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

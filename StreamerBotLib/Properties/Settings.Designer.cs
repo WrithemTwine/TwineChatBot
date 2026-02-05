@@ -2708,13 +2708,13 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool FormatTimeFullFormat {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FormatTimeFullFormatFullHours {
             get {
-                return ((bool)(this["FormatTimeFullFormat"]));
+                return ((bool)(this["FormatTimeFullFormatFullHours"]));
             }
             set {
-                this["FormatTimeFullFormat"] = value;
+                this["FormatTimeFullFormatFullHours"] = value;
             }
         }
         
@@ -2835,6 +2835,18 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["TwitchBotApproveScopes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FormatTimeFullFormatHoursFull {
+            get {
+                return ((bool)(this["FormatTimeFullFormatHoursFull"]));
+            }
+            set {
+                this["FormatTimeFullFormatHoursFull"] = value;
             }
         }
     }

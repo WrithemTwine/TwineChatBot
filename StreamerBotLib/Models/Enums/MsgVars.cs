@@ -54,6 +54,7 @@
         viewrate,
         username,
         adduration,
-        adtime
+        adtime,
+        Pluralsecond
     }
 }

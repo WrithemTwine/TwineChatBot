@@ -1566,12 +1566,12 @@ namespace StreamerBotLib.BotClients
                 AdNotificationThreadActive = true;
                 ThreadManager.CreateThreadStart("AdNotificationThread", async () =>
                 {
-                    _ = AdNotificationThread();
+                    AdNotificationThread();
                 });
             }
         }
 
-        private async Task AdNotificationThread()
+        private void AdNotificationThread()
         {
             LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "Starting the ad notification monitoring thread.");
 
@@ -1580,8 +1580,8 @@ namespace StreamerBotLib.BotClients
             DateTime NextAdCheck = DateTime.Now;
             CurrAdSchedule CurrAd = null;
             DateTime CurrTime;
-            bool AdSoonNotify = false;
-            bool CheckSnooze = false;
+            DateTime LastAdAtNotify = DateTime.MinValue;
+            bool AdSoonNotify = false, AdStartNotify = false;
 
             while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline && OptionFlags.TwitchAdsNotify)
             {
@@ -1596,83 +1596,87 @@ namespace StreamerBotLib.BotClients
                     {
                         if (AdStatus.Data.Length > 0)
                         {
-                            Schedules.UniqueAddRange(
+                            Schedules.Clear();
+
+                            Schedules.AddRange(
                                         AdStatus.Data
                                             .Where(n => !string.IsNullOrEmpty(n.NextAdAt))  // can be empty if no ad is scheduled => ignore these entries
                                             .Select(c => c)
                                             .ToList()
-                                            .ConvertAll(a => new CurrAdSchedule(a)),
-                                        (Schedules, a) => Schedules
-                                            .Where((b) => b.NextAdAt == a.NextAdAt)
-                                            .Select((c) => c)
-                                            .Any()
+                                            .ConvertAll(a => new CurrAdSchedule(a))
+                                        //    ,
+                                        //(Schedules, a) => Schedules
+                                        //    .Where((b) => b.NextAdAt == a.NextAdAt)
+                                        //    .Select((c) => c)
+                                        //    .Any()
                                         );
-
                             Schedules = [.. Schedules.OrderBy((a) => a.NextAdAt)];
-                        }
-                    }
 
-                    if (Schedules.Count > 0)
-                    {
-                        CurrAd = Schedules.First(); // make sure we have the earliest ad
-                        NextAdCheck = CurrAd.NextAdAt + CurrAd.Duration; // wait until current ad ends to check again2
+                            CurrAd = Schedules.First(); // make sure we have the earliest ad
+                            NextAdCheck = CurrAd.NextAdAt + CurrAd.Duration; // wait until current ad ends to check again
+
+                            if(LastAdAtNotify != CurrAd.NextAdAt)
+                            {
+                                AdSoonNotify = false;
+                            }
+                        }
                     }
                     else
                     {
-                        NextAdCheck = CurrTime.AddSeconds(2); // check every 2 seconds
+                        NextAdCheck = CurrTime.AddSeconds(20); // check every 2 seconds
                     } // check every 30 seconds or wait until the next ad time
                 }
 
                 // a pending ad will run soon
                 if (CurrAd != null)
                 {
-                    if (!CheckSnooze && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds + 5) >= CurrAd.NextAdAt)
-                    { // a snooze will shift the ad time by 5 minutes later, check for a snooze before notifying => reset the CurrAd and do it again
-                        CheckSnooze = CurrAd.SnoozeCount == 0 ? true : false; // if snoozed, the potential 1 snooze reduces to 0, a true stops this check next time; >0 remaining, another snooze could happen and we need to check snooze again
-                    }
-                    else
+                    /* 
+Ad chronology:
+                                                                    between_ads     AdSoon  Waiting     AdStarted       AdEnd
+-> DateTime.MinValue;                                               t               f       f           f               f
+(CurrTime = (DateTime.Now +NotifySeconds) >= NextAdTime) == false;  t               f       f           f               f
+(CurrTime = (DateTime.Now +NotifySeconds) >= NextAdTime) == true;   f               t       f           f               f
+(CurrTime = DateTime.Now) >= NextAdTime == false && NotifyAdSoon;   f               f       t           f               f
+(CurrTime = DateTime.Now) >= NextAdTime == true && NotifyAdSoon;    f               f       f           t               f
+(CurrTime = DateTime.Now+AdDuration) >= NextAdTime == false;        f               f       f           t               f
+
+(CurrTime = DateTime.Now+AdDuration) >= NextAdTime == true;         f               f       f           t               t
+                                            (the AdStarted check and AdEnd check both satisfy, without using a progress flag)
+
+                    DateTime >= NextAdTime+AdDuration: can be false for AdEnd and true for AdStarted
+                    */
+
+                    if (!AdSoonNotify && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds) >= CurrAd.NextAdAt)
+                    // first check if we need to notify ads are starting soon - should occur first chronologically
                     {
-                        /* 
-    Ad chronology:
-                                                                        between_ads     AdSoon  Waiting     AdStarted       AdEnd
-    -> DateTime.MinValue;                                               t               f       f           f               f
-    (CurrTime = (DateTime.Now +NotifySeconds) >= NextAdTime) == false;  t               f       f           f               f
-    (CurrTime = (DateTime.Now +NotifySeconds) >= NextAdTime) == true;   f               t       f           f               f
-    (CurrTime = DateTime.Now) >= NextAdTime == false && NotifyAdSoon;   f               f       t           f               f
-    (CurrTime = DateTime.Now) >= NextAdTime == true && NotifyAdSoon;    f               f       f           t               f
-    (CurrTime = DateTime.Now+AdDuration) >= NextAdTime == false;        f               f       f           t               f
+                        LastAdAtNotify = CurrAd.NextAdAt;
+                        AdSoonNotify = true;
+                        NotifyAdSoon?.Invoke(this, new(OptionFlags.TwitchAdsNotifySeconds, CurrAd.Duration));
+                    }
+                    else if (!AdStartNotify && CurrTime >= CurrAd.NextAdAt)
+                    // check if now is after the ad should start; this occurs second chronologically
+                    {
+                        AdStartNotify = true;
+                        NotifyAdStarted?.Invoke(this, new(CurrAd.Duration));
+                    }
+                    else if (CurrTime >= CurrAd.GetAdEnd)
+                    // check if now is after the ad should end; this occurs third chronologically
+                    {
+                        NotifyAdEnded?.Invoke(this, new());
+                        NextAdCheck = CurrTime;
+                        AdSoonNotify = false;
+                        AdStartNotify = false;
+                        CurrAd = null; // reset the CurrAd to get the next ad
+                        LastAdAtNotify = DateTime.MinValue; // reset the ad soon notify time
+                    }
 
-    (CurrTime = DateTime.Now+AdDuration) >= NextAdTime == true;         f               f       f           t               t
-                                                (the AdStarted check and AdEnd check both satisfy, without using a progress flag)
-
-                        DateTime >= NextAdTime+AdDuration: can be false for AdEnd and true for AdStarted
-                        */
-
-
-                        if (!AdSoonNotify && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds) >= CurrAd.NextAdAt)
-                        // first check if we need to notify ads are starting soon - should occur first chronologically
-                        {
-                            AdSoonNotify = true;
-                            NotifyAdSoon?.Invoke(this, new(OptionFlags.TwitchAdsNotifySeconds, CurrAd.Duration));
-                        }
-                        else if (CurrTime >= CurrAd.GetAdEnd)
-                        // check if now is after the ad should end; this occurs third chronologically
-                        // without a flag, AdStarted can occur also when AdEnd can occur, but AdEnd won't occur chronologically before AdStarted
-                        {
-                            NotifyAdEnded?.Invoke(this, new());
-                            NextAdCheck = CurrTime.AddMinutes(7); // 
-                            CurrAd = null; // reset the CurrAd to get the next ad
-                            CheckSnooze = false; // reset the snooze check
-                        }
-                        else if (CurrTime >= CurrAd.NextAdAt)
-                        // check if now is after the ad should start; this occurs second chronologically
-                        {
-                            NotifyAdStarted?.Invoke(this, new(CurrAd.Duration));
-                        }
+                    if (CurrAd.SnoozeCount > 0 && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds + 5) >= CurrAd.NextAdAt)
+                    { // a snooze will shift the ad time by 5 minutes later, check for a snooze before notifying => reset the CurrAd and do it again
+                        NextAdCheck = CurrTime.AddSeconds(5); // check again in 5 seconds
                     }
                 }
 
-                await Task.Delay(1000); // wait between checks
+                Task.Delay(1000).Wait(); // wait between checks
             }
         }
 
