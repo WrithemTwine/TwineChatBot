@@ -1571,7 +1571,7 @@
                                             </GroupBox>
 
                                             <!-- Date Formats -->
-                                            <GroupBox Header="{DynamicResource Options_DateFormats_Header}">
+                                            <GroupBox Header="{DynamicResource Options_TimeFormats_Header}">
                                                 <StackPanel>
                                                     <CheckBox IsChecked="{Binding FormatTimeIncludeSeconds}">
                                                         <CheckBox.ToolTip>

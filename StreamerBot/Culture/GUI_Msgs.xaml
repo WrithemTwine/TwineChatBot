@@ -1093,7 +1093,7 @@
     <system:String x:Key="Options_EnableManageData_Tooltip">Shows or Hides "Data Management" options to prevent accidental clicking.</system:String>
 
     <!-- Options -> Date Formats -->
-    <system:String x:Key="Options_DateFormats_Header">Date Formats</system:String>
+    <system:String x:Key="Options_TimeFormats_Header">Time Formats</system:String>
     <system:String x:Key="Options_TimeIncludeSeconds">Enable seconds amount in time formats</system:String>
     <system:String x:Key="Options_TimeIncludeSeconds_Tooltip">Include seconds when formatting time durations.</system:String>
     <system:String x:Key="Options_TimeFullFormatHoursFull_Tooltip">Enable this option to specify the full 'total hours' or years/months/days/hours/minutes when formatting time.</system:String>
