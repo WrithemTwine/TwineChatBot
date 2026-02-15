@@ -23,5 +23,10 @@ namespace StreamerBotLib.Models
         public int PrerollFreeTime { get; } = prerollFreeTime;
 
         public DateTime GetAdEnd { get => NextAdAt.Add(Duration); }
+
+        public new string ToString()
+        {
+            return $"NextAdAt: {NextAdAt}, Duration: {Duration}, SnoozeCount: {SnoozeCount}, SnoozeRefreshAt: {SnoozeRefreshAt}, LastAdAt: {LastAdAt}, PrerollFreeTime: {PrerollFreeTime}, GetAdEnd: {GetAdEnd}";
+        }
     }
 }

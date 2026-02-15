@@ -30,11 +30,11 @@ namespace TestStreamerBot.TestAds
         [Fact]
         public async Task TestAdNotificationMessages()
         {
-           List<CurrAdSchedule> AdStatus =
-                 [
-                     new CurrAdSchedule(1, DateTime.MinValue, DateTime.Now.AddSeconds(15), 10, DateTime.Now.ToLocalTime(), 0 ),
+            List<CurrAdSchedule> AdStatus =
+                  [
+                      new CurrAdSchedule(1, DateTime.MinValue, DateTime.Now.AddSeconds(15), 10, DateTime.Now.ToLocalTime(), 0 ),
                     new CurrAdSchedule(0, DateTime.MinValue, DateTime.Now.AddSeconds(80), 10, DateTime.Now.ToLocalTime(), 0 )
-                 ];
+                  ];
 
             List<CurrAdSchedule> Schedules = [];
 
@@ -141,7 +141,7 @@ Ad chronology:
                         LastAdAtNotify = DateTime.MinValue; // reset the ad soon notify time
                     }
 
-                    if (CurrAd!=null && CurrAd.SnoozeCount > 0 && CurrTime.AddSeconds(TwitchAdsNotifySeconds) >= CurrAd.NextAdAt)
+                    if (CurrAd != null && CurrAd.SnoozeCount > 0 && CurrTime.AddSeconds(TwitchAdsNotifySeconds) >= CurrAd.NextAdAt)
                     { // a snooze will shift the ad time by 5 minutes later, check for a snooze before notifying => reset the CurrAd and do it again
                         NextAdCheck = CurrTime.AddSeconds(1); // check again in 1 second
                         //Notifications.Add($"{DateTime.Now} - [Ad Snooze Check] Snooze available for ad at {CurrAd.NextAdAt}, snoozing now.");
@@ -157,7 +157,7 @@ Ad chronology:
                 await Task.Delay(1000); // wait between checks
             }
 
-          Assert.NotEmpty(Notifications);
+            Assert.NotEmpty(Notifications);
         }
     }
 }

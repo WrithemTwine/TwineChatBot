@@ -174,7 +174,7 @@ namespace StreamerBot
             if (sender.GetType() == typeof(DataGrid))
             {
                 bool FoundAddShout = ((DataGrid)sender).Name is nameof(DG_Users) or nameof(DG_Followers);
-                bool FoundIsEnabled = ((DataGrid)sender).Columns.Select((c) => (string)c.Header == "Enabled").Any();
+                bool FoundIsEnabled = ((DataGrid)sender).Columns.Any((c) => (string)c.Header == "Enabled");
                 bool FoundAddItem = ((DataGrid)sender).Name is
                        nameof(DG_CurrencyType)
                     or nameof(DG_CustomWelcome)
@@ -258,10 +258,10 @@ namespace StreamerBot
 
             TableMeta tableMeta = new();
 
-            if (item.Name is "DG_OverlayService_Actions" or "DG_ModApprove")
-            {
-                UpdateOverlays();
-            }
+            //if (item.Name is "DG_OverlayService_Actions" or "DG_ModApprove")
+            //{
+            UpdateOverlays();
+            //}
 
             PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
         }
@@ -272,6 +272,7 @@ namespace StreamerBot
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+
             DGOpenEditWindow(item);
         }
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
@@ -397,6 +398,78 @@ namespace StreamerBot
                 Controller.UpdatedIsEnabledRows(GetTableName(item));
             }
         }
+
+        #region DataGrid ListBox Editing (for CategoryList and ChannelEvents "EventType" column)
+        private void DataGridEdit_ListBox_PreviewLeftMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+
+            ListBox CatList = ((ListBox)sender);
+
+            if (CatList.SelectedItem == DataGridEdit_ListBox_SelectedItem)
+            { // check if we're selecting the same item
+                DataGrid_ListBox_Edit_SetSelectedItem(CatList);
+            }
+            else
+            { // we selected another item, the SelectionChanged event will handle the rest, so we just update the selected item variable
+                DataGridEdit_ListBox_SelectedItem = CatList.SelectedItem;
+            }
+        }
+
+        private object DataGridEdit_ListBox_SelectedItem = null;
+
+        private void DataGridEdit_ListBox_CategorySelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            e.Handled = true;
+
+            ListBox CatList = ((ListBox)sender);
+            DataGrid_ListBox_Edit_SetSelectedItem(CatList);
+        }
+
+        private static void DataGrid_ListBox_Edit_SetSelectedItem(ListBox CatList)
+        {
+            CheckBox CurrBox = (CheckBox)CatList.SelectedItem;
+            List<string> selected = [];
+            CurrBox.IsChecked = !CurrBox.IsChecked;
+
+            bool? SelectAll = null;
+
+            // first check what is currently selected
+            // if "All" was now selected, work with the other items
+            if (CurrBox.Content.ToString() == "All")
+            {
+                SelectAll = CurrBox.IsChecked == true;
+            }
+            // if other items were selected, then we uncheck "All"
+            else if (CurrBox.IsChecked == true)
+            {
+                SelectAll = false;
+            }
+
+            //CatList.SelectedItems.Clear();
+
+            // step through every checkbox item
+            foreach (CheckBox c in CatList.ItemsSource)
+            {
+                // look for the "All" item, set it to the found item
+                if (c.Content.ToString() == "All")
+                {
+                    c.IsChecked = SelectAll;
+                }
+                // if the "All" item is selected, uncheck all of the other items
+                else if (SelectAll == true)
+                {
+                    c.IsChecked = false;
+                }
+
+                if (c.IsChecked == true)
+                {
+                    //    CatList.SelectedItems.Add(c.Content);
+                    selected.Add(c.Content.ToString());
+                }
+            }
+        }
+        #endregion
 
         #endregion
 

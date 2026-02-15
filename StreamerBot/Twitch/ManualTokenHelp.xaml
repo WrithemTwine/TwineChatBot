@@ -1,0 +1,98 @@
+﻿<Page x:Class="StreamerBot.Twitch.ManualTokenHelp"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
+      xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
+    mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ManualTokenHelp">
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Culture/GUI_Msgs.xaml" />
+                <ResourceDictionary Source="../Culture/GUI_HelpMsgs.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Expander IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay, Source={x:Static s:Settings.Default}}"
+              ScrollViewer.CanContentScroll="True"
+              Width="Auto" MaxHeight="350">
+        <Expander.Header>
+            <TextBlock Text="{DynamicResource Credentials_Header}"/>
+        </Expander.Header>
+
+        <FlowDocumentScrollViewer Margin="10" 
+                                  VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.CanContentScroll="True">
+            <FlowDocument FontSize="12" PagePadding="5">
+                <Section>
+                    <Paragraph>
+                        <Run Text="{DynamicResource Help_Twitch_ManualToken_Intro}"/>
+                        <LineBreak/>
+                        <LineBreak/>
+                        <Run Text="{DynamicResource Help_Twitch_ManualToken_SettingsLocation}"/>
+                    </Paragraph>
+
+                    <Paragraph>
+                        <Run Text="{DynamicResource Help_Twitch_ManualToken_OAuth}"/>
+                        <LineBreak />
+                        <LineBreak />
+                        <Run Text="{DynamicResource Help_Twitch_ManualToken_Note}"/>
+                    </Paragraph>
+                </Section>
+
+                <Section>
+                    <List>
+                        <ListItem>
+                            <Paragraph>
+                                <Run Text="{DynamicResource Help_Twitch_ManualToken_BotAccount}"/>
+                            </Paragraph>
+                        </ListItem>
+
+                        <ListItem>
+                            <Paragraph>
+
+                                <InlineUIContainer>
+                                    <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Bot" Visibility="Collapsed">
+                                        <Label Width="Auto" Content="{DynamicResource Help_Twitch_ManualToken_Steps}"/>
+                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                        DataContext=""
+                                        Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}}"/>
+                                    </StackPanel>
+                                </InlineUIContainer>
+                                <Run Text=" "/>
+                                <InlineUIContainer>
+                                    <StackPanel x:Name="Help_TwitchBot_DiffAuthScopes_Streamer" Visibility="Collapsed">
+                                        <Label Width="Auto" Content="{DynamicResource Help_Twitch_ManualToken_Scopes_Streamer}"/>
+                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
+                                         DataContext=""
+                                         Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthChannel}}"/>
+                                    </StackPanel>
+                                </InlineUIContainer>
+                                <Run Text=" "/>
+                                <InlineUIContainer>
+                                    <StackPanel x:Name="Help_TwitchBot_SameAuthScopes" Visibility="Collapsed">
+                                        <Label Width="Auto" Content="{DynamicResource Help_Twitch_ManualToken_RefreshDate}"/>
+                                        <TextBox Padding="2" IsReadOnly="True"  BorderBrush="Blue" BorderThickness="1" TextWrapping="Wrap" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                            DataContext=""
+                                            Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}"/>
+                                    </StackPanel>
+                                </InlineUIContainer>
+
+                            </Paragraph>
+                        </ListItem>
+
+                        <ListItem>
+                            <Paragraph>
+                                <Run Text="{DynamicResource Help_Twitch_ManualToken_RefreshDate}"/>
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+                </Section>
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+    </Expander>
+</Page>

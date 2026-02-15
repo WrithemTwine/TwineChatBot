@@ -7,10 +7,10 @@ namespace StreamerBotLib.Models.Repeat
 {
     internal class RepeatManager
     {
-        public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
+        internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         internal event EventHandler<EventArgs> OnRepeatCheckStopped;
 
-        public bool IsStarted { get; private set; } = false;
+        internal bool IsStarted { get; private set; } = false;
 
         private readonly ActionSystem _actionsystem;
         private RepeatCommandMode _repeatcommandmethod;

@@ -590,10 +590,10 @@ namespace StreamerBot
                     OptionFlags.TwitchBotApproveScopes = OptionFlags.TwitchStreamerUseToken ?
                         OptionFlags.CredentialsTwitchScopesDiffOauthBot : OptionFlags.CredentialsTwitchScopesOauthSame;
                 }
-            } 
-            else if(sender == TB_TwitchStreamerAccessToken)
+            }
+            else if (sender == TB_TwitchStreamerAccessToken)
             {
-                if(!string.IsNullOrEmpty(TB_TwitchStreamerAccessToken.Text))
+                if (!string.IsNullOrEmpty(TB_TwitchStreamerAccessToken.Text))
                 {
                     OptionFlags.TwitchStreamerScopesApproveScopes = OptionFlags.CredentialsTwitchScopesDiffOauthChannel;
                 }

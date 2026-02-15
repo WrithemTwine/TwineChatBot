@@ -220,7 +220,7 @@ namespace StreamerBotLib.BotClients.Twitch
                             _EventSubWebsocketClient.WebsocketDisconnected += OnWebsocketDisconnected;
                             _EventSubWebsocketClient.WebsocketReconnected += OnWebsocketReconnected;
                             _EventSubWebsocketClient.ErrorOccurred += OnErrorOccurred;
-                       
+
                             OnInitialBotStartupSubHandlers?.Invoke(this, new());
                         }
 

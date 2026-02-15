@@ -14,11 +14,12 @@
     SizeToContent="WidthAndHeight" 
     UseLayoutRounding="True" 
     Topmost="True">
-    <Window.Resources>
-        <DataTemplate x:Key="CategoryCheckBox" DataType="ListBox">
-            <CheckBox Content="{Binding Item1}" IsChecked="{Binding Item2}" Checked="EditData_Category_Checked" Unchecked="EditData_Category_Checked" />
+
+    <!--<Window.Resources>
+        <DataTemplate x:Key="CategoryCheckBox">
+            <CheckBox IsChecked="{Binding Item1}" Content="{Binding Item2}" Checked="EditData_Category_Checked" Unchecked="EditData_Category_Checked" />
         </DataTemplate>
-    </Window.Resources>
+    </Window.Resources>-->
 
     <DockPanel LastChildFill="True">
         <StackPanel DockPanel.Dock="Top">

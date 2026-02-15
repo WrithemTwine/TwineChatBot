@@ -1,0 +1,132 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ============================================================= -->
+    <!--        Twitch Tab - Manual Token Flow Help (long content)      -->
+    <!-- ============================================================= -->
+
+    <!-- Main header for the expander -->
+    <system:String x:Key="Twitch_ManualToken_ExpanderHeader">Credentials (Click me)</system:String>
+
+    <!-- Introductory paragraph -->
+    <system:String x:Key="Help_Twitch_ManualToken_Intro">
+        The 'Credentials' are in the "Credentials (Click me)" expander for privacy when the bot starts.
+Click to expand and to enter and view the credentials. The data is saved automatically.
+    </system:String>
+
+    <!-- Settings location note -->
+    <system:String x:Key="Help_Twitch_ManualToken_SettingsLocation">
+        The settings are saved at: C:\Users\{username}\AppData\Local\TwineStreamerBot
+    </system:String>
+
+    <!-- OAuth explanation -->
+    <system:String x:Key="Help_Twitch_ManualToken_OAuth">
+        Bots need an "Access Token" to authorize it to post to Twitch.
+Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token".
+    </system:String>
+
+    <!-- Manual process note -->
+    <system:String x:Key="Help_Twitch_ManualToken_Note">
+        *Until this application supports creating and refreshing access tokens, the user will need to manually perform this task.
+    </system:String>
+
+    <!-- Bot account recommendation -->
+    <system:String x:Key="Help_Twitch_ManualToken_BotAccount">
+        Get and login to the bot account* to use within this chat bot.
+The Token Generator site needs the bot account as the current Twitch login (first time, to link the Token site to Twitch bot account).
+*The recommendation is to create a separate Twitch account for this bot to use.
+    </system:String>
+
+    <!-- Step-by-step instructions (long block) -->
+    <system:String x:Key="Help_Twitch_ManualToken_Steps">
+        1. Visit https://dev.twitch.tv/console and "Register Your Application" under the account the bot will use.
+   *Note, the Twitch account needs 2-factor authentication set-up to register applications.*
+
+2. Give the application a name (it's just a reference when you look at the listing)
+
+3. Add this OAuth Redirect URL: https://twitchapps.com/tokengen/
+   Select "Chat Bot" category (or add the token generator website you're using).
+
+4. Complete the reCaptcha and click 'Create'.
+
+5. View the application entry to get the 'Client Id'. You can save it and add to the credential box.
+
+6. Go to https://twitchapps.com/tokengen/ → paste Client ID → select scopes → Connect → copy Access Token &amp; Refresh Token.
+
+7. Paste them back here and click "Refresh Due Date".
+    </system:String>
+
+    <!-- Scopes explanation (when bot ≠ streamer) -->
+    <system:String x:Key="Help_Twitch_ManualToken_Scopes_Bot">
+        Bot account not equal to Streamer Channel - Bot Token Scopes:
+    </system:String>
+
+    <system:String x:Key="Help_Twitch_ManualToken_Scopes_Streamer">
+        Bot account not equal to Streamer Channel - Streamer Token Scopes:
+    </system:String>
+
+    <system:String x:Key="Help_Twitch_ManualToken_Scopes_Same">
+        Bot account and Streamer Channel account the same - Token Scopes:
+    </system:String>
+
+    <!-- Refresh date reminder -->
+    <system:String x:Key="Help_Twitch_ManualToken_RefreshDate">
+        Be sure to click "Refresh Date" here in the credentials which will give you the 60-day (53-days as it appears 'Follow' calls to Twitch only work with the token less than 60-days) date from now in which you need to refresh the 'access token'.
+You would only need to perform the new 'access token' to get another token.
+    </system:String>
+
+    <x:Array Type="system:String" x:Key="CredentialsTwitchStreamerFeatures">
+        <system:String>Channel Point Rewards</system:String>
+        <system:String>Setting Channel Title</system:String>
+        <system:String>Setting Channel Category</system:String>
+    </x:Array>
+
+    <!-- ============================================================= -->
+    <!--                   Credentials / Auth Help                     -->
+    <!-- ============================================================= -->
+    
+    <!-- Used inside the FlowDocument - short pieces -->
+    <system:String x:Key="Help_Twitch_AuthCode_Intro">This bot performs tasks on behalf of the streamer. A moderator level bot account can perform many tasks for the streamer, including chat message responses. It is possible to have a bot account perform some tasks, and use the streamer account access credentials to perform the additional tasks.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_BeforeContinuing">Before continuing, consider whether to attach this bot to the streamer account or use a (recommended) separate bot account.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_ChannelNameInstruction">To use the streamer account for the bot actions, type the streamer channel name into the "Channel Name" box, and repeat the name in the "Bot User Name" box. For using a separate bot account, type the streamer account name in the "Channel Name" box, and the bot account name in the "Bot User Name" box.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_TokenFlowExplanation">This token flow for accessing Twitch is more simplified than the user method. This flow requires registering the bot at</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_RedirectUrl">as the OAuth Redirect URL (add to the Twitch Console registered application entry):</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_ApproveApplication">and approving the application for an authorization code.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_AuthorizeSteps">To authorize the application:</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_BrowserNote">In the "Bot Account Info" box, expand it and determine whether you want to use the built-in web browser for the application (checked box) or your default browser (unchecked box). Then, click the "Authorize Bot Token" button. This will open a browser window to authorize the access, either in the application browser or default browser. You may need to change the current account (look at the top for 'sign out, change accounts) for the authorization - the Twitch authorization screen doesn't adapt to the account associated with the authorization.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_BlankPageNote">The browser will go to a blank looking or broken looking webpage. This is alright. The application intercepted the response from Twitch to save the provided access code, the user doesn't need to manually paste them.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_ClientIdSecretNote">From here on out, the user just pasted 'client Id' and 'client Secret' for each account and will not have to paste any more data for approving the application; occassionally performing the Twitch login and authorization application access.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_MultipleWindowsNote">Note: if you click 'authorize account' multiple times and open several browser windows, only use the latest browser or the authorization will fail to get recongnized in this application. (You could have a 2 browser windows open, one for streamer account authorization and another for bot account authorization, so long as you use the latest window). The 'latest' window is due to each time the user clicks the "Authorize Account" button, the application generates a new "state" token for sending to Twitch, and Twitch returns "state" with the authorization to ensure there is no impersonation. When creating several windows, the application saves the last created 'state token' and will only register the last received authorization.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_SeparateBotStreamerNote">If you're using a separate bot account alongside your streamer account, perform this same procedure for the streamer account box.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_TokenRefreshNote">The bot will save each authentication code from the "authorized access" form Twitch provides to obtain a refresh token, and continually retrieves a new access token, once the access token expires. This occurs for the bot account and also a streamer account, if you choose to separate the accesses.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_StatusBarWarning">Filling in the client Ids and client secrets in both boxes, then authorizing may show a warning statusbar the other account isn't authorized. It's okay to continue authorizing one account then the other. The statusbar will also show if something happens to the authorization and requires the user to re-authorize the application access.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_TokenExpirationNote">Note: The tokens expire for the associated account, if:</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_PasswordChange">The user changes the password, or</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_DisconnectApp">Disconnects the app connection, via Twitch settings.</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_ScopesChangeNote">From time to time, this bot may add or remove features and changes the access scope. Be sure to look at the release notes if the access scopes changed. This means the user will need to reauthorize the beat and/or streamer access again; otherwise, the tokens may fail during a live stream!</system:String>
+
+    <system:String x:Key="Help_Twitch_AuthCode_ForceReauthNote">If you need to re-authorize the access and the buttons appear locked, click the "Force Re-Authorization" button to manually reset the authorization; and the authorization buttons will be ready to click.</system:String>
+
+    <system:String x:Key="Credentials_ChannelInfo_Header">Channel Information</system:String>
+    <system:String x:Key="Credentials_ForceReauthButton">Force All Re-Authorization</system:String>
+    <system:String x:Key="Help_Twitch_AuthCode_NoScopesNote">For 'Event Sub' bot to check for stream status and incoming raids, we need a 'no-scope' access token. Click the below authorization button to create the token.</system:String>
+    
+</ResourceDictionary>

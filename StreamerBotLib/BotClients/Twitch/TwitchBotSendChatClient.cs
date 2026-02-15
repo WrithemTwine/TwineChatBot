@@ -102,8 +102,8 @@ namespace StreamerBotLib.BotClients.Twitch
                 // Clear any previous messages
                 newSendMsg.Clear();
 
-                string prefix = (message.StartsWith("/me ") && !CurrAnnouncement ? "/me " : ""); // exclude prefix if announcement
-                string tempSend = message.Replace("/me ", "");
+                string prefix = Announcement ? "" : message.StartsWith("/me ") ? "/me " : "";   // exclude prefix if announcement
+                string tempSend = Announcement ? message.Replace("/me ", "") : message;
 
                 while (tempSend.Length > SingleChatLength)
                 {

@@ -1,4 +1,5 @@
-﻿using StreamerBot.Web;
+﻿using StreamerBot.Twitch;
+using StreamerBot.Web;
 
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.Models.Enums;
@@ -47,7 +48,23 @@ namespace StreamerBot
         {
             LogWriter.DebugLog("Button_TwitchAuthToken_ReAuthorize", DebugLogTypes.GUIBotComs, "Twitch Auth Re-Authorization requested.");
             GUIStopBots_Click(this, new());
-            BotController.ForceTwitchAuthReauthorization();
+            if (((Button)sender) == Button_TwitchAuthCode_All_ForceReAuthorization)
+            {
+                BotController.ForceTwitchAuthReauthorization();
+            }
+            else if ((Button)sender == Twitch_AuthCode_Button_AuthorizeBot_Reauthorize)
+            {
+                BotController.ForceTwitchAuthReauthorization(Bots.TwitchEventSubBot);
+            }
+            else if ((Button)sender == Twitch_AuthCode_Button_AuthorizeStreamer_Reauthorize)
+            {
+                BotController.ForceTwitchAuthReauthorization(Bots.TwitchStreamerEventSubScopes);
+            }
+            else if ((Button)sender == Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer_NoScopes_Reauthorize || ((Button)sender) == Twitch_AuthCode_Button_NoScopesBot_Reauthorize)
+            {
+                BotController.ForceTwitchAuthReauthorization(Bots.TwitchStreamerEventSubNoScopes);
+            }
+
             await TwitchCheckFocusAsync();
         }
 
@@ -254,19 +271,20 @@ namespace StreamerBot
 
                 SetBotValidAccessLabels();
 
+                (Frame_Bots_Twitch_ManualTokenHelp?.Content as ManualTokenHelp)?.SetScopes();
+
                 if (OptionFlags.TwitchStreamerUseToken)
                 {
                     GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Visible;
                     TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Visible;
                     TextBox_TwitchScopesOauthSame.Visibility = Visibility.Collapsed;
-                    Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Visible;
-                    Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Visible;
-                    Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Collapsed;
 
                     Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Visible;
 
                     Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer.Visibility = Visibility.Visible;
+                    Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer_NoScopes_Reauthorize.Visibility = Visibility.Visible;
                     Twitch_AuthCode_NoScopes_Button_AuthorizeBot.Visibility = Visibility.Collapsed;
+                    Twitch_AuthCode_Button_NoScopesBot_Reauthorize.Visibility = Visibility.Collapsed;
 
                     SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Collapsed;
                     SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Visible;
@@ -278,14 +296,13 @@ namespace StreamerBot
                     GroupBox_Twitch_AdditionalStreamerCredentials.Visibility = Visibility.Collapsed;
                     TextBox_TwitchScopesDiffOauthBot.Visibility = Visibility.Collapsed;
                     TextBox_TwitchScopesOauthSame.Visibility = Visibility.Visible;
-                    Help_TwitchBot_DiffAuthScopes_Bot.Visibility = Visibility.Collapsed;
-                    Help_TwitchBot_DiffAuthScopes_Streamer.Visibility = Visibility.Collapsed;
-                    Help_TwitchBot_SameAuthScopes.Visibility = Visibility.Visible;
 
                     Twitch_AuthCode_GroupBox_StreamerInfo.Visibility = Visibility.Collapsed;
 
                     Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer.Visibility = Visibility.Collapsed;
+                    Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer_NoScopes_Reauthorize.Visibility = Visibility.Collapsed;
                     Twitch_AuthCode_NoScopes_Button_AuthorizeBot.Visibility = Visibility.Visible;
+                    Twitch_AuthCode_Button_NoScopesBot_Reauthorize.Visibility = Visibility.Visible;
 
                     SP_Twitch_UserToken_NoScopes_Bot.Visibility = Visibility.Visible;
                     SP_Twitch_UserToken_NoScopes_Streamer.Visibility = Visibility.Collapsed;
@@ -390,7 +407,7 @@ namespace StreamerBot
                 }
                 else
                 {
-                    TextBlock_EventSubNotify_AccessToken_NoScopes_Valid.Visibility = Visibility.Collapsed;  
+                    TextBlock_EventSubNotify_AccessToken_NoScopes_Valid.Visibility = Visibility.Collapsed;
                     TextBlock_EventSubNotify_AccessToken_NoScopes_Invalid.Visibility = Visibility.Visible;
                 }
 

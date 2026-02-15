@@ -145,9 +145,18 @@ namespace StreamerBotLib.Static
 
             string totaltime = output.Count == 0 ? "no time available" : string.Join(", ", output);
 
-            if (OptionFlags.FormatTimeFullFormatHoursFull)
+            if (OptionFlags.TwitchAdsNotifyTimeFormatTotalTime)
             {
-                returntime = string.Format(LocalizedMsgSystem.GetVar(MsgVars.or),totalhours, totaltime);
+                if (!OptionFlags.FormatTimeIncludeSeconds)
+                {
+                    totaltime = string.Join(", ", [totaltime, Plurality(timeSpan.Seconds, MsgVars.Pluralsecond)]);
+                }
+
+                returntime = totaltime;
+            }
+            else if (OptionFlags.FormatTimeFullFormatHoursFull)
+            {
+                returntime = string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), totalhours, totaltime);
             }
             else if (OptionFlags.FormatTimeFullFormatFullHours)
             {

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#define FixCurrency
+
+using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Models;
@@ -34,6 +36,38 @@ namespace StreamerBotLib.DataSQL.EFC10
         {
             using var context = BuildDataContext();
             await context.Database.BeginTransactionAsync();
+
+#if FixCurrency
+            var CurrUsers = await context.Users
+                                         .Where(d => d.LastDateSeen > CurrStreamStart)
+                                         .Include(c => c.Currency)
+                                         .ThenInclude(ct => ct.CurrencyType)
+                                         .ToListAsync();
+
+            var CurrencyUsers = CurrUsers.Where(u => Users.Contains(new(u.UserName, u.Platform, u.UserId)))
+                                         .ToList();
+
+            foreach (var u in CurrencyUsers)
+            {
+                TimeSpan clock = dateTime - u.LastDateSeen;
+
+                if (u.Currency != null && u.LastDateSeen >= CurrStreamStart)
+                {
+                    foreach (var currency in u.Currency)
+                    {
+                        if (currency.CurrencyType != null)
+                        {
+                            currency.Value = Math.Min(
+                                currency.CurrencyType.MaxValue,
+                                Math.Round(currency.Value + (currency.CurrencyType.AccrueAmt * (clock.TotalSeconds / currency.CurrencyType.Seconds)), 2)
+                            );
+                        }
+                    }
+                }
+            }
+
+#else
+
             var userIds = Users.Select(user => user.UserId).ToList();
 
             var dbUsers = await context.Users
@@ -60,6 +94,10 @@ namespace StreamerBotLib.DataSQL.EFC10
                     }
                 }
             }
+
+#endif
+
+
 
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);

@@ -47,6 +47,7 @@
         TwitchMultiLiveBot,
         TwitchTokenBot,
         TwitchStreamerNoScopesEventSubBot,
-        MultiLiveSystem
+        MultiLiveSystem,
+        Converters
     }
 }

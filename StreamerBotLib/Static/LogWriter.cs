@@ -204,6 +204,7 @@ using System.Text;
                 DebugLogTypes.GUIBotComs => OptionFlags.EnableDebugGUIBotComs ? line : "",
                 DebugLogTypes.GUIMultiLive => OptionFlags.EnableDebugGUIMultiLive ? line : "",
                 DebugLogTypes.TwitchStreamerNoScopesEventSubBot => OptionFlags.EnableDebugTwitchStreamerNoScopesEventSubBot ? line : "",
+                DebugLogTypes.Converters => OptionFlags.EnableDebugConverters ? line : "",
                 _ => "",
             };
             #endregion

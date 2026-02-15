@@ -3,11 +3,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:SqlModels="clr-namespace:StreamerBotLib.DataSQL.Models"
-    xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
     xmlns:SqlModelConverters="clr-namespace:StreamerBotLib.DataSQL.Models.Converters"
+    xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
     xmlns:Converter="clr-namespace:StreamerBotLib.Models.Converters"
-    xmlns:Models="clr-namespace:StreamerBotLib.Models"
     xmlns:StaticLib="clr-namespace:StreamerBotLib.Static"
     xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     mc:Ignorable="d">
@@ -15,11 +13,11 @@
     <SqlModelConverters:IntConvert x:Name="IntConverter" x:Key="IntConverter" />
     <SqlModelConverters:TimeoutSecondsConverter x:Name="TimeoutSecConvert" x:Key="TimeoutSecConvert" />
     <StaticLib:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
-    <Converter:ConvertCategory x:Name="ConvertCategory" x:Key="ConvertCategory" />
-    <Converter:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
+    <SqlModelConverters:CategoryConverter x:Name="CategoryConverter" x:Key="CategoryConverter" />
+    <SqlModelConverters:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
     <Converter:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
     <Converter:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
- 
+
     <GroupStyle x:Key="DataGrid_GroupStyle">
         <GroupStyle.HeaderTemplate>
             <DataTemplate>
@@ -75,181 +73,23 @@
 
     </Style>
 
+    <Style x:Key="DataGridEditingTextBoxStyle" 
+       TargetType="{x:Type TextBox}"
+       BasedOn="{StaticResource {x:Type TextBox}}">
+        <!-- inherits your Foreground + Background -->
 
-    <DataTemplate x:Key="CategoryDataTemplate">
-        <StackPanel>
-            <TextBlock Text="{Binding Category, Mode=TwoWay, Converter={StaticResource ConvertCategory}}" TextWrapping="Wrap" Width="250" />
-        </StackPanel>
-    </DataTemplate>
+        <!-- These are the critical overrides for editing mode -->
+        <Setter Property="CaretBrush" Value="{DynamicResource ForegroundText}" />
+        <!-- fixes invisible cursor -->
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Borders}" />
+        <!-- visible border, theme-aware -->
+        <Setter Property="Padding" Value="2,1,2,1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
 
-    <DataTemplate x:Key="EditCategoryDataTemplate">
-        <StackPanel>
-            <ListBox
-                x:Name="ComboBox_EditCategoryDataTemplate" 
-                MinHeight="50" MaxHeight="200"
-                ItemsSource="{Binding Category, Mode=TwoWay, Converter={StaticResource EditConvertCategory}}" />
-        </StackPanel>
-    </DataTemplate>
+    </Style>
 
-    <!--#region DataGrid DateTime templates -->
-    <DataTemplate x:Key="DateFirstSeenTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateCurrentLoginTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateLastSeenTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding LastDateSeen, StringFormat={}{0:g}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateFollowedTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:g}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateStatusChangedTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:g}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateGiveawayTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding DateTime, StringFormat={}{0:f}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditDateGiveawayTemplate">
-        <StackPanel>
-            <TextBox Text="{Binding DateTime}" ToolTip="Input date and time in the provided format." />
-            <!--<DatePicker SelectedDate="{Binding DateTime}" />-->
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateInRaidTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditInRaidTemplate">
-        <StackPanel>
-            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
-            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateOutRaidTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditOutRaidTemplate">
-        <StackPanel>
-            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
-            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateClipCreatedTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:g}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateStreamStartTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:f}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditStreamStartTemplate">
-        <StackPanel>
-            <TextBox Text="{Binding StreamStart}" ToolTip="Input date and time in the provided format." />
-            <!--<DatePicker SelectedDate="{Binding StreamStart}" />-->
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateStreamEndTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:f}}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditStreamEndTemplate">
-        <StackPanel>
-            <TextBox Text="{Binding StreamEnd}" ToolTip="Input date and time in the provided format." />
-            <!--<DatePicker SelectedDate="{Binding StreamEnd}" />-->
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="StreamDurationTemplate">
-        <TextBlock Text="{Binding Duration, StringFormat={}{0:g}}" />
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateLiveTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding LiveDate}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditLiveDateTemplate">
-        <StackPanel>
-            <TextBox Text="{Binding LiveDate}" ToolTip="Input date and time in the provided format." />
-            <!--<DatePicker SelectedDate="{Binding LiveDate}" />-->
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="DateThroughTemplate">
-        <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding ThroughDate}" />
-            </Border>
-        </StackPanel>
-    </DataTemplate>
-
-    <DataTemplate x:Key="EditThroughDateTemplate">
-        <StackPanel>
-            <TextBox Text="{Binding ThroughDate}" ToolTip="Input date and time in the provided format." />
-            <!--<DatePicker SelectedDate="{Binding ThroughDate}" />-->
-        </StackPanel>
-    </DataTemplate>
-
-    <!--#endregion-->
 
     <!--#region DataGrid RowDetail DataTemplates -->
 
@@ -292,15 +132,16 @@
                         <Setter Property="Margin" Value="0,3" />
                         <Setter Property="Orientation" Value="Horizontal" />
                     </Style>
-                    <Style TargetType="{x:Type TextBox}">
+                    <Style TargetType="{x:Type TextBox}" 
+                           BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="MinWidth" Value="75" />
-                        <Setter Property="Foreground" Value="{StaticResource ForegroundText}" />
+                        <!--<Setter Property="Foreground" Value="{StaticResource ForegroundText}" />-->
                     </Style>
                 </DockPanel.Resources>
                 <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Usage:</TextBlock>
-                    <TextBlock Background="{StaticResource LightBackground}" Text="{Binding Usage}" TextWrapping="Wrap" />
-                    <TextBlock>Allow Parameter: </TextBlock>
+                    <TextBlock Text="{Binding Usage}" TextWrapping="Wrap" />
+                    <TextBlock>Allow Parameter:</TextBlock>
                     <CheckBox IsChecked="{Binding AllowParam}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top">
@@ -310,31 +151,31 @@
                     <TextBox Text="{Binding Message}" TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock>Lookup Data: </TextBlock>
+                    <TextBlock>Lookup Data:</TextBlock>
                     <CheckBox IsChecked="{Binding LookupData}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Width="100">Lookup Table: </TextBlock>
+                    <TextBlock Width="100">Lookup Table:</TextBlock>
                     <TextBox Text="{Binding Table}" />
-                    <TextBlock Width="100">Key Field: </TextBlock>
+                    <TextBlock Width="100">Key Field:</TextBlock>
                     <TextBox Text="{Binding KeyField}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Width="100">Data Field: </TextBlock>
+                    <TextBlock Width="100">Data Field:</TextBlock>
                     <TextBox Text="{Binding DataField}" />
-                    <TextBlock Width="100">Currency Field: </TextBlock>
+                    <TextBlock Width="100">Currency Field:</TextBlock>
                     <TextBox Text="{Binding CurrencyField}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock>Action: </TextBlock>
+                    <TextBlock>Action:</TextBlock>
                     <ComboBox ItemsSource="{Binding Source={StaticResource EnumCommandAction}}" SelectedItem="{Binding Action}"/>
-                    <TextBlock>Sort: </TextBlock>
+                    <TextBlock>Sort:</TextBlock>
                     <ComboBox ItemsSource="{Binding Source={StaticResource EnumCommandSort}}" SelectedItem="{Binding Sort}"/>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock>Select Top N Records: </TextBlock>
+                    <TextBlock>Select Top N Records:</TextBlock>
                     <TextBox Text="{Binding Top, Converter={StaticResource IntConverter}}" />
-                    <TextBlock>Record Units (e.g. chat,chats): </TextBlock>
+                    <TextBlock>Record Units (e.g. chat,chats):</TextBlock>
                     <TextBox Text="{Binding Unit}" />
                 </StackPanel>
             </DockPanel>
@@ -424,6 +265,105 @@
                     <TextBlock Text="{Binding MultiSummaryLiveStreams.StreamCount, FallbackValue=0, StringFormat={}{0:N0}}" />
                 </StackPanel>
             </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
+        <Border BorderThickness="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="25" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="10" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- #region Basic Stream Info Statistics -->
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Users" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MaxUsers, StringFormat=\{0:N0\}}"/>
+                <TextBlock Grid.Row="3" Grid.Column="2" Text="Total Chats" />
+                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding TotalChats, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Commands" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CommandMsgs, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="4" Grid.Column="2" Text="Auto Commands" />
+                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding AutomatedCommands, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Channel Points Redeemed" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ChannelPtCount, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="5" Grid.Column="2" Text="Channel Challenges" />
+                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding ChannelChallenge, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="Webhook Messages" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WebhookMsgs, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="6" Grid.Column="2" Text="Clips Made" />
+                <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding ClipsMade, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="New Follows"/>
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding NewFollows, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="7" Grid.Column="2" Text="Mods Present" />
+                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding ModeratorsPresent, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="VIPs Present" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding VIPsPresent, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="8" Grid.Column="2" Text="Subs Present" />
+                <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SubsPresent, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Text="New Subs" />
+                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding NewSubscribers, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="9" Grid.Column="2" Text="Gift Subs" />
+                <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding GiftSubs, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Events" />
+                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding AutomatedEvents, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="10" Grid.Column="2" Text="Bits" />
+                <TextBlock Grid.Row="10" Grid.Column="3" Text="{Binding Bits, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="11" Grid.Column="0" Text="Raids" />
+                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Raids, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="11" Grid.Column="2" Text="Hosted" />
+                <TextBlock Grid.Row="11" Grid.Column="3" Text="{Binding Hosted, StringFormat=\{0:N0\}}" />
+
+                <TextBlock Grid.Row="12" Grid.Column="0" Text="Users TimedOut"/>
+                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UsersTimedOut, StringFormat=\{0:N0\}}" />
+                <TextBlock Grid.Row="12" Grid.Column="2" Text="Users Banned" />
+                <TextBlock Grid.Row="12" Grid.Column="3" Text="{Binding UsersBanned, StringFormat=\{0:N0\}}" />
+
+                <!-- #endregion Basic Stream Info Statistics -->
+
+
+                <TextBlock Grid.Row="0" Grid.Column="5" Text="Stream Categories" HorizontalAlignment="Left" />
+                <ListBox Grid.Row="1" Grid.RowSpan="13" 
+                                                                         Grid.Column="5" 
+                                                                         MaxHeight="200" MinWidth="350" MaxWidth="350"
+                                                                         HorizontalAlignment="Left"
+                                                                         ItemsSource="{Binding Category}"
+                                                                         />
+            </Grid>
         </Border>
     </DataTemplate>
 
@@ -598,6 +538,183 @@
 
     <!--#endregion-->
 
+    <!--#region Cell Templates-->
 
+    <DataTemplate x:Key="CategoryDataTemplate">
+        <StackPanel>
+            <TextBlock Text="{Binding Category, Mode=TwoWay, Converter={StaticResource CategoryConverter}}" TextWrapping="Wrap" Width="250" />
+        </StackPanel>
+    </DataTemplate>
+
+    <!--<DataTemplate x:Key="EditCategoryDataTemplate">
+        <StackPanel>
+            <ListBox
+                x:Name="ComboBox_EditCategoryDataTemplate" 
+                MinHeight="50" MaxHeight="200"
+                ItemsSource="{Binding Category, Converter={StaticResource EditConvertCategory}, Mode=OneWay}"
+                SelectedItem="{Binding Category, Converter={StaticResource EditConvertCategory}, Mode=TwoWay}" />
+        </StackPanel>
+    </DataTemplate>-->
+
+    <!--#region DataGrid DateTime templates -->
+    <DataTemplate x:Key="DateFirstSeenTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateCurrentLoginTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateLastSeenTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding LastDateSeen, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateFollowedTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateStatusChangedTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateGiveawayTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding DateTime, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditDateGiveawayTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding DateTime}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding DateTime}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateInRaidTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditInRaidTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateOutRaidTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditOutRaidTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateClipCreatedTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:g}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateStreamStartTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditStreamStartTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding StreamStart}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding StreamStart}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateStreamEndTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:f}}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditStreamEndTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding StreamEnd}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding StreamEnd}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="StreamDurationTemplate">
+        <TextBlock Text="{Binding Duration, StringFormat={}{0:g}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateLiveTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding LiveDate}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditLiveDateTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding LiveDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding LiveDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="DateThroughTemplate">
+        <StackPanel>
+            <Border BorderThickness="1">
+                <TextBlock Text="{Binding ThroughDate}" />
+            </Border>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EditThroughDateTemplate">
+        <StackPanel>
+            <TextBox Text="{Binding ThroughDate}" ToolTip="Input date and time in the provided format." />
+            <!--<DatePicker SelectedDate="{Binding ThroughDate}" />-->
+        </StackPanel>
+    </DataTemplate>
+
+    <!--#endregion-->
+    <!--#endregion-->
 
 </ResourceDictionary>

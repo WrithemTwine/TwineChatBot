@@ -10,11 +10,13 @@
 
                 <!-- pack://application:,,,/StreamerBotLib;component/ -->
                 <ResourceDictionary  x:Name="ResourceThemeDictionary" 
-                        Source="pack://application:,,,/StreamerBotLib;component/Themes/DarkTheme.xaml" />
+                        Source="pack://application:,,,/StreamerBotLib;component/Themes/NordTheme.xaml" />
                 <ResourceDictionary x:Name="ResourceStyleDictionary" 
                         Source="pack://application:,,,/StreamerBotLib;component/Themes/BaseStyle.xaml" />
                 <ResourceDictionary x:Name="ResourceDataGridDictionary" 
                         Source="pack://application:,,,/StreamerBotLib;component/Themes/DataGridDataTemplates.xaml" />
+                <ResourceDictionary Source="Culture/GUI_Msgs.xaml" />
+                <ResourceDictionary Source="Culture/GUI_HelpMsgs.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -179,7 +179,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool FirstUserChatMsg
         {
-            get => Settings.Default.FirstUserChatMsg; 
+            get => Settings.Default.FirstUserChatMsg;
             set => Settings.Default.FirstUserChatMsg = value;
         }
 
@@ -237,8 +237,16 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchRaidShoutOut => Settings.Default.TwitchRaidShoutOut;
 
-        public static bool RepeatParallelMode => Settings.Default.RepeatParallelMode;
-        public static bool RepeatSerialMode => Settings.Default.RepeatSerialMode;
+        public static bool RepeatParallelMode
+        {
+            get => Settings.Default.RepeatParallelMode; set => Settings.Default.RepeatParallelMode = value;
+        }
+
+        public static bool RepeatSerialMode
+        {
+            get => Settings.Default.RepeatSerialMode; set => Settings.Default.RepeatSerialMode = value;
+        }
+
         public static List<RepeatCommandGUISelect> RepeatSerialSaveData
         {
             get
@@ -353,7 +361,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool ManageUsers
         {
-            get => Settings.Default.ManageUsers; 
+            get => Settings.Default.ManageUsers;
             set => Settings.Default.ManageUsers = value;
         }
         /// <summary>
@@ -361,7 +369,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool ManageFollowers
         {
-            get => Settings.Default.ManageFollowers; 
+            get => Settings.Default.ManageFollowers;
             set => Settings.Default.ManageFollowers = value;
         }
         /// <summary>
@@ -385,7 +393,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool ManageOutRaidData
         {
-            get => Settings.Default.ManageOutRaidData; 
+            get => Settings.Default.ManageOutRaidData;
             set => Settings.Default.ManageOutRaidData = value;
         }
         /// <summary>
@@ -506,7 +514,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string GiveawayBegMsg
         {
-            get => Settings.Default.GiveawayBegMsg; 
+            get => Settings.Default.GiveawayBegMsg;
             set => Settings.Default.GiveawayBegMsg = value;
         }
         /// <summary>
@@ -514,7 +522,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string GiveawayEndMsg
         {
-            get => Settings.Default.GiveawayEndMsg; 
+            get => Settings.Default.GiveawayEndMsg;
             set => Settings.Default.GiveawayEndMsg = value;
         }
         /// <summary>
@@ -522,7 +530,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool GiveawayMultiUser
         {
-            get => Settings.Default.GiveawayMultiUser; 
+            get => Settings.Default.GiveawayMultiUser;
             set => Settings.Default.GiveawayMultiUser = value;
         }
         /// <summary>
@@ -555,7 +563,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchPriorChannelName
         {
-            get => Settings.Default.TwitchPriorChannelName; 
+            get => Settings.Default.TwitchPriorChannelName;
             set => Settings.Default.TwitchPriorChannelName = value;
         }
         /// <summary>
@@ -563,7 +571,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchPriorBotName
         {
-            get => Settings.Default.TwitchPriorBotName; 
+            get => Settings.Default.TwitchPriorBotName;
             set => Settings.Default.TwitchPriorBotName = value;
         }
         /// <summary>
@@ -571,7 +579,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchBotUserId
         {
-            get => Settings.Default.TwitchBotUserId; 
+            get => Settings.Default.TwitchBotUserId;
             set => Settings.Default.TwitchBotUserId = value;
         }
 
@@ -580,7 +588,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchStreamerUserId
         {
-            get => Settings.Default.TwitchChannelUserId; 
+            get => Settings.Default.TwitchChannelUserId;
             set => Settings.Default.TwitchChannelUserId = value;
         }
         /// <summary>
@@ -588,7 +596,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchBotClientId
         {
-            get => Settings.Default.TwitchBotClientID; 
+            get => Settings.Default.TwitchBotClientID;
             set => Settings.Default.TwitchBotClientID = value;
         }
         /// <summary>
@@ -596,7 +604,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchBotAccessToken
         {
-            get => Settings.Default.TwitchBotAccessToken; 
+            get => Settings.Default.TwitchBotAccessToken;
             set => Settings.Default.TwitchBotAccessToken = value;
         }
 
@@ -695,7 +703,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchAuthStreamerRefreshToken
         {
-            get => Settings.Default.TwitchAuthStreamerRefreshToken; 
+            get => Settings.Default.TwitchAuthStreamerRefreshToken;
             set => Settings.Default.TwitchAuthStreamerRefreshToken = value;
         }
         /// <summary>
@@ -750,7 +758,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchBotApproveScopes
         {
-            get => Settings.Default.TwitchBotApproveScopes; 
+            get => Settings.Default.TwitchBotApproveScopes;
             set => Settings.Default.TwitchBotApproveScopes = value;
         }
 
@@ -780,7 +788,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchAuthBotApproveScopes
         {
-            get => Settings.Default.TwitchAuthBotApproveScopes; 
+            get => Settings.Default.TwitchAuthBotApproveScopes;
             set => Settings.Default.TwitchAuthBotApproveScopes = value;
         }
 
@@ -1015,6 +1023,11 @@ namespace StreamerBotLib.Static
         /// Specifies how many seconds prior to the Twitch Ads starting to chat a notification message.
         /// </summary>
         public static int TwitchAdsNotifySeconds => Settings.Default.TwitchAdsNotifySeconds;
+
+        /// <summary>
+        /// A flag to use a different time format just for ad notices.
+        /// </summary>
+        public static bool TwitchAdsNotifyTimeFormatTotalTime => Settings.Default.TwitchAdsNotifyTimeFormatTotalTime;
         #endregion
 
         #region Themes
@@ -1036,6 +1049,23 @@ namespace StreamerBotLib.Static
         /// Specifies to use the Darkl Theme within the app
         /// </summary>
         public static bool ThemeDark => Settings.Default.ThemeDark;
+        public static bool ThemeCandy => Settings.Default.ThemeCandy;
+        public static bool ThemeFallSpooky => Settings.Default.ThemeFallSpooky;
+        public static bool ThemeFall => Settings.Default.ThemeFall;
+        public static bool ThemeForest => Settings.Default.ThemeForest;
+        public static bool ThemeHalloweenPumpkin => Settings.Default.ThemeHalloweenPumpkin;
+        public static bool ThemeIvory => Settings.Default.ThemeIvory;
+        public static bool ThemeNeonCyber => Settings.Default.ThemeNeonCyber;
+        public static bool ThemeNord => Settings.Default.ThemeNord;
+        public static bool ThemePastelGalaxy => Settings.Default.ThemePastelGalaxy;
+        public static bool ThemeRetroArcade => Settings.Default.ThemeRetroArcade;
+        public static bool ThemeSlate => Settings.Default.ThemeSlate;
+        public static bool ThemeSpringCherry => Settings.Default.ThemeSpringCherry;
+        public static bool ThemeSpringMint => Settings.Default.ThemeSpringMint;
+        public static bool ThemeSpring => Settings.Default.ThemeSpring;
+        public static bool ThemeSummerBeach => Settings.Default.ThemeSummerBeach;
+        public static bool ThemeSummer => Settings.Default.ThemeSummer;
+        public static bool ThemeWinter => Settings.Default.ThemeWinter;
 
         #endregion Themes
 
@@ -1113,7 +1143,7 @@ namespace StreamerBotLib.Static
         public static bool EnableDebugGUIDataViews => Settings.Default.EnableDebugGUIDataViews;
         public static bool EnableDebugGUIBotComs => Settings.Default.EnableDebugGUIBotComs;
         public static bool EnableDebugTwitchBots => Settings.Default.EnableDebugTwitchBots;
-
+        public static bool EnableDebugConverters => Settings.Default.EnableDebugConverters;
 
         #endregion
 

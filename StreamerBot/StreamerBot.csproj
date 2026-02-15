@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.0.1.2</Version>
+		<Version>2.0.1.3</Version>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net10.0-windows7.0</TargetFramework>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -22,13 +22,30 @@
 		<ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML;Release_PomeloMySql;Debug_EFEETesting;Update_Nuget_Only</Configurations>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="img\TSB_Icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Remove="Culture\GUIMsgs.xaml" />
+	  <Page Remove="Culture\GUI_HelpMsgs.xaml" />
+	  <Page Remove="Culture\GUI_Msgs.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Culture\GUIMsgs.xaml" />
+	  <Resource Include="Culture\GUI_HelpMsgs.xaml" />
+	  <Resource Include="Culture\GUI_Msgs.xaml" />
+	  <Resource Include="img\TSB_Icon.ico" />
+	</ItemGroup>
 	
 	<!-- <ItemGroup>
 	  <None Remove="img\BotStartupLogo.png" />
 	</ItemGroup> -->
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3650.58" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3719.77" />
 	</ItemGroup>
 
 	<PropertyGroup Label="Globals">

@@ -1,0 +1,577 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--#region Colors -->
+    <Color x:Key="LighterColor">#512DA8</Color>
+    <Color x:Key="MediumColor">#311B92</Color>
+    <Color x:Key="FullColor">#212121</Color>
+    <Color x:Key="ForegroundColor">#FFECB3</Color>
+    <Color x:Key="DisabledForegroundButtonColor">#B39DDB</Color>
+
+    <!-- DataGrid Colors -->
+    <Color x:Key="DataGridAlternateColorColor">#311B92</Color>
+    <Color x:Key="DataGridBackgroundColor">#212121</Color>
+    <Color x:Key="DataGridRowHeaderBackgroundColor">#311B92</Color>
+    <Color x:Key="DataGridColumnHeaderBackgroundColor">#512DA8</Color>
+
+    <!-- border colors -->
+    <Color x:Key="BorderColor">#444444</Color>
+
+    <!-- scrollbar colors -->
+    <Color x:Key="ScrollBarRepeatButton">#311B92</Color>
+
+    <!-- tab item colors -->
+    <Color x:Key="TabItemControlLightColor">#512DA8</Color>
+    <Color x:Key="TabItemControlMediumColor">#311B92</Color>
+    <Color x:Key="TabItemControlFullColor">#212121</Color>
+
+    <!-- ListView colors -->
+    <Color x:Key="ListViewControlFullColor">#212121</Color>
+    <Color x:Key="ListViewControlMediumColor">#311B92</Color>
+    <Color x:Key="ListViewControlLightColor">#512DA8</Color>
+
+    <!-- button colors -->
+    <Color x:Key="ButtonHoverControlLightColor">#512DA8</Color>
+    <Color x:Key="ButtonHoverControlMediumColor">#FB8C00</Color>
+    <!-- Pumpkin orange hover mid -->
+    <Color x:Key="ButtonHoverControlFullColor">#FF9800</Color>
+    <!-- Bright pumpkin full hover -->
+    <Color x:Key="ButtonDisabledBackgroundColor">#1E1E1E</Color>
+    <Color x:Key="ButtonDisabledForegroundColor">#B39DDB</Color>
+    <Color x:Key="ButtonDisabledBorderColor">#333333</Color>
+
+    <!-- General Element Colors -->
+    <Color x:Key="WindowColor">#121212</Color>
+    <Color x:Key="ContentAreaColorLight">#212121</Color>
+    <Color x:Key="ContentAreaColorDark">#0D0D0D</Color>
+
+    <Color x:Key="DisabledControlLightColor">#212121</Color>
+    <Color x:Key="DisabledControlDarkColor">#1E1E1E</Color>
+    <Color x:Key="DisabledForegroundColor">#888888</Color>
+
+    <Color x:Key="SelectedBackgroundColor">#311B92</Color>
+    <Color x:Key="SelectedUnfocusedColor">#2A2A2A</Color>
+
+    <Color x:Key="ControlLightColor">#512DA8</Color>
+    <Color x:Key="ControlMediumColor">#311B92</Color>
+    <Color x:Key="ControlDarkColor">#212121</Color>
+
+    <Color x:Key="ControlMouseOverColor">#FF9800</Color>
+    <!-- Pumpkin orange mouse over -->
+    <Color x:Key="ControlPressedColor">#FB8C00</Color>
+
+    <Color x:Key="GlyphColor">#FFECB3</Color>
+    <Color x:Key="GlyphMouseOver">sc#1, 1.0, 0.85, 0.6</Color>
+    <!-- Warm creamy glow -->
+
+    <!--Border colors-->
+    <Color x:Key="BorderLightColor">#512DA8</Color>
+    <Color x:Key="BorderMediumColor">#311B92</Color>
+    <Color x:Key="BorderDarkColor">#212121</Color>
+
+    <Color x:Key="PressedBorderLightColor">#FF9800</Color>
+    <Color x:Key="PressedBorderDarkColor">#FB8C00</Color>
+
+    <Color x:Key="DisabledBorderLightColor">#444444</Color>
+    <Color x:Key="DisabledBorderDarkColor">#333333</Color>
+
+    <Color x:Key="DefaultBorderBrushDarkColor">#000000</Color>
+
+    <!--Control-specific resources.-->
+    <Color x:Key="HeaderTopColor">#311B92</Color>
+    <Color x:Key="DatagridCurrentCellBorderColor">#FF9800</Color>
+    <Color x:Key="SliderTrackDarkColor">#311B92</Color>
+
+    <Color x:Key="NavButtonFrameColor">#FF9800</Color>
+    <!--#endregion-->
+
+    <!--#region Brushes -->
+    <SolidColorBrush x:Key="FullBackground" Color="{DynamicResource FullColor}"/>
+
+    <SolidColorBrush x:Key="PartBackground" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="LightBackground" Color="{DynamicResource LighterColor}"/>
+    <SolidColorBrush x:Key="ForegroundText" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="DisabledForegroundButtonText" Color="{DynamicResource DisabledForegroundButtonColor}" />
+
+    <!-- activity colors -->
+    <SolidColorBrush x:Key="BrightGo" Color="#FF9800" />
+    <!-- Pumpkin bright -->
+    <SolidColorBrush x:Key="BrightStop" Color="#D500F9" />
+    <!-- Eerie purple stop -->
+    <SolidColorBrush x:Key="Go" Color="#FB8C00" />
+    <!-- Warm pumpkin go -->
+    <SolidColorBrush x:Key="Stop" Color="#AA00FF" />
+    <!-- Deep purple stop -->
+    <SolidColorBrush x:Key="LabelBeta" Color="MediumVioletRed" />
+
+    <SolidColorBrush x:Key="TabControlTabs" Color="{DynamicResource MediumColor}" />
+
+    <!-- border colors -->
+    <SolidColorBrush x:Key="Borders" Color="{DynamicResource BorderMediumColor}" />
+
+    <!-- scrollbar colors -->
+    <SolidColorBrush x:Key="ScrollBarBackground" Color="{DynamicResource FullColor}" />
+    <SolidColorBrush x:Key="ScrollBarForeground" Color="#9575CD" />
+    <!-- Muted purple scroll -->
+    <SolidColorBrush x:Key="ScrollBarArrowFill" Color="#FFECB3" />
+    <SolidColorBrush x:Key="ScrollBarThumbBorder" Color="#512DA8" />
+    <SolidColorBrush x:Key="ScrollBarThumbBackground" Color="#311B92" />
+    <SolidColorBrush x:Key="ScrollBarThumbMouseOver" Color="#FF9800" />
+    <SolidColorBrush x:Key="ScrollBarThumbPressed" Color="#FB8C00" />
+
+    <!-- tab item colors -->
+    <SolidColorBrush x:Key="TabItemControlLight" Color="{DynamicResource TabItemControlLightColor}" />
+    <SolidColorBrush x:Key="TabItemControlMedium" Color="{DynamicResource TabItemControlMediumColor}" />
+    <SolidColorBrush x:Key="TabItemControlFull" Color="{DynamicResource TabItemControlFullColor}" />
+
+    <!-- datagrid colors -->
+    <SolidColorBrush x:Key="DataGridAlternateColor" Color="{DynamicResource DataGridAlternateColorColor}" />
+    <SolidColorBrush x:Key="DataGridBackground" Color="{DynamicResource DataGridBackgroundColor}" />
+    <SolidColorBrush x:Key="DataGridRowHeaderBackground" Color="{DynamicResource DataGridRowHeaderBackgroundColor}" />
+    <SolidColorBrush x:Key="DataGridColumnHeaderBackground" Color="{DynamicResource DataGridColumnHeaderBackgroundColor}" />
+
+    <!-- contextmenu coloring -->
+    <SolidColorBrush x:Key="ContextMenuBackground" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="ContextMenuForeground" Color="{DynamicResource ForegroundColor}"/>
+
+    <!-- ListView colors -->
+    <SolidColorBrush x:Key="ListViewControlLight" Color="{DynamicResource ListViewControlLightColor}" />
+    <SolidColorBrush x:Key="ListViewControlMedium" Color="{DynamicResource ListViewControlMediumColor}" />
+    <SolidColorBrush x:Key="ListViewControlFull" Color="{DynamicResource ListViewControlFullColor}" />
+
+    <!-- ComboBox colors -->
+    <SolidColorBrush x:Key="TextBox.Static.Background" Color="{DynamicResource MediumColor}"/>
+    <LinearGradientBrush x:Key="ComboBox.Static.Background" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="{DynamicResource MediumColor}" Offset="0.0"/>
+        <GradientStop Color="{DynamicResource LighterColor}" Offset="1.0"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ComboBox.Static.Border" Color="{DynamicResource BorderDarkColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{DynamicResource ForegroundColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Static.Editable.Border" Color="{DynamicResource BorderMediumColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Background" Color="Transparent"/>
+    <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Border" Color="Transparent"/>
+    <LinearGradientBrush x:Key="ComboBox.MouseOver.Background" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="{DynamicResource LighterColor}" Offset="0.0"/>
+        <GradientStop Color="{DynamicResource MediumColor}" Offset="1.0"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ComboBox.MouseOver.Border" Color="#FF9800"/>
+    <SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="{DynamicResource ForegroundColor}"/>
+    <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Background" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Border" Color="#FF9800"/>
+    <LinearGradientBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="{DynamicResource LighterColor}" Offset="0.0"/>
+        <GradientStop Color="{DynamicResource MediumColor}" Offset="1.0"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF9800"/>
+    <LinearGradientBrush x:Key="ComboBox.Pressed.Background" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="{DynamicResource MediumColor}" Offset="0.0"/>
+        <GradientStop Color="{DynamicResource FullColor}" Offset="1.0"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ComboBox.Pressed.Border" Color="#FB8C00"/>
+    <SolidColorBrush x:Key="ComboBox.Pressed.Glyph" Color="{DynamicResource ForegroundColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Background" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Border" Color="#FB8C00"/>
+    <LinearGradientBrush x:Key="ComboBox.Pressed.Editable.Button.Background" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="{DynamicResource LighterColor}" Offset="0.0"/>
+        <GradientStop Color="{DynamicResource MediumColor}" Offset="1.0"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Button.Border" Color="#FB8C00"/>
+    <SolidColorBrush x:Key="ComboBox.Disabled.Background" Color="{DynamicResource FullColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Disabled.Border" Color="{DynamicResource BorderDarkColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Disabled.Glyph" Color="#888888"/>
+    <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Background" Color="{DynamicResource MediumColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Border" Color="{DynamicResource BorderMediumColor}"/>
+    <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Background" Color="Transparent"/>
+    <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Border" Color="Transparent"/>
+
+    <!-- Checkbox colors -->
+    <SolidColorBrush x:Key="CheckBoxFullBackground" Color="{DynamicResource FullColor}" />
+    <SolidColorBrush x:Key="CheckBoxMedBackground" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="CheckBoxBorder" Color="{DynamicResource BorderLightColor}" />
+    <SolidColorBrush x:Key="CheckBoxForeground" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="CheckBoxNotEnabledBackground" Color="{DynamicResource FullColor}" />
+    <SolidColorBrush x:Key="CheckBoxNotEnabledForeground" Color="#888888" />
+    <SolidColorBrush x:Key="CheckBoxNotEnabledPath" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="CheckBoxNullCheckedBackground" Color="{DynamicResource FullColor}" />
+    <SolidColorBrush x:Key="CheckBoxNullCheckPath" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="CheckBoxPressedBackground" Color="{DynamicResource ButtonHoverControlFullColor}" />
+
+    <!-- Button colors -->
+    <SolidColorBrush x:Key="ButtonHoverControlLight" Color="{DynamicResource ButtonHoverControlLightColor}" />
+    <SolidColorBrush x:Key="ButtonHoverControlMedium" Color="{DynamicResource ButtonHoverControlMediumColor}" />
+    <SolidColorBrush x:Key="ButtonHoverControlFull" Color="{DynamicResource ButtonHoverControlFullColor}" />
+    <SolidColorBrush x:Key="ButtonDisabledBackground" Color="{DynamicResource ButtonDisabledBackgroundColor}" />
+    <SolidColorBrush x:Key="ButtonDisabledForeground" Color="{DynamicResource ButtonDisabledForegroundColor}" />
+    <SolidColorBrush x:Key="ButtonDisabledBorder" Color="{DynamicResource ButtonDisabledBorderColor}" />
+
+    <!-- RadioButton colors -->
+    <SolidColorBrush x:Key="RadioButtonMedBackground" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="RadioButtonForeground" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="RadioButton.Static.Background" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="RadioButton.Static.Border" Color="{DynamicResource BorderLightColor}" />
+    <SolidColorBrush x:Key="RadioButton.Static.Glyph" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="RadioButton.MouseOver.Background" Color="{DynamicResource ButtonHoverControlFullColor}" />
+    <SolidColorBrush x:Key="RadioButton.MouseOver.Border" Color="#FF9800" />
+    <SolidColorBrush x:Key="RadioButton.MouseOver.Glyph" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="RadioButton.Pressed.Background" Color="{DynamicResource MediumColor}" />
+    <SolidColorBrush x:Key="RadioButton.Pressed.Border" Color="#FB8C00" />
+    <SolidColorBrush x:Key="RadioButton.Pressed.Glyph" Color="{DynamicResource ForegroundColor}" />
+    <SolidColorBrush x:Key="RadioButton.Disabled.Background" Color="{DynamicResource FullColor}" />
+    <SolidColorBrush x:Key="RadioButton.Disabled.Border" Color="{DynamicResource BorderDarkColor}" />
+    <SolidColorBrush x:Key="RadioButton.Disabled.Glyph" Color="#888888" />
+    <!--#endregion-->
+
+    <!--#region Controls -->
+
+    <Style x:Key="{x:Type CheckBox}"
+           TargetType="{x:Type CheckBox}">
+
+        <Setter Property="Margin" Value="5" />
+
+        <Setter Property="Background"
+                Value="{DynamicResource CheckBoxMedBackground}"/>
+        <Setter Property="Foreground"
+                Value="{DynamicResource CheckBoxForeground}" />
+        <Setter Property="BorderBrush"
+                Value="{DynamicResource CheckBoxBorder}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <BulletDecorator Background="Transparent"
+                                     SnapsToDevicePixels="true">
+                        <BulletDecorator.Bullet>
+                            <Border x:Name="CheckMark"
+                                    Background="{TemplateBinding Background}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    BorderBrush="{TemplateBinding BorderBrush}">
+                                <Path x:Name="CheckMarkPath"
+                                      Margin="1,1,1,1"
+                                      Width="7"
+                                      Height="7"
+                                      FlowDirection="LeftToRight"
+                                      Fill="{TemplateBinding Foreground}"
+                                      Data="M 0 2.0 L 0 4.8 L 2.5 7.4 L 7.1 2.8 L 7.1 0 L 2.5 4.6 Z"/>
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="false">
+                            <Setter TargetName="CheckMarkPath" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="CheckMark" Property="Background" Value="{DynamicResource CheckBoxNullCheckedBackground}"/>
+                            <Setter TargetName="CheckMarkPath" Property="Fill" Value="{DynamicResource CheckBoxNullCheckPath}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter TargetName="CheckMark" Property="Background" Value="{DynamicResource CheckBoxPressedBackground}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="CheckMark" Property="Background" Value="{DynamicResource CheckBoxNotEnabledBackground}"/>
+                            <Setter TargetName="CheckMarkPath" Property="Fill" Value="{DynamicResource CheckBoxNotEnabledPath}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource CheckBoxNotEnabledForeground}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource ButtonDisabledBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource ButtonDisabledForeground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource ButtonDisabledBorder}" />
+                <Setter Property="Opacity" Value="0.7" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="True">
+                <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+            </Trigger>
+        </Style.Triggers>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <Border TextBlock.Foreground="{TemplateBinding Foreground}" x:Name="Border" CornerRadius="3" BorderThickness="2">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStopCollection>
+                                        <GradientStop Color="{DynamicResource ButtonHoverControlLightColor}" Offset="0.0" />
+                                        <GradientStop Color="{DynamicResource ButtonHoverControlMediumColor}" Offset="1.0" />
+                                    </GradientStopCollection>
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                        <Border.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="{DynamicResource ButtonHoverControlMediumColor}" Offset="0" />
+                                <GradientStop Color="{DynamicResource ButtonHoverControlLightColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition GeneratedDuration="0:0:0.5" />
+                                    <VisualTransition GeneratedDuration="0" To="Pressed" />
+                                </VisualStateGroup.Transitions>
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                      Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ButtonHoverControlFullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter x:Name="contentPresenter" 
+                                          Focusable="False" 
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                          Margin="{TemplateBinding Padding}" 
+                                          RecognizesAccessKey="True" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Button.IsDefaulted" Value="true">
+                            <Setter Property="BorderBrush" Value="{DynamicResource FullBackground}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="{DynamicResource ButtonHoverControlFull}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource BorderLightColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource BorderDarkColor}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" Value="{DynamicResource ButtonDisabledBackground}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource ButtonDisabledBorder}"/>
+                            <Setter Property="TextBlock.Foreground" TargetName="contentPresenter" Value="{DynamicResource DisabledForegroundButtonText}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type RadioButton}">
+        <Setter Property="Margin" Value="10,5,0,5" />
+        <Setter Property="Padding" Value="2,0,0,0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource RadioButtonMedBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource RadioButtonForeground}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Grid x:Name="templateRoot" SnapsToDevicePixels="True" Background="Transparent">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="radioButtonBorder" 
+                                Margin="1,1,2,1" 
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                CornerRadius="100">
+                            <Grid x:Name="markGrid" Margin="2">
+                                <Ellipse x:Name="optionMark" Opacity="0" MinWidth="6" MinHeight="6" Fill="{DynamicResource RadioButton.Static.Glyph}"/>
+                            </Grid>
+                        </Border>
+                        <ContentPresenter x:Name="contentPresenter" 
+                                          RecognizesAccessKey="True" 
+                                          Grid.Column="1" 
+                                          Margin="{TemplateBinding Padding}" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                          Focusable="False"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasContent" Value="true">
+                            <Setter Property="Padding" Value="4,-1,0,0"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="{DynamicResource RadioButton.MouseOver.Background}" TargetName="radioButtonBorder" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource RadioButton.MouseOver.Border}" TargetName="radioButtonBorder" />
+                            <Setter Property="Fill" Value="{DynamicResource RadioButton.MouseOver.Glyph}" TargetName="optionMark" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" Value="{DynamicResource RadioButton.Disabled.Background}" TargetName="radioButtonBorder" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource RadioButton.Disabled.Border}" TargetName="radioButtonBorder" />
+                            <Setter Property="Fill" Value="{DynamicResource RadioButton.Disabled.Glyph}" TargetName="optionMark" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" Value="{DynamicResource RadioButton.Pressed.Background}" TargetName="radioButtonBorder" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource RadioButton.Pressed.Border}" TargetName="radioButtonBorder" />
+                            <Setter Property="Fill" Value="{DynamicResource RadioButton.Pressed.Glyph}" TargetName="optionMark" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter Property="Opacity" Value="1" TargetName="optionMark" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter Property="Opacity" Value="0.56" TargetName="optionMark" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ToggleButtonTwitchTokenSelecter" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="MouseOver">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                      Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ButtonHoverControlFullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Pressed" />
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                      Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource DisabledControlDarkColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
+                                                                      Storyboard.TargetName="Arrow">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource DisabledForegroundColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                      Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource DisabledBorderDarkColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Checked">
+                                    <Storyboard Duration="0:0:1">
+                                        <ColorAnimationUsingKeyFrames 
+                                            Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                            Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ButtonHoverControlFullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+
+                                        <PointAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoiceEllipse"
+                                                        Storyboard.TargetProperty="Center" Duration="0:0:1" From="18,18" To="81,18" />
+
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient1"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="0" To="1" />
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient2"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="1" To="0" />
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Manual"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="1" To="0"/>
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Auth"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="0" To="1" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked">
+                                    <Storyboard Duration="0:0:1">
+                                        <ColorAnimationUsingKeyFrames 
+                                            Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                            Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame KeyTime="0" Value="{DynamicResource ButtonHoverControlFullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+
+                                        <PointAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoiceEllipse"
+                                                        Storyboard.TargetProperty="Center" Duration="0:0:1" From="81,18" To="18,18" />
+
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient1"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="1" To="0" />
+                                        <DoubleAnimation 
+                                            Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoicePath_Gradient2"
+                                            Storyboard.TargetProperty="Offset"
+                                            Duration="0:0:1" From="0" To="1" />
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Manual"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="0" To="1" />
+
+                                        <DoubleAnimation Storyboard.TargetName="ToggleButton_TwitchAuthText_Auth"
+                                                         Storyboard.TargetProperty="Opacity" Duration="0:0:1" From="1" To="0" />
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="Indeterminate" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Border x:Name="Border"
+                                Grid.ColumnSpan="2"
+                                CornerRadius="15"
+                                BorderThickness="1">
+                            <Border.BorderBrush>
+                                <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                    <GradientStop Color="{DynamicResource BorderLightColor}" Offset="0" />
+                                    <GradientStop Color="{DynamicResource BorderDarkColor}" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <LinearGradientBrush.GradientStops>
+                                        <GradientStopCollection>
+                                            <GradientStop Color="{DynamicResource MediumColor}" />
+                                            <GradientStop Color="{DynamicResource LighterColor}" Offset="1.0" />
+                                        </GradientStopCollection>
+                                    </LinearGradientBrush.GradientStops>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+
+                        <Path Name="ToggleButton_TwitchAuthText_ChoicePath" Height="35">
+                            <Path.Data>
+                                <EllipseGeometry x:Name="ToggleButton_TwitchAuthText_ChoiceEllipse" 
+                                                 Center="18,18" RadiusX="14" RadiusY="14" />
+                            </Path.Data>
+                            <Path.Fill>
+                                <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+                                    <GradientStop x:Name="ToggleButton_TwitchAuthText_ChoicePath_Gradient1" Color="{DynamicResource ButtonHoverControlFullColor}" Offset="0"/>
+                                    <GradientStop x:Name="ToggleButton_TwitchAuthText_ChoicePath_Gradient2" Color="{DynamicResource ForegroundColor}" Offset="1" />
+                                </LinearGradientBrush>
+                            </Path.Fill>
+                        </Path>
+
+                        <TextBlock Name="ToggleButton_TwitchAuthText_Manual" 
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                   FontSize="10px" Width="60" TextWrapping="Wrap" Opacity="0.0" Text="Manual Token" />
+
+                        <TextBlock Name="ToggleButton_TwitchAuthText_Auth"  
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                   FontSize="10px" Width="60" TextWrapping="Wrap" 
+                                   Margin="2,0,0,0" Opacity="1.0" Text="Auth Code Token" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!--#endregion-->
+
+</ResourceDictionary>

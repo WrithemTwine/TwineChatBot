@@ -46,9 +46,17 @@ namespace StreamerBotLib.Models.Repeat
             while (OptionFlags.ActiveToken && OptionFlags.RepeatTimerCommands
                    && (OptionFlags.RepeatWhenLive && OptionFlags.IsStreamOnline || !OptionFlags.RepeatWhenLive))
             {
-                CheckRepeats();
+                lock (RepeatCommands)
+                {
+                    if (RepeatCommands.Count > 0)
+                    { // only call if repeat commands has data
+                        CheckRepeats();
+                    }
+                }
                 Task.Delay(TaskDelay).Wait();
             }
+
+            LogWriter.DebugLog("RepeatThread", DebugLogTypes.RepeatCommandSystem, "Repeat thread stopped.");
         }
 
         /// <summary>

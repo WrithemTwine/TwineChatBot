@@ -559,12 +559,12 @@ namespace StreamerBotLib.BotIOController
         /// Part of the Twitch-Auth-Code Token operation method.
         /// Call to clear out the Twitch Authorization Code(s) to permit the user to re-authorize the application.
         /// </summary>
-        public static void ForceTwitchAuthReauthorization()
+        public static void ForceTwitchAuthReauthorization(params Bots[] bots)
         {
             LogWriter.DebugLog("ForceTwitchAuthReauthorization", DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
             LogWriter.DebugLog("ForceTwitchAuthReauthorization", DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
 
-            BotsTwitch.ForceTwitchReauthorization();
+            BotsTwitch.ForceTwitchReauthorization(bots);
         }
 
         /// <summary>

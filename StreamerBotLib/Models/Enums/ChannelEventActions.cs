@@ -13,7 +13,7 @@
         LeaveChannel,
         Live,
         Raid,
-        Random,
+        unused1,  // removed existing value, must maintain the order due to the Enum used in the EFC model, the Enum resolves to this list
         Respond,
         Resubscribe,
         Subscribe,

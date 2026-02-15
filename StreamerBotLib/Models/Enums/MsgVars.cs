@@ -55,6 +55,7 @@
         username,
         adduration,
         adtime,
-        Pluralsecond
+        Pluralsecond,
+        random
     }
 }

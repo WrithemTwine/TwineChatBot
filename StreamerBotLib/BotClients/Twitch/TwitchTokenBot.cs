@@ -663,21 +663,30 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Clears the authentication codes, access & refresh tokens for the bot & streamer accounts.
         /// Required when access scopes change.
         /// </summary>
-        internal static void ForceReauthorization()
+        internal static void ForceReauthorization(params Bots[] bots)
         {
             LogWriter.DebugLog("ForceReauthorization", DebugLogTypes.TwitchTokenBot, "Request to reauthorize the application. Clearing the authentication code(s).");
 
-            OptionFlags.TwitchAuthBotAuthCode = "";
-            OptionFlags.TwitchAuthBotAccessToken = "";
-            OptionFlags.TwitchAuthBotRefreshToken = "";
+            if (bots == null || bots.Contains(Bots.TwitchEventSubBot))
+            {
+                OptionFlags.TwitchAuthBotAuthCode = "";
+                OptionFlags.TwitchAuthBotAccessToken = "";
+                OptionFlags.TwitchAuthBotRefreshToken = "";
+            }
 
-            OptionFlags.TwitchAuthStreamerAuthCode = "";
-            OptionFlags.TwitchAuthStreamerAccessToken = "";
-            OptionFlags.TwitchAuthStreamerRefreshToken = "";
+            if (bots == null || bots.Contains(Bots.TwitchStreamerEventSubScopes))
+            {
+                OptionFlags.TwitchAuthStreamerAuthCode = "";
+                OptionFlags.TwitchAuthStreamerAccessToken = "";
+                OptionFlags.TwitchAuthStreamerRefreshToken = "";
+            }
 
-            OptionFlags.TwitchAuthStreamerNoScopesAuthCode = "";
-            OptionFlags.TwitchAuthStreamerNoScopesAccessToken = "";
-            OptionFlags.TwitchAuthStreamerNoScopesRefreshToken = "";
+            if (bots == null || bots.Contains(Bots.TwitchStreamerEventSubNoScopes))
+            {
+                OptionFlags.TwitchAuthStreamerNoScopesAuthCode = "";
+                OptionFlags.TwitchAuthStreamerNoScopesAccessToken = "";
+                OptionFlags.TwitchAuthStreamerNoScopesRefreshToken = "";
+            }
         }
     }
 }

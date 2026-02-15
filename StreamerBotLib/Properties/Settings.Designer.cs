@@ -2849,5 +2849,233 @@ namespace StreamerBotLib.Properties {
                 this["FormatTimeFullFormatHoursFull"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TwitchAdsNotifyTimeFormatTotalTime {
+            get {
+                return ((bool)(this["TwitchAdsNotifyTimeFormatTotalTime"]));
+            }
+            set {
+                this["TwitchAdsNotifyTimeFormatTotalTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableDebugConverters {
+            get {
+                return ((bool)(this["EnableDebugConverters"]));
+            }
+            set {
+                this["EnableDebugConverters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSpring {
+            get {
+                return ((bool)(this["ThemeSpring"]));
+            }
+            set {
+                this["ThemeSpring"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSpringCherry {
+            get {
+                return ((bool)(this["ThemeSpringCherry"]));
+            }
+            set {
+                this["ThemeSpringCherry"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSpringMint {
+            get {
+                return ((bool)(this["ThemeSpringMint"]));
+            }
+            set {
+                this["ThemeSpringMint"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSummer {
+            get {
+                return ((bool)(this["ThemeSummer"]));
+            }
+            set {
+                this["ThemeSummer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSummerBeach {
+            get {
+                return ((bool)(this["ThemeSummerBeach"]));
+            }
+            set {
+                this["ThemeSummerBeach"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeFall {
+            get {
+                return ((bool)(this["ThemeFall"]));
+            }
+            set {
+                this["ThemeFall"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeFallSpooky {
+            get {
+                return ((bool)(this["ThemeFallSpooky"]));
+            }
+            set {
+                this["ThemeFallSpooky"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeWinter {
+            get {
+                return ((bool)(this["ThemeWinter"]));
+            }
+            set {
+                this["ThemeWinter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeCandy {
+            get {
+                return ((bool)(this["ThemeCandy"]));
+            }
+            set {
+                this["ThemeCandy"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeForest {
+            get {
+                return ((bool)(this["ThemeForest"]));
+            }
+            set {
+                this["ThemeForest"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeHalloweenPumpkin {
+            get {
+                return ((bool)(this["ThemeHalloweenPumpkin"]));
+            }
+            set {
+                this["ThemeHalloweenPumpkin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeIvory {
+            get {
+                return ((bool)(this["ThemeIvory"]));
+            }
+            set {
+                this["ThemeIvory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeNeonCyber {
+            get {
+                return ((bool)(this["ThemeNeonCyber"]));
+            }
+            set {
+                this["ThemeNeonCyber"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeNord {
+            get {
+                return ((bool)(this["ThemeNord"]));
+            }
+            set {
+                this["ThemeNord"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemePastelGalaxy {
+            get {
+                return ((bool)(this["ThemePastelGalaxy"]));
+            }
+            set {
+                this["ThemePastelGalaxy"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeRetroArcade {
+            get {
+                return ((bool)(this["ThemeRetroArcade"]));
+            }
+            set {
+                this["ThemeRetroArcade"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSlate {
+            get {
+                return ((bool)(this["ThemeSlate"]));
+            }
+            set {
+                this["ThemeSlate"] = value;
+            }
+        }
     }
 }

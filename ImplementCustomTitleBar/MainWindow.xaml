@@ -1,0 +1,258 @@
+﻿<Window x:Class="ImplementCustomTitleBar.MainWindow"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        mc:Ignorable="d"
+        Title="Custom Title Bar App" 
+        Height="450" Width="800"
+
+        WindowStyle="None"
+        AllowsTransparency="False"
+        Background="Transparent"
+        ResizeMode="CanResizeWithGrip">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome 
+            CaptionHeight="36"
+            ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"
+            GlassFrameThickness="0,0,0,0"          
+            CornerRadius="8"
+            NonClientFrameEdges="None"
+            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
+    <Border x:Name="RootBorder"
+            Background="Black"
+            CornerRadius="8"
+            BorderBrush="BlanchedAlmond"
+            BorderThickness="1">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="36"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Title bar - transparent container, but buttons are in a solid sub-layer -->
+            <Border Grid.Row="0" 
+                    Background="Transparent"  
+                IsHitTestVisible="True">
+
+                <DockPanel IsHitTestVisible="True"
+                           shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                           MouseLeftButtonDown="DockPanel_MouseLeftButtonDown">
+                    <!-- Left: title -->
+                    <TextBlock DockPanel.Dock="Left" 
+                               Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Margin="12,0"/>
+
+                    <!-- Solid background for buttons only -->
+                    <Border DockPanel.Dock="Right" 
+                            Background="Gray" 
+                            IsHitTestVisible="True">
+
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Right"
+                                    IsHitTestVisible="True">
+
+                            <Button x:Name="btnMinimize"
+                                    Panel.ZIndex="100"
+                                    shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                                    IsHitTestVisible="True"
+                                    Focusable="True"
+                                    Content="—"
+                                    Click="btnMinimize_Click"
+                                    Width="46" Height="36"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Foreground="White"
+                                    FontSize="12"
+                                    Padding="0"
+                                    MouseEnter="WindowButton_MouseEnter"
+                                    MouseLeave="WindowButton_MouseLeave" />
+
+                            <Button x:Name="btnMaximizeRestore" 
+                                Panel.ZIndex="100"
+                                    shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                                IsHitTestVisible="True"
+                                Focusable="True"
+                                Content="□"
+                                Click="btnMaximizeRestore_Click"
+                                Width="46" Height="36"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="White"
+                                FontSize="12"
+                                Padding="0"
+                                MouseEnter="WindowButton_MouseEnter"
+                                MouseLeave="WindowButton_MouseLeave" />
+
+                        <Button x:Name="btnClose" 
+                                Panel.ZIndex="100"
+                                shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                                IsHitTestVisible="True"
+                                Focusable="True"
+                                Content="×"
+                                Click="btnClose_Click"
+                                Width="46" Height="36"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="White"
+                                FontSize="14"
+                                Padding="0"
+                                MouseEnter="WindowButton_MouseEnter"
+                                MouseLeave="WindowButton_MouseLeave"
+                                />
+                            
+                        </StackPanel>
+                    </Border>
+                </DockPanel>
+            </Border>
+
+            <!-- Main content (e.g. a label to test) -->
+            <DockPanel Grid.Row="1">
+             <Label DockPanel.Dock="Top" Content="Main Content Area" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <StatusBar DockPanel.Dock="Bottom" Height="25" VerticalAlignment="Bottom">
+                    <StatusBarItem Content="Bottom Status Bar" />
+                </StatusBar>
+            </DockPanel>
+        </Grid>
+    </Border>
+</Window>
+    
+    <!--#region original code -->
+    
+    <!--
+    <Window x:Class="ImplementCustomTitleBar.MainWindow"
+     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        mc:Ignorable="d"
+        Title="Custom Title Bar App" 
+        Height="450" Width="800"
+        ResizeMode="CanResizeWithGrip"
+    WindowStyle="None"
+    AllowsTransparency="True"
+    Background="Transparent"
+    Icon="TSB_Icon.ico">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome 
+            CaptionHeight="36" 
+            ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"
+            GlassFrameThickness="0"
+            CornerRadius="8"
+            NonClientFrameEdges="None"
+            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
+
+    --><!-- Root border with solid theme background -->
+<!--<Border Background="LightGray"                      
+        CornerRadius="8"
+            BorderBrush="Gray"
+            BorderThickness="1"
+            IsHitTestVisible="True">
+
+    <Grid IsHitTestVisible="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36"/>
+            --><!-- title bar, exact match to CaptionHeight --><!--
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        --><!-- Custom title bar --><!--
+        <Border Grid.Row="0"
+                    Background="DarkGray"
+                BorderBrush="Gray"
+        
+                BorderThickness="0,0,0,1"
+                    IsHitTestVisible="True">
+
+            <DockPanel LastChildFill="True" IsHitTestVisible="True">
+
+                --><!-- Left: icon + title --><!--
+                <StackPanel DockPanel.Dock="Left" 
+                                Orientation="Horizontal" 
+                                VerticalAlignment="Center" 
+                                Margin="12,0,0,0"
+                                IsHitTestVisible="True">
+                    <Image Source="TSB_Icon.ico" Width="20" Height="20" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                                   Foreground="White" 
+                                   FontSize="13"
+                                   VerticalAlignment="Center"/>
+                </StackPanel>
+
+                --><!-- Right: window buttons --><!--
+                <StackPanel DockPanel.Dock="Right" 
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Right"
+                                IsHitTestVisible="True">
+
+                    <Button x:Name="btnMinimize" 
+                                Panel.ZIndex="100"
+                                IsHitTestVisible="True"
+                                Focusable="True"
+                                Content="—"
+                                Click="btnMinimize_Click"
+                                Width="46" Height="36"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="White"
+                                FontSize="12"
+                                Padding="0"
+                                MouseEnter="WindowButton_MouseEnter"
+                                MouseLeave="WindowButton_MouseLeave" />
+
+                    <Button x:Name="btnMaximizeRestore" 
+                                Panel.ZIndex="100"
+                                IsHitTestVisible="True"
+                                Focusable="True"
+                                Content="□"
+                                Click="btnMaximizeRestore_Click"
+                                Width="46" Height="36"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="White"
+                                FontSize="12"
+                                Padding="0"
+                                MouseEnter="WindowButton_MouseEnter"
+                                MouseLeave="WindowButton_MouseLeave" />
+
+                    <Button x:Name="btnClose" 
+                                Panel.ZIndex="100"
+                                IsHitTestVisible="True"
+                                Focusable="True"
+                                Content="×"
+                                Click="btnClose_Click"
+                                Width="46" Height="36"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="White"
+                                FontSize="14"
+                                Padding="0"
+                                MouseEnter="btnClose_MouseEnter"
+                                MouseLeave="WindowButton_MouseLeave" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        --><!-- Main content (e.g. a label to test) --><!--
+        <DockPanel Grid.Row="1">
+            <Label DockPanel.Dock="Top" Content="Main Content Area" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <StatusBar DockPanel.Dock="Bottom" Height="25" VerticalAlignment="Bottom">
+                <StatusBarItem Content="Bottom Status Bar" />
+            </StatusBar>
+        </DockPanel>
+    </Grid>
+</Border>
+</Window>-->    
+    
+    <!--#endregion-->
+    
