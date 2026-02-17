@@ -1873,11 +1873,42 @@
                                                  DockPanel.Dock="Right"
                                                  ItemsSource="{Binding Source={x:Static StaticLib:OptionFlags.RepeatSerialSaveData}}"
                                                  MinHeight="20">
-                                                                        <!-- ... your existing ItemTemplate ... -->
+                                                                        <ListBox.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <StackPanel Orientation="Horizontal">
+                                                                                    <CheckBox IsChecked="{Binding IsSelected}">
+                                                                                        <TextBlock Text="{Binding Command}" Margin="5,0,0,0"/>
+                                                                                    </CheckBox>
+                                                                                </StackPanel>
+                                                                            </DataTemplate>
+                                                                        </ListBox.ItemTemplate>
                                                                     </ListBox>
 
                                                                     <StackPanel DockPanel.Dock="Left">
-                                                                        <!-- ... interval, add/remove buttons, combobox ... -->
+                                                                        <StackPanel Orientation="Horizontal" >
+                                                                            <TextBlock>Interval Seconds:</TextBlock>
+                                                                            <TextBox Width="50" Height="20" 
+     Text="{Binding RepeatSerialTime}" 
+     PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
+                                                                                <TextBox.ToolTip>
+                                                                                    <TextBlock>When using Selection Order mode, specify the interval in whole seconds (yes 1, 2, 3, no 5.5) to repeat the each command.<LineBreak />600 seconds = 10 minutes, 1800 seconds = 30 minutes, 3600 seconds = 1 hour, etc.</TextBlock>
+                                                                                </TextBox.ToolTip>
+                                                                            </TextBox>
+                                                                        </StackPanel>
+                                                                        <TextBlock>Select the order of commands to repeat. The selected command list repeats indefinitely.</TextBlock>
+                                                                        <StackPanel Orientation="Vertical">
+                                                                            <TextBlock>Select from the following command list and click 'Add'.</TextBlock>
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <Button Content="Add" Margin="0,0,5,0" Click="Button_Options_RepeatSerialCommandList_Add_Click"/>
+                                                                                <ComboBox Width="150" ItemsSource="{Binding CommandNoParamsCollection, Source={StaticResource DataViews}}">
+                                                                                    <ComboBox.ToolTip>
+                                                                                        <TextBlock>The command list items are those commands not accepting parameters. Except some default commands are marked to not accept params and can be invoked with parameters, e.g. !raid 'username'.</TextBlock>
+                                                                                    </ComboBox.ToolTip>
+                                                                                </ComboBox>
+                                                                            </StackPanel>
+                                                                            <TextBlock>(Duplicates are permitted, e.g. to repeat a command more often than others.)<LineBreak />Click the checkbox next to the command and click 'Remove' to remove from the list.</TextBlock>
+                                                                            <Button Content="Remove" Width="80" Click="Button_Options_RepeatSeralCommandList_Remove_Click" />
+                                                                        </StackPanel>
                                                                     </StackPanel>
                                                                 </DockPanel>
                                                             </GroupBox>
@@ -1929,7 +1960,56 @@
                                           Visibility="Collapsed">
                                                                 <StackPanel>
                                                                     <Grid>
-                                                                        <!-- ... your existing Grid with labels and textboxes for chat/user thresholds ... -->
+                                                                        <StackPanel>
+                                                                            <Grid>
+                                                                                <Grid.ColumnDefinitions>
+                                                                                    <ColumnDefinition Width="40" />
+                                                                                    <ColumnDefinition Width="65" />
+                                                                                    <ColumnDefinition Width="65" />
+                                                                                    <ColumnDefinition Width="65*" />
+                                                                                </Grid.ColumnDefinitions>
+                                                                                <Grid.RowDefinitions>
+                                                                                    <RowDefinition Height="25*" />
+                                                                                    <RowDefinition Height="25" />
+                                                                                    <RowDefinition Height="25" />
+                                                                                    <RowDefinition Height="25" />
+                                                                                </Grid.RowDefinitions>
+                                                                                <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" 
+                    x:Name="StackPanel_Repeat_ThresholdsOptions" Loaded="CheckBox_Checked_PanelVisibility"
+                    Margin="0">
+                                                                                    <CheckBox VerticalAlignment="Top" IsChecked="{Binding RepeatAboveChatCount, Mode=TwoWay}">
+                                                                                        <CheckBox.ToolTip>Select to prevent messages when below chat count threshold.</CheckBox.ToolTip>
+                                                                                        <TextBlock>Chat Count</TextBlock>
+                                                                                    </CheckBox>
+                                                                                    <Label VerticalAlignment="Top" Content="Inclusive Or"/>
+                                                                                    <CheckBox VerticalAlignment="Top" IsChecked="{Binding RepeatAboveUserCount, Mode=TwoWay}">
+                                                                                        <CheckBox.ToolTip>Select to prevent messages when below user count threshold.</CheckBox.ToolTip>
+                                                                                        <TextBlock>User Count</TextBlock>
+                                                                                    </CheckBox>
+                                                                                </StackPanel>
+
+                                                                                <Label Grid.Row="1" Grid.Column="1">
+                                                                                    <TextBlock>Minutes</TextBlock>
+                                                                                </Label>
+                                                                                <Label Grid.Row="1" Grid.Column="2">
+                                                                                    <TextBlock>Count</TextBlock>
+                                                                                </Label>
+                                                                                <Label Grid.Row="2" Grid.Column="0">
+                                                                                    <TextBlock Padding="0">Chat</TextBlock>
+                                                                                </Label>
+                                                                                <Label Grid.Row="3" Grid.Column="0">
+                                                                                    <TextBlock Padding="0">User</TextBlock>
+                                                                                </Label>
+                                                                                <TextBox Grid.Row="2" Grid.Column="1" Height="20" Width="50" 
+             Text="{Binding RepeatChatMinutes}" PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                                                <TextBox Grid.Row="2" Grid.Column="2" Height="20" Width="50" 
+             Text="{Binding RepeatChatCount}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                                                <TextBox Grid.Row="3" Grid.Column="1" Height="20" Width="50"  
+             Text="{Binding RepeatUserMinutes}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                                                <TextBox Grid.Row="3" Grid.Column="2" Height="20" Width="50" 
+             Text="{Binding RepeatUserCount}"  PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
+                                                                            </Grid>
+                                                                        </StackPanel>
                                                                     </Grid>
                                                                 </StackPanel>
                                                             </GroupBox>
