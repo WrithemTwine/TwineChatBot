@@ -138,7 +138,7 @@ namespace StreamerBotLib.Systems
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
             LogWriter.DebugLog("FormatResult", DebugLogTypes.CommandSystem, $"Sending formatted result: {result}.");
-            OnProcessCommand(result, cmdrow.Announce, multi);
+            OnProcessCommand(result, cmdrow?.Announce ?? false, multi);
         }
 
         /// <summary>
@@ -675,6 +675,19 @@ namespace StreamerBotLib.Systems
 
                 string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
 
+                // The parsed message, string.Replace safe (ArgumentException for empty <paramref name="field"/>).
+                static string ParseMsg(string msg, string field, MsgVars msgVars)
+                {
+                    if (!string.IsNullOrEmpty(field))
+                    {
+                        return msg.Replace(field, VariableParser.Prefix + msgVars.ToString());
+                    }
+                    else
+                    {
+                        return msg;
+                    }
+                }
+
                 if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so)
                     && !(ShoutuserId != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
                 {
@@ -727,8 +740,8 @@ namespace StreamerBotLib.Systems
                     }
                     else
                     {
-                        result = VariableParser.ParseReplace(cmdrow.Message.Replace(UpdateRandomVariable, VariableParser.Prefix+MsgVars.random.ToString()), datavalues);
-                        tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message.Replace(UpdateRandomVariable, VariableParser.Prefix + MsgVars.random.ToString()), datavalues, true);
+                        result = VariableParser.ParseReplace(ParseMsg(cmdrow.Message, UpdateRandomVariable, MsgVars.random), datavalues);
+                        tempHTMLResponse = VariableParser.ParseReplace(ParseMsg(cmdrow.Message, UpdateRandomVariable, MsgVars.random), datavalues, true);
 
                         if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so))
                         {

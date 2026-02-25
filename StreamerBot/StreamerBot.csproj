@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.0.1.4</Version>
+		<Version>2.0.1.5</Version>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net10.0-windows7.0</TargetFramework>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
