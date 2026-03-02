@@ -301,7 +301,7 @@ namespace StreamerBotLib.DataSQL.EFC10
 
         internal async Task GUIRowEditSave(string TableName)
         {
-            await GUIContext.SaveChangesAsync(); // tracked entities displayed in GUI DataGrid; user performed an edit, need to save any changes
+            await GUIContext.SaveChangesAsync(true); // tracked entities displayed in GUI DataGrid; user performed an edit, need to save any changes
 
             switch (TableName)
             {

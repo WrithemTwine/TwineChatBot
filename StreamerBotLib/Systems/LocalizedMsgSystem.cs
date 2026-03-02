@@ -144,13 +144,16 @@ namespace StreamerBotLib.Systems
         public static string GetTwineBotAuthorInfo()
         {
             LogWriter.DebugLog("GetTwineBotAuthorInfo", DebugLogTypes.LocalizedMessages, "Retrieving Twine Bot Author Info.");
-            return VariableParser.ParseReplace(
+
+            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
+            return string.Format(VariableParser.ParseReplace(
                 Msgs.TwineBotInfo,
                 new Dictionary<string, string>() {
                     { VariableParser.Prefix + "url", Resources.AuthorTwitch},
                     { VariableParser.Prefix + "author", Resources.AuthorTwitch}
                 }
-                );
+                ), version);
         }
 
         /// <summary>

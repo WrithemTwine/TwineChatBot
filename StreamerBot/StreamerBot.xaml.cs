@@ -57,7 +57,7 @@ namespace StreamerBot
 
             Version version = Assembly.GetEntryAssembly().GetName().Version;
 
-            LogWriter.WriteLog(StartBotDate, $"Now starting active bot session status log. Bot version {version.Major}.{version.Minor}.{version.Build}.{version.Revision}.");
+            LogWriter.WriteLog(StartBotDate, $"Now starting active bot session status log. Bot version {version}.");
 
             CheckSettings();
             SetDatabaseChoice();
@@ -92,7 +92,7 @@ namespace StreamerBot
             ThreadManager.CreateThreadStart(".ctor_StreamerBotWindow", ProcessWatcher);
 
             StatusBarItem_BetaLabel.Visibility = version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
-            StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+            StatusBar_Label_Version.Content = $"Version: {version}";
 
             ConstructEvents();
         }

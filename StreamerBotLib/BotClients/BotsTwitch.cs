@@ -1556,7 +1556,7 @@ namespace StreamerBotLib.BotClients
         {
             LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "Starting the ad notification monitoring thread.");
 
-            const int SecondsAdjustedForNextAd = 30; // the notify messages are firing approximately 30 seconds before the ad actually starts, so adjusting the start time
+            const int SecondsAdjustedForNextAd = 60; // the notify messages are firing approximately 60 seconds before the ad actually starts, so adjusting the start time
 
             DateTime NextAdCheck = DateTime.Now;
             CurrAdSchedule CurrAd = null;
@@ -1633,7 +1633,7 @@ namespace StreamerBotLib.BotClients
                     }
 
                     // AdSoon
-                    if (!AdSoonNotify && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds) >= CurrAd.NextAdAt)
+                    if (!AdSoonNotify && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds) >= CurrAd.NextAdAt.AddSeconds(SecondsAdjustedForNextAd))
                     {
                         LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Notifying AdSoon. CurrTime {CurrTime}, next ad at {CurrAd.NextAdAt}, duration {CurrAd.Duration}.");
                         AdSoonNotify = true;

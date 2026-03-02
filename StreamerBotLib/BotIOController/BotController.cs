@@ -1373,6 +1373,11 @@ namespace StreamerBotLib.BotIOController
                                                         BeginProcMsgs,
                                                         Priority: ThreadExitPriority.Normal);
                 SendThread.Start();
+
+                if (OptionFlags.MsgBotConnection)
+                { // only show if user spcified they want the welcome message sent to chat
+                    Send(LocalizedMsgSystem.GetTwineBotAuthorInfo());
+                }
                 DataBot.NotifyBotStart();
             }
         }

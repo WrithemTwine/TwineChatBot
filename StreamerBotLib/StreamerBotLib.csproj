@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.0.1.5</Version>
+		<Version>2.0.1.6</Version>
 		<TargetFramework>net10.0-windows7.0</TargetFramework>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<Nullable>disable</Nullable>
@@ -109,7 +109,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.3" />
 
-		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.6.6" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
+		<PackageReference Include="MASES.EntityFrameworkCore.KNet" Version="2.6.7" Condition="'$(Configuration)|$(Platform)'=='Release_KNet|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="10.0.3" Condition="'$(Configuration)|$(Platform)'=='Release_Cosmos|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.3" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU' Or '$(Configuration)|$(Platform)'=='Release_Sqlite|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug_ViewXAML|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.3" Condition="'$(Configuration)|$(Platform)'=='Release_SqlServer|AnyCPU' Or '$(Configuration)|$(Platform)'=='Update_Nuget_Only|AnyCPU'" />

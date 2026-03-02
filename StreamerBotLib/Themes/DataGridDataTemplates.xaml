@@ -76,7 +76,7 @@
     <Style x:Key="DataGridEditingTextBoxStyle" 
        TargetType="{x:Type TextBox}"
        BasedOn="{StaticResource {x:Type TextBox}}">
-        <!-- inherits your Foreground + Background -->
+        <!-- inherits Foreground + Background -->
 
         <!-- These are the critical overrides for editing mode -->
         <Setter Property="CaretBrush" Value="{DynamicResource ForegroundText}" />
@@ -87,6 +87,7 @@
         <Setter Property="Padding" Value="2,1,2,1" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="TextWrapping" Value="Wrap" />
 
     </Style>
 

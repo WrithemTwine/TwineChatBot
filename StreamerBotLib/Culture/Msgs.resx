@@ -481,7 +481,7 @@
     <value>The ads have ended. Welcome back!</value>
   </data>
   <data name="MsgAdSoon" xml:space="preserve">
-    <value>It's that time for an ad break. The ads last #adduration and are upcoming in #adtime. So, please help support the channel and watch them. If you're subscribed or have Turbo, you can bypass any ads!</value>
+    <value>It's time for an ad break in #adtime. The #adduration of ads help support the channel. So please stay and watch them! If you're subscribed or have turbo, you can bypass any ads!</value>
     <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
   </data>
   <data name="MsgAdStart" xml:space="preserve">
@@ -1025,7 +1025,7 @@
     <comment>MsgVar variable value</comment>
   </data>
   <data name="TwineBotInfo" xml:space="preserve">
-    <value>Twine Chat Bot by WrithemTwine, #url, version {0}.{1}.{2}.{3} is now connected!</value>
+    <value>Twine Chat Bot by WrithemTwine, #url, version {0} is now connected!</value>
     <comment>Leave " WrithemTwine ", " #url#author ", and " {0}.{1}.{2}.{3} " intact - used to provide information about the bot</comment>
   </data>
   <data name="unlurk" xml:space="preserve">

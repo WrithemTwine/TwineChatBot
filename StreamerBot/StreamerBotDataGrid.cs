@@ -478,6 +478,7 @@ namespace StreamerBot
         {
             if (e.EditAction == DataGridEditAction.Commit)
             {
+                LogWriter.DebugLog("DataGrid_RowEditEnding", DebugLogTypes.GUIDataViews, $"Committing edit for the {GetTableName(sender as DataGrid)} data table.");
                 Controller.GUISaveDataGridEdits((sender as DataGrid).Name is "DG_BuiltInCommands" or "DG_UserDefinedCommands", GetTableName(sender as DataGrid));
             }
         }
