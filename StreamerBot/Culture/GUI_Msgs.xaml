@@ -1211,8 +1211,8 @@
     <system:String x:Key="Options_Twitch_FollowOptions_Header">Twitch - Follow Options</system:String>
     <system:String x:Key="Options_Twitch_FollowOptions_AddOnStart">Enable adding all followers when (EventSub) connected to Twitch.</system:String>
     <system:String x:Key="Options_Twitch_FollowOptions_AddOnStart_Tooltip">Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.</system:String>
-    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers">Enable action to remove non-followers from the Follower list when bot starts.</system:String>
-    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers_Tooltip">Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers">Enable to not save follower changes to the 'Old Follows' table.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers_Tooltip">Followers can remain as a follower, but with a different username. Username and no-longer-a-follower changes normally save to the 'Old Follows' table. Enabling this option stops saving these changes to the 'Old Follows' table. You can manually delete any rows in the 'Old Follows' table</system:String>
     <system:String x:Key="Options_Twitch_FollowOptions_LimitMessages">Enable Limited Follower Messages</system:String>
     <system:String x:Key="Options_Twitch_FollowOptions_LimitNote">Multiple messages can clutter chat, this will abbreviate the response to condense the messages.</system:String>
     <system:String x:Key="Options_Twitch_FollowOptions_LimitChoose">Choose (1 to 100):</system:String>
