@@ -1227,6 +1227,12 @@
     <system:String x:Key="Options_Twitch_AdNotifications_SecondsPre">seconds pre-notification</system:String>
     <system:String x:Key="Options_Twitch_AdNotifications_TotalTime">Ad messages use total time.</system:String>
     <system:String x:Key="Options_Twitch_AdNotifications_TotalTime_Tooltip">Enable this option to use ad specific total time breakdown - "1 minute 30 seconds", different from the overall time format option.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetGroupHeader">Adjust Message Appearance</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetHeading">Fine tune when Ad Messages appear.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_AdSoonSecondsOffset">Ads Soon Msg:</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_AdStartSecondsOffset">Ads Start Msg:</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_AdEndSecondsOffset">Ads End Msg:</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetNote">Use whole seconds only: positive number is later, negative number is sooner.</system:String>
 
     <system:String x:Key="Options_Twitch_ShoutOut_Header">Twitch - Shout Out Viewers</system:String>
     <system:String x:Key="Options_Twitch_ShoutOut_ActiveWhenLive">Active when channel is live</system:String>

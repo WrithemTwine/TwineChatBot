@@ -5,8 +5,8 @@
 
 using Microsoft.Win32;
 
-using StreamerBotLib.Models;
 using StreamerBotLib.DataSQL.Models.Converters;
+using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;

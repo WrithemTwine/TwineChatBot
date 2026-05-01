@@ -1262,7 +1262,7 @@
                         </TabControl>
                     </TabItem>
 
-                    <TabItem Header="{DynamicResource Options_TabHeader}" x:Name="TabItem_DataOptions">
+                    <TabItem Header="{DynamicResource Options_TabHeader}" x:Name="TabItem_DataOptions" Margin="-2,2,0,-2" VerticalAlignment="Stretch">
                         <TabItem.Resources>
                             <Style TargetType="{x:Type StackPanel}">
                                 <Setter Property="Margin" Value="5" />
@@ -2235,12 +2235,12 @@
                                                         <TextBlock Text="{DynamicResource Options_Twitch_AdNotifications_Enable}"/>
                                                     </CheckBox>
 
-                                                    <StackPanel Orientation="Horizontal">
+                                                    <!--<StackPanel Orientation="Horizontal">
                                                         <TextBox Text="{Binding TwitchAdsNotifySeconds, Mode=TwoWay}" 
                                      Width="40" Height="20" 
                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"/>
                                                         <TextBlock Text="{DynamicResource Options_Twitch_AdNotifications_SecondsPre}"/>
-                                                    </StackPanel>
+                                                    </StackPanel>-->
 
                                                     <CheckBox IsChecked="{Binding TwitchAdsNotifyTimeFormatTotalTime, Mode=TwoWay}">
                                                         <CheckBox.ToolTip>
@@ -2248,6 +2248,24 @@
                                                         </CheckBox.ToolTip>
                                                         <TextBlock Text="{DynamicResource Options_Twitch_AdNotifications_TotalTime}"/>
                                                     </CheckBox>
+                                                    <GroupBox Width="Auto" Header="{DynamicResource Options_Twitch_AdNotifications_SecondsOffsetGroupHeader}">
+                                                        <StackPanel>
+                                                            <TextBlock Text="{DynamicResource Options_Twitch_AdNotifications_SecondsOffsetHeading}"/>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Width="100" Text="{DynamicResource Options_Twitch_AdNotifications_AdSoonSecondsOffset}"/>
+                                                                <TextBox Width="40" Text="{Binding TwitchAdsAdSoonSecondsOffset}" />
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Width="100" Text="{DynamicResource Options_Twitch_AdNotifications_AdStartSecondsOffset}"/>
+                                                                <TextBox Width="40" Text="{Binding TwitchAdsAdStartSecondsOffset}" />
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Width="100" Text="{DynamicResource Options_Twitch_AdNotifications_AdEndSecondsOffset}"/>
+                                                                <TextBox Width="40" Text="{Binding TwitchAdsAdEndSecondsOffset}" />
+                                                            </StackPanel>
+                                                            <TextBlock Text="{DynamicResource Options_Twitch_AdNotifications_SecondsOffsetNote}"/>
+                                                        </StackPanel>
+                                                    </GroupBox>
                                                 </StackPanel>
                                             </GroupBox>
 

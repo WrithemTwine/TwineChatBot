@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.0.1.6</Version>
+		<Version>2.1.0.0</Version>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net10.0-windows7.0</TargetFramework>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -45,7 +45,7 @@
 	</ItemGroup> -->
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3800.47" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
 	</ItemGroup>
 
 	<PropertyGroup Label="Globals">

@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.4.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -3075,6 +3075,42 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["ThemeSlate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int TwitchAdsAdSoonSecondsOffset {
+            get {
+                return ((int)(this["TwitchAdsAdSoonSecondsOffset"]));
+            }
+            set {
+                this["TwitchAdsAdSoonSecondsOffset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int TwitchAdsAdStartSecondsOffset {
+            get {
+                return ((int)(this["TwitchAdsAdStartSecondsOffset"]));
+            }
+            set {
+                this["TwitchAdsAdStartSecondsOffset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int TwitchAdsAdEndSecondsOffset {
+            get {
+                return ((int)(this["TwitchAdsAdEndSecondsOffset"]));
+            }
+            set {
+                this["TwitchAdsAdEndSecondsOffset"] = value;
             }
         }
     }

@@ -1028,6 +1028,21 @@ namespace StreamerBotLib.Static
         /// A flag to use a different time format just for ad notices.
         /// </summary>
         public static bool TwitchAdsNotifyTimeFormatTotalTime => Settings.Default.TwitchAdsNotifyTimeFormatTotalTime;
+
+        /// <summary>
+        /// Specifies the seconds offset for the Twitch Ads Soon message.
+        /// </summary>
+        public static int TwitchAdsAdSoonSecondsOffset => Settings.Default.TwitchAdsAdSoonSecondsOffset;
+
+        /// <summary>
+        /// Specifies the seconds offset for the Twitch Ads Start message.
+        /// </summary>
+        public static int TwitchAdsAdStartSecondsOffset => Settings.Default.TwitchAdsAdStartSecondsOffset;
+
+        /// <summary>
+        /// Specifies the seconds offset for the Twitch Ads End message.
+        /// </summary>
+        public static int TwitchAdsAdEndSecondsOffset => Settings.Default.TwitchAdsAdEndSecondsOffset;
         #endregion
 
         #region Themes
