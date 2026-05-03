@@ -79,7 +79,7 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts.
+        ///   Looks up a localized string similar to bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts channel:read:ads.
         /// </summary>
         public static string CredentialsTwitchScopesDiffOauthChannel {
             get {
@@ -88,7 +88,7 @@ namespace StreamerBotLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to user:read:chat user:write:chat bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts moderator:manage:announcements.
+        ///   Looks up a localized string similar to user:read:chat user:write:chat bits:read channel:manage:broadcast channel:manage:raids channel:read:redemptions channel:read:subscriptions channel:read:vips clips:edit moderation:read moderator:read:chatters moderator:read:followers moderator:manage:shoutouts moderator:manage:announcements channel:read:ads.
         /// </summary>
         public static string CredentialsTwitchScopesOauthSame {
             get {
@@ -180,16 +180,6 @@ namespace StreamerBotLib.Properties {
         public static string GitHubWikiLink {
             get {
                 return ResourceManager.GetString("GitHubWikiLink", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap seconds {
-            get {
-                object obj = ResourceManager.GetObject("seconds", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

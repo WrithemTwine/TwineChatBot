@@ -100,10 +100,10 @@ namespace StreamerBotLib.BotClients.Twitch
 
                 #region tokenize the message, max send length of 500 total characters, including switches & whitespace
                 // Clear any previous messages
-                newSendMsg.Clear();
+                //newSendMsg.Clear();
 
-                string prefix = (message.StartsWith("/me ") && !CurrAnnouncement ? "/me " : ""); // exclude prefix if announcement
-                string tempSend = message.Replace("/me ", "");
+                string prefix = message.StartsWith("/me ") ? "/me " : "";
+                string tempSend = message;
 
                 while (tempSend.Length > SingleChatLength)
                 {

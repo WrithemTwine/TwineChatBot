@@ -23,7 +23,6 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
-
 namespace StreamerBotLib.GUI.Windows
 {
     /// <summary>
@@ -174,6 +173,7 @@ namespace StreamerBotLib.GUI.Windows
 
                         ((ComboBox)valueElement).SetBinding(ComboBox.SelectedItemProperty, selectedItem);
                         ((ComboBox)valueElement).ItemsSource = value;
+                        ((ComboBox)valueElement).SelectedItem = CurrData.Values[Data];
 
                         if (Data == "OverlayType")
                         {
@@ -196,25 +196,28 @@ namespace StreamerBotLib.GUI.Windows
                     }
                     else if (Data == "Category")
                     {
-                        valueElement = new ListBox() { MaxHeight = 200 };
+                        valueElement = new ListBox() { MaxHeight = 200, SelectionMode = SelectionMode.Single };
+                        //var items = (ICollection<string>)CurrData.Values[Data];
 
-                        Binding categoryvalue = new()
+                        Binding selectedItem = new()
                         {
                             Path = new(Data),
-                            Source = CurrData.Values[Data],
+                            Mode = BindingMode.OneWayToSource,
+                            Converter = new EditConvertCategory()
+                        };
+
+                        Binding categoryItems = new()
+                        {
+                            Source = GUIDataManagerViews.CurrCategoryList,
+                            Path = new("Category"),
                             FallbackValue = new List<string>() { "All" },
-                            Converter = new CategoryConverter()
+                            Converter = new EditConvertCategory()
                         };
-                        Binding allcategories = new()
-                        {
-                            Source = DataManage.GetGameCategories(),
-                            Path = new(Data),
-                            Mode = BindingMode.TwoWay
-                        };
-                        ((ListBox)valueElement).SetBinding(ListBox.ItemsSourceProperty, allcategories);
-                        ((ListBox)valueElement).SetBinding(ListBox.SelectedItemProperty, categoryvalue);
 
-                        ((ListBox)valueElement).ItemTemplate = (DataTemplate)Resources["CategoryCheckBox"];
+                        ((ListBox)valueElement).SetBinding(ListBox.ItemsSourceProperty, categoryItems);
+                        ((ListBox)valueElement).SetBinding(ListBox.SelectedItemProperty, selectedItem);
+                        ((ListBox)valueElement).SelectionChanged += EditData_Category_Checked;
+
                         CategoryListView = (ListBox)valueElement;
                     }
                     else if (Data == "Table")
@@ -303,7 +306,7 @@ namespace StreamerBotLib.GUI.Windows
                     else if (CurrData.Meta[Data] == typeof(string))
                     {
                         stringCounter = true;
-                        valueElement = new TextBox();
+                        valueElement = new TextBox() { Text = (string)CurrData.Values[Data] };
 
                         Binding datatext = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
                         ((TextBox)valueElement).SetBinding(TextBox.TextProperty, datatext);
@@ -327,7 +330,7 @@ namespace StreamerBotLib.GUI.Windows
                         stringCounter = true;
                         valueElement = new TextBox();
 
-                        Binding datatext = new() { Path = new(Data), Mode = BindingMode.OneWayToSource };
+                        Binding datatext = new() { Source = CurrData.Values[Data], Path = new(Data), Mode = BindingMode.OneWayToSource, FallbackValue = "0" };
                         ((TextBox)valueElement).SetBinding(TextBox.TextProperty, datatext);
                         ((TextBox)valueElement).TextChanged += EditData_TextChanged_TextBoxLen;
                     }
@@ -575,6 +578,7 @@ namespace StreamerBotLib.GUI.Windows
                 CheckBox CurrBox = sender as CheckBox;
                 CurrCheckedItem = CurrBox;
                 ListBox CatList = CategoryListView;
+                List<string> selected = [];
 
                 bool? SelectAll = null;
 
@@ -590,6 +594,8 @@ namespace StreamerBotLib.GUI.Windows
                     SelectAll = false;
                 }
 
+                //CatList.SelectedItems.Clear();
+
                 // step through every checkbox item
                 foreach (CheckBox c in CatList.ItemsSource)
                 {
@@ -603,7 +609,14 @@ namespace StreamerBotLib.GUI.Windows
                     {
                         c.IsChecked = false;
                     }
+
+                    if (c.IsChecked == true)
+                    {
+                        //    CatList.SelectedItems.Add(c.Content);
+                        selected.Add(c.Content.ToString());
+                    }
                 }
+
                 CurrCheckedItem = null;
             }
         }

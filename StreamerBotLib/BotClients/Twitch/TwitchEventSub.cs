@@ -13,8 +13,8 @@ namespace StreamerBotLib.BotClients.Twitch
 {
     public class TwitchEventSub : TwitchBotsBase
     {
-        private readonly IEventSubMessageIdsLogger _EventSubMessageIdsLogger;
-        private readonly EventSubWebsocketClient _EventSubWebsocketClient;
+        private IEventSubMessageIdsLogger _EventSubMessageIdsLogger;
+        private EventSubWebsocketClient _EventSubWebsocketClient;
         private readonly TwitchTokenBot tokenBot;
 
         private readonly List<ITwitchBotEventSubSubscriptions> SubscriptionHandlers = [];
@@ -28,20 +28,6 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             BotClientName = ClientName;
             tokenBot = TokenBot;
-
-            ILoggerFactory StreamLoggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddStreamLogger();
-            });
-
-            _EventSubMessageIdsLogger = new EventSubMessageIdsLogger();
-            _EventSubWebsocketClient = new(StreamLoggerFactory);
-
-            _EventSubWebsocketClient.WebsocketConnected += OnWebsocketConnected;
-            _EventSubWebsocketClient.WebsocketDisconnected += OnWebsocketDisconnected;
-            _EventSubWebsocketClient.WebsocketReconnected += OnWebsocketReconnected;
-            _EventSubWebsocketClient.ErrorOccurred += OnErrorOccurred;
 
             if (ClientName == Bots.TwitchEventSubBot)
             {
@@ -214,8 +200,27 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     try
                     {
-                        if (IsActive == null)
+                        if (ErrorFound || IsActive == null)
                         {
+                            LogWriter.DebugLog("StartBot", DebugLogTypes.TwitchEventSub, "Previous error found, resetting error state before starting bot.");
+                            ErrorFound = false;
+                            IsActive = null;
+
+                            // recreate the websocket client and logger due to client being faulted
+                            ILoggerFactory StreamLoggerFactory = LoggerFactory.Create(builder =>
+                            {
+                                builder
+                                    .AddStreamLogger();
+                            });
+
+                            _EventSubMessageIdsLogger = new EventSubMessageIdsLogger();
+                            _EventSubWebsocketClient = new(StreamLoggerFactory);
+
+                            _EventSubWebsocketClient.WebsocketConnected += OnWebsocketConnected;
+                            _EventSubWebsocketClient.WebsocketDisconnected += OnWebsocketDisconnected;
+                            _EventSubWebsocketClient.WebsocketReconnected += OnWebsocketReconnected;
+                            _EventSubWebsocketClient.ErrorOccurred += OnErrorOccurred;
+
                             OnInitialBotStartupSubHandlers?.Invoke(this, new());
                         }
 

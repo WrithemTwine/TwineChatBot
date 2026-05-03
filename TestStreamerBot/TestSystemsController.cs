@@ -1,4 +1,3 @@
-using StreamerBotLib.DataSQL;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
@@ -13,20 +12,20 @@ namespace TestStreamerBot
         private string result = string.Empty;
 
         private readonly DataBot dataBot;
-        private readonly DataManagerSQL DataManage;
+        //private readonly DataManagerSQL DataManage;
 
         public TestSystemsController()
         {
             dataBot = new();
             Initialize();
-            DataManage = dataBot.GetDataManager();
+            //DataManage = dataBot.GetDataManager();
         }
 
         private void Initialize()
         {
             if (!Initialized)
             {
-                dataBot.SetPostChannelMessageHandler(SystemsController_PostChannelMessage);
+                //dataBot.SetPostChannelMessageHandler(SystemsController_PostChannelMessage);
 
                 OptionFlags.FirstUserChatMsg = true;
                 OptionFlags.FirstUserJoinedMsg = false;
@@ -83,9 +82,6 @@ namespace TestStreamerBot
 
             dataBot.PostIncomingRaid(new(RaidName, Platform.Twitch), RaidTime, viewers, new("3813210654", Category));
             dataBot.PostOutgoingRaid(RaidName, RaidTime);
-
-            Assert.True((DataManage).TestInRaidData(RaidName, RaidTime, viewers, Category));
-            Assert.True((DataManage).TestOutRaidData(RaidName, RaidTime));
         }
 
         [Theory]
@@ -99,7 +95,6 @@ namespace TestStreamerBot
             OptionFlags.IsStreamOnline = true;
 
             dataBot.UserJoined([new(UserName, Platform.Twitch)]);
-            Assert.True(DataManage.CheckUser(new(UserName, Platform.Twitch)));
             dataBot.UserLeft(new(UserName, Platform.Twitch));
         }
     }

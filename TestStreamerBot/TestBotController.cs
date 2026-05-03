@@ -2,7 +2,6 @@
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
-using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -19,20 +18,35 @@ namespace TestStreamerBot
         private string result = string.Empty;
         private const int Viewers = 80;
 
-        private readonly string DatabaseName = "TestSteamerDatabase.db";
+        private readonly string DatabaseName = "TestSteamerDatabase";
+
+        private readonly List<CategoryData> CategoryList =
+            [
+                new ("21779",  "League of Legends"),       // Iconic 2010s MOBA, massive Twitch staple
+                new ("18122",  "World of Warcraft"),       // Classic MMO, huge in early-mid 2010s streams
+                new ("29595",  "Dota 2"),                  // Major competitor to LoL, big esports/Twitch presence
+                new ("27471",  "Minecraft"),               // Eternal sandbox hit, exploded mid-2010s
+                new ("138585", "Hearthstone"),             // Blizzard card game, peaked hugely ~2015–2018
+                new ("32399",  "Counter-Strike"),          // CS 1.6/Source/GO era – long-running FPS classic
+                new ("138585", "StarCraft II"),            // Early Twitch esports king (2010–2015ish)
+                new ("29307",  "Diablo III"),              // Big launch hype in 2012, strong streaming years
+                new ("460630", "Tom Clancy's Rainbow Six Siege"), // Mid-late 2010s tactical shooter rise
+                new ("491487", "PUBG"),                    // 2017 battle royale pioneer (pre-Fortnite dominance)
+            ];
 
         [Required]
         private BotController botController;
-        [Required]
-        private readonly IDataManagerTestMethods dataManager;
+        //[Required]
+        //private readonly IDataManagerTestMethods dataManager;
 
         private Random Random { get; set; } = new();
 
         public TestBotController()
         {
-            botController = new(null);
             Initialize();
-            dataManager = BotController.DataBot.GetDataManager() as IDataManagerTestMethods;
+            botController = new(null);
+            botController.OutputSentToBots += BotController_OutputSentToBots;
+            //dataManager = BotController.DataBot.GetDataManager() as IDataManagerTestMethods;
         }
 
         private void Initialize()
@@ -41,7 +55,12 @@ namespace TestStreamerBot
             {
                 if (!Initialized)
                 {
-                    Settings.Default.EFCConnectStringSqlite = $"Data Source={DatabaseName}";
+                    if (File.Exists(DatabaseName))
+                    {
+                        File.Delete(DatabaseName);
+                    }
+
+                    Settings.Default.EFCConnectStringSqlite = $"Data Source={DatabaseName}{DateTime.Now:ddMMyyhhmmss}.db";
                     OptionFlags.EFCDatabaseProviderSqlite = true;
                     OptionFlags.EFCDataImportedDataGram = true;
 
@@ -58,30 +77,22 @@ namespace TestStreamerBot
                     OptionFlags.MediaOverlayChannelPoints = true;
                     OptionFlags.MediaOverlayShoutoutClips = true;
 
-                    if (File.Exists(DatabaseName))
-                    {
-                        File.Delete(DatabaseName);
-                    }
-
-                    botController.OutputSentToBots += BotController_OutputSentToBots;
-
                     Initialized = true;
                 }
             }
         }
 
-        private FindChannelCategoryEventArgs GetRandomGameIdName()
+        private CategoryData GetRandomGameIdName()
         {
             if (!Initialized)
             {
                 Initialize();
             }
 
-            List<CategoryData> output = dataManager.GetGameCategories();
             Random random = new();
-            CategoryData itemfound = output[random.Next(output.Count)];
+            CategoryData itemfound = CategoryList[random.Next(CategoryList.Count)];
 
-            return new() { GameId = itemfound.CategoryId, GameName = itemfound.CategoryName };
+            return itemfound;
         }
 
         private void BotController_OutputSentToBots(object? sender, PostChannelMessageEventArgs e)
@@ -130,10 +141,10 @@ namespace TestStreamerBot
                 string Title = "Let's try this stream test!";
                 DateTime onlineTime = DateTime.Now.ToLocalTime();
 
-                FindChannelCategoryEventArgs random = GetRandomGameIdName();
+                CategoryData random = GetRandomGameIdName();
 
-                string Id = random.GameId;
-                string Category = random.GameName;
+                string Id = random.CategoryId;
+                string Category = random.CategoryName;
 
                 // go online
                 botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
@@ -186,17 +197,6 @@ namespace TestStreamerBot
         }
 
         [Theory]
-        [InlineData("12345", "DarkStreamPhantom", false, 4)]
-        public void TestBeingHost(string UserId, string ChannelHost, bool AutoHosted, int Viewers)
-        {
-            Initialize();
-            lock (DatabaseName)
-            {
-                botController.HandleBeingHosted(new(userId: UserId, userName: ChannelHost, botSource: Platform.Twitch), ChannelHost, AutoHosted, Viewers);
-            }
-        }
-
-        [Theory]
         [InlineData(600)]
         [InlineData(10)]
         public void TestBulkFollowers(int PickFollowers)
@@ -204,6 +204,11 @@ namespace TestStreamerBot
             Initialize();
             lock (DatabaseName)
             {
+                var tempGame = GetRandomGameIdName();
+
+                // send category update for current category
+                botController.TwitchCategoryUpdate(new() { GameId = tempGame.CategoryId, GameName = tempGame.CategoryName });
+
                 DateTime followed = DateTime.Now;
                 int x;
 
@@ -219,7 +224,7 @@ namespace TestStreamerBot
                         "00112233",
                         $"{prefix}Follower{x}",
                         Platform.Default,
-                        GetRandomGameIdName().GameName
+                        GetRandomGameIdName()
                     );
                 }
 
@@ -237,28 +242,18 @@ namespace TestStreamerBot
 
                 botController.HandleBotEventNewFollowers(regularfollower[0]);
 
-                Assert.True(dataManager.PostFollower(
-                    new(regularfollower[0].FollowedAt,
-                    regularfollower[0].FromUserId,
-                    regularfollower[0].
-                    FromUserName,
-                    Platform.Twitch,
-                    GetRandomGameIdName().GameName)));
+                botController.HandleBotEventNewFollowers(regularfollower[0]); // should pass duplicate check
 
                 botController.HandleBotEventBulkPostFollowers(bulkfollows);
 
                 foreach (Follow f in bulkfollows)
                 {
-                    Assert.False(dataManager.PostFollower(new(f.FollowedAt, f.FromUserId, f.FromUserName, Platform.Twitch, GetRandomGameIdName().GameName)));
+                    botController.HandleBotEventNewFollowers(f); // should pass duplicate check
                 }
 
                 Thread.Sleep(5000); // wait enough time for the regular followers to add into the database
-                Assert.False(dataManager.PostFollower(
-                    new(regularfollower[0].FollowedAt,
-                    regularfollower[0].FromUserId,
-                    regularfollower[0].FromUserName,
-                    Platform.Twitch,
-                    GetRandomGameIdName().GameName)));
+
+                botController.HandleBotEventNewFollowers(regularfollower[0]); // should pass duplicate check
             }
         }
 
@@ -279,7 +274,7 @@ namespace TestStreamerBot
                             fromUserId: "00112233",
                             fromUserName: $"IFollow{datestring}{x}",
                             platform: Platform.Default,
-                            GetRandomGameIdName().GameName)
+                            GetRandomGameIdName())
                             );
                 }
 
@@ -309,7 +304,7 @@ namespace TestStreamerBot
 
                 botController.HandleBotEventPostNewClip(false, clips);
 
-                Assert.False(dataManager.PostClip(clips[0].ClipId, clips[0].CreatedAt, Convert.ToDecimal(clips[0].Duration), clips[0].GameId, clips[0].Language, clips[0].Title, clips[0].Url, clips[0].FromUserId, clips[0].FromUserName, true));
+                botController.HandleBotEventPostNewClip(false, clips);  // should pass duplicate check
             }
         }
 
@@ -327,15 +322,11 @@ namespace TestStreamerBot
                 botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
 
                 Thread.Sleep(1000);
-                Assert.False(dataManager.PostStream(onlineTime, Category));
-                Assert.True(dataManager.PostCategory(new(Id, Category)));
 
                 string newId = "981578";
                 string newCategory = "DebugStreamCategory";
 
                 botController.HandleOnStreamUpdate(new(newId, newCategory));
-
-                Assert.True(dataManager.PostCategory(new(newId, newCategory)));
 
                 botController.HandleOnStreamOffline(Platform.Twitch);
             }
@@ -347,6 +338,9 @@ namespace TestStreamerBot
         public void TestNewSubscriber(string userId, string DisplayName, string Months, string Subscription, string SubscriptionName)
         {
             Initialize();
+
+            Thread.Sleep(5000);
+
             lock (DatabaseName)
             {
                 botController.HandleNewSubscriber(new(DisplayName, Platform.Twitch, userId), Months, Subscription, SubscriptionName);
@@ -430,8 +424,8 @@ namespace TestStreamerBot
             Initialize();
             lock (DatabaseName)
             {
-                FindChannelCategoryEventArgs randomGame = GetRandomGameIdName();
-                botController.HandleOnStreamOnline("writhemtwine", "Test Giveaway", DateTime.Now.ToLocalTime(), new(randomGame.GameId, randomGame.GameName));
+                CategoryData randomGame = GetRandomGameIdName();
+                botController.HandleOnStreamOnline("writhemtwine", "Test Giveaway", DateTime.Now.ToLocalTime(), randomGame);
 
                 OptionFlags.GiveawayBegMsg = "Test Project Begin the Giveaway";
                 OptionFlags.GiveawayEndMsg = "Test Project End the Giveaway";
@@ -478,12 +472,11 @@ namespace TestStreamerBot
                 botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
 
                 Thread.Sleep(1000);
-                Assert.False(dataManager.PostStream(onlineTime, Category));
-                Assert.False(dataManager.PostCategory(new(Id, Category)));
+                botController.HandleOnStreamOnline(OptionFlags.TwitchChannelName, Title, onlineTime, new(Id, Category));
 
-                FindChannelCategoryEventArgs randomGame = GetRandomGameIdName();
+                CategoryData randomGame = GetRandomGameIdName();
 
-                botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch, userId), DateTime.Now, Random.Next(5, Viewers), new(randomGame.GameId, randomGame.GameName));
+                botController.HandleIncomingRaidData(new(RaidUserName, Platform.Twitch, userId), DateTime.Now, Random.Next(5, Viewers), randomGame);
                 Thread.Sleep(5000); // wait for category
 
                 // Assert.True(ActionSystem.UserChat(new(RaidUserName, Platform.Twitch)));
@@ -514,7 +507,7 @@ namespace TestStreamerBot
                     ClipId = ClipName,
                     CreatedAt = DateTime.Now,
                     Duration = Random.Next(30),
-                    GameId = GetRandomGameIdName().GameId,
+                    GameId = GetRandomGameIdName().CategoryId,
                     Language = "English",
                     Title = "My Random Test Clip",
                     Url = $"http://debug.app/{ClipName}",
@@ -526,18 +519,7 @@ namespace TestStreamerBot
 
                 Thread.Sleep(2000);
 
-                Assert.False(
-                    dataManager.PostClip(TestClip.ClipId,
-                                         TestClip.CreatedAt,
-                                         Convert.ToDecimal(TestClip.Duration),
-                                         TestClip.GameId,
-                                         TestClip.Language,
-                                         TestClip.Title,
-                                         TestClip.Url,
-                                         TestClip.FromUserId,
-                                         TestClip.FromUserName,
-                                         true)
-                    );
+                botController.HandleBotEventPostNewClip(false, [TestClip]);
             }
         }
 

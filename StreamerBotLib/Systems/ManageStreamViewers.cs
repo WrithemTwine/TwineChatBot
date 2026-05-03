@@ -138,11 +138,7 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("RegisterUsers", DebugLogTypes.ManageStreamViewers, "Registering users in the database.");
             foreach (var user in liveUsers)
             {
-                var viewer = ManageViewers.FirstOrDefault(v => v.LiveUser == user);
-                if (viewer != null)
-                {
-                    viewer.Registered = true;
-                }
+                ManageViewers.FirstOrDefault(v => v.LiveUser == user)?.Registered = true;
             }
         }
 
@@ -204,10 +200,11 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("GetCurrentActiveUsers", DebugLogTypes.ManageStreamViewers, "Retrieving the current active users.");
 
-            var activeUsers = ManageViewers
-                .Where(v => v.InStreamNow && v.Registered == isRegistered)
-                .Select(v => v.LiveUser)
-                .ToList();
+            List<LiveUser> activeUsers = [];
+
+            activeUsers.AddRange(ManageViewers
+             .Where(v => v.InStreamNow && v.Registered == isRegistered)
+             .Select(v => v.LiveUser));
 
 #if DEBUG
             //foreach (var user in activeUsers)

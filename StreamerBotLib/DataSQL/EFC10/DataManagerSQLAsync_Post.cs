@@ -8,9 +8,10 @@ using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
+using System.Diagnostics;
 using System.Globalization;
 
-namespace StreamerBotLib.DataSQL.EFC9
+namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {
@@ -862,6 +863,14 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             await PostCategory(gamename);
             using var context = BuildDataContext();
+
+#if DEBUG
+            var InRaidPreTest = await context.InRaidData
+                .Where(IR => IR.UserId == user.UserId && IR.RaidDate == time)
+                .Select(IR => IR).FirstOrDefaultAsync();
+            Debug.Assert(InRaidPreTest == null, "InRaid data already exists in the database.");
+#endif
+
             await context.Database.BeginTransactionAsync();
             await PostNewUser(context, user, time);
             await context.InRaidData.AddAsync(new(userId: user.UserId, raidDate: time, viewerCount: viewers, category: gamename.CategoryName, platform: user.Platform));
@@ -870,6 +879,13 @@ namespace StreamerBotLib.DataSQL.EFC9
             await RefreshUsersList();
             await RefreshCategoryListList(true);
             await RefreshInRaidDataList(true);
+
+#if DEBUG
+            var InRaidTest = await context.InRaidData
+                .Where(IR => IR.UserId == user.UserId && IR.RaidDate == time)
+                .Select(IR => IR).FirstOrDefaultAsync();
+            Debug.Assert(InRaidTest != null, "InRaid data was not properly added to the database.");
+#endif
         }
 
         internal async Task PostLearnMsgsRow(string Message, MsgTypes MsgType)
@@ -969,11 +985,26 @@ namespace StreamerBotLib.DataSQL.EFC9
         internal async Task PostOutgoingRaid(string HostedChannel, DateTime dateTime)
         {
             using var context = BuildDataContext();
+
+#if DEBUG
+            var OutRaidPreTest = await context.OutRaidData
+                .Where(OR => OR.ChannelRaided == HostedChannel && OR.RaidDate == dateTime)
+                .Select(OR => OR).FirstOrDefaultAsync();
+            Debug.Assert(OutRaidPreTest == null, "OutRaid data already exists in the database.");
+#endif
+
             await context.Database.BeginTransactionAsync();
             await context.OutRaidData.AddAsync(new(channelRaided: HostedChannel, raidDate: dateTime));
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
             await RefreshOutRaidDataList(true);
+
+#if DEBUG
+            var OutRaidTest = await context.OutRaidData
+                .Where(OR => OR.ChannelRaided == HostedChannel && OR.RaidDate == dateTime)
+                .Select(OR => OR).FirstOrDefaultAsync();
+            Debug.Assert(OutRaidTest != null, "OutRaid data was not properly added to the database.");
+#endif
         }
 
         internal async Task<int> PostQuote(string Text)

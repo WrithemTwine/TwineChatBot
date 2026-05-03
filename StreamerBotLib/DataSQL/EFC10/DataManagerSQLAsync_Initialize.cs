@@ -5,7 +5,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.MLearning;
 
-namespace StreamerBotLib.DataSQL.EFC9
+namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {
@@ -100,6 +100,19 @@ namespace StreamerBotLib.DataSQL.EFC9
                     {
                         ChannelEventActions.BannedUser,
                         new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.BannedUser, out _, out _), VariableParser.ConvertVars([MsgVars.user]))
+                    },
+                    {
+                        ChannelEventActions.AdSoon,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.AdSoon, out _, out _), VariableParser.ConvertVars([MsgVars.adduration, MsgVars.adtime]))
+
+                    },
+                    {
+                        ChannelEventActions.AdStart,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.AdStart, out _, out _), VariableParser.ConvertVars([MsgVars.adduration]))
+                    },
+                    {
+                        ChannelEventActions.AdEnd,
+                        new(LocalizedMsgSystem.GetEventMsg(ChannelEventActions.AdEnd, out _, out _), VariableParser.ConvertVars([]))
                     }
                 };
 

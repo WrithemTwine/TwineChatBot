@@ -8,7 +8,7 @@ namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
     [Index(nameof(StatusChangeDate), nameof(UserId), nameof(FollowedDate), IsDescending = [true, false, true])]
-    [DebuggerDisplay("UserId={UserId}, UserName={User.UserName}, IsFollower={IsFollower}")]
+    [DebuggerDisplay("UserId={UserId}, UserName={User.UserName}, Platform={User.Platform}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Followers(
                            bool isFollower,

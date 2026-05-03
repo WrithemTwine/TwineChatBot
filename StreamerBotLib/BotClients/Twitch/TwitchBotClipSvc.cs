@@ -142,12 +142,15 @@ namespace StreamerBotLib.BotClients.Twitch
                     if (DateTime.Now >= currCheck.AddSeconds(OptionFlags.TwitchFrequencyClipTime)) // only check at specific intervals
                     {  // time to check for new clips
                         var latestClips = await GetLatestClipsAsync(); // get the current stream clips
-                        latestClips.RemoveAll((c) => KnownClips.Contains(c, new ClipsComparer()));  // new clips are those not in known list
-
-                        if (latestClips.Count > 0)
+                        if (latestClips != null)
                         {
-                            KnownClips.AddRange(latestClips); // add new clips to known list, won't be found as new clips next time
-                            OnNewClipFound?.Invoke(this, new() { AllClips = false, Clips = latestClips }); // notify of new clips
+                            latestClips.RemoveAll((c) => KnownClips.Contains(c, new ClipsComparer()));  // new clips are those not in known list
+
+                            if (latestClips.Count > 0)
+                            {
+                                KnownClips.AddRange(latestClips); // add new clips to known list, won't be found as new clips next time
+                                OnNewClipFound?.Invoke(this, new() { AllClips = false, Clips = latestClips }); // notify of new clips
+                            }
                         }
 
                         lock (simpleLock)

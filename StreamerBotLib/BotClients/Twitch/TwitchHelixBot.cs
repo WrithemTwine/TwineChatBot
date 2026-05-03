@@ -7,6 +7,7 @@ using TwitchLib.Api;
 using TwitchLib.Api.Core;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.ChannelPoints.GetCustomReward;
+using TwitchLib.Api.Helix.Models.Channels.GetAdSchedule;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelFollowers;
 using TwitchLib.Api.Helix.Models.Channels.GetChannelInformation;
 using TwitchLib.Api.Helix.Models.Channels.ModifyChannelInformation;
@@ -247,6 +248,16 @@ namespace StreamerBotLib.BotClients.Twitch
             { // a TwitchAPI shoutout is valid for an online stream and for >=1 current stream viewers
                 await tokenBot.StreamerHelixApi.Helix.Chat.SendShoutoutAsync(fromBroadcasterId, toBroadcasterId, ModeratorId);
             }
+        }
+
+        private async Task<GetAdScheduleResponse> GetAdScheduleAsync(string UserId = null, string UserName = null)
+        {
+            string Id = UserId ?? await HelixGetUserId(UserName);
+            if (Id != null)
+            {
+                return await tokenBot.StreamerHelixApi.Helix.Channels.GetAdScheduleAsync(broadcasterId: Id);
+            }
+            return null;
         }
 
         #endregion
@@ -596,6 +607,14 @@ namespace StreamerBotLib.BotClients.Twitch
             return PerformAction("GetChannelClips", () =>
             {
                 return GetChannelClipsAsync(UserId: UserId, UserName: UserName);
+            }).Result;
+        }
+
+        public GetAdScheduleResponse GetAdSchedule(string UserId = null, string UserName = null)
+        {
+            return PerformAction("GetAdSchedule", () =>
+            {
+                return GetAdScheduleAsync(UserId: UserId, UserName: UserName);
             }).Result;
         }
 

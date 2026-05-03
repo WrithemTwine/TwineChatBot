@@ -138,7 +138,7 @@ namespace StreamerBotLib.Systems
             result = $"{(cmdrow != null && cmdrow.IsEnabled && ((OptionFlags.MsgPerComMe && cmdrow.AddMe) || OptionFlags.MsgAddMe) && !result.StartsWith("/me ") ? "/me " : "")}{result}";
 
             LogWriter.DebugLog("FormatResult", DebugLogTypes.CommandSystem, $"Sending formatted result: {result}.");
-            OnProcessCommand(result, cmdrow.Announce, multi);
+            OnProcessCommand(result, cmdrow?.Announce ?? false, multi);
         }
 
         /// <summary>
@@ -597,7 +597,7 @@ namespace StreamerBotLib.Systems
                 }
                 else if (arglist.Count == 0)
                 {
-                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No quote provided.");
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "No quote number provided.");
                     int QuoteCount = DataManage.GetQuoteCount();
 
                     result = VariableParser.ParseReplace(LocalizedMsgSystem.GetVar(Msg.MsgQuoteNumber), VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
@@ -637,7 +637,7 @@ namespace StreamerBotLib.Systems
                 LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Building variable dictionary for command.");
                 datavalues = VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                 {
-                    new(MsgVars.username, paramvalue),
+                    new( MsgVars.username, paramvalue),
                     new( MsgVars.user, paramvalue ),
                     new( MsgVars.url, paramvalue ),
                     new( MsgVars.time, DateTime.Now.ToLocalTime().ToShortTimeString() ),
@@ -645,7 +645,48 @@ namespace StreamerBotLib.Systems
                     new( MsgVars.com, paramvalue )
                 });
 
+                string UpdateRandomVariable = "";
+
+                if (cmdrow.Message.Contains(VariableParser.Prefix + MsgVars.random.ToString()))
+                {
+                    LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Command contains #random_N_D, adding random number to variable dictionary.");
+                    
+                    string msg = cmdrow.Message;
+                    int r_index = msg.IndexOf(VariableParser.Prefix + MsgVars.random.ToString());
+                    string randomVar = msg.Substring(r_index, msg.IndexOf(' ', r_index) - r_index); // get the full #random_N_D or #random_N_D_% variable with the N and D
+
+                    string[] randomParams = randomVar.Split('_'); // split into parts
+
+                    Random rnd = new();
+                    string randomNumber = Math.Round( 
+                                                rnd.NextDouble() * (randomParams.Length > 1 ? Convert.ToInt32(randomParams[1]) : 100), 
+                                                Convert.ToInt32(randomParams.Length > 2 ? randomParams[2] : 0) 
+                                            ).ToString();
+
+                    if(randomParams.Length == 4)
+                    {
+                        randomNumber += $" {randomParams[3]}"; // append the optional suffix if it exists
+                    }
+
+                    UpdateRandomVariable = randomVar;
+
+                    VariableParser.AddData(ref datavalues, new Tuple<MsgVars, string>[] { new(MsgVars.random, randomNumber) });
+                }
+
                 string ShoutuserId = DataManage.GetUserId(new(paramvalue, User.Platform));
+
+                // The parsed message, string.Replace safe (ArgumentException for empty <paramref name="field"/>).
+                static string ParseMsg(string msg, string field, MsgVars msgVars)
+                {
+                    if (!string.IsNullOrEmpty(field))
+                    {
+                        return msg.Replace(field, VariableParser.Prefix + msgVars.ToString());
+                    }
+                    else
+                    {
+                        return msg;
+                    }
+                }
 
                 if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so)
                     && !(ShoutuserId != null || BotController.VerifyUserExist(paramvalue, User.Platform)))
@@ -699,8 +740,8 @@ namespace StreamerBotLib.Systems
                     }
                     else
                     {
-                        result = VariableParser.ParseReplace(cmdrow.Message, datavalues);
-                        tempHTMLResponse = VariableParser.ParseReplace(cmdrow.Message, datavalues, true);
+                        result = VariableParser.ParseReplace(ParseMsg(cmdrow.Message, UpdateRandomVariable, MsgVars.random), datavalues);
+                        tempHTMLResponse = VariableParser.ParseReplace(ParseMsg(cmdrow.Message, UpdateRandomVariable, MsgVars.random), datavalues, true);
 
                         if (command == LocalizedMsgSystem.GetVar(DefaultCommand.so))
                         {

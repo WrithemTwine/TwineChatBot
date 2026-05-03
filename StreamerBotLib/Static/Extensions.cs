@@ -38,7 +38,7 @@ namespace StreamerBotLib.Static
         {
             bool added = false;
 
-            if (!List.Where((Listitem) => { return predicate.Invoke(Listitem); }).Select(Listitem => new { }).Any())
+            if (!List.Where(predicate.Invoke).Select(Listitem => new { }).Any())
             {
                 List.Add(Item);
                 added = true;
@@ -92,7 +92,7 @@ namespace StreamerBotLib.Static
         {
             bool added = false;
 
-            if (!ICollection.Where((CollectionItem) => { return predicate.Invoke(CollectionItem); }).Select(ICollectionitem => new { }).Any())
+            if (!ICollection.Where(predicate.Invoke).Select(ICollectionitem => new { }).Any())
             {
                 ICollection.Add(Item);
                 added = true;
@@ -112,6 +112,25 @@ namespace StreamerBotLib.Static
             foreach (T item in ItemEnumerable)
             {
                 UniqueAdd(ICollection, item);
+            }
+        }
+
+
+        /// <summary>
+        /// Uniquely adds a group of items to the provided <paramref name="ICollection"/>, first checking if each item is in the <paramref name="ICollection"/>.
+        /// </summary>
+        /// <typeparam name="T">The ICollection item type.</typeparam>
+        /// <param name="ICollection">The ICollection to add the new item.</param>
+        /// <param name="comparer">An item comparer to use to determine if an ICollection already contains a T object.</param>
+        /// <param name="ItemEnumerable">The group of items to add.</param>
+        public static void UniqueAddRange<T>(this ICollection<T> ICollection, IEnumerable<T> ItemEnumerable, Func<ICollection<T>, T, bool> comparer)
+        {
+            foreach (T item in ItemEnumerable)
+            {
+                if (!comparer(ICollection, item))
+                {
+                    UniqueAdd(ICollection, item);
+                }
             }
         }
 

@@ -1,73 +1,1553 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<!--<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    --><!-- ============================================================= -->
+    <!--                     General / Common                          -->
+    <!-- ============================================================= --><!--
+
+    <system:String x:Key="Common_Disabled">Disabled</system:String>
+    <system:String x:Key="Common_Enabled">Enabled</system:String>
+    <system:String x:Key="Common_Start">Start</system:String>
+    <system:String x:Key="Common_Stop">Stop</system:String>
+    <system:String x:Key="Common_Add">Add</system:String>
+    <system:String x:Key="Common_Remove">Remove</system:String>
+    <system:String x:Key="Common_Clear">Clear</system:String>
+    <system:String x:Key="Common_Refresh">Refresh</system:String>
+    <system:String x:Key="Common_AutoStart">Auto-start when application starts</system:String>
+    <system:String x:Key="Common_EnableAll">Enable All</system:String>
+    <system:String x:Key="Common_DisableAll">Disable All</system:String>
+
+    --><!-- ============================================================= -->
+    <!--                     Window / Title / Status Bar               -->
+    <!-- ============================================================= --><!--
+
+    <system:String x:Key="Window_Title">Streamer Bot Manager</system:String>
+
+    <system:String x:Key="Status_StreamOffline">Stream Offline</system:String>
+    <system:String x:Key="Status_StreamOnline">Stream Online</system:String>
+    <system:String x:Key="Status_AllViewers">All Viewers:</system:String>
+    <system:String x:Key="Status_CurrentFollows">Current Follows: (click to refresh)</system:String>
+    <system:String x:Key="Status_InstalledCommands">Installed Commands</system:String>
+    <system:String x:Key="Status_BuiltIn">Built-in:</system:String>
+    <system:String x:Key="Status_UserDefined">User-Defined:</system:String>
+    <system:String x:Key="Status_TokenExpiration">Token Exp:</system:String>
+    <system:String x:Key="Status_CurrentCategory">Current Category: (click to refresh)</system:String>
+    <system:String x:Key="Status_NewRelease">New Release Version!</system:String>
+
+	--><!-- Status bar specific --><!--
+	<system:String x:Key="Auth_BotTokenFailed">The Twitch-Bot Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot.</system:String>
+	<system:String x:Key="Auth_NoScopesTokenFailed">The Twitch Account-no scopes- authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot.</system:String>
+	<system:String x:Key="Auth_StreamerTokenFailed">The Twitch-Streamer Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot.</system:String>
+
+	<system:String x:Key="Status_NewReleaseAvailable">New Release Version!</system:String>
+	<system:String x:Key="Status_AllViewers_Label">All Viewers:</system:String>
+	<system:String x:Key="Status_CurrentFollows_Label">Current Follows:</system:String>
+	<system:String x:Key="Status_InstalledCommands_Label">Installed Commands</system:String>
+	<system:String x:Key="Status_BuiltIn_Label">Built-in:</system:String>
+	<system:String x:Key="Status_UserDefined_Label">User-Defined:</system:String>
+	<system:String x:Key="Status_TokenExpiration_Label">Token Exp:</system:String>
+	<system:String x:Key="Status_CurrentCategory_Label">Current Category:</system:String>
+	<system:String x:Key="Status_Category_RefreshTooltip">Click to refresh</system:String>
+
+	--><!-- StatusBar tooltips --><!--
+	<system:String x:Key="Tooltip_AllViewers">
+		All Users who visited the stream while online.
+	</system:String>
+
+	<system:String x:Key="Tooltip_CurrentFollows_Refresh">
+		Click here to refresh now. Use 'Options' to manage followers, including regular updates — does not update immediately for unfollows.
+	</system:String>
+
+	<system:String x:Key="Tooltip_TokenExpiration">
+		The earliest token expiration date among active tokens.
+	</system:String>
+
+	<system:String x:Key="Tooltip_Category_Refresh">
+		Click to refresh current category
+	</system:String>
+
+	<system:String x:Key="Tooltip_NewReleaseAvailable">
+		New Release version available! Download from "GitHub → Stable" tab.
+	</system:String>
+
+    --><!-- ============================================================= -->
+    <!--                     Authorization / Credentials               -->
+    <!-- ============================================================= --><!--
+
+    <system:String x:Key="Auth_ExpiredCredentials">The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</system:String>
+
+    <system:String x:Key="Credentials_Header">Help for Credentials</system:String>
+    <system:String x:Key="Credentials_ChannelName">Channel Name</system:String>
+    <system:String x:Key="Credentials_BotUserName">Bot User Name</system:String>
+    <system:String x:Key="Credentials_ClientId">Client Id</system:String>
+    <system:String x:Key="Credentials_AccessToken">Access OAuth Token</system:String>
+    <system:String x:Key="Credentials_RefreshToken">Refresh Token</system:String>
+    <system:String x:Key="Credentials_NoScopesToken">No Scopes Access Token</system:String>
+    <system:String x:Key="Credentials_TokenScope">Token Scope</system:String>
+    <system:String x:Key="Credentials_RefreshDueDateButton">Refresh Due Date</system:String>
+    <system:String x:Key="Credentials_RefreshDueDateTooltip">Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed.</system:String>
+
+    <system:String x:Key="Credentials_AuthorizeBotToken">Authorize Bot Token</system:String>
+    <system:String x:Key="Credentials_ClearBotToken">Clear Bot Token</system:String>
+    <system:String x:Key="Credentials_AuthorizeStreamerToken">Authorize Scopes Token</system:String>
+    <system:String x:Key="Credentials_ClearStreamerToken">Clear Streamer Token</system:String>
+    <system:String x:Key="Credentials_AuthorizeNoScopes">Authorize No Scopes Token</system:String>
+
+    <system:String x:Key="Credentials_UseInternalBrowser">Use App web browser for authentication.</system:String>
+    <system:String x:Key="Credentials_LoginFirst">At Twitch.tv, be sure to log into this account first before authorizing the access.</system:String>
+
+    --><!-- ============================================================= -->
+    <!--                     Bots Tab – Short strings                  -->
+    <!-- ============================================================= --><!--
+
+    <system:String x:Key="Bots_TabHeader">Bots</system:String>
+    <system:String x:Key="Bots_StartAll">Start All Bots</system:String>
+    <system:String x:Key="Bots_StopAll">Stop All Bots</system:String>
+
+    <system:String x:Key="Bot_EventSubChat">EventSub Bot Chat</system:String>
+    <system:String x:Key="Bot_EventSubNotifications">EventSub Bot Notifications</system:String>
+    <system:String x:Key="Bot_LiveMonitor">Streamer-Multi-LiveStream Service</system:String>
+    <system:String x:Key="Bot_ClipService">Streamer-Clip Service</system:String>
+    <system:String x:Key="Bot_MediaOverlay">Service-Media Overlay</system:String>
+
+    <system:String x:Key="Bot_Status_Started">The {0} is started!</system:String>
+    <system:String x:Key="Bot_Status_Stopped">The {0} is stopped!</system:String>
+    <system:String x:Key="Bot_AccessValid">Valid</system:String>
+    <system:String x:Key="Bot_AccessInvalid">Invalid</system:String>
+    <system:String x:Key="Bots_UsageInfo_Header">Bot Usage Info</system:String>
+
+    <system:String x:Key="Bot_EventSubChat_Description">This bot receives chats from Twitch, including commands.</system:String>
+
+    <system:String x:Key="Help_Bot_EventSubChat_ManualToken">Use the updated access scopes and obtain a new access token.</system:String>
+    <system:String x:Key="Help_Bot_EventSubChat_AuthCode">Use the "Authorize Token" button on Twitch tab to re-authorize the app.</system:String>
+
+    <system:String x:Key="Bot_AccessAuthorized_Label">Access Authorized:</system:String>
+
+    <system:String x:Key="Bot_Start_Label">Start EventSub Bot</system:String>
+    <system:String x:Key="Bot_Stop_Label">Stop EventSub Bot</system:String>
+
+    <system:String x:Key="Bot_ActivatePerOnline_Header">Activate per Online Status</system:String>
+    <system:String x:Key="Bot_ConnectWhenOnline">Connect when stream is online</system:String>
+    <system:String x:Key="Bot_DisconnectWhenOffline">Disconnect when stream is offline</system:String>
+
+    --><!-- Bots tab – general --><!--
+    <system:String x:Key="Bots_StartBots_TabHeader">Start Bots</system:String>
+    <system:String x:Key="Bots_Twitch_TabHeader">Twitch</system:String>
+    <system:String x:Key="Bots_Overlay_TabHeader">Overlay</system:String>
+
+
+    --><!-- Individual bots --><!--
+
+    <system:String x:Key="Bot_EventSubNotifications_Description">This bot receives from Twitch: channel online/offline, raids, gifts, cheers, follows, and channel point redeems.</system:String>
+
+    <system:String x:Key="Bot_LiveMonitor_Description">Bot will only start if multi-live channels are available.</system:String>
+
+
+    <system:String x:Key="Bot_AccessAuthorizedScopes_Label">Access Authorized-Scopes:</system:String>
+    <system:String x:Key="Bot_AccessAuthorizedNoScopes_Label">Access Authorized-No Scopes:</system:String>
+
+
+    <system:String x:Key="Bot_Start_EventSubChat">Start EventSub Bot</system:String>
+    <system:String x:Key="Bot_Stop_EventSubChat">Stop EventSub Bot</system:String>
+
+    <system:String x:Key="Bot_Start_EventSubNotifications">Start EventSub Bot</system:String>
+    <system:String x:Key="Bot_Stop_EventSubNotifications">Stop EventSub Bot</system:String>
+
+    --><!-- Help messages (move to GUI_HelpMsgs.xaml if you prefer) --><!--
+    <system:String x:Key="Help_Bots_UsageInfo">The bot credentials form needs to be completed with at least client id and access token.\nThe LiveStreamMonitor Service monitors multiple channels for live status.\nFor optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.\nChanging the Twitch username and/or password can invalidate the access token.\nStart and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being active, as it awaits for a new 'Stream Online' event.</system:String>
+
+    <system:String x:Key="Help_Bot_EventSubNotify_ManualToken">Use the updated access scopes and obtain a new access token.</system:String>
+    <system:String x:Key="Help_Bot_EventSubNotify_AuthCode">Use the "Authorize Token" button on Twitch tab to re-authorize the app.</system:String>
+
+    <system:String x:Key="Bot_Start_LiveMonitor">Start Live Monitor Bot</system:String>
+    <system:String x:Key="Bot_Stop_LiveMonitor">Stop Live Monitor Bot</system:String>
+
+    <system:String x:Key="Bot_Start_ClipService">Start Clip Service Bot</system:String>
+    <system:String x:Key="Bot_Stop_ClipService">Stop Clip Service Bot</system:String>
+    <system:String x:Key="Bot_ClipService_Error">The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</system:String>
+
+    <system:String x:Key="Bot_Start_MediaOverlay">Start Overlay Service Bot</system:String>
+    <system:String x:Key="Bot_Stop_MediaOverlay">Stop Overlay Service Bot</system:String>
+    <system:String x:Key="Bot_MediaOverlay_Error">The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</system:String>
+
+    <system:String x:Key="Bot_MediaOverlay_StartWithStream">Start-stream online, Stop-stream offline.</system:String>
+    <system:String x:Key="Help_Overlay_Intro">Be sure to check Overlay Server, it has separately configured HTTP ports before starting the server.</system:String>
+
+    --><!-- Twitch tab --><!--
+    <system:String x:Key="Bots_Twitch_Settings_Header">Settings</system:String>
+
+    <system:String x:Key="Bots_Twitch_ClipSetup_Header">Setup Clip Operations</system:String>
+    <system:String x:Key="Bots_Twitch_ClipCheckSeconds_Label">Seconds between checking for new clips:</system:String>
+    <system:String x:Key="Bots_Twitch_ClipCheckSeconds_Tooltip">Choose how often, in seconds, to check for new clips. Smaller values increases traffic to your channel.</system:String>
+
+    <system:String x:Key="Bots_Twitch_GoLiveSetup_Header">Setup Go-Live Notifications</system:String>
+    <system:String x:Key="Bots_Twitch_GoLiveCheckSeconds_Label">Seconds between checking for going live:</system:String>
+    <system:String x:Key="Bots_Twitch_GoLiveCheckSeconds_Tooltip">Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel.</system:String>
+
+    <system:String x:Key="Bots_Twitch_BotCredentials_Header">Bot Account</system:String>
+    <system:String x:Key="Bots_Twitch_ExpiredCredentials">The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</system:String>
+    <system:String x:Key="Bots_Twitch_ChannelName_Label">Channel Name</system:String>
+    <system:String x:Key="Bots_Twitch_TokenScope_Label">Token Scope</system:String>
+    <system:String x:Key="Bots_Twitch_SingleChannelNote">* This Chat Bot only supports communicating to one channel through the Channel Name.</system:String>
+    <system:String x:Key="Bots_Twitch_BotUserName_Label">Bot User Name</system:String>
+    <system:String x:Key="Bots_Twitch_RefreshDueDate_Button">Refresh Due Date</system:String>
+    <system:String x:Key="Bots_Twitch_RefreshDueDate_Tooltip">Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed.</system:String>
+    <system:String x:Key="Bots_Twitch_Credentials_ExpanderHeader">Credentials (Click me)</system:String>
+    <system:String x:Key="Bots_Twitch_ClientId_Label">Client Id</system:String>
+    <system:String x:Key="Bots_Twitch_ClientId_Tooltip">The client ID for the bot user account.</system:String>
+    <system:String x:Key="Bots_Twitch_AccessToken_Label">Access OAuth Token</system:String>
+    <system:String x:Key="Bots_Twitch_RefreshToken_Label">Refresh Token</system:String>
+    <system:String x:Key="Bots_Twitch_NoScopesExplanation">For 'Event Sub' bot to check for stream status and incoming raids, we need a 'no-scope' token. Create the token with the above client Id and blank access scope.</system:String>
+    <system:String x:Key="Bots_Twitch_NoScopesToken_Label">No Scopes Access Token</system:String>
+
+    <system:String x:Key="Bots_Twitch_StreamerCredentials_Header">Streamer Channel Credentials</system:String>
+    <system:String x:Key="Bots_Twitch_StreamerCredentials_Explanation">Current Bot Features requiring same {Bot and Streamer} Client ID</system:String>
+    <system:String x:Key="Bots_Twitch_StreamerCredentials_ExpanderHeader">Streamer Channel Specific Credentials (Click Me)</system:String>
+
+    <system:String x:Key="Bots_Twitch_StreamerFeatures_Label">Current Bot Features requiring same {Bot and Streamer} Client ID</system:String>
+
+
+    <system:String x:Key="Bots_Twitch_ReauthWarning">If you used the automatic refresh token (other page), you will need to re-enter tokens on this page.</system:String>
+
+    <system:String x:Key="Bots_Twitch_BotAccount_Header">Bot Account Info</system:String>
+    <system:String x:Key="Bots_Twitch_HiddenPrivacy">Hidden for privacy</system:String>
+    <system:String x:Key="Bots_Twitch_ClientSecret_Label">Client Secret</system:String>
+    <system:String x:Key="Bots_Twitch_InternalBrowser_Tooltip">Checking this box will use this application's web browser (MSEdge), or unchecked will open your default browser.</system:String>
+    <system:String x:Key="Bots_Twitch_UseInternalBrowser">Use App web browser for authentication.</system:String>
+    <system:String x:Key="Bots_Twitch_LoginFirstBot">At Twitch.tv, be sure to log into this bot account first before authorizing the access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthorizeBotToken">Authorize Bot Token</system:String>
+    <system:String x:Key="Bots_Twitch_ClearBotToken">Clear Bot Token</system:String>
+    <system:String x:Key="Bots_Twitch_AuthorizeNoScopes">Authorize No Scopes Token</system:String>
+    <system:String x:Key="Bots_Twitch_ClearNoScopes">Clear No Scopes Token</system:String>
+
+    <system:String x:Key="Bots_Twitch_StreamerAccount_Header">Streamer Account Info</system:String>
+    <system:String x:Key="Bots_Twitch_LoginFirstStreamer">At Twitch.tv, be sure to log into this streamer account first before authorizing the access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthorizeScopesToken">Authorize Scopes Token</system:String>
+    <system:String x:Key="Bots_Twitch_ClearStreamerToken">Clear Streamer Token</system:String>
+
+    <system:String x:Key="Bots_Twitch_ChannelInfo_Header">Channel Information</system:String>
+    <system:String x:Key="Bots_Twitch_ForceReauth">Force All Re-Authorization</system:String>
+    <system:String x:Key="Bots_Twitch_NoScopesNote">For 'Event Sub' bot to check for stream status and incoming raids, we need a 'no-scope' access token. Click the below authorization button to create the token.</system:String>
+
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Header">Authorization Code Token Flow</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Intro">This bot performs tasks on behalf of the streamer. A moderator level bot account can perform many tasks for the streamer, including chat message responses. It is possible to have a bot account perform some tasks, and use the streamer account access credentials to perform the additional tasks.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Before">Before continuing, consider whether to attach this bot to the streamer account or use a (recommended) separate bot account.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ChannelName">To use the streamer account for the bot actions, type the streamer channel name into the "Channel Name" box, and repeat the name in the "Bot User Name" box. For using a separate bot account, type the streamer account name in the "Channel Name" box, and the bot account name in the "Bot User Name" box.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_TokenFlow">This token flow for accessing Twitch is more simplified than the user method. This flow requires registering the bot at</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Redirect">as the OAuth Redirect URL (add to the Twitch Console registered application entry):</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Approve">and approving the application for an authorization code.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Authorize">To authorize the application:</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Browser">In the "Bot Account Info" box, expand it and determine whether you want to use the built-in web browser for the application (checked box) or your default browser (unchecked box). Then, click the "Authorize Bot Token" button. This will open a browser window to authorize the access, either in the application browser or default browser. You may need to change the current account (look at the top for 'sign out, change accounts) for the authorization - the Twitch authorization screen doesn't adapt to the account associated with the authorization.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_BlankPage">The browser will go to a blank looking or broken looking webpage. This is alright. The application intercepted the response from Twitch to save the provided access code, the user doesn't need to manually paste them.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ClientSecret">From here on out, the user just pasted 'client Id' and 'client Secret' for each account and will not have to paste any more data for approving the application; occassionally performing the Twitch login and authorization application access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_MultipleWindows">Note: if you click 'authorize account' multiple times and open several browser windows, only use the latest browser or the authorization will fail to get recongnized in this application. (You could have a 2 browser windows open, one for streamer account authorization and another for bot account authorization, so long as you use the latest window). The 'latest' window is due to each time the user clicks the "Authorize Account" button, the application generates a new "state" token for sending to Twitch, and Twitch returns "state" with the authorization to ensure there is no impersonation. When creating several windows, the application saves the last created 'state token' and will only register the last received authorization.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_SeparateBotStreamer">If you're using a separate bot account alongside your streamer account, perform this same procedure for the streamer account box.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_TokenRefresh">The bot will save each authentication code from the "authorized access" form Twitch provides to obtain a refresh token, and continually retrieves a new access token, once the access token expires. This occurs for the bot account and also a streamer account, if you choose to separate the accesses.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_StatusBarWarning">Filling in the client Ids and client secrets in both boxes, then authorizing may show a warning statusbar the other account isn't authorized. It's okay to continue authorizing one account then the other. The statusbar will also show if something happens to the authorization and requires the user to re-authorize the application access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_TokenExpiration">Note: The tokens expire for the associated account, if:</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_PasswordChange">The user changes the password, or</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_DisconnectApp">Disconnects the app connection, via Twitch settings.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ScopesChange">From time to time, this bot may add or remove features and changes the access scope. Be sure to look at the release notes if the access scopes changed. This means the user will need to reauthorize the beat and/or streamer access again; otherwise, the tokens may fail during a live stream!</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ForceReauth">If you need to re-authorize the access and the buttons appear locked, click the "Force Re-Authorization" button to manually reset the authorization; and the authorization buttons will be ready to click.</system:String>
+
+    --><!-- Twitch tab general --><!--
+    <system:String x:Key="Twitch_Settings_Header">Settings</system:String>
+
+    --><!-- Clip poll section --><!--
+    <system:String x:Key="Twitch_ClipPoll_Header">Setup Clip Operations</system:String>
+    <system:String x:Key="Twitch_ClipPoll_IntervalLabel">Seconds between checking for new clips:</system:String>
+    <system:String x:Key="Twitch_ClipPoll_Tooltip">Choose how often, in seconds, to check for new clips. Smaller values increases traffic to your channel.</system:String>
+
+    --><!-- Go-live poll section --><!--
+    <system:String x:Key="Twitch_GoLivePoll_Header">Setup Go-Live Notifications</system:String>
+    <system:String x:Key="Twitch_GoLivePoll_IntervalLabel">Seconds between checking for going live:</system:String>
+    <system:String x:Key="Twitch_GoLivePoll_Tooltip">Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel.</system:String>
+
+    --><!-- Credentials --><!--
+    <system:String x:Key="Credentials_BotAccount_Header">Bot Account</system:String>
+    <system:String x:Key="Credentials_StreamerAccount_Header">Streamer Channel Credentials</system:String>
+    <system:String x:Key="Credentials_BotSingleChannel_Note">* This Chat Bot only supports communicating to one channel through the Channel Name.</system:String>
+    <system:String x:Key="Credentials_ExpanderHeader">Credentials (Click me)</system:String>
+    <system:String x:Key="Credentials_NoScopes_Explanation">For 'Event Sub' bot to check for stream status and incoming raids, we need a 'no-scope' token. Create the token with the above client Id and blank access scope.</system:String>
+    <system:String x:Key="Credentials_ReauthWarning">If you used the automatic refresh token (other page), you will need to re-enter tokens on this page.</system:String>
+    <system:String x:Key="Credentials_HiddenForPrivacy">Hidden for privacy</system:String>
+
+    --><!-- Help blocks (better in GUI_HelpMsgs.xaml) --><!--
+    <system:String x:Key="Help_Credentials_ReauthWarning">If you used the automatic refresh token (other page), you will need to re-enter tokens on this page.</system:String>
+
+    --><!-- Auth code flow --><!--
+    <system:String x:Key="Twitch_AuthCode_ExpanderHeader">Authorization Code Token Flow</system:String>
+
+    --><!-- ============================================================= -->
+    <!--                     Options Tab – Short strings               -->
+    <!-- ============================================================= --><!--
+
+    <system:String x:Key="Options_Tab_Theme">Theme</system:String>
+    <system:String x:Key="Options_Tab_StreamerBot">Streamer Bot</system:String>
+    <system:String x:Key="Options_Tab_Twitch">Twitch</system:String>
+    <system:String x:Key="Options_Tab_Database">Database</system:String>
+
+    <system:String x:Key="Options_Debug_LogBotStatus">Enable Bot Status Logging</system:String>
+    <system:String x:Key="Options_Debug_LogExceptions">Enable TwineBot Exception Logging</system:String>
+    <system:String x:Key="Options_Debug_CautionLargeLogs">Caution-logging with these options can create a significant log file, and should be used sparingly or to track issues. Useful to include in debug/issue reports.</system:String>
+
+    --><!-- Add more short strings as needed when you continue extraction -->
+    <!-- Options tab general --><!--
+    <system:String x:Key="Options_TabHeader">Options</system:String>
+
+    --><!-- Sub-tab headers --><!--
+    <system:String x:Key="Options_Theme_SubHeader">Theme</system:String>
+    <system:String x:Key="Options_StreamerBot_SubHeader">Streamer Bot</system:String>
+    <system:String x:Key="Options_Twitch_SubHeader">Twitch</system:String>
+    <system:String x:Key="Options_Database_SubHeader">Database</system:String>
+
+    --><!-- Theme sub-tab --><!--
+    <system:String x:Key="Options_Theme_SelectHeader">Select App Theme</system:String>
+    <system:String x:Key="Options_Theme_SpringSummer_Title">Spring &amp; Summer</system:String>
+    <system:String x:Key="Options_Theme_Spring">Spring (Pastel)</system:String>
+    <system:String x:Key="Options_Theme_SpringCherry">Spring Cherry Blossom</system:String>
+    <system:String x:Key="Options_Theme_SpringMint">Spring Mint &amp; Lemon</system:String>
+    <system:String x:Key="Options_Theme_Summer">Summer (Pastel Grass &amp; Flowers)</system:String>
+    <system:String x:Key="Options_Theme_SummerBeach">Summer Beach</system:String>
+
+    <system:String x:Key="Options_Theme_FallWinter_Title">Fall &amp; Winter</system:String>
+    <system:String x:Key="Options_Theme_Fall">Fall (Classic)</system:String>
+    <system:String x:Key="Options_Theme_FallSpooky">Fall Halloween / Spooky</system:String>
+    <system:String x:Key="Options_Theme_HalloweenPumpkin">Halloween Pumpkin</system:String>
+    <system:String x:Key="Options_Theme_Winter">Winter Pastel</system:String>
+
+    <system:String x:Key="Options_Theme_Core_Title">Core Themes</system:String>
+    <system:String x:Key="Options_Theme_Light">Light Theme</system:String>
+    <system:String x:Key="Options_Theme_Dark">Dark Theme</system:String>
+    <system:String x:Key="Options_Theme_Example_Header">Theme Example</system:String>
+
+    <system:String x:Key="Options_Theme_Legendary_Title">Legendary Themes</system:String>
+    <system:String x:Key="Options_Theme_Forest">Forest (Nature Dark)</system:String>
+    <system:String x:Key="Options_Theme_Ivory">Ivory (Clean Light)</system:String>
+    <system:String x:Key="Options_Theme_Nord">Nord (Clean Dark)</system:String>
+    <system:String x:Key="Options_Theme_Slate">Slate (Minimal Dark)</system:String>
+
+    <system:String x:Key="Options_Theme_Fun_Title">Fun Themes</system:String>
+    <system:String x:Key="Options_Theme_Candy">Candy (Playful)</system:String>
+    <system:String x:Key="Options_Theme_NeonCyber">Neon Cyber</system:String>
+    <system:String x:Key="Options_Theme_PastelGalaxy">Pastel Galaxy</system:String>
+    <system:String x:Key="Options_Theme_RetroArcade">Retro Arcade</system:String>
+
+    --><!-- Streamer Bot sub-tab – short labels --><!--
+    <system:String x:Key="Options_Debug_Header">Bot Management - Debug Mode</system:String>
+    <system:String x:Key="Options_Debug_LogBotStatus_Tooltip">Save this log - 'StatusLog.txt'</system:String>
+    <system:String x:Key="Options_Debug_LogExceptions_Tooltip">Save Exceptions - 'ExceptionsLog.txt'</system:String>
+    <system:String x:Key="Options_Debug_LogFunctions_Header">Log the following functionality:</system:String>
+    <system:String x:Key="Options_AppInterface_Header">Bot Management - App Interface</system:String>
+    <system:String x:Key="Options_PostMultiLive">Enable posting to social media (e.g. Discord) multiple live messages in same day.</system:String>
+    <system:String x:Key="Options_DebugLiveStream">Enable Livestream debug buttons.</system:String>
+    <system:String x:Key="Options_ManageClearButton_Tooltip">This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</system:String>
+    <system:String x:Key="Options_ManageClearButton">Enable 'Clear Data' buttons.</system:String>
+    <system:String x:Key="Options_EnableManageData_Tooltip">Shows or Hides "Data Management" options to prevent accidental clicking.</system:String>
+    <system:String x:Key="Options_EnableManageData">Enable "Data Management" Options</system:String>
+
+    <system:String x:Key="Options_DateFormats_Header">Date Formats</system:String>
+    <system:String x:Key="Options_TimeIncludeSeconds_Tooltip">Include seconds when formatting time durations.</system:String>
+    <system:String x:Key="Options_TimeIncludeSeconds">Enable seconds amount in time formats</system:String>
+
+    <system:String x:Key="Options_TimeFullFormatHoursFull_Tooltip">Enable this option to specify the full 'total hours' or years/months/days/hours/minutes when formatting time.</system:String>
+    <system:String x:Key="Options_TimeFullFormatHoursFull">Enable full "hours or {time-breakdown}" format.</system:String>
+
+    <system:String x:Key="Options_TimeFullFormatFullHours_Tooltip">Enable this option to specify the full "years/months/days/hours/minutes or 'total hours'" when formatting time.</system:String>
+    <system:String x:Key="Options_TimeFullFormatFullHours">Enable full "{time-breakdown} or hours" format.</system:String>
+
+    <system:String x:Key="Options_TimeTotalHours_Tooltip">Enable this option to specify only "total hours" when formatting time.</system:String>
+    <system:String x:Key="Options_TimeTotalHours">Enable "{total hours}" format.</system:String>
+
+    <system:String x:Key="Options_TimeTotalTime_Tooltip">Enable this option to specify only "total time" when formatting time.</system:String>
+    <system:String x:Key="Options_TimeTotalTime">Enable "{total time: years/months/days.../minutes}" format.</system:String>
+
+    <system:String x:Key="Options_Tabs_Header">Bot Management - Tabs</system:String>
+    <system:String x:Key="Options_Tabs_WidthNote">Enable width-based tab config for data tables. Enter width in pixels.</system:String>
+    <system:String x:Key="Options_TabUserFollow_Tooltip">When the application width decreases too much, the User Follow listing is hard to read. This option enables the tab to be reconfigured when the width is decreased.</system:String>
+    <system:String x:Key="Options_TabUserFollow_Label">UserData User Follow</system:String>
+
+    <system:String x:Key="Options_TabStreamRaids_Tooltip">When the application width decreases too much, the Incoming and Outgoing raid listing is hard to read. This option enables the tab to be reconfigured when the width is decreased.</system:String>
+    <system:String x:Key="Options_TabStreamRaids_Label">Stream In Out Raids</system:String>
+
+    <system:String x:Key="Options_MediaOverlay_Header">Media Overlay</system:String>
+    <system:String x:Key="Options_MediaOverlay_ClickNote">Clicking Enable will start a new Process for the Media Overlay Server</system:String>
+    <system:String x:Key="Options_MediaOverlay_Enable">Enable Media Overlay</system:String>
+    <system:String x:Key="Options_MediaOverlay_ChannelPoints_Tooltip">The PubService bot must have 'Monitor Channel Points' service and bot started to enable this feature.</system:String>
+    <system:String x:Key="Options_MediaOverlay_ChannelPoints">Enable Monitor Channel Points</system:String>
+    <system:String x:Key="Options_MediaOverlay_ShoutoutClips">Enable for shout-outs using a random clip from user's channel</system:String>
+    <system:String x:Key="Options_MediaOverlay_ShoutoutClips_Tooltip">For an Overlay Service Shout-Out event, use a random clip from their channel as part of the overlay notification. Twitch currently requires SSL certs for embed videos and a domain name. Disabled for unavailable features.</system:String>
+
+    <system:String x:Key="Options_Currency_Header">Currency System</system:String>
+    <system:String x:Key="Options_Currency_Enable">Enable Currency Accrual - still permits adding currencies</system:String>
+    <system:String x:Key="Options_Currency_OnlineOnly">Enable Currency Accrual only when Streaming Online</system:String>
+
+    <system:String x:Key="Options_Welcome_Header">Welcome Viewers</system:String>
+    <system:String x:Key="Options_Welcome_OncePerStream">Only once per user per active stream (no repeats)</system:String>
+    <system:String x:Key="Options_Welcome_OnJoin">Enable when viewer joins the channel</system:String>
+    <system:String x:Key="Options_Welcome_OnFirstChat">Enable when a viewer first chats</system:String>
+    <system:String x:Key="Options_Welcome_StreamerChat">Enable welcome message when streamer chats</system:String>
+    <system:String x:Key="Options_Welcome_Customize">Customize Welcome Messages - Welcome New Viewer, Returning Viewer, and Followers/Subscribers</system:String>
+
+    <system:String x:Key="Options_Output_Header">Bot Management - Output</system:String>
+    <system:String x:Key="Options_Output_BotWelcome">Enable bot welcome message when connected to stream channel.</system:String>
+    <system:String x:Key="Options_Output_CommandNotFound">Enable "Command Not Found" output message.</system:String>
+    <system:String x:Key="Options_Output_SocialSeparate_Tooltip">Using !socials, click to send each social message separately to chat.</system:String>
+    <system:String x:Key="Options_Output_SocialSeparate">Enable separate Social messages.</system:String>
+
+    <system:String x:Key="Options_ModerateFollows_Header">Moderate Follows</system:String>
+    <system:String x:Key="Options_ModerateFollows_Enable">Enable auto-banning Follow bots</system:String>
+    <system:String x:Key="Options_ModerateFollows_Note">Currently sends "ban candidates" to the "Status Log" - to test and ensure real users are not accidentally banned.</system:String>
+    <system:String x:Key="Options_ModerateFollows_ClusterNote">When Follow-bot looks every N seconds, total new follows are detected at one time. A cluster can indicate a follow-bot attack (or you're very popular).</system:String>
+    <system:String x:Key="Options_ModerateFollows_Choose">Choose (1 to 100):</system:String>
+
+
+    <system:String x:Key="Options_ModerationMessages_Header">Moderation Messages</system:String>
+    <system:String x:Key="Options_ModApprovalExpiration_Header">Approval Request Expiration</system:String>
+    <system:String x:Key="Options_ModApprovalExpiration_Label">Expiration Minutes:</system:String>
+    <system:String x:Key="Options_ModApprovalExpiration_Tooltip">On 'Data/Moderator/User Approve' tab, specify which commands or channel points redemptions users can request moderator approval. Specifically, actions that can modify bot data. Specify here how many minutes should moderators have to approve the request. After these specified minutes, the request will expire.</system:String>
     
-    <!-- Begin- Manage Scopes--><!--
+    <system:String x:Key="Options_ModerationML_Note">Currently not enabled-working on machine learning</system:String>
+    <system:String x:Key="Options_ModerateUserLearn">The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</system:String>
+    <system:String x:Key="Options_ModerateUsersWarn">Provide chat message of probable moderator action.</system:String>
+    <system:String x:Key="Options_ModerateUsersAction">The bot performs the moderation action</system:String>
 
-    <system:String x:Key="CredentialsTwitchScopesDiffOauthBot">bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers</system:String>
-    <system:String x:Key="CredentialsTwitchScopesDiffOauthChannel">channel:read:redemptions channel:manage:broadcast channel:manage:raids</system:String>
-    <system:String x:Key="CredentialsTwitchScopesOauthSame">bits:read chat:read chat:edit channel:moderate moderator:manage:banned_users moderator:read:followers channel:read:redemptions channel:manage:broadcast channel:manage:raids</system:String>
+    <system:String x:Key="Options_RepeatCommands_Header">Automatic Commands by Timer</system:String>
+    <system:String x:Key="Options_RepeatCommands_Tooltip">Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</system:String>
+    <system:String x:Key="Options_RepeatCommands_Enable">Enable repeating commands.</system:String>
+    <system:String x:Key="Options_Repeat_WhenLive">Perform Repeat commands only when live.</system:String>
+    <system:String x:Key="Options_Repeat_Mode_Header">Choose Repeat Mode</system:String>
+    <system:String x:Key="Options_Repeat_EnsureEnabled">Ensure Command is Enabled or command will not perform.</system:String>
+    <system:String x:Key="Options_Repeat_Parallel">Independent Timing - Specify in Data→Commands→column Repeat Timer, the seconds to repeat that command.</system:String>
+    <system:String x:Key="Options_Repeat_Serial">Selection Order - Choose the order of commands to repeat at specific intervals, restart after last command.</system:String>
+    <system:String x:Key="Options_Repeat_SerialSettings_Header">Selection Order Settings</system:String>
+    <system:String x:Key="Options_Repeat_Adjustment_Header">Choose Repeater adjustment</system:String>
+    <system:String x:Key="Options_Repeat_NoAdjustment_Tooltip">This option provides no restrictions to repeat timers, they run as is.</system:String>
+    <system:String x:Key="Options_Repeat_NoAdjustment">No adjustment to repeat timers.</system:String>
+    <system:String x:Key="Options_Repeat_SlowDown_Tooltip">The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 15+ viewers per half hour or over 20 viewer chats in 15 minutes.</system:String>
+    <system:String x:Key="Options_Repeat_SlowDown">Enable smart slow-down repeating commands</system:String>
+    <system:String x:Key="Options_Repeat_Threshold_Header">Adjustment Thresholds</system:String>
+    <system:String x:Key="Options_Repeat_Threshold_Tooltip">Select this option to prevent messages from sending if the stream doesn't meet the specified thresholds.</system:String>
+    <system:String x:Key="Options_Repeat_Threshold_Use">Use thresholds to only send messages when exceeding the criteria.</system:String>
+    <system:String x:Key="Options_Repeat_ResetOnOnline_Tooltip">The repeating commands continually run while the chat bot is active. The repeat timers will fire at their designated time as indicated by the 'repeat timer' and 'category' (of the stream - repeat commands can be specific to certain categories or 'All' for any stream). This setting resets the next fire event to the current time when the bot detects the stream is online.</system:String>
+    <system:String x:Key="Options_Repeat_ResetOnOnline">Enable reset repeat timers when stream is online</system:String>
+    <system:String x:Key="Options_Repeat_ShowOnReset_Tooltip">Coupled with the above 'Enable reset repeat timers when stream is online' option, this option permits whether the commands will perform upon the timer reset or not.</system:String>
+    <system:String x:Key="Options_Repeat_ShowOnReset">Enable showing repeat timer command when timers reset and stream is online.</system:String>
 
-    --><!-- End-Manage Scopes-->
+    <system:String x:Key="Options_DataManagement_Header">Data Management</system:String>
+    <system:String x:Key="Options_DataManagement_UncheckWarning">*Unchecking will remove data from database.*</system:String>
+    <system:String x:Key="Options_AppData_Enable">Enable saving the data to the AppData location,</system:String>
+    <system:String x:Key="Options_AppData_ReOpen">You will need to close the app, move the save files, and re-open the app.</system:String>
+    <system:String x:Key="Options_Data_Interlinked_Header">Interlinked</system:String>
+    <system:String x:Key="Options_Data_FollowerDependency_Tooltip">Follower data rows save related data to Users and Stream-Category tables.</system:String>
+    <system:String x:Key="Options_Data_FollowerDependency">To Manage Follower data, the Users and StreamStats data must be enabled.</system:String>
+    <system:String x:Key="Options_Data_ManageUsers">Manage channel viewers, including their watchtime.*</system:String>
+    <system:String x:Key="Options_Data_ManageFollowers">Manage channel followers, including their followage. Requires User data.*</system:String>
+    <system:String x:Key="Options_Data_ManageStreamStats">Record Stream Stats for each stream, including the categories table.*</system:String>
+    <system:String x:Key="Options_Data_ManageRaids">Record Raid Stats for incoming raids.*</system:String>
+
+    <system:String x:Key="Options_Data_ManageOutRaids">Record Outgoing Raid Stats.*</system:String>
+    <system:String x:Key="Options_Data_ManageGiveaways">Record Giveaway Stats.*</system:String>
+    <system:String x:Key="Options_Data_ManageTicker">Record Ticker Stats.*</system:String>
+    --><!-- Options → Twitch sub-tab --><!--
+
+    <system:String x:Key="Options_Twitch_FormatBotMessages_Header">Twitch - Format Bot messages</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_MeNote">/me changes message to all italics</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_InsertMe_Tooltip">Add /me to all command output, regardless of setting.</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_InsertMe">Enable /me for all commands</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_PerCommand_Tooltip">Add "/me " to command output based on "Add Me" column in "Data/Commands" tables.</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_PerCommand">Enable /me per command</system:String>
+
+    <system:String x:Key="Options_Twitch_FollowOptions_Header">Twitch - Follow Options</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AddOnStart_Tooltip">Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AddOnStart">Enable adding all followers when (EventSub) connected to Twitch.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers_Tooltip">Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers">Enable action to remove non-followers from the Follower list when bot starts.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_LimitMessages">Enable Limited Follower Messages</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_LimitNote">Multiple messages can clutter chat, this will abbreviate the response to condense the messages.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_LimitChoose">Choose (1 to 100):</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AutoRefresh_Tooltip">The Twitch API doesn't provide notices when someone unfollows. This refreshes follower list while bot is running - instead of restarting the Follow bot.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AutoRefresh">Enable Regular Follower Updates</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_RefreshHours_Label">Select Refresh Hours:</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_RefreshHours_Tooltip">Select Frequency in Hours to Refresh Followers</system:String>
+
+    <system:String x:Key="Options_Twitch_AdNotifications_Header">Twitch - Manage Ad Notifications</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_Tooltip">Enable and edit your choice of the Data/Channel Events tab ad-related messages: "AdSoon", "AdStarted", "AdEnded" channel events. The enabled items will output to chat.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_Enable">Enable-Notify chat when ads are starting</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsPre">seconds pre-notification</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_TotalTime_Tooltip">Enable this option to use ad specific total time breakdown - "1 minute 30 seconds", different from the overall time format option.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_TotalTime">Ad messages use total time.</system:String>
+
+    <system:String x:Key="Options_Twitch_ShoutOut_Header">Twitch - Shout Out Viewers</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ActiveWhenLive">Active when channel is live</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_Auto_Tooltip">Tied to 'Welcome Viewers'. Add names to "Auto SO" tab.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_Auto">Auto shoutout viewers when they first appear</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_Raid">Enable auto shoutout for incoming channel raid streamers</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_SendToChat_Tooltip">Permits other bots to use !so (username) for messages. Each active '!so' action will send a '!so' message to chat, includes 'Auto ShoutOut Incoming Channel Raid' when active.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_SendToChat">Always send !so command to chat for every shoutout.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_API">Perform Twitch API ShoutOut, activated alongside shoutout messages.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_OverlayClips">Show a random user clip during shoutout (Enable Media Overlay Server)</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ClipSize">Clip size in overlay alert:</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ClipWidth">Width:</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ClipHeight">Height:</system:String>
+
+    <system:String x:Key="Options_Twitch_Clips_Header">Twitch - Stream Clips</system:String>
+    <system:String x:Key="Options_Twitch_Clips_PostChat">Post new clips to chat.</system:String>
+    <system:String x:Key="Options_Twitch_Clips_PostDiscord">Post new clips to Discord. Must have "Clips" Webhook(s) defined.</system:String>
+
+    <system:String x:Key="Options_Twitch_MultiLive_Header">Twitch - MultiLive Options</system:String>
+    <system:String x:Key="Options_Twitch_MultiLive_Description">Interact with Multi-Live channels - open a browser window. Tabs may be unmuted and videos may be muted.</system:String>
+    <system:String x:Key="Options_Twitch_MultiLive_OpenBrowser">Open a browser window when any monitored channel is online.</system:String>
+    <system:String x:Key="Options_Twitch_MultiLive_OpenEachTime">This will open a browser window each time a streamer starts their stream.</system:String>
+
+    --><!-- Options → Database sub-tab --><!--
+    <system:String x:Key="Options_Database_Provider_Header">Choose Database Provider</system:String>
+    <system:String x:Key="Options_Database_Provider_Column">Database</system:String>
+    <system:String x:Key="Options_Database_ConnectionVars_Column">Connection Variables</system:String>
+    <system:String x:Key="Options_Database_InputData_Column">Input Data</system:String>
+
+    <system:String x:Key="Options_Database_Sqlite_Label">Sqlite</system:String>
+    <system:String x:Key="Options_Database_SqlServer_Label">Sql Server</system:String>
+    <system:String x:Key="Options_Database_Cosmos_Label">Cosmos</system:String>
+    <system:String x:Key="Options_Database_PostgreSQL_Label">PostgreSQL</system:String>
+    <system:String x:Key="Options_Database_MySql_Label">MySql</system:String>
+    <system:String x:Key="Options_Database_KNet_Label">MASES-KNet Apache</system:String>
+
+    <system:String x:Key="Options_Database_ConnectString_Label">Connect String:</system:String>
+    <system:String x:Key="Options_Database_CosmosDbName_Label">Database Name:</system:String>
+    <system:String x:Key="Options_Database_KNet_Bootstrap_Label">Bootstrap Server:</system:String>
+    <system:String x:Key="Options_Database_KNet_AppId_Label">Application Id:</system:String>
+    <system:String x:Key="Options_Database_KNet_DbName_Label">Database Name:</system:String>
+
+
+    --><!-- Data tab general --><!--
+    <system:String x:Key="Data_TabHeader">Data</system:String>
+
+    --><!-- Sub-tab headers --><!--
+    <system:String x:Key="Data_Variables_SubHeader">Variables</system:String>
+    <system:String x:Key="Data_Webhooks_SubHeader">Webhooks</system:String>
+    <system:String x:Key="Data_Moderation_SubHeader">Moderation</system:String>
+
+    --><!-- Webhooks --><!--
+    <system:String x:Key="Data_Webhooks_Instructions">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.\nUse 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.</system:String>
+    <system:String x:Key="Data_Webhooks_Id_Column">Id</system:String>
+    <system:String x:Key="Data_Webhooks_AddEveryone_Column">Add @Everyone</system:String>
+    <system:String x:Key="Data_Webhooks_Source_Column">Webhook Source</system:String>
+    <system:String x:Key="Data_Webhooks_Kind_Column">Kind</system:String>
+    <system:String x:Key="Data_Webhooks_Server_Column">Server</system:String>
+
+    --><!-- Moderation --><!--
+    <system:String x:Key="Data_Moderation_UserApprove_SubHeader">User Approve</system:String>
+    <system:String x:Key="Data_Moderation_UserApprove_Instructions">Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.\nModActionType-the type of defined action-a command, channel point redeem, etc\nModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro\nModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.\nModPerformAction-the name of the action to perform once approved\nThe default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".</system:String>
+    <system:String x:Key="Data_Moderation_ModActionType_Column">ModActionType</system:String>
+    <system:String x:Key="Data_Moderation_ModActionName_Column">ModActionName</system:String>
+    <system:String x:Key="Data_Moderation_ModPerformType_Column">ModPerformType</system:String>
+    <system:String x:Key="Data_Moderation_ModPerformAction_Column">ModPerformAction</system:String>
+
+    <system:String x:Key="Data_Moderation_MsgMod_SubHeader">Msg Mod</system:String>
+    <system:String x:Key="Data_Moderation_MsgMod_Instructions">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified.\nThis procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment.\nCaution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</system:String>
+    <system:String x:Key="Data_Mod_Id_Column">Id</system:String>
+    <system:String x:Key="Data_Mod_MsgType_Column">Msg Type</system:String>
+    <system:String x:Key="Data_Mod_BanReason_Column">BanReason</system:String>
+    <system:String x:Key="Data_Mod_TimeoutNote">Timeout is marked in seconds, minimum is 1 and max is 1,209,600 (2 weeks).\nWhen 'ModAction' is set to 'Ban', the timeout isn't used.\nIt's probable sometimes messages from long term followers/users are a little more tolerable than new arrivals, options provided for to help with this.</system:String>
+    <system:String x:Key="Data_Mod_ModAction_Column">ModAction</system:String>
+    <system:String x:Key="Data_Mod_TimeoutSecs_Column">Timeout Secs</system:String>
+    <system:String x:Key="Data_Mod_ViewerTypes_Column">Viewer Types</system:String>
+    <system:String x:Key="Data_Mod_LearningMessage_Column">Learning Message</system:String>
+
+    --><!-- User Data --><!--
+    <system:String x:Key="Data_UserData_SubHeader">User Data</system:String>
+    <system:String x:Key="Data_UserData_UserFollow_SubHeader">User Follow</system:String>
+    <system:String x:Key="Data_UserData_Users_Tab">Users</system:String>
+    <system:String x:Key="Data_UserData_Followers_Tab">Followers</system:String>
+    <system:String x:Key="Data_UserData_Users_Label">User List</system:String>
+    <system:String x:Key="Data_UserData_Followers_Label">Follower List - Bot Account Needs to be a Moderator To View this List</system:String>
+    <system:String x:Key="Data_UserData_ClearNonFollowers">Clear Non-Followers</system:String>
+    <system:String x:Key="Data_UserData_ClearNonFollowers_Tooltip">Remove all non-Followers from User listing. The comparison is "Id" field, not "IsFollower" status.</system:String>
+    <system:String x:Key="Data_UserData_ResetWatchTime">Reset All WatchTime</system:String>
+
+    <system:String x:Key="Data_UserData_Platform_Column">Platform</system:String>
+    <system:String x:Key="Data_UserData_Follower_Column">Follower</system:String>
+    <system:String x:Key="Data_UserData_WatchTime_Column">Watch Time</system:String>
+
+    --><!-- Currency --><!--
+    <system:String x:Key="Data_Currency_SubHeader">Currency</system:String>
+    <system:String x:Key="Data_Currency_Enable">Enable Currency Accrual</system:String>
+    <system:String x:Key="Data_Currency_PerMinute_Label">Currency per minute:</system:String>
+    <system:String x:Key="Data_Currency_OnlineOnly">Accrue only when stream is online</system:String>
+    <system:String x:Key="Data_Currency_ResetAll">Reset All Currency</system:String>
+    <system:String x:Key="Data_Currency_Balance_Column">Balance</system:String>
+
+    --><!-- Data inner tab --><!--
+    <system:String x:Key="Data_Currency_Data_SubHeader">Data</system:String>
+    <system:String x:Key="Data_Currency_Instructions">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</system:String>
+    <system:String x:Key="Data_Currency_ClearAllValues">Clear All Currency Values</system:String>
+
+    <system:String x:Key="Data_Currency_CurrencyName_Column">CurrencyName</system:String>
+    <system:String x:Key="Data_Currency_AccrueAmt_Column">Accrue Amt</system:String>
+    <system:String x:Key="Data_Currency_Seconds_Column">Seconds</system:String>
+    <system:String x:Key="Data_Currency_MaxValue_Column">Max Value</system:String>
+
+    <system:String x:Key="Data_Currency_Value_Column">Value</system:String>
+
+    --><!-- Games inner tab --><!--
+    <system:String x:Key="Data_Currency_Games_SubHeader">Games</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Header">Cards - Blackjack 21</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_HouseStands">House Stands at:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Payouts">Player payouts:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Dealt21">Dealt 21:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Reaches21">Reaches 21:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Under21Stop">Under 21 Stop:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_PayoutMessage">Payout Message (use #value):</system:String>
+    
+    --><!-- Quotes (if not already added) --><!--
+    <system:String x:Key="Data_Quotes_SubHeader">Quotes</system:String>
+    <system:String x:Key="Data_Quotes_Instructions">Quotes are saved from chat messages with !quote or !addquote commands.\nThe 'Cited By' column is the user who added the quote (not necessarily the original speaker).\nQuotes can be used in other commands with $quote(#) or $randomquote.</system:String>
+    <system:String x:Key="Data_Quotes_Number_Column">Number</system:String>
+    <system:String x:Key="Data_Quotes_Quote_Column">Quote</system:String>
+    <system:String x:Key="Data_Quotes_CitedBy_Column">Cited By</system:String>
+    <system:String x:Key="Data_Quotes_DateAdded_Column">Date Added</system:String>
+
+    --><!-- Old Follows --><!--
+    <system:String x:Key="Data_OldFollows_SubHeader">Old Follows</system:String>
+
+    --><!-- Auto-SO --><!--
+    <system:String x:Key="Data_AutoSO_SubHeader">Auto-SO</system:String>
+    <system:String x:Key="Data_AutoSO_Instructions">When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here.</system:String>
+    <system:String x:Key="Data_AutoSO_ShoutButton">Shout these Users if in Chat</system:String>
+    <system:String x:Key="Data_AutoSO_ShoutButton_Tooltip">The 'soactive' command needs to be enabled.</system:String>
+    <system:String x:Key="Data_AutoSO_CustomMessageNote">Specify a custom message per UserName, tied to Welcome Message options - first appearance or first message. Otherwise, system falls back onto default.</system:String>
+    <system:String x:Key="Data_AutoSO_Message_Column">Message</system:String>
+
+    --><!-- Giveaways --><!--
+    <system:String x:Key="Data_Giveaways_SubHeader">Giveaways</system:String>
+    <system:String x:Key="Data_Giveaways_SetupNote">Setup Giveaways!\nBe sure to start "Twitch Chat Client" bot to read channel points, viewer entries, and provide giveaway details and winner(s) to viewers.</system:String>
+    <system:String x:Key="Data_Giveaways_Condition_Header">Select Giveaway Condition</system:String>
+    <system:String x:Key="Data_Giveaways_Condition_Tooltip">Select the "Command" or "Channel Points" item a viewer uses to enter the giveaway.</system:String>
+    <system:String x:Key="Data_Giveaways_Command_Label">Command</system:String>
+    <system:String x:Key="Data_Giveaways_Command_Tooltip">Select a command to enter the giveaway. The command will be used to enter the giveaway, e.g. '!giveaway' or '!enter'. Command must be enabled in the Commands tab to appear here.</system:String>
+    <system:String x:Key="Data_Giveaways_ChannelPoints_Label">Channel Points</system:String>
+    <system:String x:Key="Data_Giveaways_MultiEntry">Allow more than 1 entry</system:String>
+    <system:String x:Key="Data_Giveaways_MaxEntries_Label">Max Entries</system:String>
+    <system:String x:Key="Data_Giveaways_MaxEntries_Tooltip">Can be changed during giveaway, lowered will remove excess entrants.</system:String>
+    <system:String x:Key="Data_Giveaways_Begin">Begin Giveaway</system:String>
+    <system:String x:Key="Data_Giveaways_Begin_Tooltip">The ChatBot needs to be started for chatting Giveaway messages. PubSub Bot needs to be started for Channel Points redemption to be detected.</system:String>
+    <system:String x:Key="Data_Giveaways_End">End Giveaway</system:String>
+    <system:String x:Key="Data_Giveaways_PickWinner">Pick Winners</system:String>
+    <system:String x:Key="Data_Giveaways_Winners_Label">Number of Winners:</system:String>
+    <system:String x:Key="Data_Giveaways_Winners_Tooltip">Specify how many viewers to select for the giveaway event.</system:String>
+    <system:String x:Key="Data_Giveaways_StartMessage_Label">Giveaway start message:</system:String>
+    <system:String x:Key="Data_Giveaways_Announce">Output as Announcement</system:String>
+    <system:String x:Key="Data_Giveaways_EndMessage_Label">Giveaway end message:</system:String>
+    <system:String x:Key="Data_Giveaways_WinnerMessage_Label">Winner Message (#winner):</system:String>
+    <system:String x:Key="Data_Giveaways_CurrentEntrants_Label">Current Giveaway Entrants:</system:String>
+    <system:String x:Key="Data_Giveaways_ResultsNote">Results of prior Giveaways recorded here!\nData management is enabled or disabled in the Options tab.</system:String>
+    <system:String x:Key="Data_Giveaways_DateTime_Column">Date Time</system:String>
+
+    --><!-- System Events --><!--
+    <system:String x:Key="Data_SystemEvents_SubHeader">System Events</system:String>
+    <system:String x:Key="Data_SystemEvents_Instructions">These are system-level events (stream start/end, bot connect/disconnect, etc.) that can trigger messages or actions.\nEnable/disable individual events, add /me, announce in chat, or set custom repeat messages.\nUse $variable syntax for dynamic content (e.g. $streamtitle, $uptime, $category).</system:String>
+    <system:String x:Key="Data_SystemEvents_Tooltip">Double-click a row to edit the message or variables.\nSome events only trigger when the relevant bot/service is running (e.g. EventSub for stream online/offline).</system:String>
+    <system:String x:Key="Data_SystemEvents_Name_Column">Event Name</system:String>
+    <system:String x:Key="Data_SystemEvents_AddMe_Column">/me</system:String>
+    <system:String x:Key="Data_SystemEvents_Announce_Column">Announce</system:String>
+    <system:String x:Key="Data_SystemEvents_SendMsg_Column">Send Msg</system:String>
+    <system:String x:Key="Data_SystemEvents_Message_Column">Message</system:String>
+    <system:String x:Key="Data_SystemEvents_Variables_Column">Variables</system:String>
+    --><!-- Commands sub-tab --><!--
+    <system:String x:Key="Data_Commands_SubHeader">Commands</system:String>
+
+    --><!-- Help inner tab --><!--
+    <system:String x:Key="Data_Commands_Help_SubHeader">Help</system:String>
+    <system:String x:Key="Data_Commands_Help_BuiltInNote">Built-in commands are always enabled and cannot be deleted or renamed. They are core to bot operation.</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Label">Viewer Types</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Tooltip">These are permission levels for commands. Set in the 'Permission' column.</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Explanation">Everyone - any viewer\nFollower - followers only\nSubscriber - subs only\nVIP - VIPs only\nModerator - mods only\nBroadcaster - streamer only\nCustom - use custom role list</system:String>
+
+    <system:String x:Key="Data_Commands_Category_Column">Category</system:String>
+    <system:String x:Key="Data_Commands_Command_Column">Command</system:String>
+    <system:String x:Key="Data_Commands_Permission_Column">Permission</system:String>
+
+    <system:String x:Key="Data_Commands_AddMe_Column">Add Me</system:String>
+    <system:String x:Key="Data_Commands_Announce_Column">Announce</system:String>
+    <system:String x:Key="Data_Commands_RepeatTimer_Column">Repeat Timer</system:String>
+
+    <system:String x:Key="Data_Commands_TimesCalled_Column">Times Called</system:String>
+
+    <system:String x:Key="Data_UserData_FollowedDate_Column">Followed Date</system:String>
+    <system:String x:Key="Data_UserData_StatusChanged_Column">StatusChanged Date</system:String>
+    <system:String x:Key="Data_UserData_UserId_Column">UserId</system:String>
+    <system:String x:Key="Data_UserData_UserName_Column">UserName</system:String>
+    <system:String x:Key="Data_UserData_LastSeen_Column">Last Seen</system:String>
+
+    --><!-- Built-In inner tab --><!--
+    <system:String x:Key="Data_Commands_BuiltIn_SubHeader">Built-In</system:String>
+    <system:String x:Key="Data_Commands_BuiltIn_RepeatNote">Built-in commands can have repeat timers set in the Repeat Timer column (seconds).</system:String>
+    <system:String x:Key="Data_Commands_BuiltIn_Label">Built-in Commands List</system:String>
+
+    --><!-- User-Defined inner tab --><!--
+    <system:String x:Key="Data_Commands_UserDefined_SubHeader">User-Defined</system:String>
+    <system:String x:Key="Data_Commands_UserDefined_RepeatNote">User-defined commands can have repeat timers set in the Repeat Timer column (seconds).</system:String>
+    <system:String x:Key="Data_Commands_UserDefined_Label">User-Defined Commands List</system:String>
+
+
+    --><!-- Overlays --><!--
+    <system:String x:Key="Data_Overlays_SubHeader">Overlays</system:String>
+    <system:String x:Key="Data_Overlays_Events_SubHeader">Events</system:String>
+    <system:String x:Key="Data_Overlays_Events_Header">Overlay Events Help</system:String>
+    <system:String x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).\nDuration is in seconds.\nImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.\nUseChatMsg = show message in chat when triggered.\nUserName = optional filter for specific user triggering the event.</system:String>
+    <system:String x:Key="Data_Overlays_Type_Column">Type</system:String>
+    <system:String x:Key="Data_Overlays_Action_Column">Action</system:String>
+    <system:String x:Key="Data_Overlays_Duration_Column">Duration (s)</system:String>
+    <system:String x:Key="Data_Overlays_ImageFile_Column">ImageFile</system:String>
+    <system:String x:Key="Data_Overlays_MediaFile_Column">MediaFile</system:String>
+    <system:String x:Key="Data_Overlays_UseChatMsg_Column">UseChatMsg</system:String>
+    <system:String x:Key="Data_Overlays_UserName_Column">UserName</system:String>
+    <system:String x:Key="Data_Overlays_Queue_Header">Alert Queue</system:String>
+    <system:String x:Key="Data_Overlays_PauseQueue">Pause Queue</system:String>
+    <system:String x:Key="Data_Overlays_ClearQueue">Clear Queue</system:String>
+    <system:String x:Key="Data_Overlays_ActionItems_Label">action items queued</system:String>
+    <system:String x:Key="Data_Overlays_ChannelPoints_Header">Channel Points</system:String>
+
+    <system:String x:Key="Data_Overlays_Ticker_SubHeader">Ticker</system:String>
+    <system:String x:Key="Data_Overlays_Ticker_Note">Ticker items scroll continuously in overlay. Add/remove users here.</system:String>
+    <system:String x:Key="Data_Overlays_TickerName_Column">Ticker Name</system:String>
+
+    --><!-- Stream Data --><!--
+    <system:String x:Key="Data_StreamData_SubHeader">Stream Data</system:String>
+    <system:String x:Key="Data_StreamData_Stats_SubHeader">Stats</system:String>
+    <system:String x:Key="Data_StreamData_StreamStart_Column">Stream Start</system:String>
+    <system:String x:Key="Data_StreamData_StreamEnd_Column">Stream End</system:String>
+    <system:String x:Key="Data_StreamData_Duration_Column">Duration</system:String>
+    <system:String x:Key="Data_StreamData_MaxUsers_Column">Max Users</system:String>
+    <system:String x:Key="Data_StreamData_NewFollows_Column">New Follows</system:String>
+    <system:String x:Key="Data_StreamData_Category_Column">Category</system:String>
+
+    <system:String x:Key="Data_StreamData_Raids_SubHeader">Raids</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Incoming">Incoming Raids</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Outgoing">Outgoing Raids</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Incoming_Note">Incoming raid data from other channels raiding yours.</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Outgoing_Note">Outgoing raids you performed to other channels.</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Date_Column">Raid Date</system:String>
+    <system:String x:Key="Data_StreamData_Raids_ToChannel_Column">Raided Channel</system:String>
+    <system:String x:Key="Data_StreamData_ViewerCount_Column">Viewer Count</system:String>
+
+    <system:String x:Key="Data_Categories_SubHeader">Categories</system:String>
+    <system:String x:Key="Data_Categories_Note">Stream categories tracked per stream session. Reset stream count button clears counters for new tracking cycle.</system:String>
+    <system:String x:Key="Data_Categories_ResetStreamCount">Reset Stream Count</system:String>
+    <system:String x:Key="Data_Categories_Id_Column">Id</system:String>
+    <system:String x:Key="Data_Categories_Category_Column">Category</system:String>
+    <system:String x:Key="Data_Categories_StreamCount_Column">Stream Count</system:String>
+    <system:String x:Key="Data_Categories_DeathCounter_Label">Death Counter per Category</system:String>
+    <system:String x:Key="Data_Categories_Counter_Column">Counter</system:String>
+    <system:String x:Key="Data_Categories_Streams_Column">Streams</system:String>
+
+    <system:String x:Key="Data_Clips_SubHeader">Clips</system:String>
+    <system:String x:Key="Data_Clips_Label">Recorded Clips</system:String>
+    <system:String x:Key="Data_Clips_ClipId_Column">Clip ID</system:String>
+    <system:String x:Key="Data_Clips_Duration_Column">Duration</system:String>
+    <system:String x:Key="Data_Clips_CreatedAt_Column">Created At</system:String>
+
+    --><!-- MultiLive --><!--
+    <system:String x:Key="Data_MultiLive_SubHeader">MultiLive Monitor</system:String>
+
+    --><!-- Logs tab --><!--
+    <system:String x:Key="Logs_TabHeader">Logs</system:String>
+
+    <system:String x:Key="Logs_BotStatus_Tab">Bot Status</system:String>
+    <system:String x:Key="Logs_TwitchStatus_Tab">Twitch Status</system:String>
+
+    <system:String x:Key="Logs_BotStatusLog_Header">Bot Status Log</system:String>
+    <system:String x:Key="Logs_EnableBotStatus">Enable Bot Status Logging</system:String>
+    <system:String x:Key="Logs_BotStatusLog_Tooltip">Save this log - 'StatusLog.txt'</system:String>
+
+    <system:String x:Key="Logs_EnableExceptions">Enable TwineBot Exception Logging</system:String>
+    <system:String x:Key="Logs_ExceptionsLog_Tooltip">Save Exceptions - 'ExceptionsLog.txt'</system:String>
+
+    --><!-- User Join tab --><!--
+    <system:String x:Key="UserJoin_TabHeader">User Join</system:String>
+
+    <system:String x:Key="UserJoin_Instructions1">Join List to organize playing games with your viewers.</system:String>
+    <system:String x:Key="UserJoin_Instructions2">Click the 'remove' box next to the user name to remove from this list.</system:String>
+
+    <system:String x:Key="UserJoin_Status_Header">Join List Status</system:String>
+    <system:String x:Key="UserJoin_Start">Start Join List</system:String>
+    <system:String x:Key="UserJoin_Stop">Stop Join List</system:String>
+
+    <system:String x:Key="UserJoin_Remove_Column">Remove</system:String>
+    <system:String x:Key="UserJoin_GameTagUserName_Column">GameTag UserName</system:String>
+    <system:String x:Key="UserJoin_ChatUser_Column">Chat User</system:String>
+
+    <system:String x:Key="UserJoin_CurrentList_Label">Current User List</system:String>
+    <system:String x:Key="UserJoin_CurrentList_Tooltip">Currently, the API doesn't support identifying joining users with their viewer type (broadcaster, moderator etc).
+        </system:String>
+
+        <system:String x:Key="UserJoin_PopOutChat">Pop-Out Chat Box</system:String>
+        <system:String x:Key="UserJoin_PopOutOpacity_Label">Pop-out Opacity</system:String>
+        <system:String x:Key="UserJoin_PopOutOpacity_Value">50%</system:String>
+
+        <system:String x:Key="Common_Send">Send</system:String>
+
+        --><!-- GitHub tab --><!--
+    <system:String x:Key="GitHub_TabHeader">GitHub</system:String>
+
+    <system:String x:Key="GitHub_AllReleasesNote">All StreamerBot Releases - Always backup data files!</system:String>
+
+    <system:String x:Key="GitHub_WikiDoc_Tab">Wiki Doc</system:String>
+    <system:String x:Key="GitHub_WikiDoc_Label">The Wiki Documentation to help use the Bot</system:String>
+
+    <system:String x:Key="GitHub_Stable_Tab">Stable</system:String>
+    <system:String x:Key="GitHub_Stable_Label">Latest stable release - may have unusual bugs, most are resolved</system:String>
+
+    <system:String x:Key="GitHub_Latest_Tab">Latest</system:String>
+    <system:String x:Key="GitHub_Latest_Label">Latest development and stable releases - may have bugs while testing for next stable release</system:String>
+
+    --><!-- Already had this from earlier, but for completeness --><!--
+    <system:String x:Key="Common_Reload">Reload</system:String>
     
     
-    <system:String x:Key="Disabled">Disabled</system:String>
-       
-    <system:String x:Key="ExpiredToken">The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</system:String>
+</ResourceDictionary>-->
 
-    <system:String x:Key="CredentialsHeader">Help for Credentials</system:String>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ============================================================= -->
+    <!--                     Common / Shared                           -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="Common_Add">Add</system:String>
+    <system:String x:Key="Common_AutoStart">Auto-start when application starts</system:String>
+    <system:String x:Key="Common_Clear">Clear</system:String>
+    <system:String x:Key="Common_Disabled">Disabled</system:String>
+    <system:String x:Key="Common_DisableAll">Disable All</system:String>
+    <system:String x:Key="Common_EnableAll">Enable All</system:String>
+    <system:String x:Key="Common_Enabled">Enabled</system:String>
+    <system:String x:Key="Common_Refresh">Refresh</system:String>
+    <system:String x:Key="Common_Remove">Remove</system:String>
+    <system:String x:Key="Common_Reload">Reload</system:String>
+    <system:String x:Key="Common_Send">Send</system:String>
+    <system:String x:Key="Common_Start">Start</system:String>
+    <system:String x:Key="Common_Stop">Stop</system:String>
+
+    <!-- ============================================================= -->
+    <!--                     Window / Title / Status Bar               -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="Window_Title">Streamer Bot Manager</system:String>
+
+    <system:String x:Key="Status_AllViewers_Label">All Viewers:</system:String>
+    <system:String x:Key="Status_BuiltIn_Label">Built-in:</system:String>
+    <system:String x:Key="Status_Category_RefreshTooltip">Click to refresh current category</system:String>
+    <system:String x:Key="Status_CurrentCategory_Label">Current Category:</system:String>
+    <system:String x:Key="Status_CurrentFollows_Label">Current Follows:</system:String>
+    <system:String x:Key="Status_InstalledCommands_Label">Installed Commands</system:String>
+    <system:String x:Key="Status_NewReleaseAvailable">New Release Version!</system:String>
+    <system:String x:Key="Status_StreamOffline">Stream Offline</system:String>
+    <system:String x:Key="Status_StreamOnline">Stream Online</system:String>
+    <system:String x:Key="Status_TokenExpiration_Label">Token Exp:</system:String>
+    <system:String x:Key="Status_UserDefined_Label">User-Defined:</system:String>
+
+    <system:String x:Key="Tooltip_AllViewers">All Users who visited the stream while online.</system:String>
+    <system:String x:Key="Tooltip_Category_Refresh">Click to refresh current category</system:String>
+    <system:String x:Key="Tooltip_CurrentFollows_Refresh">Click here to refresh now. Use 'Options' to manage followers, including regular updates — does not update immediately for unfollows.</system:String>
+    <system:String x:Key="Tooltip_NewReleaseAvailable">New Release version available! Download from "GitHub → Stable" tab.</system:String>
+    <system:String x:Key="Tooltip_TokenExpiration">The earliest token expiration date among active tokens.</system:String>
+
+    <!-- Auth failure warnings -->
+    <system:String x:Key="Auth_BotTokenFailed">The Twitch-Bot Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot.</system:String>
+    <system:String x:Key="Auth_NoScopesTokenFailed">The Twitch Account-no scopes- authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot.</system:String>
+    <system:String x:Key="Auth_StreamerTokenFailed">The Twitch-Streamer Account authorization code has failed. The bots have stopped due to no access. Please re-authorize to reactivate the bot.</system:String>
+
+    <!-- ============================================================= -->
+    <!--                     Authorization / Credentials               -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="Credentials_AccessToken">Access OAuth Token</system:String>
+    <system:String x:Key="Credentials_AuthorizeBotToken">Authorize Bot Token</system:String>
+    <system:String x:Key="Credentials_AuthorizeNoScopes">Authorize No Scopes Token</system:String>
+    <system:String x:Key="Credentials_AuthorizeScopesToken">Authorize Scopes Token</system:String>
+    <system:String x:Key="Credentials_BotUserName">Bot User Name</system:String>
+    <system:String x:Key="Credentials_ChannelName">Channel Name</system:String>
+    <system:String x:Key="Credentials_ClientId">Client Id</system:String>
+    <system:String x:Key="Credentials_ClientSecret">Client Secret</system:String>
+    <system:String x:Key="Credentials_ExpiredCredentials">The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</system:String>
+    <system:String x:Key="Credentials_LoginFirstBot">At Twitch.tv, be sure to log into this bot account first before authorizing the access.</system:String>
+    <system:String x:Key="Credentials_NoScopesToken">No Scopes Access Token</system:String>
+    <system:String x:Key="Credentials_ReauthWarning">If you used the automatic refresh token (other page), you will need to re-enter tokens on this page.</system:String>
+    <system:String x:Key="Credentials_RefreshDueDateButton">Refresh Due Date</system:String>
+    <system:String x:Key="Credentials_RefreshDueDateTooltip">Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed.</system:String>
+    <system:String x:Key="Credentials_RefreshToken">Refresh Token</system:String>
+    <system:String x:Key="Credentials_TokenScope">Token Scope</system:String>
+
+    <!-- ============================================================= -->
+    <!--                     Bots Tab                                  -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="Bots_TabHeader">Bots</system:String>
+    <system:String x:Key="Bots_StartAll">Start All Bots</system:String>
+    <system:String x:Key="Bots_StopAll">Stop All Bots</system:String>
+    <system:String x:Key="Bots_StartBots_TabHeader">Start Bots</system:String>
+
+    <!-- Individual bots -->
+    <system:String x:Key="Bot_EventSubChat">EventSub Bot Chat</system:String>
+    <system:String x:Key="Bot_EventSubChat_Start">EventSub Bot Chat is started!</system:String>
+    <system:String x:Key="Bot_EventSubChat_Stop">EventSub Bot Chat is stopped!</system:String>
+    <system:String x:Key="Bot_EventSubNotifications">EventSub Bot Notifications</system:String>
+    <system:String x:Key="Bot_EventSubNotifications_Start">EventSub Bot Notifications is started!</system:String>
+    <system:String x:Key="Bot_EventSubNotifications_Stop">EventSub Bot Notifications is stopped!</system:String>
+    <system:String x:Key="Bot_LiveMonitor">Streamer-Multi-LiveStream Service</system:String>
+    <system:String x:Key="Bot_LiveMonitor_Start">Streamer-Multi-LiveStream Service is started!</system:String>
+    <system:String x:Key="Bot_LiveMonitor_Stop">Streamer-Multi-LiveStream Service is stopped!</system:String>
+    <system:String x:Key="Bot_ClipService">Streamer-Clip Service</system:String>
+    <system:String x:Key="Bot_ClipService_Start">Streamer-Clip Service is started!</system:String>
+    <system:String x:Key="Bot_ClipService_Stop">Streamer-Clip Service is stopped!</system:String>
+    <system:String x:Key="Bot_MediaOverlay">Service-Media Overlay</system:String>
+    <system:String x:Key="Bot_MediaOverlay_Start">Service-Media Overlay is started!</system:String>
+    <system:String x:Key="Bot_MediaOverlay_Stop">Service-Media Overlay is stopped!</system:String>
+
+    <system:String x:Key="Bot_AccessValid">Valid</system:String>
+    <system:String x:Key="Bot_AccessInvalid">Invalid</system:String>
+
+    <system:String x:Key="Bot_EventSubChat_Description">This bot receives chats from Twitch, including commands.</system:String>
+    <system:String x:Key="Bot_EventSubNotifications_Description">This bot receives from Twitch: channel online/offline, raids, gifts, cheers, follows, and channel point redeems.</system:String>
+
+    <system:String x:Key="Help_Bot_EventSubChat_ManualToken">Use the updated access scopes and obtain a new access token.</system:String>
+    <system:String x:Key="Help_Bot_EventSubChat_AuthCode">Use the "Authorize Token" button on Twitch tab to re-authorize the app.</system:String>
+    <system:String x:Key="Help_Bot_EventSubNotify_ManualToken">Use the updated access scopes and obtain a new access token.</system:String>
+    <system:String x:Key="Help_Bot_EventSubNotify_AuthCode">Use the "Authorize Token" button on Twitch tab to re-authorize the app.</system:String>
     
-    <system:String x:Key="CredentialsIntro">*The 'Credentials' are in the "Credentials (Click me)" expander for privacy when the bot starts. Click to expand and to enter and view the credentials. The data is saved automatically.</system:String>
+    <system:String x:Key="Bot_LiveMonitor_Description">Bot will only start if multi-live channels are available.</system:String>
 
-    <system:String x:Key="CredentialsSettings">The settings are saved at: C:\Users\{username}\AppData\Local\TwineStreamerBot</system:String>
+    <system:String x:Key="Bot_AccessAuthorized_Label">Access Authorized:</system:String>
+    <system:String x:Key="Bot_AccessAuthorizedScopes_Label">Access Authorized-Scopes:</system:String>
+    <system:String x:Key="Bot_AccessAuthorizedNoScopes_Label">Access Authorized-No Scopes:</system:String>
 
-    <system:String x:Key="CredentialsOAuth">Bots need an "Access Token" to authorize it to post to Twitch. Per the OAuth requirements, the "Access Token" must be paired with the "Client Id" used to generate the "Access Token".</system:String>
+    <system:String x:Key="Bot_Start_EventSubChat">Start EventSub Bot</system:String>
+    <system:String x:Key="Bot_Stop_EventSubChat">Stop EventSub Bot</system:String>
+    <system:String x:Key="Bot_Start_EventSubNotifications">Start EventSub Bot</system:String>
+    <system:String x:Key="Bot_Stop_EventSubNotifications">Stop EventSub Bot</system:String>
+    <system:String x:Key="Bot_Start_LiveMonitor">Start Live Monitor Bot</system:String>
+    <system:String x:Key="Bot_Stop_LiveMonitor">Stop Live Monitor Bot</system:String>
+    <system:String x:Key="Bot_Start_ClipService">Start Clip Service Bot</system:String>
+    <system:String x:Key="Bot_Stop_ClipService">Stop Clip Service Bot</system:String>
+    <system:String x:Key="Bot_ClipService_Error">The Twitch Clip Client failed to start! Check the Access Token Refresh Date and the Token Scope.</system:String>
+    <system:String x:Key="Bot_Start_MediaOverlay">Start Overlay Service Bot</system:String>
+    <system:String x:Key="Bot_Stop_MediaOverlay">Stop Overlay Service Bot</system:String>
+    <system:String x:Key="Bot_MediaOverlay_Error">The Media Overlay Service failed to start! Check the Access Token Refresh Date and the Token Scope.</system:String>
 
-    <system:String x:Key="CredentialsOAuthManual">*Until this application supports creating and refreshing access tokens, the user will need to manually perform this task.</system:String>
+    <system:String x:Key="Bot_MediaOverlay_StartWithStream">Start-stream online, Stop-stream offline.</system:String>
+    <system:String x:Key="Help_Overlay_Intro">Be sure to check Overlay Server, it has separately configured HTTP ports before starting the server.</system:String>
 
-    <system:String x:Key="CredentialsBotAccount">Get and login to the bot account* to use within this chat bot. The Token Generator site needs the bot account as the current Twitch login (first time, to link the Token site to Twitch bot account).  *The recommendation is to create a separate Twitch account for this bot to use.</system:String>
+    <system:String x:Key="Bot_ActivatePerOnline_Header">Activate per Online Status</system:String>
+    <system:String x:Key="Bot_ConnectWhenOnline">Connect when stream is online</system:String>
+    <system:String x:Key="Bot_DisconnectWhenOffline">Disconnect when stream is offline</system:String>
 
-    <system:String x:Key="CredentialsLinkTwitchConsole">https://dev.twitch.tv/console</system:String>
-    <system:String x:Key="CredentialsLinkTwitchTokenGen">https://twitchapps.com/tokengen/</system:String>
-    
-    
+    <system:String x:Key="Bots_UsageInfo_Header">Bot Usage Info</system:String>
+    <system:String x:Key="Help_Bots_UsageInfo">The bot credentials form needs to be completed with at least client id and access token.\nThe LiveStreamMonitor Service monitors multiple channels for live status.\nFor optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.\nChanging the Twitch username and/or password can invalidate the access token.\nStart and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being active, as it awaits for a new 'Stream Online' event.</system:String>
 
-    <!-- Begin - Streamer Channel specific, when bot login is different than streamer channel -->
-    <system:String x:Key="CredentialsTwitchExplainSameChannel">Twitch limits access to certain channel data only to the broadcaster channel account. To access this data, please create a ClientID and use the following scope(s) (hidden in expander section) to create the access token.</system:String>
+    <!-- ============================================================= -->
+    <!--                     Twitch Tab                                -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="Bots_Twitch_TabHeader">Twitch</system:String>
+
+    <system:String x:Key="Bots_Twitch_Settings_Header">Settings</system:String>
+
+    <system:String x:Key="Bots_Twitch_ClipSetup_Header">Setup Clip Operations</system:String>
+    <system:String x:Key="Bots_Twitch_ClipCheckSeconds_Label">Seconds between checking for new clips:</system:String>
+    <system:String x:Key="Bots_Twitch_ClipCheckSeconds_Tooltip">Choose how often, in seconds, to check for new clips. Smaller values increases traffic to your channel.</system:String>
+
+    <system:String x:Key="Bots_Twitch_GoLiveSetup_Header">Setup Go-Live Notifications</system:String>
+    <system:String x:Key="Bots_Twitch_GoLiveCheckSeconds_Label">Seconds between checking for going live:</system:String>
+    <system:String x:Key="Bots_Twitch_GoLiveCheckSeconds_Tooltip">Choose how often, in seconds, to check for a change in channel state: going live, updated stream, and going offline. Smaller values increases traffic to your channel.</system:String>
+
+    <system:String x:Key="Bots_Twitch_BotCredentials_Header">Bot Account</system:String>
+    <system:String x:Key="Bots_Twitch_ExpiredCredentials">The credentials for the bot have expired and the bot is stopped. Please update the token and restart the bots!</system:String>
+    <system:String x:Key="Bots_Twitch_ChannelName_Label">Channel Name</system:String>
+    <system:String x:Key="Bots_Twitch_TokenScope_Label">Token Scope</system:String>
+    <system:String x:Key="Bots_Twitch_SingleChannelNote">* This Chat Bot only supports communicating to one channel through the Channel Name.</system:String>
+    <system:String x:Key="Bots_Twitch_BotUserName_Label">Bot User Name</system:String>
+    <system:String x:Key="Bots_Twitch_RefreshDueDate_Button">Refresh Due Date</system:String>
+    <system:String x:Key="Bots_Twitch_RefreshDueDate_Tooltip">Click this button to set a 60 day due date from today, to show when the 'access token' needs refreshed.</system:String>
+    <system:String x:Key="Bots_Twitch_Credentials_ExpanderHeader">Credentials (Click me)</system:String>
+    <system:String x:Key="Bots_Twitch_ClientId_Label">Client Id</system:String>
+    <system:String x:Key="Bots_Twitch_ClientId_Tooltip">The client ID for the bot user account.</system:String>
+    <system:String x:Key="Bots_Twitch_AccessToken_Label">Access OAuth Token</system:String>
+    <system:String x:Key="Bots_Twitch_RefreshToken_Label">Refresh Token</system:String>
+    <system:String x:Key="Bots_Twitch_NoScopesExplanation">For 'Event Sub' bot to check for stream status and incoming raids, we need a 'no-scope' token. Create the token with the above client Id and blank access scope.</system:String>
+    <system:String x:Key="Bots_Twitch_NoScopesToken_Label">No Scopes Access Token</system:String>
+
+    <system:String x:Key="Bots_Twitch_StreamerCredentials_Header">Streamer Channel Credentials</system:String>
+    <system:String x:Key="Bots_Twitch_StreamerCredentials_Explanation">Current Bot Features requiring same {Bot and Streamer} Client ID</system:String>
+    <system:String x:Key="Bots_Twitch_StreamerCredentials_ExpanderHeader">Streamer Channel Specific Credentials (Click Me)</system:String>
+
+    <system:String x:Key="Bots_Twitch_StreamerFeatures_Label">Current Bot Features requiring same {Bot and Streamer} Client ID</system:String>
+
+    <system:String x:Key="Bots_Twitch_ReauthWarning">If you used the automatic refresh token (other page), you will need to re-enter tokens on this page.</system:String>
+
+    <system:String x:Key="Bots_Twitch_BotAccount_Header">Bot Account Info</system:String>
+    <system:String x:Key="Bots_Twitch_HiddenPrivacy">Hidden for privacy</system:String>
+    <system:String x:Key="Bots_Twitch_ClientSecret_Label">Client Secret</system:String>
+    <system:String x:Key="Bots_Twitch_InternalBrowser_Tooltip">Checking this box will use this application's web browser (MSEdge), or unchecked will open your default browser.</system:String>
+    <system:String x:Key="Bots_Twitch_UseInternalBrowser">Use App web browser for authentication.</system:String>
+    <system:String x:Key="Bots_Twitch_LoginFirstBot">At Twitch.tv, be sure to log into this bot account first before authorizing the access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthorizeBotToken">Authorize Bot Token</system:String>
+    <system:String x:Key="Bots_Twitch_ClearBotToken">Clear Bot Token</system:String>
+    <system:String x:Key="Bots_Twitch_AuthorizeNoScopes">Authorize No Scopes Token</system:String>
+    <system:String x:Key="Bots_Twitch_ClearNoScopes">Clear No Scopes Token</system:String>
+
+    <system:String x:Key="Bots_Twitch_StreamerAccount_Header">Streamer Account Info</system:String>
+    <system:String x:Key="Bots_Twitch_LoginFirstStreamer">At Twitch.tv, be sure to log into this streamer account first before authorizing the access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthorizeScopesToken">Authorize Scopes Token</system:String>
+    <system:String x:Key="Bots_Twitch_ClearStreamerToken">Clear Streamer Token</system:String>
+
+    <system:String x:Key="Bots_Twitch_ChannelInfo_Header">Channel Information</system:String>
+    <system:String x:Key="Bots_Twitch_ForceReauth">Force All Re-Authorization</system:String>
+    <system:String x:Key="Bots_Twitch_NoScopesNote">For 'Event Sub' bot to check for stream status and incoming raids, we need a 'no-scope' access token. Click the below authorization button to create the token.</system:String>
+
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Header">Authorization Code Token Flow</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Intro">This bot performs tasks on behalf of the streamer. A moderator level bot account can perform many tasks for the streamer, including chat message responses. It is possible to have a bot account perform some tasks, and use the streamer account access credentials to perform the additional tasks.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Before">Before continuing, consider whether to attach this bot to the streamer account or use a (recommended) separate bot account.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ChannelName">To use the streamer account for the bot actions, type the streamer channel name into the "Channel Name" box, and repeat the name in the "Bot User Name" box. For using a separate bot account, type the streamer account name in the "Channel Name" box, and the bot account name in the "Bot User Name" box.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_TokenFlow">This token flow for accessing Twitch is more simplified than the user method. This flow requires registering the bot at</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Redirect">as the OAuth Redirect URL (add to the Twitch Console registered application entry):</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Approve">and approving the application for an authorization code.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Authorize">To authorize the application:</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_Browser">In the "Bot Account Info" box, expand it and determine whether you want to use the built-in web browser for the application (checked box) or your default browser (unchecked box). Then, click the "Authorize Bot Token" button. This will open a browser window to authorize the access, either in the application browser or default browser. You may need to change the current account (look at the top for 'sign out, change accounts) for the authorization - the Twitch authorization screen doesn't adapt to the account associated with the authorization.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_BlankPage">The browser will go to a blank looking or broken looking webpage. This is alright. The application intercepted the response from Twitch to save the provided access code, the user doesn't need to manually paste them.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ClientSecret">From here on out, the user just pasted 'client Id' and 'client Secret' for each account and will not have to paste any more data for approving the application; occassionally performing the Twitch login and authorization application access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_MultipleWindows">Note: if you click 'authorize account' multiple times and open several browser windows, only use the latest browser or the authorization will fail to get recongnized in this application. (You could have a 2 browser windows open, one for streamer account authorization and another for bot account authorization, so long as you use the latest window). The 'latest' window is due to each time the user clicks the "Authorize Account" button, the application generates a new "state" token for sending to Twitch, and Twitch returns "state" with the authorization to ensure there is no impersonation. When creating several windows, the application saves the last created 'state token' and will only register the last received authorization.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_SeparateBotStreamer">If you're using a separate bot account alongside your streamer account, perform this same procedure for the streamer account box.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_TokenRefresh">The bot will save each authentication code from the "authorized access" form Twitch provides to obtain a refresh token, and continually retrieves a new access token, once the access token expires. This occurs for the bot account and also a streamer account, if you choose to separate the accesses.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_StatusBarWarning">Filling in the client Ids and client secrets in both boxes, then authorizing may show a warning statusbar the other account isn't authorized. It's okay to continue authorizing one account then the other. The statusbar will also show if something happens to the authorization and requires the user to re-authorize the application access.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_TokenExpiration">Note: The tokens expire for the associated account, if:</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_PasswordChange">The user changes the password, or</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_DisconnectApp">Disconnects the app connection, via Twitch settings.</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ScopesChange">From time to time, this bot may add or remove features and changes the access scope. Be sure to look at the release notes if the access scopes changed. This means the user will need to reauthorize the beat and/or streamer access again; otherwise, the tokens may fail during a live stream!</system:String>
+    <system:String x:Key="Bots_Twitch_AuthCodeFlow_ForceReauth">If you need to re-authorize the access and the buttons appear locked, click the "Force Re-Authorization" button to manually reset the authorization; and the authorization buttons will be ready to click.</system:String>
 
 
-    <x:Array Type="system:String" x:Key="CredentialsTwitchStreamerFeatures">
-        <system:String>Channel Point Rewards</system:String>
-        <system:String>Setting Channel Title</system:String>
-        <system:String>Setting Channel Category</system:String>
-    </x:Array>
-    
-    <!-- End - Streamer Channel specific, when bot login is different than streamer channel -->
+    <system:String x:Key="Bots_Overlay_TabHeader">Overlay</system:String>
 
-    <system:String x:Key="CredentialsVisit">Visit: </system:String>
-    <system:String x:Key="CredentialsAdd">Add:</system:String>
 
-    <system:String x:Key="CredentialsTwitchAppRegister"> and "Register Your Application" under the account the bot will use. *Note, the Twitch account needs 2-factor authentication set-up to register applications.*</system:String>
+    <!-- ============================================================= -->
+    <!--                     Options Tab                               -->
+    <!-- ============================================================= -->
 
-    <system:String x:Key="CredentialsTwitchAppName">Give the application a name (it's just a reference when you look at the listing)</system:String>
+    <system:String x:Key="Options_TabHeader">Options</system:String>
 
-    <system:String x:Key="CredentialsTwitchAcctOAuthRedirect"> as the OAuth Redirect URL. Select "Chat Bot" category (or add the token generator website you're using to generate tokens).</system:String>
+    <system:String x:Key="Options_Theme_SubHeader">Theme</system:String>
+    <system:String x:Key="Options_StreamerBot_SubHeader">Streamer Bot</system:String>
+    <system:String x:Key="Options_Twitch_SubHeader">Twitch</system:String>
+    <system:String x:Key="Options_Database_SubHeader">Database</system:String>
 
-    <system:String x:Key="CredentialsTwitchAppCreate">Complete the reCaptcha and click 'Create'.</system:String>
+    <!-- Theme -->
+    <system:String x:Key="Options_Theme_SelectHeader">Select App Theme</system:String>
+    <system:String x:Key="Options_Theme_SpringSummer_Title">Spring &amp; Summer</system:String>
+    <system:String x:Key="Options_Theme_Spring">Spring (Pastel)</system:String>
+    <system:String x:Key="Options_Theme_SpringCherry">Spring Cherry Blossom</system:String>
+    <system:String x:Key="Options_Theme_SpringMint">Spring Mint &amp; Lemon</system:String>
+    <system:String x:Key="Options_Theme_Summer">Summer (Pastel Grass &amp; Flowers)</system:String>
+    <system:String x:Key="Options_Theme_SummerBeach">Summer Beach</system:String>
 
-    <system:String x:Key="CredentialsTwitchClientId">View the application entry to get the 'Client Id'. You can save it in your files and add to the left credential box.</system:String>
+    <system:String x:Key="Options_Theme_FallWinter_Title">Fall &amp; Winter</system:String>
+    <system:String x:Key="Options_Theme_Fall">Fall (Classic)</system:String>
+    <system:String x:Key="Options_Theme_FallSpooky">Fall Halloween / Spooky</system:String>
+    <system:String x:Key="Options_Theme_HalloweenPumpkin">Halloween Pumpkin</system:String>
+    <system:String x:Key="Options_Theme_Winter">Winter Pastel</system:String>
 
-    <system:String x:Key="CredentialsAccessTokens">One such site to generate the access tokens is at: </system:String>
+    <system:String x:Key="Options_Theme_Core_Title">Core Themes</system:String>
+    <system:String x:Key="Options_Theme_Light">Light Theme</system:String>
+    <system:String x:Key="Options_Theme_Dark">Dark Theme</system:String>
+    <system:String x:Key="Options_Theme_Example_Header">Theme Example</system:String>
 
-    <system:String x:Key="CredentialsTwitchPasteClientId">Paste the 'Client Id' generated from above at: </system:String>
+    <system:String x:Key="Options_Theme_Legendary_Title">Legendary Themes</system:String>
+    <system:String x:Key="Options_Theme_Forest">Forest (Nature Dark)</system:String>
+    <system:String x:Key="Options_Theme_Ivory">Ivory (Clean Light)</system:String>
+    <system:String x:Key="Options_Theme_Nord">Nord (Clean Dark)</system:String>
+    <system:String x:Key="Options_Theme_Slate">Slate (Minimal Dark)</system:String>
 
-    <system:String x:Key="CredentialsTwitchPasteScopes">For "Scopes", paste exactly the following depending if you're acquiring a Bot or Stream access token</system:String>
+    <system:String x:Key="Options_Theme_Fun_Title">Fun Themes</system:String>
+    <system:String x:Key="Options_Theme_Candy">Candy (Playful)</system:String>
+    <system:String x:Key="Options_Theme_NeonCyber">Neon Cyber</system:String>
+    <system:String x:Key="Options_Theme_PastelGalaxy">Pastel Galaxy</system:String>
+    <system:String x:Key="Options_Theme_RetroArcade">Retro Arcade</system:String>
 
-    <system:String x:Key="CredentialsTwitchScopesExplained">*This permits specific access for the app functions. Please add these scopes. Currently, the app doesn't adjust to what user scopes you've selected if you don't want specific features enabled.</system:String>
+    <!-- Streamer Bot sub-tab -->
+    <system:String x:Key="Options_Debug_Header">Bot Management - Debug Mode</system:String>
+    <system:String x:Key="Options_Debug_LogBotStatus">Enable Bot Status Logging</system:String>
+    <system:String x:Key="Options_Debug_LogBotStatus_Tooltip">Save this log - 'StatusLog.txt'</system:String>
+    <system:String x:Key="Options_Debug_LogExceptions">Enable TwineBot Exception Logging</system:String>
+    <system:String x:Key="Options_Debug_LogExceptions_Tooltip">Save Exceptions - 'ExceptionsLog.txt'</system:String>
+    <system:String x:Key="Options_Debug_LogFunctions_Header">Log the following functionality:</system:String>
+    <system:String x:Key="Options_Debug_CautionLargeLogs">Caution-logging with these options can create a significant log file, and should be used sparingly or to track issues. Useful to include in debug/issue reports.</system:String>
 
-    <system:String x:Key="CredentialsTwitchAcctConnectClientIds">Click 'Connect' (to connect with Twitch Account) and copy the resulting "Access Token". You can save it to your local files and paste it to the left credential box.</system:String>
+    <system:String x:Key="Options_AppInterface_Header">Bot Management - App Interface</system:String>
+    <system:String x:Key="Options_PostMultiLive">Enable posting to social media (e.g. Discord) multiple live messages in same day.</system:String>
+    <system:String x:Key="Options_DebugLiveStream">Enable Livestream debug buttons.</system:String>
+    <system:String x:Key="Options_ManageClearButton">Enable 'Clear Data' buttons.</system:String>
+    <system:String x:Key="Options_ManageClearButton_Tooltip">This should mitigate accidental button clicks on the GUI when moving the mouse around, e.g. during a live stream.</system:String>
+    <system:String x:Key="Options_EnableManageData">Enable "Data Management" Options</system:String>
+    <system:String x:Key="Options_EnableManageData_Tooltip">Shows or Hides "Data Management" options to prevent accidental clicking.</system:String>
 
-    <system:String x:Key="CredentialsTwitchRefreshDate">Be sure to click "Refresh Date" here in the credentials which will give you the 60-day (53-days as it appears 'Follow' calls to Twitch only work with the token less than 60-days) date from now in which you need to refresh the 'access token'. You would only need to perform the new 'access token' to get another token.</system:String>
-    
+    <!-- Options -> Date Formats -->
+    <system:String x:Key="Options_TimeFormats_Header">Time Formats</system:String>
+    <system:String x:Key="Options_TimeIncludeSeconds">Enable seconds amount in time formats</system:String>
+    <system:String x:Key="Options_TimeIncludeSeconds_Tooltip">Include seconds when formatting time durations.</system:String>
+    <system:String x:Key="Options_TimeFullFormatHoursFull_Tooltip">Enable this option to specify the full 'total hours' or years/months/days/hours/minutes when formatting time.</system:String>
+    <system:String x:Key="Options_TimeFullFormatHoursFull">Enable full "hours or {time-breakdown}" format.</system:String>
+
+    <system:String x:Key="Options_TimeFullFormatFullHours_Tooltip">Enable this option to specify the full "years/months/days/hours/minutes or 'total hours'" when formatting time.</system:String>
+    <system:String x:Key="Options_TimeFullFormatFullHours">Enable full "{time-breakdown} or hours" format.</system:String>
+    <system:String x:Key="Options_TimeTotalHours">Enable "{total hours}" format.</system:String>
+    <system:String x:Key="Options_TimeTotalHours_Tooltip">Enable this option to specify only "total hours" when formatting time.</system:String>
+    <system:String x:Key="Options_TimeTotalTime">Enable "{total time: years/months/days.../minutes}" format.</system:String>
+    <system:String x:Key="Options_TimeTotalTime_Tooltip">Enable this option to specify only "total time" when formatting time.</system:String>
+
+
+    <!-- Options → Tabs -->
+    <system:String x:Key="Options_Tabs_Header">Bot Management - Tabs</system:String>
+    <system:String x:Key="Options_Tabs_WidthNote">Enable width-based tab config for data tables. Enter width in pixels.</system:String>
+    <system:String x:Key="Options_TabUserFollow_Label">UserData User Follow</system:String>
+    <system:String x:Key="Options_TabUserFollow_Tooltip">When the application width decreases too much, the User Follow listing is hard to read. This option enables the tab to be reconfigured when the width is decreased.</system:String>
+    <system:String x:Key="Options_TabStreamRaids_Label">Stream In Out Raids</system:String>
+    <system:String x:Key="Options_TabStreamRaids_Tooltip">When the application width decreases too much, the Incoming and Outgoing raid listing is hard to read. This option enables the tab to be reconfigured when the width is decreased.</system:String>
+
+    <!-- Options → Media Overlay -->
+    <system:String x:Key="Options_MediaOverlay_Header">Media Overlay</system:String>
+    <system:String x:Key="Options_MediaOverlay_ClickNote">Clicking Enable will start a new Process for the Media Overlay Server</system:String>
+    <system:String x:Key="Options_MediaOverlay_Enable">Enable Media Overlay</system:String>
+    <system:String x:Key="Options_MediaOverlay_ChannelPoints">Enable Monitor Channel Points</system:String>
+    <system:String x:Key="Options_MediaOverlay_ChannelPoints_Tooltip">The PubService bot must have 'Monitor Channel Points' service and bot started to enable this feature.</system:String>
+    <system:String x:Key="Options_MediaOverlay_ShoutoutClips">Enable for shout-outs using a random clip from user's channel</system:String>
+    <system:String x:Key="Options_MediaOverlay_ShoutoutClips_Tooltip">For an Overlay Service Shout-Out event, use a random clip from their channel as part of the overlay notification. Twitch currently requires SSL certs for embed videos and a domain name. Disabled for unavailable features.</system:String>
+
+    <!-- Options → Currency -->
+    <system:String x:Key="Options_Currency_Header">Currency System</system:String>
+    <system:String x:Key="Options_Currency_Enable">Enable Currency Accrual - still permits adding currencies</system:String>
+    <system:String x:Key="Options_Currency_OnlineOnly">Enable Currency Accrual only when Streaming Online</system:String>
+
+    <!-- Options → Welcome -->
+    <system:String x:Key="Options_Welcome_Header">Welcome Viewers</system:String>
+    <system:String x:Key="Options_Welcome_OncePerStream">Only once per user per active stream (no repeats)</system:String>
+    <system:String x:Key="Options_Welcome_OnJoin">Enable when viewer joins the channel</system:String>
+    <system:String x:Key="Options_Welcome_OnFirstChat">Enable when a viewer first chats</system:String>
+    <system:String x:Key="Options_Welcome_StreamerChat">Enable welcome message when streamer chats</system:String>
+    <system:String x:Key="Options_Welcome_Customize">Customize Welcome Messages - Welcome New Viewer, Returning Viewer, and Followers/Subscribers</system:String>
+
+    <!-- Options → Output -->
+    <system:String x:Key="Options_Output_Header">Bot Management - Output</system:String>
+    <system:String x:Key="Options_Output_BotWelcome">Enable bot welcome message when connected to stream channel.</system:String>
+    <system:String x:Key="Options_Output_CommandNotFound">Enable "Command Not Found" output message.</system:String>
+    <system:String x:Key="Options_Output_SocialSeparate">Enable separate Social messages.</system:String>
+    <system:String x:Key="Options_Output_SocialSeparate_Tooltip">Using !socials, click to send each social message separately to chat.</system:String>
+
+    <!-- Options → Moderate Follows -->
+    <system:String x:Key="Options_ModerateFollows_Header">Moderate Follows</system:String>
+    <system:String x:Key="Options_ModerateFollows_Enable">Enable auto-banning Follow bots</system:String>
+    <system:String x:Key="Options_ModerateFollows_Note">Currently sends "ban candidates" to the "Status Log" - to test and ensure real users are not accidentally banned.</system:String>
+    <system:String x:Key="Options_ModerateFollows_ClusterNote">When Follow-bot looks every N seconds, total new follows are detected at one time. A cluster can indicate a follow-bot attack (or you're very popular).</system:String>
+    <system:String x:Key="Options_ModerateFollows_Choose">Choose (1 to 100):</system:String>
+
+    <!-- Options → Moderation Messages -->
+    <system:String x:Key="Options_ModerationMessages_Header">Moderation Messages</system:String>
+    <system:String x:Key="Options_ModApprovalExpiration_Header">Approval Request Expiration</system:String>
+    <system:String x:Key="Options_ModApprovalExpiration_Label">Expiration Minutes:</system:String>
+    <system:String x:Key="Options_ModApprovalExpiration_Tooltip">On 'Data/Moderator/User Approve' tab, specify which commands or channel points redemptions users can request moderator approval. Specifically, actions that can modify bot data. Specify here how many minutes should moderators have to approve the request. After these specified minutes, the request will expire.</system:String>
+    <system:String x:Key="Options_ModerationML_Note">Currently not enabled-working on machine learning</system:String>
+    <system:String x:Key="Options_ModerateUserLearn">The bot records chat messages to learn if messages are good or bad - bannable/timeout worthy.</system:String>
+    <system:String x:Key="Options_ModerateUsersWarn">Provide chat message of probable moderator action.</system:String>
+    <system:String x:Key="Options_ModerateUsersAction">The bot performs the moderation action</system:String>
+
+    <!-- Options → Repeat Commands -->
+    <system:String x:Key="Options_RepeatCommands_Header">Automatic Commands by Timer</system:String>
+    <system:String x:Key="Options_RepeatCommands_Tooltip">Add 'seconds' (whole number, e.g. 600) to the repeat timer column within the command list. Timer updates after the command runs.</system:String>
+    <system:String x:Key="Options_RepeatCommands_Enable">Enable repeating commands.</system:String>
+    <system:String x:Key="Options_Repeat_WhenLive">Perform Repeat commands only when live.</system:String>
+    <system:String x:Key="Options_Repeat_Mode_Header">Choose Repeat Mode</system:String>
+    <system:String x:Key="Options_Repeat_EnsureEnabled">Ensure Command is Enabled or command will not perform.</system:String>
+    <system:String x:Key="Options_Repeat_Parallel">Independent Timing - Specify in Data→Commands→column Repeat Timer, the seconds to repeat that command.</system:String>
+    <system:String x:Key="Options_Repeat_Serial">Selection Order - Choose the order of commands to repeat at specific intervals, restart after last command.</system:String>
+    <system:String x:Key="Options_Repeat_SerialSettings_Header">Selection Order Settings</system:String>
+    <system:String x:Key="Options_Repeat_Adjustment_Header">Choose Repeater adjustment</system:String>
+    <system:String x:Key="Options_Repeat_NoAdjustment">No adjustment to repeat timers.</system:String>
+    <system:String x:Key="Options_Repeat_NoAdjustment_Tooltip">This option provides no restrictions to repeat timers, they run as is.</system:String>
+    <system:String x:Key="Options_Repeat_SlowDown">Enable smart slow-down repeating commands</system:String>
+    <system:String x:Key="Options_Repeat_SlowDown_Tooltip">The repeating commands will slow down by up to 2x the specified time. The commands will return/unwind to normal speed when chat is very active. The specs for normal operation speed are about: at least 15+ viewers per half hour or over 20 viewer chats in 15 minutes.</system:String>
+    <system:String x:Key="Options_Repeat_Threshold_Header">Adjustment Thresholds</system:String>
+    <system:String x:Key="Options_Repeat_Threshold_Tooltip">Select this option to prevent messages from sending if the stream doesn't meet the specified thresholds.</system:String>
+    <system:String x:Key="Options_Repeat_Threshold_Use">Use thresholds to only send messages when exceeding the criteria.</system:String>
+    <system:String x:Key="Options_Repeat_ResetOnOnline">Enable reset repeat timers when stream is online</system:String>
+    <system:String x:Key="Options_Repeat_ResetOnOnline_Tooltip">The repeating commands continually run while the chat bot is active. The repeat timers will fire at their designated time as indicated by the 'repeat timer' and 'category' (of the stream - repeat commands can be specific to certain categories or 'All' for any stream). This setting resets the next fire event to the current time when the bot detects the stream is online.</system:String>
+    <system:String x:Key="Options_Repeat_ShowOnReset">Enable showing repeat timer command when timers reset and stream is online.</system:String>
+    <system:String x:Key="Options_Repeat_ShowOnReset_Tooltip">Coupled with the above 'Enable reset repeat timers when stream is online' option, this option permits whether the commands will perform upon the timer reset or not.</system:String>
+
+    <!-- Options → Data Management -->
+    <system:String x:Key="Options_DataManagement_Header">Data Management</system:String>
+    <system:String x:Key="Options_DataManagement_UncheckWarning">*Unchecking will remove data from database.*</system:String>
+    <system:String x:Key="Options_AppData_Enable">Enable saving the data to the AppData location,</system:String>
+    <system:String x:Key="Options_AppData_ReOpen">You will need to close the app, move the save files, and re-open the app.</system:String>
+    <system:String x:Key="Options_Data_Interlinked_Header">Interlinked</system:String>
+    <system:String x:Key="Options_Data_FollowerDependency">To Manage Follower data, the Users and StreamStats data must be enabled.</system:String>
+    <system:String x:Key="Options_Data_FollowerDependency_Tooltip">Follower data rows save related data to Users and Stream-Category tables.</system:String>
+    <system:String x:Key="Options_Data_ManageUsers">Manage channel viewers, including their watchtime.*</system:String>
+    <system:String x:Key="Options_Data_ManageFollowers">Manage channel followers, including their followage. Requires User data.*</system:String>
+    <system:String x:Key="Options_Data_ManageStreamStats">Record Stream Stats for each stream, including the categories table.*</system:String>
+    <system:String x:Key="Options_Data_ManageRaids">Record Raid Stats for incoming raids.*</system:String>
+    <system:String x:Key="Options_Data_ManageOutRaids">Record Outgoing Raid Stats.*</system:String>
+    <system:String x:Key="Options_Data_ManageGiveaways">Record Giveaway Stats.*</system:String>
+    <system:String x:Key="Options_Data_ManageTicker">Record Ticker Stats.*</system:String>
+
+    <!-- Options → Twitch -->
+    <system:String x:Key="Options_Twitch_FormatBotMessages_Header">Twitch - Format Bot messages</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_MeNote">/me changes message to all italics</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_InsertMe">Enable /me for all commands</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_InsertMe_Tooltip">Add /me to all command output, regardless of setting.</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_PerCommand">Enable /me per command</system:String>
+    <system:String x:Key="Options_Twitch_FormatBotMessages_PerCommand_Tooltip">Add "/me " to command output based on "Add Me" column in "Data/Commands" tables.</system:String>
+
+    <system:String x:Key="Options_Twitch_FollowOptions_Header">Twitch - Follow Options</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AddOnStart">Enable adding all followers when (EventSub) connected to Twitch.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AddOnStart_Tooltip">Will also re-perform when clicking 'Stop Bot' then 'Start Bot'.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers">Enable to not save follower changes to the 'Old Follows' table.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_PruneNonFollowers_Tooltip">Followers can remain as a follower, but with a different username. Username and no-longer-a-follower changes normally save to the 'Old Follows' table. Enabling this option stops saving these changes to the 'Old Follows' table. You can manually delete any rows in the 'Old Follows' table</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_LimitMessages">Enable Limited Follower Messages</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_LimitNote">Multiple messages can clutter chat, this will abbreviate the response to condense the messages.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_LimitChoose">Choose (1 to 100):</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AutoRefresh">Enable Regular Follower Updates</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_AutoRefresh_Tooltip">The Twitch API doesn't provide notices when someone unfollows. This refreshes follower list while bot is running - instead of restarting the Follow bot.</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_RefreshHours_Label">Select Refresh Hours:</system:String>
+    <system:String x:Key="Options_Twitch_FollowOptions_RefreshHours_Tooltip">Select Frequency in Hours to Refresh Followers</system:String>
+
+    <system:String x:Key="Options_Twitch_AdNotifications_Header">Twitch - Manage Ad Notifications</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_Tooltip">Enable and edit your choice of the Data/Channel Events tab ad-related messages: "AdSoon", "AdStarted", "AdEnded" channel events. The enabled items will output to chat.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_Enable">Enable-Notify chat when ads are starting</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsPre">seconds pre-notification</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_TotalTime">Ad messages use total time.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_TotalTime_Tooltip">Enable this option to use ad specific total time breakdown - "1 minute 30 seconds", different from the overall time format option.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetGroupHeader">Adjust Message Appearance</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetHeading">Fine tune when Ad Messages appear.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_AdSoonSecondsOffset">Ads Soon Msg:</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_AdStartSecondsOffset">Ads Start Msg:</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_AdEndSecondsOffset">Ads End Msg:</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetNote">Use whole seconds only: positive number is later, negative number is sooner.</system:String>
+
+    <system:String x:Key="Options_Twitch_ShoutOut_Header">Twitch - Shout Out Viewers</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ActiveWhenLive">Active when channel is live</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_Auto">Auto shoutout viewers when they first appear</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_Auto_Tooltip">Tied to 'Welcome Viewers'. Add names to "Auto SO" tab.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_Raid">Enable auto shoutout for incoming channel raid streamers</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_SendToChat">Always send !so command to chat for every shoutout.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_SendToChat_Tooltip">Permits other bots to use !so (username) for messages. Each active '!so' action will send a '!so' message to chat, includes 'Auto ShoutOut Incoming Channel Raid' when active.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_API">Perform Twitch API ShoutOut, activated alongside shoutout messages.</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_OverlayClips">Show a random user clip during shoutout (Enable Media Overlay Server)</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ClipSize">Clip size in overlay alert:</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ClipWidth">Width:</system:String>
+    <system:String x:Key="Options_Twitch_ShoutOut_ClipHeight">Height:</system:String>
+
+    <system:String x:Key="Options_Twitch_Clips_Header">Twitch - Stream Clips</system:String>
+    <system:String x:Key="Options_Twitch_Clips_PostChat">Post new clips to chat.</system:String>
+    <system:String x:Key="Options_Twitch_Clips_PostDiscord">Post new clips to Discord. Must have "Clips" Webhook(s) defined.</system:String>
+
+    <system:String x:Key="Options_Twitch_MultiLive_Header">Twitch - MultiLive Options</system:String>
+    <system:String x:Key="Options_Twitch_MultiLive_Description">Interact with Multi-Live channels - open a browser window. Tabs may be unmuted and videos may be muted.</system:String>
+    <system:String x:Key="Options_Twitch_MultiLive_OpenBrowser">Open a browser window when any monitored channel is online.</system:String>
+    <system:String x:Key="Options_Twitch_MultiLive_OpenEachTime">This will open a browser window each time a streamer starts their stream.</system:String>
+
+    <!-- Options → Database -->
+    <system:String x:Key="Options_Database_Provider_Header">Choose Database Provider</system:String>
+    <system:String x:Key="Options_Database_Provider_Column">Database</system:String>
+    <system:String x:Key="Options_Database_ConnectionVars_Column">Connection Variables</system:String>
+    <system:String x:Key="Options_Database_InputData_Column">Input Data</system:String>
+
+    <system:String x:Key="Options_Database_Sqlite_Label">Sqlite</system:String>
+    <system:String x:Key="Options_Database_SqlServer_Label">Sql Server</system:String>
+    <system:String x:Key="Options_Database_Cosmos_Label">Cosmos</system:String>
+    <system:String x:Key="Options_Database_PostgreSQL_Label">PostgreSQL</system:String>
+    <system:String x:Key="Options_Database_MySql_Label">MySql</system:String>
+    <system:String x:Key="Options_Database_KNet_Label">MASES-KNet Apache</system:String>
+
+    <system:String x:Key="Options_Database_ConnectString_Label">Connect String:</system:String>
+    <system:String x:Key="Options_Database_CosmosDbName_Label">Database Name:</system:String>
+    <system:String x:Key="Options_Database_KNet_Bootstrap_Label">Bootstrap Server:</system:String>
+    <system:String x:Key="Options_Database_KNet_AppId_Label">Application Id:</system:String>
+    <system:String x:Key="Options_Database_KNet_DbName_Label">Database Name:</system:String>
+
+    <!-- ============================================================= -->
+    <!--                     Data Tab                                  -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="Data_TabHeader">Data</system:String>
+
+    <system:String x:Key="Data_Variables_SubHeader">Variables</system:String>
+    <system:String x:Key="Data_Webhooks_SubHeader">Webhooks</system:String>
+    <system:String x:Key="Data_Moderation_SubHeader">Moderation</system:String>
+    <system:String x:Key="Data_UserData_SubHeader">User Data</system:String>
+    <system:String x:Key="Data_Giveaways_SubHeader">Giveaways</system:String>
+    <system:String x:Key="Data_Quotes_SubHeader">Quotes</system:String>
+    <system:String x:Key="Data_SystemEvents_SubHeader">System Events</system:String>
+    <system:String x:Key="Data_Commands_SubHeader">Commands</system:String>
+    <system:String x:Key="Data_Overlays_SubHeader">Overlays</system:String>
+    <system:String x:Key="Data_StreamData_SubHeader">Stream Data</system:String>
+    <system:String x:Key="Data_MultiLive_SubHeader">MultiLive Monitor</system:String>
+
+    <!-- Webhooks -->
+    <system:String x:Key="Data_Webhooks_Instructions">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.\nUse 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.</system:String>
+    <system:String x:Key="Data_Webhooks_Id_Column">Id</system:String>
+    <system:String x:Key="Data_Webhooks_AddEveryone_Column">Add @Everyone</system:String>
+    <system:String x:Key="Data_Webhooks_Source_Column">Webhook Source</system:String>
+    <system:String x:Key="Data_Webhooks_Kind_Column">Kind</system:String>
+    <system:String x:Key="Data_Webhooks_Server_Column">Server</system:String>
+
+    <!-- Moderation -->
+    <system:String x:Key="Data_Moderation_UserApprove_SubHeader">User Approve</system:String>
+    <system:String x:Key="Data_Moderation_UserApprove_Instructions">Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.\nModActionType-the type of defined action-a command, channel point redeem, etc\nModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro\nModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.\nModPerformAction-the name of the action to perform once approved\nThe default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".</system:String>
+    <system:String x:Key="Data_Moderation_ModActionType_Column">ModActionType</system:String>
+    <system:String x:Key="Data_Moderation_ModActionName_Column">ModActionName</system:String>
+    <system:String x:Key="Data_Moderation_ModPerformType_Column">ModPerformType</system:String>
+    <system:String x:Key="Data_Moderation_ModPerformAction_Column">ModPerformAction</system:String>
+
+    <system:String x:Key="Data_Moderation_MsgMod_SubHeader">Msg Mod</system:String>
+    <system:String x:Key="Data_Moderation_MsgMod_Instructions">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified.\nThis procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment.\nCaution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</system:String>
+    <system:String x:Key="Data_Mod_Id_Column">Id</system:String>
+    <system:String x:Key="Data_Mod_MsgType_Column">Msg Type</system:String>
+    <system:String x:Key="Data_Mod_BanReason_Column">BanReason</system:String>
+    <system:String x:Key="Data_Mod_TimeoutNote">Timeout is marked in seconds, minimum is 1 and max is 1,209,600 (2 weeks).\nWhen 'ModAction' is set to 'Ban', the timeout isn't used.\nIt's probable sometimes messages from long term followers/users are a little more tolerable than new arrivals, options provided for to help with this.</system:String>
+    <system:String x:Key="Data_Mod_ModAction_Column">ModAction</system:String>
+    <system:String x:Key="Data_Mod_TimeoutSecs_Column">Timeout Secs</system:String>
+    <system:String x:Key="Data_Mod_ViewerTypes_Column">Viewer Types</system:String>
+    <system:String x:Key="Data_Mod_LearningMessage_Column">Learning Message</system:String>
+
+    <!-- User Data -->
+    <system:String x:Key="Data_UserData_UserFollow_SubHeader">User Follow</system:String>
+    <system:String x:Key="Data_UserData_Users_Tab">Users</system:String>
+    <system:String x:Key="Data_UserData_Followers_Tab">Followers</system:String>
+    <system:String x:Key="Data_UserData_Users_Label">User List</system:String>
+    <system:String x:Key="Data_UserData_Followers_Label">Follower List - Bot Account Needs to be a Moderator To View this List</system:String>
+    <system:String x:Key="Data_UserData_ClearNonFollowers">Clear Non-Followers</system:String>
+    <system:String x:Key="Data_UserData_ClearNonFollowers_Tooltip">Remove all non-Followers from User listing. The comparison is "Id" field, not "IsFollower" status.</system:String>
+    <system:String x:Key="Data_UserData_ResetWatchTime">Reset All WatchTime</system:String>
+
+    <system:String x:Key="Data_UserData_Platform_Column">Platform</system:String>
+    <system:String x:Key="Data_UserData_UserId_Column">UserId</system:String>
+    <system:String x:Key="Data_UserData_UserName_Column">UserName</system:String>
+    <system:String x:Key="Data_UserData_Follower_Column">Follower</system:String>
+    <system:String x:Key="Data_UserData_WatchTime_Column">WatchTime</system:String>
+    <system:String x:Key="Data_UserData_LastSeen_Column">Last Seen</system:String>
+    <system:String x:Key="Data_UserData_FollowedDate_Column">Followed Date</system:String>
+    <system:String x:Key="Data_UserData_StatusChanged_Column">Status Changed</system:String>
+    <!-- Currency -->
+    <system:String x:Key="Data_Currency_SubHeader">Currency</system:String>
+    <system:String x:Key="Data_Currency_Data_SubHeader">Data</system:String>
+    <system:String x:Key="Data_Currency_Instructions">Specify Currency Type (left side) to accrue per user (right side). Specify Amount earned for Seconds of time (e.g. earn 5 every 10 seconds). Any updates are prospective (starts from now) and not retrospective (doesn't award currency for the past).</system:String>
+    <system:String x:Key="Data_Currency_ClearAllValues">Clear All Currency Values</system:String>
+    <system:String x:Key="Data_Currency_CurrencyName_Column">CurrencyName</system:String>
+    <system:String x:Key="Data_Currency_AccrueAmt_Column">Accrue Amt</system:String>
+    <system:String x:Key="Data_Currency_Seconds_Column">Seconds</system:String>
+    <system:String x:Key="Data_Currency_MaxValue_Column">Max Value</system:String>
+    <system:String x:Key="Data_Currency_Value_Column">Value</system:String>
+
+    <system:String x:Key="Data_Currency_Games_SubHeader">Games</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Header">Cards - Blackjack 21</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_HouseStands">House Stands at:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Payouts">Player payouts:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Dealt21">Dealt 21:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Reaches21">Reaches 21:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_Under21Stop">Under 21 Stop:</system:String>
+    <system:String x:Key="Data_Currency_Blackjack_PayoutMessage">Payout Message (use #value):</system:String>
+
+    <!-- Giveaways -->
+    <system:String x:Key="Data_Giveaways_SetupNote">Setup Giveaways!\nBe sure to start "Twitch Chat Client" bot to read channel points, viewer entries, and provide giveaway details and winner(s) to viewers.</system:String>
+    <system:String x:Key="Data_Giveaways_Condition_Header">Select Giveaway Condition</system:String>
+    <system:String x:Key="Data_Giveaways_Condition_Tooltip">Select the "Command" or "Channel Points" item a viewer uses to enter the giveaway.</system:String>
+    <system:String x:Key="Data_Giveaways_Command_Label">Command</system:String>
+    <system:String x:Key="Data_Giveaways_Command_Tooltip">Select a command to enter the giveaway. The command will be used to enter the giveaway, e.g. '!giveaway' or '!enter'. Command must be enabled in the Commands tab to appear here.</system:String>
+    <system:String x:Key="Data_Giveaways_ChannelPoints_Label">Channel Points</system:String>
+    <system:String x:Key="Data_Giveaways_MultiEntry">Allow more than 1 entry</system:String>
+    <system:String x:Key="Data_Giveaways_MaxEntries_Label">Max Entries</system:String>
+    <system:String x:Key="Data_Giveaways_MaxEntries_Tooltip">Can be changed during giveaway, lowered will remove excess entrants.</system:String>
+    <system:String x:Key="Data_Giveaways_Begin">Begin Giveaway</system:String>
+    <system:String x:Key="Data_Giveaways_Begin_Tooltip">The ChatBot needs to be started for chatting Giveaway messages. PubSub Bot needs to be started for Channel Points redemption to be detected.</system:String>
+    <system:String x:Key="Data_Giveaways_End">End Giveaway</system:String>
+    <system:String x:Key="Data_Giveaways_PickWinner">Pick Winners</system:String>
+    <system:String x:Key="Data_Giveaways_Winners_Label">Number of Winners:</system:String>
+    <system:String x:Key="Data_Giveaways_Winners_Tooltip">Specify how many viewers to select for the giveaway event.</system:String>
+    <system:String x:Key="Data_Giveaways_StartMessage_Label">Giveaway start message:</system:String>
+    <system:String x:Key="Data_Giveaways_Announce">Output as Announcement</system:String>
+    <system:String x:Key="Data_Giveaways_EndMessage_Label">Giveaway end message:</system:String>
+    <system:String x:Key="Data_Giveaways_WinnerMessage_Label">Winner Message (#winner):</system:String>
+    <system:String x:Key="Data_Giveaways_CurrentEntrants_Label">Current Giveaway Entrants:</system:String>
+    <system:String x:Key="Data_Giveaways_ResultsNote">Results of prior Giveaways recorded here!\nData management is enabled or disabled in the Options tab.</system:String>
+    <system:String x:Key="Data_Giveaways_DateTime_Column">Date Time</system:String>
+
+    <!-- Quotes -->
+    <system:String x:Key="Data_Quotes_Instructions">Quotes are saved from chat messages with !quote or !addquote commands.\nThe 'Cited By' column is the user who added the quote (not necessarily the original speaker).\nQuotes can be used in other commands with $quote(#) or $randomquote.</system:String>
+    <system:String x:Key="Data_Quotes_Number_Column">Number</system:String>
+    <system:String x:Key="Data_Quotes_Quote_Column">Quote</system:String>
+
+    <!-- Old Follows -->
+    <system:String x:Key="Data_OldFollows_SubHeader">Old Follows</system:String>
+
+    <!-- Auto-SO -->
+    <system:String x:Key="Data_AutoSO_SubHeader">Auto-SO</system:String>
+    <system:String x:Key="Data_AutoSO_Instructions">When 'Auto shout out' is enabled in options, displaynames in this list will receive a shout-out upon entering the channel - when Twitch tells me they're here.</system:String>
+    <system:String x:Key="Data_AutoSO_ShoutButton">Shout these Users if in Chat</system:String>
+    <system:String x:Key="Data_AutoSO_ShoutButton_Tooltip">The 'soactive' command needs to be enabled.</system:String>
+    <system:String x:Key="Data_AutoSO_CustomMessageNote">Specify a custom message per UserName, tied to Welcome Message options - first appearance or first message. Otherwise, system falls back onto default.</system:String>
+    <system:String x:Key="Data_AutoSO_Message_Column">Message</system:String>
+
+    <!-- System Events -->
+    <system:String x:Key="Data_SystemEvents_Instructions">These are system-level events (stream start/end, bot connect/disconnect, etc.) that can trigger messages or actions.\nEnable/disable individual events, add /me, announce in chat, or set custom repeat messages.\nUse $variable syntax for dynamic content (e.g. $streamtitle, $uptime, $category).</system:String>
+    <system:String x:Key="Data_SystemEvents_Tooltip">Double-click a row to edit the message or variables.\nSome events only trigger when the relevant bot/service is running (e.g. EventSub for stream online/offline).</system:String>
+    <system:String x:Key="Data_SystemEvents_Name_Column">Event Name</system:String>
+    <system:String x:Key="Data_SystemEvents_AddMe_Column">/me</system:String>
+    <system:String x:Key="Data_SystemEvents_Announce_Column">Announce</system:String>
+    <system:String x:Key="Data_SystemEvents_SendMsg_Column">Send Msg</system:String>
+    <system:String x:Key="Data_SystemEvents_Message_Column">Message</system:String>
+    <system:String x:Key="Data_SystemEvents_Variables_Column">Variables</system:String>
+
+    <!-- Commands -->
+    <system:String x:Key="Data_Commands_Help_SubHeader">Help</system:String>
+    <system:String x:Key="Data_Commands_Help_BuiltInNote">Built-in commands are always enabled and cannot be deleted or renamed. They are core to bot operation.</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Label">Viewer Types</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Tooltip">These are permission levels for commands. Set in the 'Permission' column.</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Explanation">Everyone - any viewer\nFollower - followers only\nSubscriber - subs only\nVIP - VIPs only\nModerator - mods only\nBroadcaster - streamer only\nCustom - use custom role list</system:String>
+
+    <system:String x:Key="Data_Commands_BuiltIn_SubHeader">Built-In</system:String>
+    <!-- Commands tab - Built-In -->
+    <system:String x:Key="Data_Commands_BuiltIn_RepeatNote">Built-in commands can have repeat timers set in the Repeat Timer column (seconds).</system:String>
+    <system:String x:Key="Data_Commands_BuiltIn_Label">Built-in Commands List</system:String>
+
+    <!-- Commands tab - User-Defined -->
+    <system:String x:Key="Data_Commands_UserDefined_SubHeader">User-Defined</system:String>
+    <system:String x:Key="Data_Commands_UserDefined_RepeatNote">User-defined commands can have repeat timers set in the Repeat Timer column (seconds).</system:String>
+    <system:String x:Key="Data_Commands_UserDefined_Label">User-Defined Commands List</system:String>
+
+    <!-- Commands columns (shared) -->
+    <system:String x:Key="Data_Commands_Command_Column">Command</system:String>
+    <system:String x:Key="Data_Commands_TimesCalled_Column">Times Called</system:String>
+    <system:String x:Key="Data_Commands_AddMe_Column">Add Me</system:String>
+    <system:String x:Key="Data_Commands_Announce_Column">Announce</system:String>
+    <system:String x:Key="Data_Commands_RepeatTimer_Column">Repeat Timer</system:String>
+    <system:String x:Key="Data_Commands_Category_Column">Category</system:String>
+    <system:String x:Key="Data_Commands_Permission_Column">Permission</system:String>
+
+    <!-- Overlays tab -->
+    <system:String x:Key="Data_Overlays_Events_SubHeader">Events</system:String>
+    <system:String x:Key="Data_Overlays_Events_Header">Overlay Events Help</system:String>
+    <system:String x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).\nDuration is in seconds.\nImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.\nUseChatMsg = show message in chat when triggered.\nUserName = optional filter for specific user triggering the event.</system:String>
+
+    <system:String x:Key="Data_Overlays_Type_Column">Type</system:String>
+    <system:String x:Key="Data_Overlays_Action_Column">Action</system:String>
+    <system:String x:Key="Data_Overlays_Duration_Column">Duration (s)</system:String>
+    <system:String x:Key="Data_Overlays_ImageFile_Column">ImageFile</system:String>
+    <system:String x:Key="Data_Overlays_MediaFile_Column">MediaFile</system:String>
+    <system:String x:Key="Data_Overlays_UseChatMsg_Column">UseChatMsg</system:String>
+    <system:String x:Key="Data_Overlays_UserName_Column">UserName</system:String>
+
+    <system:String x:Key="Data_Overlays_Queue_Header">Alert Queue</system:String>
+    <system:String x:Key="Data_Overlays_PauseQueue">Pause Queue</system:String>
+    <system:String x:Key="Data_Overlays_ClearQueue">Clear Queue</system:String>
+    <system:String x:Key="Data_Overlays_ActionItems_Label">action items queued</system:String>
+
+    <system:String x:Key="Data_Overlays_ChannelPoints_Header">Channel Points</system:String>
+
+    <system:String x:Key="Data_Overlays_Ticker_SubHeader">Ticker</system:String>
+    <system:String x:Key="Data_Overlays_Ticker_Note">Ticker items scroll continuously in overlay. Add/remove users here.</system:String>
+    <system:String x:Key="Data_Overlays_TickerName_Column">Ticker Name</system:String>
+
+    <!-- Stream Data tab -->
+    <system:String x:Key="Data_StreamData_Stats_SubHeader">Stats</system:String>
+    <system:String x:Key="Data_StreamData_StreamStart_Column">Stream Start</system:String>
+    <system:String x:Key="Data_StreamData_StreamEnd_Column">Stream End</system:String>
+    <system:String x:Key="Data_StreamData_Duration_Column">Duration</system:String>
+    <system:String x:Key="Data_StreamData_MaxUsers_Column">Max Users</system:String>
+    <system:String x:Key="Data_StreamData_NewFollows_Column">New Follows</system:String>
+    <system:String x:Key="Data_StreamData_Category_Column">Category</system:String>
+
+    <system:String x:Key="Data_StreamData_Raids_SubHeader">Raids</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Incoming">Incoming Raids</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Outgoing">Outgoing Raids</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Incoming_Note">Incoming raid data from other channels raiding yours.</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Outgoing_Note">Outgoing raids you performed to other channels.</system:String>
+    <system:String x:Key="Data_StreamData_Raids_Date_Column">Raid Date</system:String>
+    <system:String x:Key="Data_StreamData_Raids_ToChannel_Column">Raided Channel</system:String>
+    <system:String x:Key="Data_StreamData_ViewerCount_Column">Viewer Count</system:String>
+
+    <system:String x:Key="Data_Categories_SubHeader">Categories</system:String>
+    <system:String x:Key="Data_Categories_Note">Stream categories tracked per stream session. Reset stream count button clears counters for new tracking cycle.</system:String>
+    <system:String x:Key="Data_Categories_ResetStreamCount">Reset Stream Count</system:String>
+    <system:String x:Key="Data_Categories_Id_Column">Id</system:String>
+    <system:String x:Key="Data_Categories_Category_Column">Category</system:String>
+    <system:String x:Key="Data_Categories_StreamCount_Column">Stream Count</system:String>
+    <system:String x:Key="Data_Categories_DeathCounter_Label">Death Counter per Category</system:String>
+    <system:String x:Key="Data_Categories_Counter_Column">Counter</system:String>
+    <system:String x:Key="Data_Categories_Streams_Column">Streams</system:String>
+
+    <system:String x:Key="Data_Clips_SubHeader">Clips</system:String>
+    <system:String x:Key="Data_Clips_Label">Recorded Clips</system:String>
+    <system:String x:Key="Data_Clips_ClipId_Column">Clip ID</system:String>
+    <system:String x:Key="Data_Clips_Duration_Column">Duration</system:String>
+    <system:String x:Key="Data_Clips_CreatedAt_Column">Created At</system:String>
+
+
+    <!-- ============================================================= -->
+    <!--                     Logs Tab                                  -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="Logs_TabHeader">Logs</system:String>
+
+    <system:String x:Key="Logs_BotStatus_Tab">Bot Status</system:String>
+    <system:String x:Key="Logs_TwitchStatus_Tab">Twitch Status</system:String>
+
+    <system:String x:Key="Logs_BotStatusLog_Header">Bot Status Log</system:String>
+    <system:String x:Key="Logs_EnableBotStatus">Enable Bot Status Logging</system:String>
+    <system:String x:Key="Logs_BotStatusLog_Tooltip">Save this log - 'StatusLog.txt'</system:String>
+
+    <system:String x:Key="Logs_EnableExceptions">Enable TwineBot Exception Logging</system:String>
+    <system:String x:Key="Logs_ExceptionsLog_Tooltip">Save Exceptions - 'ExceptionsLog.txt'</system:String>
+
+    <!-- ============================================================= -->
+    <!--                     User Join Tab                             -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="UserJoin_TabHeader">User Join</system:String>
+
+    <system:String x:Key="UserJoin_Instructions1">Join List to organize playing games with your viewers.</system:String>
+    <system:String x:Key="UserJoin_Instructions2">Click the 'remove' box next to the user name to remove from this list.</system:String>
+
+    <system:String x:Key="UserJoin_Status_Header">Join List Status</system:String>
+    <system:String x:Key="UserJoin_Start">Start Join List</system:String>
+    <system:String x:Key="UserJoin_Stop">Stop Join List</system:String>
+
+    <system:String x:Key="UserJoin_Remove_Column">Remove</system:String>
+    <system:String x:Key="UserJoin_GameTagUserName_Column">GameTag UserName</system:String>
+    <system:String x:Key="UserJoin_ChatUser_Column">Chat User</system:String>
+
+    <system:String x:Key="UserJoin_CurrentList_Label">Current User List</system:String>
+    <system:String x:Key="UserJoin_CurrentList_Tooltip">Currently, the API doesn't support identifying joining users with their viewer type (broadcaster, moderator etc).</system:String>
+
+    <system:String x:Key="UserJoin_PopOutChat">Pop-Out Chat Box</system:String>
+    <system:String x:Key="UserJoin_PopOutOpacity_Label">Pop-out Opacity</system:String>
+    <system:String x:Key="UserJoin_PopOutOpacity_Value">50%</system:String>
+
+    <!-- ============================================================= -->
+    <!--                     GitHub Tab                                -->
+    <!-- ============================================================= -->
+
+    <system:String x:Key="GitHub_TabHeader">GitHub</system:String>
+
+    <system:String x:Key="GitHub_AllReleasesNote">All StreamerBot Releases - Always backup data files!</system:String>
+
+    <system:String x:Key="GitHub_WikiDoc_Tab">Wiki Doc</system:String>
+    <system:String x:Key="GitHub_WikiDoc_Label">The Wiki Documentation to help use the Bot</system:String>
+
+    <system:String x:Key="GitHub_Stable_Tab">Stable</system:String>
+    <system:String x:Key="GitHub_Stable_Label">Latest stable release - may have unusual bugs, most are resolved</system:String>
+
+    <system:String x:Key="GitHub_Latest_Tab">Latest</system:String>
+    <system:String x:Key="GitHub_Latest_Label">Latest development and stable releases - may have bugs while testing for next stable release</system:String>
+
 </ResourceDictionary>
-

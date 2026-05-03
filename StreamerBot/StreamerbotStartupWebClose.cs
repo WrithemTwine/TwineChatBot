@@ -24,24 +24,67 @@ namespace StreamerBot
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
 
+                #region Manage app authorization for access scope changes
                 // reserved for clearing tokens when there is an access scope change
+                // have a trailing access scope saved for each token method, if the saved scope doesn't match the current scopes, then clear the tokens and saved scopes to force a new authentication with the new scopes. This is needed because Twitch requires a new access token with the required access scopes when accessing newly implemented API calls within the app.
 
-                //Version thisversion = this.GetType().Assembly.GetName().Version;
+                // TODO: update the tokenbot or GUI to save the scopes when the manual tokens are entered in the Twitch token credentials
+                // TODO: update the authcode flow, tokenbot?, to save the scopes when authorizing the app
 
-                //if (thisversion.Major == 1 && thisversion.MajorRevision == 3 && thisversion.Minor == 1 && thisversion.MinorRevision == 3)
-                //{ // reset the credentials, new access scopes for each token
-                //    Settings.Default.TwitchAuthBotClientId = (string)Settings.Default.GetPreviousVersion("TwitchAuthClientId"); ;
+                if (Settings.Default.TwitchTokenUseAuth)
+                {
+                    if (OptionFlags.TwitchStreamerUseToken)
+                    {
+                        if (Settings.Default.TwitchAuthBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthBot)
+                        {
+                            Settings.Default.TwitchAuthBotAccessToken = string.Empty;
+                            Settings.Default.TwitchAuthBotRefreshToken = string.Empty;
+                            Settings.Default.TwitchAuthBotAuthCode = string.Empty;
+                        }
+                        if (Settings.Default.TwitchAuthStreamerScopeApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthChannel)
+                        {
+                            Settings.Default.TwitchAuthStreamerAccessToken = string.Empty;
+                            Settings.Default.TwitchAuthStreamerRefreshToken = string.Empty;
+                            Settings.Default.TwitchAuthStreamerAuthCode = string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        if (Settings.Default.TwitchAuthBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesOauthSame)
+                        {
+                            Settings.Default.TwitchAuthBotAccessToken = string.Empty;
+                            Settings.Default.TwitchAuthBotRefreshToken = string.Empty;
+                            Settings.Default.TwitchAuthBotAuthCode = string.Empty;
+                        }
+                    }
+                }
+                else
+                {
+                    if (OptionFlags.TwitchStreamerUseToken)
+                    {
+                        if (Settings.Default.TwitchBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthBot)
+                        {
+                            Settings.Default.TwitchBotAccessToken = string.Empty;
+                            Settings.Default.TwitchBotRefreshToken = string.Empty;
+                        }
+                        if (Settings.Default.TwitchStreamerScopesApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthChannel)
+                        {
+                            Settings.Default.TwitchStreamerAccessToken = string.Empty;
+                            Settings.Default.TwitchStreamerRefreshToken = string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        if (Settings.Default.TwitchBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesOauthSame)
+                        {
+                            Settings.Default.TwitchBotAccessToken = string.Empty;
+                            Settings.Default.TwitchBotRefreshToken = string.Empty;
+                        }
+                    }
+                }
 
-                //    Settings.Default.TwitchAuthBotAccessToken = null;
-                //    Settings.Default.TwitchAuthBotAuthCode = null;
-                //    Settings.Default.TwitchAuthBotRefreshToken = null;
-                //    Settings.Default.TwitchAuthStreamerAccessToken = null;
-                //    Settings.Default.TwitchAuthStreamerAuthCode = null;
-                //    Settings.Default.TwitchAuthStreamerRefreshToken = null;
-
-                //    Settings.Default.TwitchBotAccessToken = null;
-                //    Settings.Default.TwitchStreamerAccessToken = null;
-                //}
+                // end of the reserved section for clearing tokens when there is an access scope change
+                #endregion
 
                 Settings.Default.Save();
             }
@@ -117,7 +160,7 @@ namespace StreamerBot
             GUITwitchBots.OnBotStarted += GUI_OnBotStarted;
             GUITwitchBots.OnBotStarted += GuiTwitchBot_GiveawayEvents;
             GUITwitchBots.OnBotFailedStart += GuiTwitchBot_OnBotFailedStart;
-            GUITwitchBots.OnFollowerBotStarted += GuiTwitchBot_OnFollowerBotStarted;
+            GUITwitchBots.OnBulkFollowerStopped += GuiTwitchBot_OnBulkFollowerStopped;
 
             Controller.OnStreamOnline += GuiTwitchBot_OnLiveStreamStarted;
             Controller.OnStreamOffline += GuiTwitchBot_OnLiveStreamStopped;

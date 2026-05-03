@@ -1,6 +1,6 @@
 ﻿using StreamerBotLib.Models;
 
-namespace StreamerBotLib.DataSQL.EFC9
+namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {
@@ -67,10 +67,13 @@ namespace StreamerBotLib.DataSQL.EFC9
                 Random random = new();
                 List<LiveUser> result = [];
 
-                for (int x = 0; x < count; x++)
+                if (Users.Count > 0)
                 {
-                    Models.Users row = Users[random.Next(Users.Count)];
-                    result.Add(new(row.UserName, row.Platform, row.UserId));
+                    for (int x = 0; x < count; x++)
+                    {
+                        Models.Users row = Users[random.Next(Users.Count)];
+                        result.Add(new(row.UserName, row.Platform, row.UserId));
+                    }
                 }
 
                 return result;

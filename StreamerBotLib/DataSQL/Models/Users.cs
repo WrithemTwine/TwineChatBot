@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace StreamerBotLib.DataSQL.Models
 {
     [PrimaryKey(nameof(UserId), nameof(Platform))]
-    [DebuggerDisplay("UserId={UserId}, UserName={UserName}")]
+    [DebuggerDisplay("UserId={UserId}, UserName={UserName}, Platform={Platform}")]
 #if DEBUG_EFMODELS_NODEFAULTPARAM
     public class Users(
                        DateTime firstDateSeen,

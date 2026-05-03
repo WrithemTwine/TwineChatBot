@@ -22,7 +22,7 @@ namespace StreamerBotLib.Models.Repeat
             _LastRun = DateTime.Now;
             _NextRun = _LastRun.Add(_Interval.Multiply(_dilutetime));
 
-            ThreadManager.CreateThreadStart(".ctor_RepeatSerialMode", () => RepeatThread());
+            ThreadManager.CreateThreadStart(".ctor_RepeatSerialMode", RepeatThread);
         }
 
         internal override void NotifyRepeatManager_StreamOnline()
@@ -45,10 +45,7 @@ namespace StreamerBotLib.Models.Repeat
                 RepeatCommands.AddRange(OptionFlags.RepeatSerialSaveDataString.Cast<string>().Select(s => new TimerCommand(new(s, 0, ["All"]), dilutetime)));
 
                 // reset index if the repeating list is shorter after the update, so it doesn't give index out of range
-                if (_currIdx > RepeatCommands.Count)
-                {
-                    _currIdx = 0;
-                }
+                _currIdx %= RepeatCommands.Count;
             }
         }
 
@@ -69,7 +66,12 @@ namespace StreamerBotLib.Models.Repeat
                 _NextRun = _LastRun.Add(_Interval.Multiply(_dilutetime));
                 if (DateTime.Now > _NextRun)
                 {
+                    // validate the index is within the list, the command list might
+                    // change between loop checks and the index is outside the list
+                    _currIdx %= RepeatCommands.Count;
+
                     LogWriter.DebugLog("CheckRepeats", DebugLogTypes.RepeatCommandSystem, $"Found it's time to run the next command, {RepeatCommands[_currIdx]}. Updating for the next run.");
+
 
                     // send the activated command
                     RepeatEvent(RepeatCommands[_currIdx].Command, Platform.Twitch);
@@ -78,7 +80,7 @@ namespace StreamerBotLib.Models.Repeat
                     _LastRun = _NextRun;
 
                     // increment the index within the repeat command list
-                    _currIdx = (_currIdx + 1) % RepeatCommands.Count;
+                    _currIdx++;
                 }
             }
         }

@@ -35,6 +35,8 @@ namespace StreamerBotLib.BotIOController
         public event EventHandler<FindChannelCategoryEventArgs> OnStreamCategoryChanged;
         public event EventHandler OnStreamOffline;
 
+        internal event EventHandler OnBulkFollowerStarted;
+
         private readonly Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
                                                                                select new KeyValuePair<Platform, bool>(P, false));
 
@@ -73,6 +75,11 @@ namespace StreamerBotLib.BotIOController
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
+
+            TwitchBots.NotifyAdSoon += TwitchBots_NotifyAdSoon;
+            TwitchBots.NotifyAdStarted += TwitchBots_NotifyAdStarted;
+            TwitchBots.NotifyAdEnded += TwitchBots_NotifyAdEnded;
+
             OutputSentToBots += DataBot.GetPostChannelMessageHandler();
 
             ThreadManager.CreateThreadStart(".ctor_BotController", () =>
@@ -552,12 +559,12 @@ namespace StreamerBotLib.BotIOController
         /// Part of the Twitch-Auth-Code Token operation method.
         /// Call to clear out the Twitch Authorization Code(s) to permit the user to re-authorize the application.
         /// </summary>
-        public static void ForceTwitchAuthReauthorization()
+        public static void ForceTwitchAuthReauthorization(params Bots[] bots)
         {
             LogWriter.DebugLog("ForceTwitchAuthReauthorization", DebugLogTypes.BotController, "Received request to invalidate Twitch Authorization Codes so user can re-authorize application.");
             LogWriter.DebugLog("ForceTwitchAuthReauthorization", DebugLogTypes.BotController, "It's okay, there's a button in the GUI for the user to click and perform this operation.");
 
-            BotsTwitch.ForceTwitchReauthorization();
+            BotsTwitch.ForceTwitchReauthorization(bots);
         }
 
         /// <summary>
@@ -807,7 +814,7 @@ namespace StreamerBotLib.BotIOController
 
         public void TwitchBotEventSubStopping(EventArgs args = null)
         {
-            HandleChatBotStopped(Bots.TwitchEventSubBot, args);
+            HandleChatBotStopping(Bots.TwitchEventSubBot, args);
         }
 
         public void TwitchBotEventSubStopped(EventArgs args = null)
@@ -1091,6 +1098,7 @@ namespace StreamerBotLib.BotIOController
 
         public void HandleBotEventStartBulkFollowers()
         {
+            OnBulkFollowerStarted?.Invoke(this, new());
             DataBot.StartBulkFollowers();
         }
 
@@ -1365,6 +1373,11 @@ namespace StreamerBotLib.BotIOController
                                                         BeginProcMsgs,
                                                         Priority: ThreadExitPriority.Normal);
                 SendThread.Start();
+
+                if (OptionFlags.MsgBotConnection)
+                { // only show if user spcified they want the welcome message sent to chat
+                    Send(LocalizedMsgSystem.GetTwineBotAuthorInfo());
+                }
                 DataBot.NotifyBotStart();
             }
         }
@@ -1710,6 +1723,30 @@ namespace StreamerBotLib.BotIOController
         public void SetChannelRewardList(List<string> channelPointNames)
         {
             DataBot.SetChannelRewardList(channelPointNames);
+        }
+
+        #endregion
+
+        #region Ad Messages
+
+        public void StartTwitchAdNotifications()
+        {
+            TwitchBots.StartAdNotificationThread();
+        }
+
+        private void TwitchBots_NotifyAdEnded(object sender, EventArgs e)
+        {
+            DataBot.NotifyAdEnd();
+        }
+
+        private void TwitchBots_NotifyAdStarted(object sender, NotifyAdStartedEventArgs e)
+        {
+            DataBot.NotifyAdStart(e.AdDuration);
+        }
+
+        private void TwitchBots_NotifyAdSoon(object sender, NotifyAdSoonEventArgs e)
+        {
+            DataBot.NotifyAdSoon(e.SecondsUntilAd, e.AdDuration);
         }
 
         #endregion

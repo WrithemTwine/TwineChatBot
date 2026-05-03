@@ -131,7 +131,8 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchPruneNonFollowers
         {
-            get => Settings.Default.TwitchPruneNonFollowers; set => Settings.Default.TwitchPruneNonFollowers = value;
+            get => Settings.Default.TwitchPruneNonFollowers;
+            set => Settings.Default.TwitchPruneNonFollowers = value;
         }
         /// <summary>
         /// Turns off notification during the bulk follower add operation, prevents sending chats to the channel.
@@ -170,14 +171,16 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool FirstUserJoinedMsg
         {
-            get => Settings.Default.FirstUserJoinedMsg; set => Settings.Default.FirstUserJoinedMsg = value;
+            get => Settings.Default.FirstUserJoinedMsg;
+            set => Settings.Default.FirstUserJoinedMsg = value;
         }
         /// <summary>
         /// Specifies whether to welcome a user when they first chat in the given (live) channel.
         /// </summary>
         public static bool FirstUserChatMsg
         {
-            get => Settings.Default.FirstUserChatMsg; set => Settings.Default.FirstUserChatMsg = value;
+            get => Settings.Default.FirstUserChatMsg;
+            set => Settings.Default.FirstUserChatMsg = value;
         }
 
         /// <summary>
@@ -234,8 +237,16 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchRaidShoutOut => Settings.Default.TwitchRaidShoutOut;
 
-        public static bool RepeatParallelMode => Settings.Default.RepeatParallelMode;
-        public static bool RepeatSerialMode => Settings.Default.RepeatSerialMode;
+        public static bool RepeatParallelMode
+        {
+            get => Settings.Default.RepeatParallelMode; set => Settings.Default.RepeatParallelMode = value;
+        }
+
+        public static bool RepeatSerialMode
+        {
+            get => Settings.Default.RepeatSerialMode; set => Settings.Default.RepeatSerialMode = value;
+        }
+
         public static List<RepeatCommandGUISelect> RepeatSerialSaveData
         {
             get
@@ -350,42 +361,48 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool ManageUsers
         {
-            get => Settings.Default.ManageUsers; set => Settings.Default.ManageUsers = value;
+            get => Settings.Default.ManageUsers;
+            set => Settings.Default.ManageUsers = value;
         }
         /// <summary>
         /// Specifies to save follower data in the database.
         /// </summary>
         public static bool ManageFollowers
         {
-            get => Settings.Default.ManageFollowers; set => Settings.Default.ManageFollowers = value;
+            get => Settings.Default.ManageFollowers;
+            set => Settings.Default.ManageFollowers = value;
         }
         /// <summary>
         /// Specifies to save stream statistic data in the database.
         /// </summary>
         public static bool ManageStreamStats
         {
-            get => Settings.Default.ManageStreamStats; set => Settings.Default.ManageStreamStats = value;
+            get => Settings.Default.ManageStreamStats;
+            set => Settings.Default.ManageStreamStats = value;
         }
         /// <summary>
         /// Specifies to save incoming raid data in the database.
         /// </summary>
         public static bool ManageRaidData
         {
-            get => Settings.Default.ManageRaidData; set => Settings.Default.ManageRaidData = value;
+            get => Settings.Default.ManageRaidData;
+            set => Settings.Default.ManageRaidData = value;
         }
         /// <summary>
         /// Specifies to save outgoing raid data in the database.
         /// </summary>
         public static bool ManageOutRaidData
         {
-            get => Settings.Default.ManageOutRaidData; set => Settings.Default.ManageOutRaidData = value;
+            get => Settings.Default.ManageOutRaidData;
+            set => Settings.Default.ManageOutRaidData = value;
         }
         /// <summary>
         /// Specifies to save giveaway data in the database.
         /// </summary>
         public static bool ManageGiveawayUsers
         {
-            get => Settings.Default.ManageGiveawayUsers; set => Settings.Default.ManageGiveawayUsers = value;
+            get => Settings.Default.ManageGiveawayUsers;
+            set => Settings.Default.ManageGiveawayUsers = value;
         }
         /// <summary>
         /// Specifies to user about they need to manage archiving the saved data.
@@ -406,7 +423,8 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchClipPostChat
         {
-            get => Settings.Default.TwitchClipPostChat; set => Settings.Default.TwitchClipPostChat = value;
+            get => Settings.Default.TwitchClipPostChat;
+            set => Settings.Default.TwitchClipPostChat = value;
         }
 
         /// <summary>
@@ -464,42 +482,64 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static int GiveawayCount
         {
-            get => Settings.Default.GiveawayCount; set => Settings.Default.GiveawayCount = value;
+            get => Settings.Default.GiveawayCount;
+            set => Settings.Default.GiveawayCount = value;
         }
+
+        /// <summary>
+        /// Flag for Giveaway begin message uses TwitchAPI chat announcement.
+        /// </summary>
+        public static bool GiveawayAnnounceBegMsg => Settings.Default.GiveawayAnnounceBegMsg;
+
+        /// <summary>
+        /// Flag for Giveaway end message uses TwitchAPI chat announcement.
+        /// </summary>
+        public static bool GiveawayAnnounceEndMsg => Settings.Default.GiveawayAnnounceEndMsg;
+
+        /// <summary>
+        /// Flag for Giveaway win message uses TwitchAPI chat announcement.
+        /// </summary>
+        public static bool GiveawayAnnounceWinMsg => Settings.Default.GiveawayAnnounceWinMsg;
+
         /// <summary>
         /// The message to send the channel chat for a user winning the giveaway.
         /// </summary>
         public static string GiveawayWinMsg
         {
-            get => Settings.Default.GiveawayWinMsg; set => Settings.Default.GiveawayWinMsg = value;
+            get => Settings.Default.GiveawayWinMsg;
+            set => Settings.Default.GiveawayWinMsg = value;
         }
         /// <summary>
         /// The message for when the giveaway starts/begins.
         /// </summary>
         public static string GiveawayBegMsg
         {
-            get => Settings.Default.GiveawayBegMsg; set => Settings.Default.GiveawayBegMsg = value;
+            get => Settings.Default.GiveawayBegMsg;
+            set => Settings.Default.GiveawayBegMsg = value;
         }
         /// <summary>
         /// The message for when the giveaway ends.
         /// </summary>
         public static string GiveawayEndMsg
         {
-            get => Settings.Default.GiveawayEndMsg; set => Settings.Default.GiveawayEndMsg = value;
+            get => Settings.Default.GiveawayEndMsg;
+            set => Settings.Default.GiveawayEndMsg = value;
         }
         /// <summary>
         /// Determines if the user can submit multiple entries.
         /// </summary>
         public static bool GiveawayMultiUser
         {
-            get => Settings.Default.GiveawayMultiUser; set => Settings.Default.GiveawayMultiUser = value;
+            get => Settings.Default.GiveawayMultiUser;
+            set => Settings.Default.GiveawayMultiUser = value;
         }
         /// <summary>
         /// The number of giveaway entries a user can submit.
         /// </summary>
         public static int GiveawayMaxEntries
         {
-            get => Settings.Default.GiveawayMaxEntries; set => Settings.Default.GiveawayMaxEntries = value;
+            get => Settings.Default.GiveawayMaxEntries;
+            set => Settings.Default.GiveawayMaxEntries = value;
         }
 
         /// <summary>
@@ -515,28 +555,32 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchBotUserName
         {
-            get => Settings.Default.TwitchBotUserName; set => Settings.Default.TwitchBotUserName = value;
+            get => Settings.Default.TwitchBotUserName;
+            set => Settings.Default.TwitchBotUserName = value;
         }
         /// <summary>
         /// Captures prior channel name to detect if the user is monitoring another channel, hence, requiring new channel user id.
         /// </summary>
         public static string TwitchPriorChannelName
         {
-            get => Settings.Default.TwitchPriorChannelName; set => Settings.Default.TwitchPriorChannelName = value;
+            get => Settings.Default.TwitchPriorChannelName;
+            set => Settings.Default.TwitchPriorChannelName = value;
         }
         /// <summary>
         /// Captures prior bot account name to detect if user changed bot accounts, hence, requiring a new bot user id.
         /// </summary>
         public static string TwitchPriorBotName
         {
-            get => Settings.Default.TwitchPriorBotName; set => Settings.Default.TwitchPriorBotName = value;
+            get => Settings.Default.TwitchPriorBotName;
+            set => Settings.Default.TwitchPriorBotName = value;
         }
         /// <summary>
         /// Holds the latest used bot user id, to minimize api calls.
         /// </summary>
         public static string TwitchBotUserId
         {
-            get => Settings.Default.TwitchBotUserId; set => Settings.Default.TwitchBotUserId = value;
+            get => Settings.Default.TwitchBotUserId;
+            set => Settings.Default.TwitchBotUserId = value;
         }
 
         /// <summary>
@@ -544,21 +588,24 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchStreamerUserId
         {
-            get => Settings.Default.TwitchChannelUserId; set => Settings.Default.TwitchChannelUserId = value;
+            get => Settings.Default.TwitchChannelUserId;
+            set => Settings.Default.TwitchChannelUserId = value;
         }
         /// <summary>
         /// Specifies the bot account client ID, to use in authentication calls.
         /// </summary>
         public static string TwitchBotClientId
         {
-            get => Settings.Default.TwitchBotClientID; set => Settings.Default.TwitchBotClientID = value;
+            get => Settings.Default.TwitchBotClientID;
+            set => Settings.Default.TwitchBotClientID = value;
         }
         /// <summary>
         /// Specifies the bot account access token, used in authentication calls.
         /// </summary>
         public static string TwitchBotAccessToken
         {
-            get => Settings.Default.TwitchBotAccessToken; set => Settings.Default.TwitchBotAccessToken = value;
+            get => Settings.Default.TwitchBotAccessToken;
+            set => Settings.Default.TwitchBotAccessToken = value;
         }
 
         /// <summary>
@@ -656,14 +703,8 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static string TwitchAuthStreamerRefreshToken
         {
-            get
-            {
-                return Settings.Default.TwitchAuthStreamerRefreshToken;
-            }
-            set
-            {
-                Settings.Default.TwitchAuthStreamerRefreshToken = value;
-            }
+            get => Settings.Default.TwitchAuthStreamerRefreshToken;
+            set => Settings.Default.TwitchAuthStreamerRefreshToken = value;
         }
         /// <summary>
         /// Holds the streamer account auth code obtained in the 'authorization code flow' method to receive an access token
@@ -682,23 +723,96 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static bool TwitchAuthUseInternalBrowser => Settings.Default.TwitchAuthUseInternalBrowser;
 
+        /// <summary>
+        /// The access token for the streamer account with no scopes.
+        /// </summary>
         public static string TwitchAuthStreamerNoScopesAccessToken
         {
             get => Settings.Default.TwitchAuthStreamerNoScopesAccessToken;
             set => Settings.Default.TwitchAuthStreamerNoScopesAccessToken = value;
         }
 
+        /// <summary>
+        /// The refresh token for the streamer account with no scopes.
+        /// </summary>
         public static string TwitchAuthStreamerNoScopesRefreshToken
         {
             get => Settings.Default.TwitchAuthStreamerNoScopesRefreshToken;
             set => Settings.Default.TwitchAuthStreamerNoScopesRefreshToken = value;
         }
 
+        /// <summary>
+        /// The authcode for the streamer account with no scopes.
+        /// </summary>
         public static string TwitchAuthStreamerNoScopesAuthCode
         {
             get => Settings.Default.TwitchAuthStreamerNoScopesAuthCode;
             set => Settings.Default.TwitchAuthStreamerNoScopesAuthCode = value;
         }
+
+        #region Approved Scopes
+
+        /// <summary>
+        /// Saves the scopes when the access token is created.
+        /// A variance with current scopes would require re-authorization.
+        /// </summary>
+        public static string TwitchBotApproveScopes
+        {
+            get => Settings.Default.TwitchBotApproveScopes;
+            set => Settings.Default.TwitchBotApproveScopes = value;
+        }
+
+        /// <summary>
+        /// Saves the scopes when the access token is created.
+        /// A variance with current scopes would require re-authorization.
+        /// </summary>
+        public static string TwitchStreamerScopesApproveScopes
+        {
+            get => Settings.Default.TwitchStreamerScopesApproveScopes;
+            set => Settings.Default.TwitchStreamerScopesApproveScopes = value;
+        }
+
+        /// <summary>
+        /// Saves the scopes when the access token is created.
+        /// A variance with current scopes would require re-authorization.
+        /// </summary>
+        public static string TwitchStreamerNoScopesApproveScopes
+        {
+            get => Settings.Default.TwitchStreamerNoScopesApproveScopes;
+            set => Settings.Default.TwitchStreamerNoScopesApproveScopes = value;
+        }
+
+        /// <summary>
+        /// Saves the scopes when the access token is created.
+        /// A variance with current scopes would require re-authorization.
+        /// </summary>
+        public static string TwitchAuthBotApproveScopes
+        {
+            get => Settings.Default.TwitchAuthBotApproveScopes;
+            set => Settings.Default.TwitchAuthBotApproveScopes = value;
+        }
+
+        /// <summary>
+        /// Saves the scopes when the access token is created.
+        /// A variance with current scopes would require re-authorization.
+        /// </summary>
+        public static string TwitchAuthStreamerScopeApproveScopes
+        {
+            get => Settings.Default.TwitchAuthStreamerScopeApproveScopes;
+            set => Settings.Default.TwitchAuthStreamerScopeApproveScopes = value;
+        }
+
+        /// <summary>
+        /// Saves the scopes when the access token is created.
+        /// A variance with current scopes would require re-authorization.
+        /// </summary>
+        public static string TwitchAuthStreamerNoScopeApproveScopes
+        {
+            get => Settings.Default.TwitchAuthStreamerNoScopeApproveScopes;
+            set => Settings.Default.TwitchAuthStreamerNoScopeApproveScopes = value;
+        }
+
+        #endregion
 
         #endregion
 
@@ -875,6 +989,62 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static int GridTabifyStreamRaidsWidth => Settings.Default.GridTabifyStreamRaidsWidth;
 
+        /// <summary>
+        /// Enables the user choice to include "total hours" in time formats 
+        /// </summary>
+        public static bool FormatTimeTotalHours => Settings.Default.FormatTimeTotalHours;
+
+        /// <summary>
+        /// Enables the user choice to use "[total time] or total hours" in time formats 
+        /// </summary>
+        public static bool FormatTimeFullFormatFullHours => Settings.Default.FormatTimeFullFormatFullHours;
+        /// <summary>
+        /// Enables the user choice to use "total hours or [total time]" in time formats 
+        /// </summary>
+        public static bool FormatTimeFullFormatHoursFull => Settings.Default.FormatTimeFullFormatHoursFull;
+
+        /// <summary>
+        /// Enables the user choice to include "total time" in time formats 
+        /// </summary>
+        public static bool FormatTimeTotalTime => Settings.Default.FormatTimeTotalTime;
+
+        /// <summary>
+        /// Enables the user choice to include "seconds" as part of time messages
+        /// </summary>
+        public static bool FormatTimeIncludeSeconds => Settings.Default.FormatTimeIncludeSeconds;
+
+        #region Twitch Ads Notification
+        /// <summary>
+        /// Specifies whether to notify the user when Twitch Ads are starting in the channel.
+        /// </summary>
+        public static bool TwitchAdsNotify => Settings.Default.TwitchAdsNotify;
+
+        /// <summary>
+        /// Specifies how many seconds prior to the Twitch Ads starting to chat a notification message.
+        /// </summary>
+        public static int TwitchAdsNotifySeconds => Settings.Default.TwitchAdsNotifySeconds;
+
+        /// <summary>
+        /// A flag to use a different time format just for ad notices.
+        /// </summary>
+        public static bool TwitchAdsNotifyTimeFormatTotalTime => Settings.Default.TwitchAdsNotifyTimeFormatTotalTime;
+
+        /// <summary>
+        /// Specifies the seconds offset for the Twitch Ads Soon message.
+        /// </summary>
+        public static int TwitchAdsAdSoonSecondsOffset => Settings.Default.TwitchAdsAdSoonSecondsOffset;
+
+        /// <summary>
+        /// Specifies the seconds offset for the Twitch Ads Start message.
+        /// </summary>
+        public static int TwitchAdsAdStartSecondsOffset => Settings.Default.TwitchAdsAdStartSecondsOffset;
+
+        /// <summary>
+        /// Specifies the seconds offset for the Twitch Ads End message.
+        /// </summary>
+        public static int TwitchAdsAdEndSecondsOffset => Settings.Default.TwitchAdsAdEndSecondsOffset;
+        #endregion
+
         #region Themes
 
         // specify properties as "Theme[theme name]", e.g. "ThemeDark". reverse the name for the theme file, e.g. "DarkTheme.xaml"
@@ -894,6 +1064,23 @@ namespace StreamerBotLib.Static
         /// Specifies to use the Darkl Theme within the app
         /// </summary>
         public static bool ThemeDark => Settings.Default.ThemeDark;
+        public static bool ThemeCandy => Settings.Default.ThemeCandy;
+        public static bool ThemeFallSpooky => Settings.Default.ThemeFallSpooky;
+        public static bool ThemeFall => Settings.Default.ThemeFall;
+        public static bool ThemeForest => Settings.Default.ThemeForest;
+        public static bool ThemeHalloweenPumpkin => Settings.Default.ThemeHalloweenPumpkin;
+        public static bool ThemeIvory => Settings.Default.ThemeIvory;
+        public static bool ThemeNeonCyber => Settings.Default.ThemeNeonCyber;
+        public static bool ThemeNord => Settings.Default.ThemeNord;
+        public static bool ThemePastelGalaxy => Settings.Default.ThemePastelGalaxy;
+        public static bool ThemeRetroArcade => Settings.Default.ThemeRetroArcade;
+        public static bool ThemeSlate => Settings.Default.ThemeSlate;
+        public static bool ThemeSpringCherry => Settings.Default.ThemeSpringCherry;
+        public static bool ThemeSpringMint => Settings.Default.ThemeSpringMint;
+        public static bool ThemeSpring => Settings.Default.ThemeSpring;
+        public static bool ThemeSummerBeach => Settings.Default.ThemeSummerBeach;
+        public static bool ThemeSummer => Settings.Default.ThemeSummer;
+        public static bool ThemeWinter => Settings.Default.ThemeWinter;
 
         #endregion Themes
 
@@ -971,7 +1158,7 @@ namespace StreamerBotLib.Static
         public static bool EnableDebugGUIDataViews => Settings.Default.EnableDebugGUIDataViews;
         public static bool EnableDebugGUIBotComs => Settings.Default.EnableDebugGUIBotComs;
         public static bool EnableDebugTwitchBots => Settings.Default.EnableDebugTwitchBots;
-
+        public static bool EnableDebugConverters => Settings.Default.EnableDebugConverters;
 
         #endregion
 

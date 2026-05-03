@@ -16,6 +16,7 @@ using StreamerBotLib.Systems;
 using System.Net;
 using System.Web;
 
+using TwitchLib.Api.Helix.Models.Channels.GetAdSchedule;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -53,17 +54,15 @@ namespace StreamerBotLib.BotClients
 
         #endregion
 
-        private Thread BulkLoadClips;
-
-        public static event EventHandler<EventArgs> RaidCompleted;
+        //public static event EventHandler<EventArgs> RaidCompleted;
         //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOnline;
         //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamUpdated;
         //public static event EventHandler<StreamUpdatePropertiesEventArgs> StreamOffline;
 
         public event EventHandler<InvalidAccessTokenEventArgs> InvalidTwitchAccess;
 
-        public static event EventHandler<TwitchAuthCodeExpiredEventArgs> BotAuthCodeExpired;
-        public static event EventHandler<TwitchAuthCodeExpiredEventArgs> StreamerAuthCodeExpired;
+        //   public static event EventHandler<TwitchAuthCodeExpiredEventArgs>? BotAuthCodeExpired;
+        //   public static event EventHandler<TwitchAuthCodeExpiredEventArgs>? StreamerAuthCodeExpired;
 
         /// <summary>
         /// This event relates to app starting up and notifies when the Helix apis 
@@ -588,6 +587,8 @@ namespace StreamerBotLib.BotClients
                 {
                     TwitchBotClipSvc.StartBot();
                 }
+
+                StartAdNotificationThread();
             }
             else
             {
@@ -707,10 +708,7 @@ namespace StreamerBotLib.BotClients
                 {
                     LogWriter.DebugLog("SendShoutOut", DebugLogTypes.TwitchBots, "User already exists in shoutout list, updating last seen time.");
                     var shoutuser = ShoutOutUsers.Find(s => s.Equals(shoutOutLiveUser) && (s.LastShoutOut != null && s.LastShoutOut.Value.AddMinutes(15) < DateTime.Now));
-                    if (shoutuser != null)
-                    {
-                        shoutuser.NextShoutOut = shoutuser.LastShoutOut.Value.AddHours(1);
-                    }
+                    shoutuser?.NextShoutOut = shoutuser.LastShoutOut.Value.AddHours(1);
                 }
             }
         }
@@ -1149,11 +1147,11 @@ namespace StreamerBotLib.BotClients
             }
         }
 
-        public static void ForceTwitchReauthorization()
+        public static void ForceTwitchReauthorization(params Bots[] bots)
         {
             LogWriter.DebugLog("ForceTwitchReauthorization", DebugLogTypes.TwitchBots, $"Received a request to reauthenticate.");
 
-            TwitchTokenBot.ForceReauthorization();
+            TwitchTokenBot.ForceReauthorization(bots);
         }
 
         #endregion
@@ -1212,6 +1210,7 @@ namespace StreamerBotLib.BotClients
 
         #region Threaded Ops
 
+        #region Followers
         public override void GetAllFollowers()
         {
             if (OptionFlags.ManageFollowers)// && OptionFlags.TwitchAddFollowersStart)
@@ -1257,6 +1256,9 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchStopBulkFollowers, null);
         }
 
+        #endregion
+
+        #region Manage Active Users
         private bool ActiveUserThread;
         private void ActiveUsers()
         {
@@ -1427,7 +1429,9 @@ namespace StreamerBotLib.BotClients
             });
         }
 
+        #endregion
 
+        #region Out Raid Management
         //private readonly TimeSpan DefaultOutRaid = new(0, 0, 90);
         //private DateTime OutRaidStarted;
         //private Thread RaidLoop = null;
@@ -1528,5 +1532,278 @@ namespace StreamerBotLib.BotClients
 
         #endregion
 
+        #region Manage Ad Notifications
+
+        private bool AdNotificationThreadActive = false;
+
+        internal event EventHandler<NotifyAdSoonEventArgs> NotifyAdSoon;
+        internal event EventHandler<NotifyAdStartedEventArgs> NotifyAdStarted;
+        internal event EventHandler<EventArgs> NotifyAdEnded;
+
+        internal void StartAdNotificationThread()
+        {
+            if (!AdNotificationThreadActive && OptionFlags.TwitchAdsNotify && OptionFlags.IsStreamOnline)
+            {
+                AdNotificationThreadActive = true;
+                ThreadManager.CreateThreadStart("AdNotificationThread", async () =>
+                {
+                    AdNotificationThread();
+                });
+            }
+        }
+
+        private void AdNotificationThread()
+        {
+            LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "Starting the ad notification monitoring thread.");
+
+            //const int SecondsAdjustedForNextAd = 60; // the notify messages are firing approximately 60 seconds before the ad actually starts, so adjusting the start time
+
+            DateTime NextAdCheck = DateTime.Now;
+            CurrAdSchedule CurrAd = null;
+            DateTime CurrTime;
+            DateTime LastAdAtNotify = DateTime.MinValue;
+            bool AdSoonNotify = false;
+            bool AdStartNotify = false;
+            bool SnoozeCheck = false;
+
+            while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline && OptionFlags.TwitchAdsNotify)
+            {
+                CurrTime = DateTime.Now;
+
+                if (CurrTime >= NextAdCheck)
+                {
+                    LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Fetching ad schedule at {CurrTime}.");
+
+                    GetAdScheduleResponse AdStatus = TwitchHelixBot.GetAdSchedule(UserId: OptionFlags.TwitchStreamerUserId);
+                    if (AdStatus?.Data != null && AdStatus.Data.Length > 0)
+                    {
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Twitch reported {AdStatus.Data.Length} ads in the ad schedule.");
+
+                        int x = 1;
+
+                        foreach(var ad in AdStatus.Data)
+                        {
+                            LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Ad Schedule Entry {x} - NextAdAt: {DateTimeOffset.FromUnixTimeSeconds(long.Parse(ad.NextAdAt)).DateTime.ToLocalTime()}, Duration: {ad.Duration}, SnoozeCount: {ad.SnoozeCount}");
+                            x++;
+                        }
+
+                        List<CurrAdSchedule> Schedules = AdStatus.Data
+                            .Where(a => !string.IsNullOrEmpty(a.NextAdAt) && DateTimeOffset.FromUnixTimeSeconds(long.Parse(a.NextAdAt)).DateTime.ToLocalTime() > CurrStream.StartedAt.ToLocalTime())  // filter old/empty
+                            .Select(a => new CurrAdSchedule(a))
+                            .OrderBy(a => a.NextAdAt)
+                            .ToList();
+
+                        if (Schedules.Count > 0)
+                        {
+                            CurrAd = Schedules.First();
+                            NextAdCheck = CurrAd.GetAdEnd.AddMinutes(7);  // short buffer after expected start
+
+                            if (LastAdAtNotify != CurrAd.NextAdAt)
+                            {
+                                AdSoonNotify = false;
+                                AdStartNotify = false;
+                                SnoozeCheck = false;
+                                LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"New upcoming ad detected: {CurrAd.ToString()}. Next check at {NextAdCheck}.");
+                            }
+                        }
+                        else
+                        {
+                            CurrAd = null;
+                            NextAdCheck = CurrTime.AddSeconds(60);  // longer delay if no upcoming ads
+                            LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "No upcoming ads found. Next check in 60 seconds.");
+                        }
+                    }
+                    else
+                    {
+                        CurrAd = null;
+                        NextAdCheck = CurrTime.AddSeconds(60);
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "Ad status is null or empty. Next check in 60 seconds.");
+                    }
+                }
+
+                if (CurrAd != null)
+                {
+                    // Snooze check only if relevant
+                    if (!SnoozeCheck && CurrAd.SnoozeCount > 0 && CurrTime.AddSeconds(OptionFlags.TwitchAdsAdSoonSecondsOffset) >= CurrAd.NextAdAt)
+                    {
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Checking for potential snooze near ad time. CurrTime {CurrTime}, next ad at {CurrAd.NextAdAt}, duration {CurrAd.Duration}. Re-fetching schedule soon.");
+                        NextAdCheck = CurrTime.AddSeconds(10);  // short delay to re-fetch after possible snooze
+                        SnoozeCheck = true;
+                        continue;  // skip notifications until re-fetch
+                    }
+
+                    // AdSoon
+                    if (!AdSoonNotify && CurrTime.AddSeconds(OptionFlags.TwitchAdsAdSoonSecondsOffset) >= CurrAd.NextAdAt.AddSeconds(OptionFlags.TwitchAdsAdSoonSecondsOffset))
+                    {
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Notifying AdSoon. CurrTime {CurrTime}, next ad at {CurrAd.NextAdAt}, duration {CurrAd.Duration}.");
+                        AdSoonNotify = true;
+                        LastAdAtNotify = CurrAd.NextAdAt;
+                        NotifyAdSoon?.Invoke(this, new NotifyAdSoonEventArgs(OptionFlags.TwitchAdsNotifySeconds, CurrAd.Duration));
+                    }
+
+                    // AdStarted
+                    if (!AdStartNotify && CurrTime >= CurrAd.NextAdAt.AddSeconds(OptionFlags.TwitchAdsAdStartSecondsOffset))
+                    { // adjust NextAdAt due to Twitch not starting ads exactly at the indicated time
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Notifying AdStarted. CurrTime {CurrTime}, next ad at {CurrAd.NextAdAt}, duration {CurrAd.Duration}.");
+                        AdStartNotify = true;
+                        NotifyAdStarted?.Invoke(this, new NotifyAdStartedEventArgs(CurrAd.Duration));
+                    }
+
+                    // AdEnded
+                    if (CurrTime >= CurrAd.GetAdEnd.AddSeconds(OptionFlags.TwitchAdsAdEndSecondsOffset))
+                    { // adjust GetAdEnd due to Twitch not starting ads exactly at the indicated time
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Notifying AdEnded. CurrTime {CurrTime}, next ad at {CurrAd.NextAdAt}, duration {CurrAd.Duration}, GetAdEnd {CurrAd.GetAdEnd}.");
+                        NotifyAdEnded?.Invoke(this, new EventArgs());
+                        CurrAd = null;
+                        AdSoonNotify = false;
+                        AdStartNotify = false;
+                        SnoozeCheck = false;
+                        LastAdAtNotify = DateTime.MinValue;
+                        NextAdCheck = CurrTime.AddMinutes(8);  // short delay after end to check for new ads
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Ad ended. Next schedule check in 8 minutes: {NextAdCheck}.");
+                    }
+                }
+
+                Task.Delay(1000).Wait();  // 1s loop
+            }
+
+            LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "Ad notification thread ended.");
+            AdNotificationThreadActive = false;
+        }
+
+        /*
+        private void AdNotificationThread()
+        {
+            LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "Starting the ad notification monitoring thread.");
+
+            List<CurrAdSchedule> Schedules = [];
+
+            DateTime NextAdCheck = DateTime.Now;
+            CurrAdSchedule CurrAd = null;
+            DateTime CurrTime;
+            DateTime LastAdAtNotify = DateTime.MinValue;
+            bool AdSoonNotify = false, AdStartNotify = false;
+
+            while (OptionFlags.ActiveToken && OptionFlags.IsStreamOnline && OptionFlags.TwitchAdsNotify)
+            {
+                CurrTime = DateTime.Now;
+
+                // only check for ads while there isn't a current ad pending
+                if (CurrTime >= NextAdCheck)
+                {
+                    LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Checking for upcoming or active ads to notify as of {CurrTime}.");
+                    GetAdScheduleResponse AdStatus = TwitchHelixBot.GetAdSchedule(UserId: OptionFlags.TwitchStreamerUserId);
+                    if (AdStatus != null)
+                    {
+                        if (AdStatus.Data.Length > 0)
+                        {
+                            LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Twitch reported {AdStatus.Data.Length} ads in the ad schedule.");
+                            Schedules.Clear();
+
+                            Schedules.AddRange(
+                                        AdStatus.Data
+                                            .Where(n => !string.IsNullOrEmpty(n.NextAdAt))  // can be empty if no ad is scheduled => ignore these entries
+                                            .Select(c => c)
+                                            .ToList()
+                                            .ConvertAll(a => new CurrAdSchedule(a))
+                                        );
+
+                            LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Current ad schedule:");
+
+                            foreach (CurrAdSchedule a in Schedules)
+                            {
+                                LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"{a.ToString()}");
+                            }
+
+                            Schedules.RemoveAll(a => a.NextAdAt < CurrTime); // very early stream seems to have old ads in the schedule
+                            Schedules = [.. Schedules.OrderBy((a) => a.NextAdAt)];
+
+                            if (Schedules.Count > 0)
+                            { // may be empty after removing old "NextAdAt" entries
+                                CurrAd = Schedules.First(); // make sure we have the earliest ad
+                                NextAdCheck = CurrAd.NextAdAt + CurrAd.Duration; // wait until current ad ends to check again
+
+                                LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Next ad check will occur at: {NextAdCheck}.");
+
+                                if (LastAdAtNotify != CurrAd.NextAdAt)
+                                {
+                                    AdSoonNotify = false;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        NextAdCheck = CurrTime.AddSeconds(20); // check every 20 seconds
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Check for ads again ad: {NextAdCheck}.");
+                    } // check every 20 seconds or wait until the next ad time
+                }
+
+                // a pending ad will run soon
+                if (CurrAd != null)
+                {
+                     
+//Ad chronology:
+//                                                                    between_ads     AdSoon  Waiting     AdStarted       AdEnd
+//-> DateTime.MinValue;                                               t               f       f           f               f
+//(CurrTime = (DateTime.Now +NotifySeconds) >= NextAdTime) == false;  t               f       f           f               f
+//(CurrTime = (DateTime.Now +NotifySeconds) >= NextAdTime) == true;   f               t       f           f               f
+//(CurrTime = DateTime.Now) >= NextAdTime == false && NotifyAdSoon;   f               f       t           f               f
+//(CurrTime = DateTime.Now) >= NextAdTime == true && NotifyAdSoon;    f               f       f           t               f
+//(CurrTime = DateTime.Now+AdDuration) >= NextAdTime == false;        f               f       f           t               f
+
+//(CurrTime = DateTime.Now+AdDuration) >= NextAdTime == true;         f               f       f           t               t
+//                                            (the AdStarted check and AdEnd check both satisfy, without using a progress flag)
+
+//                    DateTime >= NextAdTime+AdDuration: can be false for AdEnd and true for AdStarted
+                    
+
+                    if (!AdSoonNotify && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds) >= CurrAd.NextAdAt)
+                    // first check if we need to notify ads are starting soon - should occur first chronologically
+                    {
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"AdSoon is detected, based on current time: {CurrTime} + {OptionFlags.TwitchAdsNotifySeconds} seconds and the next ad at: {CurrAd.NextAdAt}.");
+
+                        LastAdAtNotify = CurrAd.NextAdAt;
+                        AdSoonNotify = true;
+                        NotifyAdSoon?.Invoke(this, new(OptionFlags.TwitchAdsNotifySeconds, CurrAd.Duration));
+                    }
+                    else if (!AdStartNotify && CurrTime >= CurrAd.NextAdAt)
+                    // check if now is after the ad should start; this occurs second chronologically
+                    {
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"AdStarted is calculated, based on Curr Time: {CurrTime} and current Ad Time: {CurrAd.NextAdAt}.");
+
+                        AdStartNotify = true;
+                        NotifyAdStarted?.Invoke(this, new(CurrAd.Duration));
+                    }
+                    else if (CurrTime >= CurrAd.GetAdEnd)
+                    // check if now is after the ad should end; this occurs third chronologically
+                    {
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"AdEnd is calculated as: {CurrAd.GetAdEnd}, for the current time: {CurrTime}.");
+
+                        NotifyAdEnded?.Invoke(this, new());
+                        NextAdCheck = CurrTime;
+                        AdSoonNotify = false;
+                        AdStartNotify = false;
+                        CurrAd = null; // reset the CurrAd to get the next ad
+                        LastAdAtNotify = DateTime.MinValue; // reset the ad soon notify time
+                        Task.Delay(10000).Wait();
+                    }
+
+                    if (CurrAd != null && CurrAd.SnoozeCount > 0 && CurrTime.AddSeconds(OptionFlags.TwitchAdsNotifySeconds + 5) >= CurrAd.NextAdAt)
+                    { // a snooze will shift the ad time by 5 minutes later, check for a snooze before notifying => reset the CurrAd and do it again
+                        LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, $"Time to check for a snooze.");
+
+                        NextAdCheck = CurrTime.AddSeconds(5); // check again in 5 seconds
+                    }
+                }
+
+                Task.Delay(1000).Wait(); // wait between checks
+            }
+        }
+        */
+
+        #endregion
+
+        #endregion
     }
 }

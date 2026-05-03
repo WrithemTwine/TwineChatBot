@@ -126,6 +126,15 @@ namespace StreamerBotLib.Static
                 { "minute", timeSpan.Minutes }
             };
 
+            if (OptionFlags.FormatTimeIncludeSeconds)
+            {
+                datakeys.Add("second", timeSpan.Seconds);
+            }
+
+            string returntime = "";
+
+            string totalhours = Plurality(Math.Round(timeSpan.TotalHours, 2), MsgVars.Pluralhour);
+
             foreach (string k in datakeys.Keys)
             {
                 if (datakeys[k] != 0)
@@ -134,9 +143,37 @@ namespace StreamerBotLib.Static
                 }
             }
 
-            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Converted {timeSpan} into: {(output.Count == 0 ? "no time available" : string.Join(", ", output))}");
+            string totaltime = output.Count == 0 ? "no time available" : string.Join(", ", output);
 
-            return string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), Plurality(Math.Round(timeSpan.TotalHours, 2), MsgVars.Pluralhour), output.Count == 0 ? "no time available" : string.Join(", ", output));
+            if (OptionFlags.TwitchAdsNotifyTimeFormatTotalTime)
+            {
+                if (!OptionFlags.FormatTimeIncludeSeconds)
+                {
+                    totaltime = string.Join(", ", [totaltime, Plurality(timeSpan.Seconds, MsgVars.Pluralsecond)]);
+                }
+
+                returntime = totaltime;
+            }
+            else if (OptionFlags.FormatTimeFullFormatHoursFull)
+            {
+                returntime = string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), totalhours, totaltime);
+            }
+            else if (OptionFlags.FormatTimeFullFormatFullHours)
+            {
+                returntime = string.Format(LocalizedMsgSystem.GetVar(MsgVars.or), totaltime, totalhours);
+            }
+            else if (OptionFlags.FormatTimeTotalHours)
+            {
+                returntime = totalhours;
+            }
+            else if (OptionFlags.FormatTimeTotalTime)
+            {
+                returntime = totaltime;
+            }
+
+            LogWriter.DebugLog("FormatTimes", DebugLogTypes.FormatData, $"Converted {timeSpan} into: {returntime}");
+
+            return returntime;
         }
 
         /// <summary>

@@ -89,24 +89,27 @@ namespace StreamerBotLib.DataSQL
                 .WithOne(g => g.CategoryList)
                 .HasForeignKey<GameDeadCounter>(c => new { c.CategoryId, c.Category })
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(true);
+                .IsRequired();
 
             modelBuilder.Entity<CategoryList>()
                 .HasMany(c => c.Followers)
                 .WithOne(c => c.CategoryList)
                 .HasPrincipalKey(c => c.Category)
-                .HasForeignKey(c => c.Category);
+                .HasForeignKey(c => c.Category)
+                .IsRequired();
 
             modelBuilder.Entity<CategoryList>()
                 .HasMany(c => c.Clips)
                 .WithOne(c => c.CategoryList)
                 .HasPrincipalKey(c => c.CategoryId)
-                .HasForeignKey(c => c.CategoryId);
+                .HasForeignKey(c => c.CategoryId)
+                .IsRequired();
 
             modelBuilder.Entity<Currency>()
                 .HasOne(c => c.CurrencyType)
                 .WithMany(c => c.Currency)
                 .HasForeignKey(c => new { c.CurrencyName })
+                .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Users>()
@@ -114,7 +117,7 @@ namespace StreamerBotLib.DataSQL
                 .WithOne(c => c.User)
                 .HasForeignKey(u => new { u.UserId, u.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(true);
+                .IsRequired(false);
 
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.CustomWelcome)
@@ -141,12 +144,13 @@ namespace StreamerBotLib.DataSQL
                 .WithOne(u => u.User)
                 .HasForeignKey<UserStats>(s => new { s.UserId, s.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(true);
+                .IsRequired();
 
             modelBuilder.Entity<Users>()
                 .HasOne(u => u.Follower)
                 .WithOne(f => f.User)
                 .HasForeignKey<Followers>(f => new { f.UserId, f.Platform })
+                .HasPrincipalKey<Users>(u => new { u.UserId, u.Platform })
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
 
@@ -164,14 +168,14 @@ namespace StreamerBotLib.DataSQL
                 .WithOne(m => m.MultiChannels)
                 .HasForeignKey(m => new { m.UserId, m.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(true);
+                .IsRequired();
 
             modelBuilder.Entity<MultiChannels>()
                 .HasOne(m => m.MultiSummaryLiveStreams)
                 .WithOne(m => m.MultiChannels)
                 .HasForeignKey<MultiSummaryLiveStreams>(m => new { m.UserId, m.Platform })
                 .OnDelete(DeleteBehavior.Cascade)
-                .IsRequired(true);
+                .IsRequired();
 
             modelBuilder.Entity<LearnMsgs>()
                 .Property(i => i.Id)

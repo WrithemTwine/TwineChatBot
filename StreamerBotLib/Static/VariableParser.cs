@@ -12,14 +12,14 @@ namespace StreamerBotLib.Static
 
         public static string ConvertVars(MsgVars[] msgVars)
         {
-            string x = "";
+            List<string> x = [];
 
             foreach (MsgVars m in msgVars)
             {
-                x += Prefix + m.ToString() + ",";
+                x.Add(Prefix + m.ToString());
             }
 
-            return x[..x.LastIndexOf(',')];
+            return string.Join(",", x);
         }
 
         /// <summary>

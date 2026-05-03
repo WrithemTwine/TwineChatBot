@@ -80,12 +80,12 @@
                   PreviewKeyDown="DG_PreviewKeyDown_Click"
                   RowEditEnding="DataGrid_RowEditEnding">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
                 <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" />
                 <DataGridCheckBoxColumn Header="Add @Everyone" Binding="{Binding AddEveryone}" />
                 <DataGridComboBoxColumn Header="Webhook Source" SelectedItemBinding="{Binding WebhooksSource}" ItemsSource="{Binding Source={StaticResource EnumWebhooksSource}}" />
                 <DataGridComboBoxColumn Header="Kind" SelectedItemBinding="{Binding Kind}" ItemsSource="{Binding Source={StaticResource EnumWebhooksKind}}" />
-                <DataGridTextColumn Header="Server" Binding="{Binding Server}" Width="80" MaxWidth="120" />
+                <DataGridTextColumn Header="Server" Binding="{Binding Server}" Width="80" MaxWidth="120" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
             </DataGrid.Columns>
             <DataGrid.GroupStyle>
                 <StaticResource ResourceKey="DataGrid_GroupStyle" />
@@ -106,9 +106,9 @@
                             PreviewKeyDown="DG_PreviewKeyDown_Click"
                             RowEditEnding="DataGrid_RowEditEnding">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
-                            <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" />
-                            <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
+                            <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
+                            <DataGridTextColumn Header="User Name" Binding="{Binding UserName}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
+                            <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
                         </DataGrid.Columns>
                         <DataGrid.GroupStyle>
                             <StaticResource ResourceKey="DataGrid_GroupStyle" />
@@ -146,10 +146,10 @@
                         PreviewKeyDown="DG_PreviewKeyDown_Click"
                         RowEditEnding="DataGrid_RowEditEnding">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" />
-                        <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
+                        <DataGridTextColumn Header="User Id" Binding="{Binding UserId}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
+                        <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
                         <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateLiveTemplate}" CellEditingTemplate="{StaticResource EditLiveDateTemplate}" SortMemberPath="LiveDate" />
-                        <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" />
+                        <DataGridTextColumn Header="Platform" Binding="{Binding Platform}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
                     </DataGrid.Columns>
                     <DataGrid.GroupStyle>
                         <StaticResource ResourceKey="DataGrid_GroupStyle" />
@@ -164,8 +164,8 @@
                         PreviewKeyDown="DG_PreviewKeyDown_Click"
                         RowEditEnding="DataGrid_RowEditEnding">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="User Id" Binding="{Binding MultiChannels.UserId}" />
-                        <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" />
+                        <DataGridTextColumn Header="User Id" Binding="{Binding MultiChannels.UserId}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
+                        <DataGridTextColumn Header="User Name" Binding="{Binding MultiChannels.UserName}" EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
                         <DataGridTemplateColumn Header="Live Date" CellTemplate="{StaticResource DateThroughTemplate}" CellEditingTemplate="{StaticResource EditThroughDateTemplate}" SortMemberPath="ThroughDate" />
                         <DataGridTextColumn Header="Streams" Binding="{Binding StreamCount, StringFormat={}{0:N0}}" />
                     </DataGrid.Columns>

@@ -4,6 +4,7 @@ using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Repeat;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -56,7 +57,7 @@ namespace StreamerBot
 
             Version version = Assembly.GetEntryAssembly().GetName().Version;
 
-            LogWriter.WriteLog(StartBotDate, $"Now starting active bot session status log. Bot version {version.Major}.{version.Minor}.{version.Build}.{version.Revision}.");
+            LogWriter.WriteLog(StartBotDate, $"Now starting active bot session status log. Bot version {version}.");
 
             CheckSettings();
             SetDatabaseChoice();
@@ -91,7 +92,7 @@ namespace StreamerBot
             ThreadManager.CreateThreadStart(".ctor_StreamerBotWindow", ProcessWatcher);
 
             StatusBarItem_BetaLabel.Visibility = version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
-            StatusBar_Label_Version.Content = $"Version: {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+            StatusBar_Label_Version.Content = $"Version: {version}";
 
             ConstructEvents();
         }
@@ -280,14 +281,27 @@ namespace StreamerBot
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
         {
-            if (CheckBox_ManageUsers.IsChecked == true)
+            // to enable Followers, the Manage Users and Manage Categories (Stream Data) must be enabled first
+
+            if (CheckBox_ManageUsers.IsChecked == true && CheckBox_ManageStreamStat.IsChecked == true)
             {
                 CheckBox_ManageFollowers.IsEnabled = true;
             }
-            else
+            else if (CheckBox_ManageStreamStat.IsChecked == false)
             {
                 CheckBox_ManageFollowers.IsEnabled = false;
                 CheckBox_ManageFollowers.IsChecked = false; // requires the Manage Users to be enabled
+            }
+
+            if (CheckBox_ManageFollowers.IsChecked == true)
+            {
+                CheckBox_ManageUsers.IsEnabled = false;
+                CheckBox_ManageStreamStat.IsEnabled = false;
+            }
+            else
+            {
+                CheckBox_ManageUsers.IsEnabled = true;
+                CheckBox_ManageStreamStat.IsEnabled = true;
             }
 
             //if (CheckBox_ManageFollowers.IsChecked == true)
@@ -344,6 +358,11 @@ namespace StreamerBot
         private void TabItem_GotFocus(object sender, RoutedEventArgs e)
         {
             //TextBlock_TwitchBotLog.ScrollToEnd();
+        }
+
+        private void CheckBox_TwitchAdsNotify_Checked(object sender, RoutedEventArgs e)
+        {
+            Controller.StartTwitchAdNotifications();
         }
 
         private void CheckBox_Checked_PanelVisibility(object sender, RoutedEventArgs e)
@@ -465,7 +484,7 @@ namespace StreamerBot
 
         private void Button_Options_RepeatSeralCommandList_Remove_Click(object sender, RoutedEventArgs e)
         {
-            OptionFlags.RepeatSerialSaveData = (List<StreamerBotLib.Models.Repeat.RepeatCommandGUISelect>)ListBox_Options_RepeatSerialCommandList.ItemsSource;
+            OptionFlags.RepeatSerialSaveData = (List<RepeatCommandGUISelect>)ListBox_Options_RepeatSerialCommandList.ItemsSource;
             ListBox_Options_RepeatSerialCommandList.ItemsSource = OptionFlags.RepeatSerialSaveData;
             Controller.UpdateRepeatCommands();
         }
@@ -563,6 +582,23 @@ namespace StreamerBot
         private void TextBox_SourceUpdated(object sender, DataTransferEventArgs e)
         {
             LogWriter.DebugLog("TextBox_SourceUpdated", DebugLogTypes.GUIEvents, "Text box source updated, check Twitch button enable status.");
+
+            if (sender == TB_Twitch_AccessToken)
+            {
+                if (!string.IsNullOrEmpty(TB_Twitch_AccessToken.Text))
+                {
+                    OptionFlags.TwitchBotApproveScopes = OptionFlags.TwitchStreamerUseToken ?
+                        OptionFlags.CredentialsTwitchScopesDiffOauthBot : OptionFlags.CredentialsTwitchScopesOauthSame;
+                }
+            }
+            else if (sender == TB_TwitchStreamerAccessToken)
+            {
+                if (!string.IsNullOrEmpty(TB_TwitchStreamerAccessToken.Text))
+                {
+                    OptionFlags.TwitchStreamerScopesApproveScopes = OptionFlags.CredentialsTwitchScopesDiffOauthChannel;
+                }
+            }
+
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             TwitchCheckFocusAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
@@ -633,5 +669,6 @@ namespace StreamerBot
             TwitchCheckFocusAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
+
     }
 }

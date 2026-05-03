@@ -60,6 +60,7 @@ namespace TestStreamerBot
             var liveUser1 = new LiveUser("User1", Platform.Twitch);
             var liveUser2 = new LiveUser("User2", Platform.Twitch);
             manageStreamViewers.AddUsersFirstJoinedChannel(new List<LiveUser> { liveUser1, liveUser2 });
+            manageStreamViewers.RegisterUsers(new List<LiveUser> { liveUser1, liveUser2 });
 
             // Act
             var currentActiveUsers = manageStreamViewers.GetCurrentActiveUsers(true);
@@ -77,7 +78,8 @@ namespace TestStreamerBot
             // Arrange
             var manageStreamViewers = new ManageStreamViewers();
             var liveUser = new LiveUser("User1", Platform.Twitch);
-            manageStreamViewers.AddUsersFirstJoinedChannel(new List<LiveUser> { liveUser });
+            manageStreamViewers.AddUsersFirstJoinedChannel([liveUser]);
+            manageStreamViewers.RegisterUsers([liveUser]);
 
             // Act
             var result = manageStreamViewers.GetCurrentActiveUsers(true);

@@ -23,7 +23,7 @@ namespace StreamerBotLib.Systems
             GiveawayCollectionList.Clear();
             GiveawayCollection.Clear();
 
-            SendMessage(OptionFlags.GiveawayBegMsg);
+            SendMessage(OptionFlags.GiveawayBegMsg, OptionFlags.GiveawayAnnounceBegMsg);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("EndGiveaway", DebugLogTypes.SystemController, "Ending giveaway.");
             GiveawayStarted = false;
-            SendMessage(OptionFlags.GiveawayEndMsg);
+            SendMessage(OptionFlags.GiveawayEndMsg, OptionFlags.GiveawayAnnounceEndMsg);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace StreamerBotLib.Systems
                                 {
                                 new(MsgVars.winner, DisplayName)
                                 }
-                                )));
+                                )), OptionFlags.GiveawayAnnounceWinMsg);
 
                     foreach (LiveUser W in WinnerList)
                     {

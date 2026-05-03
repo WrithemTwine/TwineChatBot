@@ -52,6 +52,10 @@
         Pluralbe,
         be,
         viewrate,
-        username
+        username,
+        adduration,
+        adtime,
+        Pluralsecond,
+        random
     }
 }

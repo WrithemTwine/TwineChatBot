@@ -2,7 +2,7 @@
 
 using StreamerBotLib.DataSQL.Models;
 
-namespace StreamerBotLib.DataSQL.EFC9
+namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {
@@ -35,7 +35,7 @@ namespace StreamerBotLib.DataSQL.EFC9
         {
             using var context = BuildDataContext();
             await context.Database.BeginTransactionAsync();
-            await context.Users.Where((u) => u.Follower == null || !u.Follower.IsFollower).ExecuteDeleteAsync();
+            await context.Users.Include(f => f.Follower).Where((u) => u.Follower == null).ExecuteDeleteAsync();
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
 

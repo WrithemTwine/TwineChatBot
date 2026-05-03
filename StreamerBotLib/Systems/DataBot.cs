@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.DataSQL;
-using StreamerBotLib.GUI.Windows;
+﻿using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
@@ -18,10 +17,10 @@ namespace StreamerBotLib.Systems
 
 #if DEBUG
 
-        public DataManagerSQL GetDataManager()
-        {
-            return ActionSystem.DataManage as DataManagerSQL;
-        }
+        //public DataManagerSQL GetDataManager()
+        //{
+        //    return ActionSystem.DataManage as DataManagerSQL;
+        //}
 
         public void SetPostChannelMessageHandler(EventHandler<PostChannelMessageEventArgs> handler)
         {
@@ -667,6 +666,33 @@ namespace StreamerBotLib.Systems
             {
                 LogWriter.DebugLog("PostIncomingRaid", DebugLogTypes.DataBot, $"Posting incoming raid from user: {user?.UserName} at time: {raidTime}, viewer count: {viewerCount}, category: {category?.CategoryName}.");
                 SystemAction.PostIncomingRaid(user, raidTime, viewerCount, category);
+            }));
+        }
+
+        public void NotifyAdSoon(int secondsUntilAd, TimeSpan AdDuration)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("NotifyAdSoon", DebugLogTypes.DataBot, "Notifying ad soon.");
+                SystemAction.NotifyAdSoon(secondsUntilAd, AdDuration);
+            }));
+        }
+
+        public void NotifyAdStart(TimeSpan AdDuration)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("NotifyAdStart", DebugLogTypes.DataBot, "Notifying ad started.");
+                SystemAction.NotifyAdStart(AdDuration);
+            }));
+        }
+
+        public void NotifyAdEnd()
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("NotifyAdEnd", DebugLogTypes.DataBot, "Notifying ad ended.");
+                SystemAction.NotifyAdEnd();
             }));
         }
 

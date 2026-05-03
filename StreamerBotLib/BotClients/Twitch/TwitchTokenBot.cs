@@ -632,6 +632,11 @@ namespace StreamerBotLib.BotClients.Twitch
 
                     LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "URL generated.");
 
+                    // save the scopes used to generate the authcode to determine later if the scopes changed and the user needs to reauthorize with different scopes
+                    OptionFlags.TwitchAuthBotApproveScopes = OptionFlags.TwitchStreamerUseToken ?
+                        Resources.CredentialsTwitchScopesDiffOauthBot :
+                        Resources.CredentialsTwitchScopesOauthSame;
+
                     BotAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
                 }
                 else
@@ -646,6 +651,9 @@ namespace StreamerBotLib.BotClients.Twitch
                         );
                     LogWriter.DebugLog("GenerateAuthCodeURL", DebugLogTypes.TwitchTokenBot, "URL generated.");
 
+                    // save the scopes used to generate the authcode to determine later if the scopes changed and the user needs to reauthorize with different scopes
+                    OptionFlags.TwitchAuthStreamerScopeApproveScopes = Resources.CredentialsTwitchScopesDiffOauthChannel;
+
                     StreamerAcctAuthCodeExpired?.Invoke(this, new(buildURL, State, OpenBrowser, AuthenticationFinished));
                 }
             }
@@ -655,21 +663,30 @@ namespace StreamerBotLib.BotClients.Twitch
         /// Clears the authentication codes, access & refresh tokens for the bot & streamer accounts.
         /// Required when access scopes change.
         /// </summary>
-        internal static void ForceReauthorization()
+        internal static void ForceReauthorization(params Bots[] bots)
         {
             LogWriter.DebugLog("ForceReauthorization", DebugLogTypes.TwitchTokenBot, "Request to reauthorize the application. Clearing the authentication code(s).");
 
-            OptionFlags.TwitchAuthBotAuthCode = "";
-            OptionFlags.TwitchAuthBotAccessToken = "";
-            OptionFlags.TwitchAuthBotRefreshToken = "";
+            if (bots == null || bots.Contains(Bots.TwitchEventSubBot))
+            {
+                OptionFlags.TwitchAuthBotAuthCode = "";
+                OptionFlags.TwitchAuthBotAccessToken = "";
+                OptionFlags.TwitchAuthBotRefreshToken = "";
+            }
 
-            OptionFlags.TwitchAuthStreamerAuthCode = "";
-            OptionFlags.TwitchAuthStreamerAccessToken = "";
-            OptionFlags.TwitchAuthStreamerRefreshToken = "";
+            if (bots == null || bots.Contains(Bots.TwitchStreamerEventSubScopes))
+            {
+                OptionFlags.TwitchAuthStreamerAuthCode = "";
+                OptionFlags.TwitchAuthStreamerAccessToken = "";
+                OptionFlags.TwitchAuthStreamerRefreshToken = "";
+            }
 
-            OptionFlags.TwitchAuthStreamerNoScopesAuthCode = "";
-            OptionFlags.TwitchAuthStreamerNoScopesAccessToken = "";
-            OptionFlags.TwitchAuthStreamerNoScopesRefreshToken = "";
+            if (bots == null || bots.Contains(Bots.TwitchStreamerEventSubNoScopes))
+            {
+                OptionFlags.TwitchAuthStreamerNoScopesAuthCode = "";
+                OptionFlags.TwitchAuthStreamerNoScopesAccessToken = "";
+                OptionFlags.TwitchAuthStreamerNoScopesRefreshToken = "";
+            }
         }
     }
 }

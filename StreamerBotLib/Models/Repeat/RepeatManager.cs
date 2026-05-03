@@ -7,10 +7,10 @@ namespace StreamerBotLib.Models.Repeat
 {
     internal class RepeatManager
     {
-        public event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
+        internal event EventHandler<TimerCommandsEventArgs> OnRepeatEventOccured;
         internal event EventHandler<EventArgs> OnRepeatCheckStopped;
 
-        public bool IsStarted { get; private set; } = false;
+        internal bool IsStarted { get; private set; } = false;
 
         private readonly ActionSystem _actionsystem;
         private RepeatCommandMode _repeatcommandmethod;
@@ -87,8 +87,8 @@ namespace StreamerBotLib.Models.Repeat
 
         private void ComputeUpdate()
         {
-            while (OptionFlags.ActiveToken && IsStarted)
-            {
+            while (OptionFlags.ActiveToken && IsStarted && ((OptionFlags.IsStreamOnline && OptionFlags.RepeatWhenLive) || !OptionFlags.RepeatWhenLive))
+            { // stay active while app is in running state, the repeat manager is enabled, and if user wants repeat commands only if live
                 UpdateChatUserStats();
 
                 if (OptionFlags.RepeatTimerComSlowdown) // only calculate if user wants diluted/smart-mode repeat commands
