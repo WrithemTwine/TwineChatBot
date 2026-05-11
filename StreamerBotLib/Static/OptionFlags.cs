@@ -1081,6 +1081,24 @@ namespace StreamerBotLib.Static
         public static bool ThemeSummerBeach => Settings.Default.ThemeSummerBeach;
         public static bool ThemeSummer => Settings.Default.ThemeSummer;
         public static bool ThemeWinter => Settings.Default.ThemeWinter;
+ 
+        public static bool ThemeSilverCherry => Settings.Default.ThemeSilverCherry;
+
+        public static bool ThemeBaseball => Settings.Default.ThemeBaseball;
+        public static bool ThemeBaseballLegendary => Settings.Default.ThemeBaseballLegendary;
+        public static bool ThemeBasketball => Settings.Default.ThemeBasketball;
+        public static bool ThemeChess => Settings.Default.ThemeChess;
+        public static bool ThemeChessEpic => Settings.Default.ThemeChessEpic;
+        public static bool ThemeChessLegendary => Settings.Default.ThemeChessLegendary;
+        public static bool ThemeGolf => Settings.Default.ThemeGolf;
+        public static bool ThemeGolfEpic => Settings.Default.ThemeGolfEpic;
+        public static bool ThemeGolfLegendary => Settings.Default.ThemeGolfLegendary;
+        public static bool ThemeHockey => Settings.Default.ThemeHockey;
+        public static bool ThemeHockeyEpic => Settings.Default.ThemeHockeyEpic;
+        public static bool ThemeHockeyLegendary => Settings.Default.ThemeHockeyLegendary;
+        public static bool ThemeSoccer => Settings.Default.ThemeSoccer;
+        public static bool ThemeSwimming => Settings.Default.ThemeSwimming;
+        public static bool ThemeSwimmingEpic => Settings.Default.ThemeSwimmingEpic;
 
         #endregion Themes
 

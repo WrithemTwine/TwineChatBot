@@ -42,8 +42,8 @@ namespace StreamerBotLib.Models
         /// <param name="other">The object to compare.</param>
         /// <returns>True if the objects contain identical values.</returns>
         public bool Equals(LiveUser other)
-        {
-            return other != null && UserName == other.UserName && Platform == other.Platform && UserId == other.UserId;
+        { // updated equality to allow for empty userIds, as some calls do not provide them and we want to be able to match on username and platform alone in those cases
+            return other != null && UserName == other.UserName && Platform == other.Platform && (string.IsNullOrEmpty(other.UserId) || string.IsNullOrEmpty(UserId) || UserId == other.UserId);
         }
 
         public static int GetHashCode(object Obj)

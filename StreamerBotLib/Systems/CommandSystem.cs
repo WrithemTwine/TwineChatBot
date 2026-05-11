@@ -170,7 +170,7 @@ namespace StreamerBotLib.Systems
         public void CheckShout(LiveUser User, out string response, bool AutoShout = true)
         {
             response = "";
-            if (DataManage.CheckShoutName(User.UserId) || !AutoShout)
+            if (!AutoShout || DataManage.CheckShoutName(User.UserId))
             {
                 LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, $"User {User.UserName} is on the shout list.");
                 if (OptionFlags.MsgSendSOToChat)

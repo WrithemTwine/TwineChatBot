@@ -1288,6 +1288,12 @@
                                                     <TextBlock Text="{DynamicResource Options_Theme_Spring}"/>
                                                 </RadioButton>
 
+                                                <RadioButton x:Name="RadioButton_Theme_SilverCherry" GroupName="AppThemeGroup"
+                                        IsChecked="{Binding ThemeSilverCherry}" 
+                                        Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_SilverCherry}"/>
+                                                </RadioButton>
+                                                
                                                 <RadioButton x:Name="RadioButton_Theme_SpringCherry" GroupName="AppThemeGroup"
                                          IsChecked="{Binding ThemeSpringCherry}" 
                                          Checked="RadioButton_Theme_Checked">
@@ -1340,6 +1346,54 @@
                                          Checked="RadioButton_Theme_Checked">
                                                     <TextBlock Text="{DynamicResource Options_Theme_Winter}"/>
                                                 </RadioButton>
+
+                                                <StackPanel Height="20" />
+                                                
+                                                <TextBlock Text="{DynamicResource Options_Theme_Sports_Title}" 
+                                                           FontWeight="Bold" Margin="0,0,0,10"/>
+
+                                                <RadioButton x:Name="RadioButton_Theme_Baseball" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeBaseball}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_Baseball}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_Basketball" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeBasketball}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_Basketball}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_Chess" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeChess}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_Chess}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_Golf" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeGolf}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_Golf}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_Hockey" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeHockey}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_Hockey}"/>
+                                                </RadioButton>
+ 
+                                                <RadioButton x:Name="RadioButton_Theme_Soccer" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeSoccer}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_Soccer}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_Swimming" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeSwimming}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_Swimming}"/>
+                                                </RadioButton>
+
                                             </StackPanel>
 
                                             <!-- Core Themes + Example -->
@@ -1463,6 +1517,54 @@
                                          IsChecked="{Binding ThemeSlate}" 
                                          Checked="RadioButton_Theme_Checked">
                                                     <TextBlock Text="{DynamicResource Options_Theme_Slate}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_BaseballLegendary" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeBaseballLegendary}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_BaseballLegendary}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_ChessEpic" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeChessEpic}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_ChessEpic}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_ChessLegendary" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeChessLegendary}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_ChessLegendary}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_GolfEpic" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeGolfEpic}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_GolfEpic}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_GolfLegendary" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeGolfLegendary}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_GolfLegendary}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_HockeyEpic" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeHockeyEpic}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_HockeyEpic}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_HockeyLegendary" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeHockeyLegendary}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_HockeyLegendary}"/>
+                                                </RadioButton>
+
+                                                <RadioButton x:Name="RadioButton_Theme_SwimmingEpic" GroupName="AppThemeGroup"
+                     IsChecked="{Binding ThemeSwimmingEpic}" 
+                     Checked="RadioButton_Theme_Checked">
+                                                    <TextBlock Text="{DynamicResource Options_Theme_SwimmingEpic}"/>
                                                 </RadioButton>
 
                                                 <StackPanel Height="20" />
@@ -1870,9 +1972,25 @@
                                           Visibility="Collapsed" Width="Auto">
                                                                 <DockPanel>
                                                                     <ListBox x:Name="ListBox_Options_RepeatSerialCommandList"
-                                                 DockPanel.Dock="Right"
-                                                 ItemsSource="{Binding Source={x:Static StaticLib:OptionFlags.RepeatSerialSaveData}}"
-                                                 MinHeight="20">
+                                                                             DockPanel.Dock="Right"
+                                                                             ItemsSource="{Binding Source={x:Static StaticLib:OptionFlags.RepeatSerialSaveData}}"
+                                                                             MinHeight="20" 
+                                                                             PreviewMouseLeftButtonDown="ListBox_Options_RepeatSerialCommandList_PreviewMouseLeftButtonDown" 
+                                                                             PreviewMouseMove="ListBox_Options_RepeatSerialCommandList_PreviewMouseMove" 
+                                                                             Drop="ListBox_Options_RepeatSerialCommandList_Drop" 
+                                                                             DragOver="ListBox_Options_RepeatSerialCommandList_DragOver" 
+                                                                             AllowDrop="True" 
+                                                                             IsManipulationEnabled="True" 
+                                                                             ScrollViewer.CanContentScroll="True">
+                                                                        
+                                                                        <ListBox.ItemContainerStyle>
+                                                                            <Style TargetType="ListBoxItem">
+                                                                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_Options_RepeatSerialCommandList_PreviewMouseLeftButtonDown"/>
+                                                                                <EventSetter Event="PreviewMouseMove" Handler="ListBoxItem_Options_RepeatSerialCommandList_PreviewMouseMove"/>
+
+                                                                            </Style>
+                                                                        </ListBox.ItemContainerStyle>
+                                                                        
                                                                         <ListBox.ItemTemplate>
                                                                             <DataTemplate>
                                                                                 <StackPanel Orientation="Horizontal">
@@ -1888,8 +2006,8 @@
                                                                         <StackPanel Orientation="Horizontal" >
                                                                             <TextBlock>Interval Seconds:</TextBlock>
                                                                             <TextBox Width="50" Height="20" 
-     Text="{Binding RepeatSerialTime}" 
-     PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
+                                                                                 Text="{Binding RepeatSerialTime}" 
+                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll">
                                                                                 <TextBox.ToolTip>
                                                                                     <TextBlock>When using Selection Order mode, specify the interval in whole seconds (yes 1, 2, 3, no 5.5) to repeat the each command.<LineBreak />600 seconds = 10 minutes, 1800 seconds = 30 minutes, 3600 seconds = 1 hour, etc.</TextBlock>
                                                                                 </TextBox.ToolTip>
@@ -2250,7 +2368,7 @@
                                                     </CheckBox>
                                                     <GroupBox Width="Auto" Header="{DynamicResource Options_Twitch_AdNotifications_SecondsOffsetGroupHeader}">
                                                         <StackPanel>
-                                                            <TextBlock Text="{DynamicResource Options_Twitch_AdNotifications_SecondsOffsetHeading}"/>
+                                                            <TextBlock Margin="0,0,0,10" Text="{DynamicResource Options_Twitch_AdNotifications_SecondsOffsetHeading}"/>
                                                             <StackPanel Orientation="Horizontal">
                                                                 <TextBlock Width="100" Text="{DynamicResource Options_Twitch_AdNotifications_AdSoonSecondsOffset}"/>
                                                                 <TextBox Width="40" Text="{Binding TwitchAdsAdSoonSecondsOffset}" />

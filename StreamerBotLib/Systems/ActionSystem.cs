@@ -550,13 +550,15 @@ namespace StreamerBotLib.Systems
             if (OptionFlags.RepeatTimerCommands && (!OptionFlags.RepeatWhenLive || OptionFlags.IsStreamOnline))
             {
                 LogWriter.DebugLog("ProcessCommands_OnRepeatEventOccured", DebugLogTypes.SystemController, "Processing repeat event.");
-                short x = 0;
+                //short x = 0;
 
-                do
-                {
-                    SendMessage(e.Message);
-                    x++;
-                } while (x <= e.RepeatMsg);
+                //do
+                //{
+                //    SendMessage(e.Message);
+                //    x++;
+                //} while (x <= e.RepeatMsg);
+
+                SendMessage(e.Message, e.Announcement, e.RepeatMsg);
             }
             UpdatedStat(StreamStatType.AutoCommands);
         }

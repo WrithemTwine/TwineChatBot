@@ -71,15 +71,17 @@ namespace StreamerBotLib.Models.Repeat
                 if (e.platform == Platform.Twitch)
                 {
                     LogWriter.DebugLog("RepeatEventOccured", DebugLogTypes.RepeatCommandSystem, $"Perform the repeat command: {e.Command}.");
+                    CommandData currCommand = ActionSystem.DataManage.GetCommand(e.Command);
                     OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs()
                     {
                         Message = _actionsystem.ParseCommand(
-                                           e.Command,
-                                           new(OptionFlags.TwitchBotUserName, e.platform),
-                                           [],
-                                           ActionSystem.DataManage.GetCommand(e.Command),
-                                           out short multi, true),
-                        RepeatMsg = multi
+                                               e.Command,
+                                               new(OptionFlags.TwitchBotUserName, e.platform),
+                                               [],
+                                               currCommand,
+                                               out short multi, true),
+                        RepeatMsg = multi,
+                        Announcement = currCommand.Announce
                     });
                 }
             }

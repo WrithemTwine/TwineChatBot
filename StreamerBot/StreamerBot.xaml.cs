@@ -440,60 +440,7 @@ namespace StreamerBot
             // setup the repeat timer; setting is unchecked so the repeat timer should be started for the user
             Controller.ActivateRepeatTimers();
         }
-
-        private void RadioButton_RepeatCommand_SerialMode_Loaded(object sender, RoutedEventArgs e)
-        {
-            switch (RadioButton_RepeatCommand_SerialMode?.IsChecked)
-            {
-                case true:
-                    GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Visible;
-                    break;
-                case false or null:
-                    GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Collapsed;
-                    break;
-            }
-        }
-
-        private void RadioButton_RepeatCommand_ParallelMode_Checked(object sender, RoutedEventArgs e)
-        {
-            Controller.ActivateRepeatTimers();
-        }
-
-        private void RadioButton_RepeatCommand_SerialMode_Checked(object sender, RoutedEventArgs e)
-        {
-            if (GroupBox_Options_RepeatSerialModeSettings != null)
-            {
-                GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Visible;
-            }
-
-            Controller.ActivateRepeatTimers();
-        }
-
-        private void Button_Options_RepeatSerialCommandList_Add_Click(object sender, RoutedEventArgs e)
-        {
-            ComboBox selectedCommand = ((ComboBox)(((StackPanel)((Button)sender).Parent).Children[1]));
-
-            if (selectedCommand.SelectedItem != null)
-            {
-                OptionFlags.RepeatSerialSaveDataString.Add(selectedCommand.Text);
-                Settings.Default.Save();
-                ListBox_Options_RepeatSerialCommandList.ItemsSource = OptionFlags.RepeatSerialSaveData;
-                Controller.UpdateRepeatCommands();
-            }
-        }
-
-        private void Button_Options_RepeatSeralCommandList_Remove_Click(object sender, RoutedEventArgs e)
-        {
-            OptionFlags.RepeatSerialSaveData = (List<RepeatCommandGUISelect>)ListBox_Options_RepeatSerialCommandList.ItemsSource;
-            ListBox_Options_RepeatSerialCommandList.ItemsSource = OptionFlags.RepeatSerialSaveData;
-            Controller.UpdateRepeatCommands();
-        }
-
-        private void RadioButton_RepeatCommand_SerialMode_Unchecked(object sender, RoutedEventArgs e)
-        {
-            GroupBox_Options_RepeatSerialModeSettings.Visibility = Visibility.Collapsed;
-        }
-
+ 
         private void TextBox_Follower_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox src = (TextBox)sender;
@@ -669,6 +616,7 @@ namespace StreamerBot
             TwitchCheckFocusAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
+
 
     }
 }

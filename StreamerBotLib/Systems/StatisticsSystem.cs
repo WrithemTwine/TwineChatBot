@@ -221,7 +221,7 @@ namespace StreamerBotLib.Systems
 
         public void ModJoined(string User)
         {
-            LogWriter.DebugLog("ModJoined", DebugLogTypes.StatSystem, "Adding a moderator to the list of moderators.");
+            LogWriter.DebugLog("ModJoined", DebugLogTypes.StatSystem, "Adding a moderator to the list of joined moderators.");
             if (OptionFlags.IsStreamOnline)
             {
                 ModUsers.UniqueAdd(User);
@@ -230,7 +230,7 @@ namespace StreamerBotLib.Systems
 
         public void SubJoined(string User)
         {
-            LogWriter.DebugLog("SubJoined", DebugLogTypes.StatSystem, "Adding a subscriber to the list of subscribers.");
+            LogWriter.DebugLog("SubJoined", DebugLogTypes.StatSystem, "Adding a subscriber to the list of joined subscribers.");
             if (OptionFlags.IsStreamOnline)
             {
                 SubUsers.UniqueAdd(User);
@@ -239,7 +239,7 @@ namespace StreamerBotLib.Systems
 
         public void VIPJoined(string User)
         {
-            LogWriter.DebugLog("VIPJoined", DebugLogTypes.StatSystem, "Adding a VIP to the list of VIPs.");
+            LogWriter.DebugLog("VIPJoined", DebugLogTypes.StatSystem, "Adding a VIP to the list of joined VIPs.");
             if (OptionFlags.IsStreamOnline)
             {
                 VIPUsers.UniqueAdd(User);
@@ -366,7 +366,7 @@ namespace StreamerBotLib.Systems
 
         public bool StreamOnline(DateTime Started)
         {
-            LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Detected a new livestream and starting up activites.");
+            LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Detected a new livestream and starting up activities.");
 
             CurrStream = new(); // start over
 

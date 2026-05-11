@@ -1047,6 +1047,7 @@
     <system:String x:Key="Options_Theme_SelectHeader">Select App Theme</system:String>
     <system:String x:Key="Options_Theme_SpringSummer_Title">Spring &amp; Summer</system:String>
     <system:String x:Key="Options_Theme_Spring">Spring (Pastel)</system:String>
+    <system:String x:Key="Options_Theme_SilverCherry">Silver Cherry Blossom</system:String>
     <system:String x:Key="Options_Theme_SpringCherry">Spring Cherry Blossom</system:String>
     <system:String x:Key="Options_Theme_SpringMint">Spring Mint &amp; Lemon</system:String>
     <system:String x:Key="Options_Theme_Summer">Summer (Pastel Grass &amp; Flowers)</system:String>
@@ -1074,6 +1075,31 @@
     <system:String x:Key="Options_Theme_NeonCyber">Neon Cyber</system:String>
     <system:String x:Key="Options_Theme_PastelGalaxy">Pastel Galaxy</system:String>
     <system:String x:Key="Options_Theme_RetroArcade">Retro Arcade</system:String>
+
+    <!-- Sports & Activity Themes -->
+    <system:String x:Key="Options_Theme_Sports_Title">Sports Themes</system:String>
+
+    <system:String x:Key="Options_Theme_Golf">Golf</system:String>
+    <system:String x:Key="Options_Theme_GolfEpic">Golf (Epic)</system:String>
+    <system:String x:Key="Options_Theme_GolfLegendary">Golf (Legendary)</system:String>
+
+    <system:String x:Key="Options_Theme_Basketball">Basketball</system:String>
+
+    <system:String x:Key="Options_Theme_Soccer">Soccer</system:String>
+
+    <system:String x:Key="Options_Theme_Hockey">Hockey</system:String>
+    <system:String x:Key="Options_Theme_HockeyEpic">Hockey (Epic)</system:String>
+    <system:String x:Key="Options_Theme_HockeyLegendary">Hockey (Legendary)</system:String>
+
+    <system:String x:Key="Options_Theme_Chess">Chess</system:String>
+    <system:String x:Key="Options_Theme_ChessEpic">Chess (Epic)</system:String>
+    <system:String x:Key="Options_Theme_ChessLegendary">Chess (Legendary)</system:String>
+
+    <system:String x:Key="Options_Theme_Swimming">Swimming</system:String>
+    <system:String x:Key="Options_Theme_SwimmingEpic">Swimming (Epic)</system:String>
+
+    <system:String x:Key="Options_Theme_Baseball">Baseball</system:String>
+    <system:String x:Key="Options_Theme_BaseballLegendary">Baseball (Legendary)</system:String>
 
     <!-- Streamer Bot sub-tab -->
     <system:String x:Key="Options_Debug_Header">Bot Management - Debug Mode</system:String>
@@ -1227,8 +1253,8 @@
     <system:String x:Key="Options_Twitch_AdNotifications_SecondsPre">seconds pre-notification</system:String>
     <system:String x:Key="Options_Twitch_AdNotifications_TotalTime">Ad messages use total time.</system:String>
     <system:String x:Key="Options_Twitch_AdNotifications_TotalTime_Tooltip">Enable this option to use ad specific total time breakdown - "1 minute 30 seconds", different from the overall time format option.</system:String>
-    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetGroupHeader">Adjust Message Appearance</system:String>
-    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetHeading">Fine tune when Ad Messages appear.</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetGroupHeader">Adjust Message Display Time</system:String>
+    <system:String x:Key="Options_Twitch_AdNotifications_SecondsOffsetHeading">Twitch provides a timestamp to indicate when an ad will occur. However, the actual ad event appears delayed requiring a 'seconds offset' to align the ad messages to actual ad event.</system:String>
     <system:String x:Key="Options_Twitch_AdNotifications_AdSoonSecondsOffset">Ads Soon Msg:</system:String>
     <system:String x:Key="Options_Twitch_AdNotifications_AdStartSecondsOffset">Ads Start Msg:</system:String>
     <system:String x:Key="Options_Twitch_AdNotifications_AdEndSecondsOffset">Ads End Msg:</system:String>

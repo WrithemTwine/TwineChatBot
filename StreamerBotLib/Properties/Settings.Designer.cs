@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.5.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -3111,6 +3111,198 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["TwitchAdsAdEndSecondsOffset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSilverCherry {
+            get {
+                return ((bool)(this["ThemeSilverCherry"]));
+            }
+            set {
+                this["ThemeSilverCherry"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeBaseball {
+            get {
+                return ((bool)(this["ThemeBaseball"]));
+            }
+            set {
+                this["ThemeBaseball"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeBaseballLegendary {
+            get {
+                return ((bool)(this["ThemeBaseballLegendary"]));
+            }
+            set {
+                this["ThemeBaseballLegendary"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeBasketball {
+            get {
+                return ((bool)(this["ThemeBasketball"]));
+            }
+            set {
+                this["ThemeBasketball"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeChess {
+            get {
+                return ((bool)(this["ThemeChess"]));
+            }
+            set {
+                this["ThemeChess"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeChessEpic {
+            get {
+                return ((bool)(this["ThemeChessEpic"]));
+            }
+            set {
+                this["ThemeChessEpic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeChessLegendary {
+            get {
+                return ((bool)(this["ThemeChessLegendary"]));
+            }
+            set {
+                this["ThemeChessLegendary"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeGolf {
+            get {
+                return ((bool)(this["ThemeGolf"]));
+            }
+            set {
+                this["ThemeGolf"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeGolfEpic {
+            get {
+                return ((bool)(this["ThemeGolfEpic"]));
+            }
+            set {
+                this["ThemeGolfEpic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeGolfLegendary {
+            get {
+                return ((bool)(this["ThemeGolfLegendary"]));
+            }
+            set {
+                this["ThemeGolfLegendary"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeHockey {
+            get {
+                return ((bool)(this["ThemeHockey"]));
+            }
+            set {
+                this["ThemeHockey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeHockeyEpic {
+            get {
+                return ((bool)(this["ThemeHockeyEpic"]));
+            }
+            set {
+                this["ThemeHockeyEpic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeHockeyLegendary {
+            get {
+                return ((bool)(this["ThemeHockeyLegendary"]));
+            }
+            set {
+                this["ThemeHockeyLegendary"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSoccer {
+            get {
+                return ((bool)(this["ThemeSoccer"]));
+            }
+            set {
+                this["ThemeSoccer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSwimming {
+            get {
+                return ((bool)(this["ThemeSwimming"]));
+            }
+            set {
+                this["ThemeSwimming"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ThemeSwimmingEpic {
+            get {
+                return ((bool)(this["ThemeSwimmingEpic"]));
+            }
+            set {
+                this["ThemeSwimmingEpic"] = value;
             }
         }
     }
