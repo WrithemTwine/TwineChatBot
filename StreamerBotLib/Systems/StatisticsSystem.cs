@@ -54,8 +54,16 @@ namespace StreamerBotLib.Systems
 
         public void PostCategoryStream(CategoryData categoryData)
         {
-            LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.StatSystem, "Posting category stream data to the database.");
-            DataManage.PostCategoryStream(categoryData);
+            if (OptionFlags.IsStreamOnline)
+            {
+                LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.StatSystem, "Posting category stream data to the database.");
+
+                DataManage.PostCategoryStream(categoryData);
+            }
+            else
+            {
+                LogWriter.DebugLog("PostCategoryStream", DebugLogTypes.StatSystem, "Stream is offline, not posting stream data to the database.");
+            }
         }
 
         public void PostViewerCategory(CategoryData categoryData)
@@ -465,11 +473,11 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("ClearStreamStatState", DebugLogTypes.StatSystem, "Clear all of the stream data lists.");
 
-            CurrStream.Clear();
             ModUsers.Clear();
             SubUsers.Clear();
             VIPUsers.Clear();
             StreamViewers.EndStreamResetList();
+            CurrStream = new();
         }
 
         public void ResetCategoryStreamCount()

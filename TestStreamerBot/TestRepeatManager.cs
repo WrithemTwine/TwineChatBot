@@ -7,6 +7,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
+using StreamerBotLib.Models.Repeat;
 
 using System.Reflection;
 
