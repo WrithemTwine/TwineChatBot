@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿#define ASYNC_POSTNEWUSER_NO
+
+
+using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Models;
@@ -45,8 +48,12 @@ namespace StreamerBotLib.DataSQL.EFC10
             return user ?? new LiveUser("Unknown", Platform, UserId);
         }
 
-        private async Task<Users> PostNewUser(SQLDBContext context, LiveUser User, DateTime FirstSeen)
+
+        private async Task<Users> PostNewUser(SQLDBContext context, LiveUser User, DateTime FirstSeen, bool save = true)
         {
+            LogWriter.DebugLog("PostNewUser", DebugLogTypes.DataManager,
+                            $"Adding or updating user {User.UserId}, {User.UserName}, {User.Platform} in database.");
+
             Users newuser = (from U in context.Users where (U.UserId == User.UserId && U.Platform == User.Platform) select U)
                             .Include(S => S.UserStats)
                             .Include(f => f.Follower)
@@ -54,17 +61,25 @@ namespace StreamerBotLib.DataSQL.EFC10
 
             if (newuser is null)
             {
-                newuser = context.Users.Add(new(userId: User.UserId, userName: User.UserName,
+                LogWriter.DebugLog("PostNewUser", DebugLogTypes.DataManager,
+                                $"User {User.UserId}, {User.UserName}, {User.Platform} not found in database. Adding new user.");
+
+                newuser = (await context.Users.AddAsync(new(userId: User.UserId, userName: User.UserName,
                                                 platform: User.Platform, firstDateSeen: FirstSeen,
-                                                currLoginDate: FirstSeen, lastDateSeen: FirstSeen)).Entity;
+                                                currLoginDate: FirstSeen, lastDateSeen: FirstSeen))).Entity;
                 await context.UserStats.AddAsync(new(userId: User.UserId, platform: User.Platform, watchTime: new(0, 0, 0)));
             }
             else
             {
+                LogWriter.DebugLog("PostNewUser", DebugLogTypes.DataManager,
+                                $"User {User.UserId}, {User.UserName}, {User.Platform} found in database. Updating user information.");
+
                 if (newuser.Platform == default) { newuser.Platform = User.Platform; }
                 if (newuser.UserName != User.UserName && newuser.UserId == User.UserId) { newuser.UserName = User.UserName; }
             }
 
+            LogWriter.DebugLog("PostNewUser", DebugLogTypes.DataManager,
+                            $"Ensuring currency entries for user {User.UserId}, {User.UserName}, {User.Platform} are present in database.");
             foreach (Models.CurrencyType t in context.CurrencyType)
             {
                 Currency curr = (from UC in context.Currency
@@ -77,7 +92,10 @@ namespace StreamerBotLib.DataSQL.EFC10
                 }
             }
 
-            await context.SaveChangesAsync(true);
+            if (save)
+            {
+                await context.SaveChangesAsync(true);
+            }
             return newuser;
         }
 
@@ -105,7 +123,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                 if (user == default || user == null)
                 {  // add a null check - have been receiving exceptions
                     LogWriter.DebugLog("UserJoined", DebugLogTypes.DataManager,
-                                    $"Failed to add or find user {L.UserId},{L.UserName},{L.Platform} in database.");
+                                    $"Failed to add or find user {L.UserId}, {L.UserName}, {L.Platform} in database.");
                 }
                 else
                 {
@@ -166,7 +184,7 @@ namespace StreamerBotLib.DataSQL.EFC10
             //await RefreshUserStatsList(true);
         }
 
-        #endregion
+#endregion
 
         #region Followers
 
@@ -227,7 +245,7 @@ namespace StreamerBotLib.DataSQL.EFC10
 
 #if DEBUG
                             Debug.Assert(currUserRow != null, "currUserRow should not be null");
-#endif 
+#endif
 
                             Followers currFollow = currUserRow?.Follower;
 
@@ -235,7 +253,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                             {
                                 currFollow.IsFollower = true;
                                 currFollow.FollowedDate = f.FollowedAt;
-                                currFollow.Category ??= f.Category.CategoryName;
+                                currFollow.Category ??= FormatData.AddEscapeFormat(f.Category.CategoryName);  // category needs formatted due to incompatible SQL characters
                             }
                             else
                             {
@@ -245,7 +263,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                                                                      platform: f.FromUser.Platform,
                                                                      isFollower: true, followedDate: f.FollowedAt,
                                                                      statusChangeDate: f.FollowedAt, addDate: currtime,
-                                                                     category: f.Category.CategoryName));
+                                                                     category: FormatData.AddEscapeFormat(f.Category.CategoryName))); // category needs formatted due to incompatible SQL characters
                             }
                         }
                     }

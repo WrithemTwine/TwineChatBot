@@ -1,10 +1,13 @@
 ﻿#define USE_POOLED_DBCONTEXT4
 
+//#define DEBUG_LOG
+
 #if !USE_POOLED_DBCONTEXT
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 using StreamerBotLib.Static;
 
@@ -27,7 +30,7 @@ namespace StreamerBotLib.DataSQL
 #if DEBUG || DEBUG_VIEWXAML || RELEASE_SQLITE
                 .UseSqlite(OptionFlags.EFCConnectStringSqlite)
 #if DEBUG_LOG
-                            .LogTo(DebugLog.WriteLine, LogLevel.Information) // This line enables logging to a file
+                            .LogTo(LogWriter.WriteLog, LogLevel.Information) // This line enables logging to a file
 #endif
 
 #elif RELEASE_POSTGRE

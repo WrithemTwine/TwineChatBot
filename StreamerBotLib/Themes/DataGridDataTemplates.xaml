@@ -194,7 +194,7 @@
                 </StackPanel.Resources>
                 <StackPanel>
                     <TextBlock>Category when Followed:</TextBlock>
-                    <TextBlock Text="{Binding Category}" />
+                    <TextBlock Text="{Binding Category, Converter={StaticResource CategoryConverter}}" />
                 </StackPanel>
                 <StackPanel>
                     <TextBlock>Followed Date:</TextBlock>

@@ -114,6 +114,19 @@ namespace StreamerBotLib.Static
 
 
         /// <summary>
+        /// Specifies whether to connect the Twitch bot EventSub-BotChat to the channel chat when the stream is detected online.
+        /// </summary>
+        public static bool TwitchBotEventSubChatConnectOnline => Settings.Default.TwitchBotEventSubChatConnectOnline;
+        /// <summary>
+        /// Specifies whether to disconnect the Twitch bot EventSub-BotChat from the channel chat when the stream is detected offline.
+        /// </summary>
+        public static bool TwitchBotEventSubChatDisconnectOffline => Settings.Default.TwitchBotEventSubChatDisconnectOffline;
+        /// <summary>
+        /// Specifies whether to disconnect the Twitch bot EventSub-Notifications when the stream is detected offline.
+        /// </summary>
+        public static bool TwitchStreamEventSubNotifyDisconnectOffline => Settings.Default.TwitchStreamEventSubNotifyDisconnectOffline;
+
+        /// <summary>
         /// Specifies whether to record bot status messages in the log file.
         /// </summary>
         public static bool LogBotStatus

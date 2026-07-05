@@ -532,12 +532,13 @@
                                                     </RadioButton>
 
                                                     <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" 
-                                          Width="Auto" Visibility="Collapsed">
+                                          Width="Auto">
                                                         <WrapPanel>
-                                                            <CheckBox DataContext="{Binding TwitchBotEventSubConnectOnline, Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchBotEventSubChatConnectOnline}">                                                                
                                                                 <TextBlock Text="{DynamicResource Bot_ConnectWhenOnline}"/>
                                                             </CheckBox>
-                                                            <CheckBox DataContext="{Binding TwitchBotEventSubDisconnectOffline, Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
+                                                                      IsChecked="{Binding TwitchBotEventSubChatDisconnectOffline}">
                                                                 <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
                                                             </CheckBox>
                                                         </WrapPanel>
@@ -612,10 +613,10 @@
 
                                                     <StackPanel Height="45">
                                                         <Label x:Name="Label_TwitchBot_EventSubStreamer_Start" Visibility="Collapsed">
-                                                            <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_LiveMonitor_Start}" />
+                                                            <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_EventSubNotifications_Start}" />
                                                         </Label>
                                                         <Label x:Name="Label_TwitchBot_EventSubStreamer_Stop" Visibility="Visible">
-                                                            <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_LiveMonitor_Stop}" />
+                                                            <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_EventSubNotifications_Stop}" />
                                                         </Label>
                                                     </StackPanel>
 
@@ -639,12 +640,11 @@
                                                     </RadioButton>
 
                                                     <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" 
-                                          Width="Auto" Visibility="Collapsed">
+                                          Width="Auto">
                                                         <WrapPanel>
-                                                            <CheckBox DataContext="{Binding TwitchBotEventSubConnectOnline, Mode=OneWay, Source={x:Static s:Settings.Default}}">
-                                                                <TextBlock Text="{DynamicResource Bot_ConnectWhenOnline}"/>
-                                                            </CheckBox>
-                                                            <CheckBox DataContext="{Binding TwitchBotEventSubDisconnectOffline, Mode=OneWay, Source={x:Static s:Settings.Default}}">
+                                                            <TextBlock Margin="0, 8" Text="{DynamicResource Bot_EventSubNotifyConnectOnlineDescription}"/>
+
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchStreamEventSubNotifyDisconnectOffline}">
                                                                 <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
                                                             </CheckBox>
                                                         </WrapPanel>

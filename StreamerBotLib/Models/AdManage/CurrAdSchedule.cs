@@ -2,7 +2,7 @@
 
 using TwitchLib.Api.Helix.Models.Channels.GetAdSchedule;
 
-namespace StreamerBotLib.Models
+namespace StreamerBotLib.Models.AdManage
 {
     [DebuggerDisplay("NextAdAt={NextAdAt}, LastAdAt={LastAdAt}, SnoozeCount={SnoozeCount}")]
     internal class CurrAdSchedule(int snoozeCount, string snoozeRefreshAt, string nextAdAt, int duration, string lastAdAt, int prerollFreeTime)

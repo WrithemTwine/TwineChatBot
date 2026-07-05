@@ -942,6 +942,7 @@
 
     <system:String x:Key="Bot_ActivatePerOnline_Header">Activate per Online Status</system:String>
     <system:String x:Key="Bot_ConnectWhenOnline">Connect when stream is online</system:String>
+    <system:String x:Key="Bot_EventSubNotifyConnectOnlineDescription">This EventSub bot detects stream online status, so this 'Connect when Online' option is unavailable.</system:String>
     <system:String x:Key="Bot_DisconnectWhenOffline">Disconnect when stream is offline</system:String>
 
     <system:String x:Key="Bots_UsageInfo_Header">Bot Usage Info</system:String>
