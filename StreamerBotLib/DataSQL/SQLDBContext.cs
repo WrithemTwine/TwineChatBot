@@ -21,8 +21,6 @@ using System.IO;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Static;
 
-
-
 namespace StreamerBotLib.DataSQL
 {
     public class SQLDBContext(DbContextOptions<SQLDBContext> options) : DbContext(options)

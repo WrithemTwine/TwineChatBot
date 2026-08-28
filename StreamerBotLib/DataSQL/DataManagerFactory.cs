@@ -11,11 +11,9 @@ using Microsoft.Extensions.Logging;
 
 using StreamerBotLib.Static;
 
-using MASES.EntityFrameworkCore.KNet.Extensions;
-
-
 #if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
+using MASES.EntityFrameworkCore.KNet.Extensions;
 #endif
 
 namespace StreamerBotLib.DataSQL
