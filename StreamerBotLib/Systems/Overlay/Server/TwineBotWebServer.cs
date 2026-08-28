@@ -208,141 +208,144 @@ namespace StreamerBotLib.Systems.Overlay.Server
 
             Action ResponseListen = new(() =>
             {
-                // call listener and finish for garbage collection; otherwise listener objects don't free up memory and memory usage will max
-                _ = HTTPListenServer.BeginGetContext((result) =>
+                if (OptionFlags.ActiveToken)
                 {
-                    try
+                    // call listener and finish for garbage collection; otherwise listener objects don't free up memory and memory usage will max
+                    _ = HTTPListenServer.BeginGetContext((result) =>
                     {
-                        HttpListenerContext context = (result.AsyncState as HttpListener).EndGetContext(result);
-                        HttpListenerRequest request = context.Request;
-                        // Obtain a response object.
-                        HttpListenerResponse response = context.Response;
-                        // Construct a response.
-
-                        //LogWriter.DebugLog("ResponseListen", DebugLogTypes.OverlayBot, $"http server - received request, {request.RawUrl}");
-
-                        byte[] buffer;
-
-                        if (request.RawUrl.Contains(PublicConstants.TickerPageName))
+                        try
                         {
-                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
+                            HttpListenerContext context = (result.AsyncState as HttpListener).EndGetContext(result);
+                            HttpListenerRequest request = context.Request;
+                            // Obtain a response object.
+                            HttpListenerResponse response = context.Response;
+                            // Construct a response.
 
-                            lock (TickerPages)
+                            //LogWriter.DebugLog("ResponseListen", DebugLogTypes.OverlayBot, $"http server - received request, {request.RawUrl}");
+
+                            byte[] buffer;
+
+                            if (request.RawUrl.Contains(PublicConstants.TickerPageName))
                             {
-                                if (TickerPages.Count == 1)
+                                string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
+
+                                lock (TickerPages)
                                 {
-                                    responseString = TickerPages[0].OverlayHyperText;
-                                }
-                                else if (TickerPages.Count > 1)
-                                {
-                                    foreach (var T in from T in TickerPages
-                                                      where request.RawUrl.Contains(T.OverlayType)
-                                                      select T)
+                                    if (TickerPages.Count == 1)
                                     {
-                                        responseString = T.OverlayHyperText;
+                                        responseString = TickerPages[0].OverlayHyperText;
                                     }
-                                }
-                            }
-
-                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                        }
-                        else if (request.RawUrl.Contains(PublicConstants.OverlayPageName))
-                        {
-                            string RequestType = OverlayTypes.None.ToString();
-                            if (!OptionFlags.MediaOverlayUseSameStyle)
-                            {
-                                RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
-                            }
-
-                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
-
-                            lock (OverlayPages)
-                            {
-                                if (OverlayPages.Count > 0)
-                                {
-                                    IOverlayPageReadOnly found = null;
-
-                                    foreach (var page in OverlayPages)
+                                    else if (TickerPages.Count > 1)
                                     {
-                                        if (page.OverlayType == RequestType || OptionFlags.MediaOverlayUseSameStyle)
+                                        foreach (var T in from T in TickerPages
+                                                          where request.RawUrl.Contains(T.OverlayType)
+                                                          select T)
                                         {
-                                            found = page;
+                                            responseString = T.OverlayHyperText;
                                         }
                                     }
+                                }
 
-                                    if (found != null)
-                                    {
-                                        OverlayPages.Remove(found);
-                                        responseString = found.OverlayHyperText;
-                                    }
-                                }
+                                buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                             }
-                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                        }
-                        else if (request.RawUrl.Contains(PublicConstants.OverlayVideoName))
-                        {
-                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
-                            lock (OverlayVideo)
+                            else if (request.RawUrl.Contains(PublicConstants.OverlayPageName))
                             {
-                                if (OverlayVideo.Count > 0)
+                                string RequestType = OverlayTypes.None.ToString();
+                                if (!OptionFlags.MediaOverlayUseSameStyle)
                                 {
-                                    IOverlayPageReadOnly found = OverlayVideo.FirstOrDefault();
-                                    if (found != default)
-                                    {
-                                        OverlayVideo.Remove(found);
-                                        responseString = found.OverlayHyperText;
-                                    }
+                                    RequestType = request.RawUrl?.Substring(1, request.RawUrl.IndexOf('/', 1)) ?? RequestType;
                                 }
-                            }
-                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                        }
-                        else if (request.RawUrl.Contains(PublicConstants.OverlayImageName))
-                        {
-                            string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
-                            lock (OverlayImages)
-                            {
-                                if (OverlayImages.Count > 0)
+
+                                string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
+
+                                lock (OverlayPages)
                                 {
-                                    IOverlayPageReadOnly found = OverlayImages.FirstOrDefault();
-                                    if (found != default)
+                                    if (OverlayPages.Count > 0)
                                     {
-                                        OverlayImages.Remove(found);
-                                        responseString = found.OverlayHyperText;
+                                        IOverlayPageReadOnly found = null;
+
+                                        foreach (var page in OverlayPages)
+                                        {
+                                            if (page.OverlayType == RequestType || OptionFlags.MediaOverlayUseSameStyle)
+                                            {
+                                                found = page;
+                                            }
+                                        }
+
+                                        if (found != null)
+                                        {
+                                            OverlayPages.Remove(found);
+                                            responseString = found.OverlayHyperText;
+                                        }
                                     }
                                 }
+                                buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                             }
-                            buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-                        }
-                        else
-                        {
-                            if (File.Exists(request.RawUrl[1..]))
+                            else if (request.RawUrl.Contains(PublicConstants.OverlayVideoName))
                             {
-                                buffer = File.ReadAllBytes(request.RawUrl[1..]);
+                                string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
+                                lock (OverlayVideo)
+                                {
+                                    if (OverlayVideo.Count > 0)
+                                    {
+                                        IOverlayPageReadOnly found = OverlayVideo.FirstOrDefault();
+                                        if (found != default)
+                                        {
+                                            OverlayVideo.Remove(found);
+                                            responseString = found.OverlayHyperText;
+                                        }
+                                    }
+                                }
+                                buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
+                            }
+                            else if (request.RawUrl.Contains(PublicConstants.OverlayImageName))
+                            {
+                                string responseString = ProcessHyperText.DefaultPage; // "<html><head>{RefreshToken(2)}</head><body></body></html>";
+                                lock (OverlayImages)
+                                {
+                                    if (OverlayImages.Count > 0)
+                                    {
+                                        IOverlayPageReadOnly found = OverlayImages.FirstOrDefault();
+                                        if (found != default)
+                                        {
+                                            OverlayImages.Remove(found);
+                                            responseString = found.OverlayHyperText;
+                                        }
+                                    }
+                                }
+                                buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                             }
                             else
                             {
-                                buffer = System.Text.Encoding.UTF8.GetBytes("");
+                                if (File.Exists(request.RawUrl[1..]))
+                                {
+                                    buffer = File.ReadAllBytes(request.RawUrl[1..]);
+                                }
+                                else
+                                {
+                                    buffer = System.Text.Encoding.UTF8.GetBytes("");
+                                }
+                            }
+
+                            // Get a response stream and write the response to it.
+                            response.ContentLength64 = buffer.Length;
+
+                            Stream output = response.OutputStream;
+                            output.Write(buffer, 0, buffer.Length);
+
+                            //LogWriter.DebugLog("ResponseListen", DebugLogTypes.OverlayBot, $"http server - finished sending request.");
+
+                            // must close the output stream.
+                            output.Close();
+
+                            lock (Lock)
+                            {
+                                ResponseCount--; // listener is finished, lower active listener count
                             }
                         }
-
-                        // Get a response stream and write the response to it.
-                        response.ContentLength64 = buffer.Length;
-
-                        Stream output = response.OutputStream;
-                        output.Write(buffer, 0, buffer.Length);
-
-                        //LogWriter.DebugLog("ResponseListen", DebugLogTypes.OverlayBot, $"http server - finished sending request.");
-
-                        // must close the output stream.
-                        output.Close();
-
-                        lock (Lock)
-                        {
-                            ResponseCount--; // listener is finished, lower active listener count
-                        }
-                    }
-                    catch { }
-                }, HTTPListenServer);
+                        catch { }
+                    }, HTTPListenServer);
+                }
             });
 
             // spin until application is stopped or the server is stopped

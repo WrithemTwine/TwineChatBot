@@ -669,30 +669,30 @@ namespace StreamerBotLib.Systems
             }));
         }
 
-        public void NotifyAdSoon(int secondsUntilAd, TimeSpan AdDuration)
+        public void NotifyAdSoon(Platform platform, int secondsUntilAd, TimeSpan AdDuration)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("NotifyAdSoon", DebugLogTypes.DataBot, "Notifying ad soon.");
-                SystemAction.NotifyAdSoon(secondsUntilAd, AdDuration);
+                SystemAction.NotifyAdSoon(platform, secondsUntilAd, AdDuration);
             }));
         }
 
-        public void NotifyAdStart(TimeSpan AdDuration)
+        public void NotifyAdStart(Platform platform, TimeSpan AdDuration)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("NotifyAdStart", DebugLogTypes.DataBot, "Notifying ad started.");
-                SystemAction.NotifyAdStart(AdDuration);
+                SystemAction.NotifyAdStart(platform, AdDuration);
             }));
         }
 
-        public void NotifyAdEnd()
+        public void NotifyAdEnd(Platform platform)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("NotifyAdEnd", DebugLogTypes.DataBot, "Notifying ad ended.");
-                SystemAction.NotifyAdEnd();
+                SystemAction.NotifyAdEnd(platform);
             }));
         }
 

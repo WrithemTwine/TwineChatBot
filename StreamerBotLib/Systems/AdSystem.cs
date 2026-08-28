@@ -6,7 +6,7 @@ namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem
     {
-        internal void NotifyAdSoon(int secondsUntilAd, TimeSpan AdDuration)
+        internal void NotifyAdSoon(Platform platform, int secondsUntilAd, TimeSpan AdDuration)
         {
             // don't need OptionFlags.TwitchAdsNotify because this event chain won't start unless this option is enabled
 
@@ -25,7 +25,7 @@ namespace StreamerBotLib.Systems
                             new(MsgVars.adduration, FormatData.FormatTimes(AdDuration)),
                             new(MsgVars.adtime, FormatData.FormatTimes(TimeSpan.FromSeconds(secondsUntilAd)))
                         });
-                        SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.AdSoon), Multi);
+                        SendMessage(platform, VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.AdSoon), Multi);
                     }
 
                     CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.AdSoon.ToString(), null);
@@ -34,7 +34,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        internal void NotifyAdStart(TimeSpan AdDuration)
+        internal void NotifyAdStart(Platform platform, TimeSpan AdDuration)
         {
             // don't need OptionFlags.TwitchAdsNotify because this event chain won't start unless this option is enabled
 
@@ -52,7 +52,7 @@ namespace StreamerBotLib.Systems
                         {
                             new(MsgVars.adduration, FormatData.FormatTimes(AdDuration))
                         });
-                        SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.AdStart), Multi);
+                        SendMessage(platform, VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.AdStart), Multi);
                     }
 
                     CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.AdStart.ToString(), null);
@@ -61,7 +61,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        internal void NotifyAdEnd()
+        internal void NotifyAdEnd(Platform platform)
         {
             // don't need OptionFlags.TwitchAdsNotify because this event chain won't start unless this option is enabled
 
@@ -75,7 +75,7 @@ namespace StreamerBotLib.Systems
                     if (Enabled)
                     {
                         LogWriter.DebugLog("NotifyAdEnd", DebugLogTypes.SystemController, "Sending message for the ad ending now.");
-                        SendMessage(msg, DataManage.GetEventAnnounce(ChannelEventActions.AdEnd), Multi);
+                        SendMessage(platform, msg, DataManage.GetEventAnnounce(ChannelEventActions.AdEnd), Multi);
                     }
 
                     CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.AdEnd.ToString(), null);

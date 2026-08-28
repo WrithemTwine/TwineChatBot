@@ -11,6 +11,8 @@ namespace StreamerBotLib.DataSQL.EFC10
 {
     internal partial class DataManagerSQLAsync
     {
+        bool _CurrencyFilterActive = false;
+
         //internal async Task UpdateIsEnabled(IEnumerable<EntityBase> entities, string TableName, bool isEnabled)
         //{
         //    if (entities != null)
@@ -31,6 +33,23 @@ namespace StreamerBotLib.DataSQL.EFC10
         //    }
 
         //}
+        internal async Task StartOnlineCurrencyFilter()
+        {
+            await Task.Run(()=>
+            {
+                _CurrencyFilterActive = true;
+            });
+        }
+
+        internal async Task StopOnlineCurrencyFilter()
+        {
+            await Task.Run(async ()=>
+            {
+                _CurrencyFilterActive = false;
+                await RefreshCurrencyList(); // return the currency list to the default state when the filter is stopped
+            });
+        }
+
 
         internal async Task UpdateCurrency(List<LiveUser> Users, DateTime dateTime)
         {
@@ -65,6 +84,27 @@ namespace StreamerBotLib.DataSQL.EFC10
                     }
                 }
             }
+
+            Parallel.ForEach(CurrencyUsers, u =>
+            {
+                var clockSeconds = (dateTime - u.LastDateSeen).TotalSeconds;
+
+                if (u.Currency != null && u.LastDateSeen >= CurrStreamStart)
+                {
+                    Parallel.ForEach(u.Currency, currency =>
+                    {
+                        if (currency.CurrencyType != null)
+                        {
+                            var accrualAmount = currency.CurrencyType.AccrueAmt * (clockSeconds / currency.CurrencyType.Seconds);
+
+                            currency.Value = Math.Min(
+                                currency.CurrencyType.MaxValue,
+                                Math.Round(currency.Value + accrualAmount, 2)
+                            );
+                        }
+                    });
+                }
+            });
 
 #else
 

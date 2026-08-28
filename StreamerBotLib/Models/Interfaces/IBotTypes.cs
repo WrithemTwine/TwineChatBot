@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Models.Events;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Events;
 
 namespace StreamerBotLib.Models.Interfaces
 {
@@ -7,6 +8,8 @@ namespace StreamerBotLib.Models.Interfaces
     /// </summary>
     public interface IBotTypes
     {
+        public Platform Platform { get; set; }
+
         public event EventHandler<BotEventArgs> BotEvent;
 
         /// <summary>

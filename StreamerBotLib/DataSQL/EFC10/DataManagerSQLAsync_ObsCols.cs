@@ -518,16 +518,18 @@ namespace StreamerBotLib.DataSQL.EFC10
 
         private async Task RefreshCurrencyList(bool RecordCountChange = false)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
-                {
-                    GUIContext.ChangeTracker.Clear();
-                    await GUIContext.Currency.Include(u => u.User).ThenInclude(F => F.Follower).Include(u => u.User).ThenInclude(S => S.UserStats).LoadAsync();
-                    Currency.Clear();
-                    Currency.AddRange([.. GUIContext.Currency.Local]);
-                    NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
-                });
+                 {
+                     GUIContext.ChangeTracker.Clear();
+                     await GUIContext.Currency.Include(u => u.User).ThenInclude(F => F.Follower).Include(u => u.User).ThenInclude(S => S.UserStats).LoadAsync();
+
+                     var CurrCurrency = _CurrencyFilterActive ? [.. GUIContext.Currency.Local.Where((c) => c.User.LastDateSeen >= CurrStreamStart)] : GUIContext.Currency.Local.ToList();
+                     Currency.Clear();
+                     Currency.AddRange(CurrCurrency);
+                     NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
+                 });
             });
         }
 

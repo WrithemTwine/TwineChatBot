@@ -91,8 +91,8 @@ namespace StreamerBotLib.Models.Interfaces
         void ResetCategoryStreamCount();
         void PostCategoryStream(CategoryData categoryData);
 
-        void NotifyAdSoon(int secondsUntilAd, TimeSpan AdDuration);
-        void NotifyAdStart(TimeSpan AdDuration);
-        void NotifyAdEnd();
+        void NotifyAdSoon(Platform platform, int secondsUntilAd, TimeSpan AdDuration);
+        void NotifyAdStart(Platform platform, TimeSpan AdDuration);
+        void NotifyAdEnd(Platform platform);
     }
 }

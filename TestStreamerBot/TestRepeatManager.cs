@@ -310,6 +310,16 @@ namespace TestStreamerBot
                 throw new NotImplementedException();
             }
 
+            public void StartOnlineCurrencyFilter()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void StopOnlineCurrencyFilter()
+            {
+                throw new NotImplementedException();
+            }
+
             #endregion
         }
 

@@ -27,6 +27,8 @@ namespace StreamerBotLib.Models.Interfaces
         void ClearAllCurrencyValues();
         void ClearUsersNotFollowers();
         void ClearWatchTime();
+        void StartOnlineCurrencyFilter();
+        void StopOnlineCurrencyFilter();
         void DeleteDataRows(IEnumerable<object> dataRows, string TableName);
         string EditCommand(string cmd, List<string> Arglist);
         Tuple<ModActions, Enums.BanReasons, int> FindRemedy(ViewerTypes viewerTypes, MsgTypes msgTypes);

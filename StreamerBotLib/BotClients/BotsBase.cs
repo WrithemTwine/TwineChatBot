@@ -11,6 +11,8 @@ namespace StreamerBotLib.BotClients
     {
         public event EventHandler<BotEventArgs> BotEvent;
 
+        public virtual Platform Platform { get; set; } = Platform.Default;
+
         protected Collection<Thread> MultiThreadOps = [];
 
         internal Collection<IIOModule> BotsList { get; private set; } = [];

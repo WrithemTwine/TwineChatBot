@@ -329,14 +329,14 @@ namespace StreamerBotLib.BotIOController
         {
             LogWriter.DebugLog("Systems_PostChannelMessage", DebugLogTypes.BotController, $"Received message to post to chat: {e.Msg}");
 
-            Send(e.Msg, e.Announcement, e.RepeatMsg);
+            Send(e.Platform, e.Msg, e.Announcement, e.RepeatMsg);
         }
 
         /// <summary>
         /// Send a response message to all bots incorporated into this app. The messages send through a thread managing a message delay to not flood the channel with immediate messages, channels often have limited received messages per minute.
         /// </summary>
         /// <param name="s">The string to send.</param>
-        public void Send(string s, bool Announcement = false, int Repeat = 0)
+        public void Send(Platform platform, string s, bool Announcement = false, int Repeat = 0)
         {
             OutputSentToBots?.Invoke(this, new() { Msg = s });
 
@@ -344,12 +344,15 @@ namespace StreamerBotLib.BotIOController
             {
                 lock (Operations)
                 {
-                    for (int x = 0; x <= Repeat; x++)
+                    if (bot.Platform == platform || platform == Platform.Default)
                     {
-                        Operations.Enqueue(new Task(() =>
+                        for (int x = 0; x <= Repeat; x++)
                         {
-                            bot.Send(s, Announcement);
-                        }));
+                            Operations.Enqueue(new Task(() =>
+                            {
+                                bot.Send(s, Announcement);
+                            }));
+                        }
                     }
                 }
             }
@@ -1628,7 +1631,7 @@ namespace StreamerBotLib.BotIOController
 
                 if (OptionFlags.MsgBotConnection)
                 { // only show if user spcified they want the welcome message sent to chat
-                    Send(LocalizedMsgSystem.GetTwineBotAuthorInfo());
+                    Send( Platform.Default, LocalizedMsgSystem.GetTwineBotAuthorInfo());
                 }
                 DataBot.NotifyBotStart();
             }
@@ -1688,7 +1691,7 @@ namespace StreamerBotLib.BotIOController
 
             if (Enabled)
             {
-                DataBot.GetEventAnnounce(ChannelEventActions.Subscribe, (result) => Send(ParsedMsg, result, Multi));
+                DataBot.GetEventAnnounce(ChannelEventActions.Subscribe, (result) => Send(User.Platform, ParsedMsg, result, Multi));
             }
 
             DataBot.UpdatedStat(StreamStatType.Sub, StreamStatType.AutoEvents);
@@ -1728,7 +1731,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                DataBot.GetEventAnnounce(ChannelEventActions.Resubscribe, (result) => Send(ParsedMsg, result, Multi));
+                DataBot.GetEventAnnounce(ChannelEventActions.Resubscribe, (result) => Send(User.Platform, ParsedMsg, result, Multi));
             }
             DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Resubscribe, User, UserMsg: HTMLParsedMsg);
 
@@ -1759,7 +1762,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                DataBot.GetEventAnnounce(ChannelEventActions.GiftSub, (result) => Send(ParsedMsg, result, Multi));
+                DataBot.GetEventAnnounce(ChannelEventActions.GiftSub, (result) => Send(User.Platform, ParsedMsg, result, Multi));
             }
             DataBot.UpdatedStat(StreamStatType.GiftSubs, StreamStatType.AutoEvents);
             DataBot.CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.GiftSub, User, UserMsg: HTMLParsedMsg);
@@ -1786,7 +1789,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                DataBot.GetEventAnnounce(ChannelEventActions.CommunitySubs, (result) => Send(ParsedMsg, result, Multi));
+                DataBot.GetEventAnnounce(ChannelEventActions.CommunitySubs, (result) => Send(User.Platform, ParsedMsg, result, Multi));
             }
 
             DataBot.UpdatedStat(StreamStatType.GiftSubs, SubCount);
@@ -1827,7 +1830,7 @@ namespace StreamerBotLib.BotIOController
             string HTMLParsedMsg = VariableParser.ParseReplace(msg, dictionary, true);
             if (Enabled)
             {
-                DataBot.GetEventAnnounce(ChannelEventActions.BeingHosted, (result) => Send(ParsedMsg, result, Multi));
+                DataBot.GetEventAnnounce(ChannelEventActions.BeingHosted, (result) => Send(User.Platform, ParsedMsg, result, Multi));
             }
 
             DataBot.UpdatedStat(StreamStatType.Hosted, StreamStatType.AutoEvents);
@@ -2100,17 +2103,17 @@ namespace StreamerBotLib.BotIOController
 
         private void TwitchBots_NotifyAdEnded(object sender, EventArgs e)
         {
-            DataBot.NotifyAdEnd();
+            DataBot.NotifyAdEnd(Platform.Twitch);
         }
 
         private void TwitchBots_NotifyAdStarted(object sender, NotifyAdStartedEventArgs e)
         {
-            DataBot.NotifyAdStart(e.AdDuration);
+            DataBot.NotifyAdStart(Platform.Twitch, e.AdDuration);
         }
 
         private void TwitchBots_NotifyAdSoon(object sender, NotifyAdSoonEventArgs e)
         {
-            DataBot.NotifyAdSoon(e.SecondsUntilAd, e.AdDuration);
+            DataBot.NotifyAdSoon(Platform.Twitch, e.SecondsUntilAd, e.AdDuration);
         }
 
         #endregion

@@ -229,7 +229,7 @@
                                 Template="{StaticResource CaptionButtonTemplate}"
                                 Click="btnMaximizeRestore_Click"
                                 Height="28" Width="40" />
-                            
+
                             <!-- For close button – nicer × symbol -->
                             <Button x:Name="btnClose"
                                     WindowChrome.IsHitTestVisibleInChrome="True"
@@ -447,354 +447,360 @@
                                     </StackPanel>
 
                                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                        <WrapPanel HorizontalAlignment="Center">
+                                        <WrapPanel HorizontalAlignment="Center" Orientation="Vertical" DataContext="{Binding Mode=OneWay,Source={x:Static s:Settings.Default}}">
+                                            <WrapPanel Orientation="Horizontal">
 
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <!-- EventSub Bot Chat -->
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <GroupBox Header="{DynamicResource Bot_EventSubChat}" 
-                                  x:Name="GroupBox_Twitch_StartBots_EventSubBot">
-                                                <WrapPanel>
-                                                    <Border BorderBrush="{DynamicResource PartBackground}" 
-                                        BorderThickness="2" Margin="5,10">
-                                                        <Grid MinHeight="40" MaxWidth="220">
-                                                            <Grid.Resources>
-                                                                <Style TargetType="{x:Type TextBlock}"
-                                                   BasedOn="{StaticResource {x:Type TextBlock}}">
-                                                                    <Setter Property="TextWrapping" Value="Wrap"/>
-                                                                </Style>
-                                                            </Grid.Resources>
-
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="10"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                            </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="160"/>
-                                                                <ColumnDefinition Width="50"/>
-                                                            </Grid.ColumnDefinitions>
-
-                                                            <TextBlock Text="{DynamicResource Bot_AccessAuthorized_Label}"/>
-                                                            <TextBlock x:Name="TextBlock_EventSubChat_AccessToken_Valid" 
-                                                   Grid.Column="1" 
-                                                   Foreground="{DynamicResource BrightGo}" 
-                                                   Visibility="Collapsed"
-                                                   Text="{DynamicResource Bot_AccessValid}"/>
-                                                            <TextBlock x:Name="TextBlock_EventSubChat_AccessToken_Invalid" 
-                                                   Grid.Column="1" 
-                                                   Foreground="{DynamicResource BrightStop}"
-                                                   Visibility="Visible"
-                                                   Text="{DynamicResource Bot_AccessInvalid}"/>
-
-                                                            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
-                                                   x:Name="TextBlock_EventSubChat_ManualToken_Info" 
-                                                   Foreground="{DynamicResource BrightStop}"
-                                                   Visibility="Visible"
-                                                   Text="{DynamicResource Help_Bot_EventSubChat_ManualToken}"/>
-                                                            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
-                                                   x:Name="TextBlock_EventSubChat_AuthCode_Info" 
-                                                   Foreground="{DynamicResource BrightStop}"
-                                                   Visibility="Collapsed"
-                                                   Text="{DynamicResource Help_Bot_EventSubChat_AuthCode}"/>
-                                                        </Grid>
-                                                    </Border>
-
-                                                    <TextBlock Text="{DynamicResource Bot_EventSubChat_Description}"/>
-
-                                                    <StackPanel Height="45">
-                                                        <Label x:Name="Label_TwitchBot_EventSubBot_Start" Visibility="Collapsed">
-                                                            <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_EventSubChat_Start}" />
-                                                        </Label>
-                                                        <Label x:Name="Label_TwitchBot_EventSubBot_Stop" Visibility="Visible">
-                                                            <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_EventSubChat_Stop}"/>
-                                                        </Label>
-                                                    </StackPanel>
-
-                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
-                                          IsChecked="{Binding TwitchBotEventSubAutoStart}">
-                                                        <TextBlock Text="{DynamicResource Common_AutoStart}"/>
-                                                    </CheckBox>
-
-                                                    <RadioButton DataContext="{Binding TwitchEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                             x:Name="Radio_Twitch_EventSubBotStart" 
-                                             IsEnabled="False" 
-                                             PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Start_EventSubChat}"/>
-                                                    </RadioButton>
-
-                                                    <RadioButton DataContext="{Binding TwitchEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                             x:Name="Radio_Twitch_EventSubBotStop" 
-                                             IsEnabled="False" IsChecked="True" 
-                                             PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Stop_EventSubChat}"/>
-                                                    </RadioButton>
-
-                                                    <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" 
-                                          Width="Auto">
-                                                        <WrapPanel>
-                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchBotEventSubChatConnectOnline}">                                                                
-                                                                <TextBlock Text="{DynamicResource Bot_ConnectWhenOnline}"/>
-                                                            </CheckBox>
-                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
-                                                                      IsChecked="{Binding TwitchBotEventSubChatDisconnectOffline}">
-                                                                <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
-                                                            </CheckBox>
-                                                        </WrapPanel>
-                                                    </GroupBox>
-                                                </WrapPanel>
-                                            </GroupBox>
-
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <!-- EventSub Bot Notifications -->
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <GroupBox Header="{DynamicResource Bot_EventSubNotifications}"
-                                  x:Name="GroupBox_Twitch_StartBots_EventSubStreamer">
-                                                <WrapPanel>
-                                                    <Border BorderBrush="{DynamicResource PartBackground}" 
-                                        BorderThickness="2" Margin="5,10">
-                                                        <Grid MinHeight="40" MaxWidth="220">
-                                                            <Grid.Resources>
-                                                                <Style TargetType="{x:Type TextBlock}">
-                                                                    <Setter Property="TextWrapping" Value="Wrap"/>
-                                                                </Style>
-                                                            </Grid.Resources>
-
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                                <RowDefinition Height="10"/>
-                                                                <RowDefinition Height="Auto"/>
-                                                            </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="170"/>
-                                                                <ColumnDefinition Width="40"/>
-                                                            </Grid.ColumnDefinitions>
-
-                                                            <TextBlock Grid.Row="0" Text="{DynamicResource Bot_AccessAuthorizedScopes_Label}"/>
-                                                            <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_Scopes_Valid" 
-                                                   Grid.Column="1" 
-                                                   Foreground="{DynamicResource BrightGo}" 
-                                                   Visibility="Collapsed"
-                                                   Text="{DynamicResource Bot_AccessValid}"/>
-                                                            <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_Scopes_Invalid" 
-                                                   Grid.Column="1" 
-                                                   Foreground="{DynamicResource BrightStop}"
-                                                   Visibility="Visible"
-                                                   Text="{DynamicResource Bot_AccessInvalid}"/>
-
-                                                            <TextBlock Grid.Row="1" Text="{DynamicResource Bot_AccessAuthorizedNoScopes_Label}"/>
-                                                            <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_NoScopes_Valid" 
-                                                   Grid.Row="1" Grid.Column="1" 
-                                                   Foreground="{DynamicResource BrightGo}" 
-                                                   Visibility="Collapsed"
-                                                   Text="{DynamicResource Bot_AccessValid}"/>
-                                                            <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_NoScopes_Invalid" 
-                                                   Grid.Row="1" Grid.Column="1" 
-                                                   Foreground="{DynamicResource BrightStop}"
-                                                   Visibility="Visible"
-                                                   Text="{DynamicResource Bot_AccessInvalid}"/>
-
-                                                            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
-                                                   x:Name="TextBlock_EventSubNotify_ManualToken_Info" 
-                                                   Foreground="{DynamicResource BrightStop}"
-                                                   Visibility="Visible"
-                                                   Text="{DynamicResource Help_Bot_EventSubNotify_ManualToken}"/>
-                                                            <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
-                                                   x:Name="TextBlock_EventSubNotify_AuthCode_Info" 
-                                                   Foreground="{DynamicResource BrightStop}"
-                                                   Visibility="Collapsed"
-                                                   Text="{DynamicResource Help_Bot_EventSubNotify_AuthCode}"/>
-                                                        </Grid>
-                                                    </Border>
-
-                                                    <TextBlock Text="{DynamicResource Bot_EventSubNotifications_Description}"/>
-
-                                                    <StackPanel Height="45">
-                                                        <Label x:Name="Label_TwitchBot_EventSubStreamer_Start" Visibility="Collapsed">
-                                                            <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_EventSubNotifications_Start}" />
-                                                        </Label>
-                                                        <Label x:Name="Label_TwitchBot_EventSubStreamer_Stop" Visibility="Visible">
-                                                            <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_EventSubNotifications_Stop}" />
-                                                        </Label>
-                                                    </StackPanel>
-
-                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
-                                          IsChecked="{Binding TwitchStreamEventSubAutoStart}">
-                                                        <TextBlock Text="{DynamicResource Common_AutoStart}"/>
-                                                    </CheckBox>
-
-                                                    <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                             x:Name="Radio_Twitch_EventSubStreamerStart" 
-                                             IsEnabled="False" 
-                                             PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Start_EventSubNotifications}"/>
-                                                    </RadioButton>
-
-                                                    <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                             x:Name="Radio_Twitch_EventSubStreamerStop" 
-                                             IsEnabled="False" IsChecked="True" 
-                                             PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Stop_EventSubNotifications}"/>
-                                                    </RadioButton>
-
-                                                    <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" 
-                                          Width="Auto">
-                                                        <WrapPanel>
-                                                            <TextBlock Margin="0, 8" Text="{DynamicResource Bot_EventSubNotifyConnectOnlineDescription}"/>
-
-                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchStreamEventSubNotifyDisconnectOffline}">
-                                                                <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
-                                                            </CheckBox>
-                                                        </WrapPanel>
-                                                    </GroupBox>
-                                                </WrapPanel>
-                                            </GroupBox>
-
-                                            <!-- The other GroupBoxes (Live Monitor, Clip Service, Media Overlay) follow the exact same pattern -->
-
-                                            <GroupBox Header="{DynamicResource Bot_LiveMonitor}">
-                                                <StackPanel Orientation="Vertical">
+                                                <!-- ──────────────────────────────────────────────── -->
+                                                <!-- Service-Media Overlay -->
+                                                <!-- ──────────────────────────────────────────────── -->
+                                                <GroupBox Header="{DynamicResource Bot_MediaOverlay}">
                                                     <WrapPanel>
-                                                        <TextBlock Text="{DynamicResource Bot_LiveMonitor_Description}"/>
-
                                                         <StackPanel Height="45">
-                                                            <Label x:Name="Label_TwitchMultiLive_Start" Visibility="Collapsed">
-                                                                <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_LiveMonitor_Start}" />
+                                                            <Label x:Name="Label_OverlayService_Start" Visibility="Collapsed">
+                                                                <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_MediaOverlay_Start}" />
                                                             </Label>
-                                                            <Label x:Name="Label_TwitchMultiLive_Stop" Visibility="Visible">
-                                                                <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_LiveMonitor_Stop}" />
+                                                            <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
+                                                                <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_MediaOverlay_Stop}" />
                                                             </Label>
                                                         </StackPanel>
+
+                                                        <TextBlock Text="{DynamicResource Help_Overlay_Intro}"/>
 
                                                         <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
-                                              IsChecked="{Binding TwitchLiveStreamSvcAutoStart}">
-                                                            <TextBlock Text="{DynamicResource Common_AutoStart}"/>
+                                          IsChecked="{Binding MediaOverlayAutoStart}">
+                                                            <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                         </CheckBox>
 
-                                                        <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                                 x:Name="Radio_Twitch_LiveBotStart" 
-                                                 IsEnabled="False" 
-                                                 PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
-                                                            <TextBlock Text="{DynamicResource Bot_Start_LiveMonitor}"/>
-                                                        </RadioButton>
-
-                                                        <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                                 x:Name="Radio_Twitch_LiveBotStop" 
-                                                 IsEnabled="False" IsChecked="True" 
-                                                 PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
-                                                            <TextBlock Text="{DynamicResource Bot_Stop_LiveMonitor}"/>
-                                                        </RadioButton>
-                                                    </WrapPanel>
-                                                </StackPanel>
-                                            </GroupBox>
-
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <!-- Streamer-Clip Service -->
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <GroupBox Header="{DynamicResource Bot_ClipService}">
-                                                <WrapPanel>
-                                                    <StackPanel Height="45">
-                                                        <Label x:Name="Label_TwitchClip_Start" Visibility="Collapsed">
-                                                            <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_ClipService_Start}" />
-                                                        </Label>
-                                                        <Label x:Name="Label_TwitchClip_Stop" Visibility="Visible">
-                                                            <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_ClipService_Stop}" />
-                                                        </Label>
-                                                    </StackPanel>
-
-                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
-                                          IsChecked="{Binding TwitchClipAutoStart}">
-                                                        <TextBlock Text="{DynamicResource Common_AutoStart}"/>
-                                                    </CheckBox>
-
-                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                             x:Name="Radio_Twitch_ClipBotStart" 
-                                             IsEnabled="False" 
-                                             PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Start_ClipService}"/>
-                                                    </RadioButton>
-
-                                                    <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" 
-                                             x:Name="Radio_Twitch_ClipBotStop" 
-                                             IsEnabled="False" IsChecked="True" 
-                                             PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Stop_ClipService}"/>
-                                                    </RadioButton>
-
-                                                    <Label x:Name="Label_TwitchClip_Error" Visibility="Collapsed" Height="Auto">
-                                                        <TextBlock Foreground="{DynamicResource Stop}">
-                                        <Run Text="{DynamicResource Bot_ClipService_Error}"/>
-                                                        </TextBlock>
-                                                    </Label>
-
-                                                    <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" Width="Auto">
-                                                        <StackPanel>
-                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
-                                                  IsChecked="{Binding TwitchClipConnectOnline}">
-                                                                <TextBlock Text="{DynamicResource Bot_ConnectWhenOnline}"/>
-                                                            </CheckBox>
-                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
-                                                  IsChecked="{Binding TwitchClipDisconnectOffline}">
-                                                                <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
-                                                            </CheckBox>
-                                                        </StackPanel>
-                                                    </GroupBox>
-                                                </WrapPanel>
-                                            </GroupBox>
-
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <!-- Service-Media Overlay -->
-                                            <!-- ──────────────────────────────────────────────── -->
-                                            <GroupBox Header="{DynamicResource Bot_MediaOverlay}">
-                                                <WrapPanel>
-                                                    <StackPanel Height="45">
-                                                        <Label x:Name="Label_OverlayService_Start" Visibility="Collapsed">
-                                                            <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_MediaOverlay_Start}" />
-                                                        </Label>
-                                                        <Label x:Name="Label_OverlayService_Stop" Visibility="Visible">
-                                                            <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_MediaOverlay_Stop}" />
-                                                        </Label>
-                                                    </StackPanel>
-
-                                                    <TextBlock Text="{DynamicResource Help_Overlay_Intro}"/>
-
-                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
-                                          IsChecked="{Binding MediaOverlayAutoStart}">
-                                                        <TextBlock Text="{DynamicResource Common_AutoStart}" />
-                                                    </CheckBox>
-
-                                                    <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
+                                                        <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
                                              x:Name="Radio_Services_OverlayBotStart" 
                                              IsEnabled="False" 
                                              PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Start_MediaOverlay}"/>
-                                                    </RadioButton>
+                                                            <TextBlock Text="{DynamicResource Bot_Start_MediaOverlay}"/>
+                                                        </RadioButton>
 
-                                                    <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
+                                                        <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}" 
                                              x:Name="Radio_Services_OverlayBotStop" 
                                              IsEnabled="False" IsChecked="True" 
                                              PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
-                                                        <TextBlock Text="{DynamicResource Bot_Stop_MediaOverlay}"/>
-                                                    </RadioButton>
+                                                            <TextBlock Text="{DynamicResource Bot_Stop_MediaOverlay}"/>
+                                                        </RadioButton>
 
-                                                    <Label x:Name="Label_OverlayServer_Error" Visibility="Collapsed" Height="Auto">
-                                                        <TextBlock Foreground="{DynamicResource Stop}">
+                                                        <Label x:Name="Label_OverlayServer_Error" Visibility="Collapsed" Height="Auto">
+                                                            <TextBlock Foreground="{DynamicResource Stop}">
                                         <Run Text="{DynamicResource Bot_MediaOverlay_Error}"/>
-                                                        </TextBlock>
-                                                    </Label>
+                                                            </TextBlock>
+                                                        </Label>
 
-                                                    <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" Width="Auto">
-                                                        <WrapPanel Orientation="Vertical">
-                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                                        <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" Width="Auto">
+                                                            <WrapPanel Orientation="Vertical">
+                                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
                                                   IsChecked="{Binding MediaOverlayStartWithStream}">
-                                                                <TextBlock Text="{DynamicResource Bot_MediaOverlay_StartWithStream}"/>
+                                                                    <TextBlock Text="{DynamicResource Bot_MediaOverlay_StartWithStream}"/>
+                                                                </CheckBox>
+                                                            </WrapPanel>
+                                                        </GroupBox>
+                                                    </WrapPanel>
+                                                </GroupBox>
+                                            </WrapPanel>
+
+                                            <Expander Header="{DynamicResource Bots_Category_Twitch}" IsExpanded="{Binding GUI_BotCategory_Twitch_Expand}" ExpandDirection="Down">
+                                                <WrapPanel>
+                                                    <!-- ──────────────────────────────────────────────── -->
+                                                    <!-- EventSub Bot Chat -->
+                                                    <!-- ──────────────────────────────────────────────── -->
+                                                    <GroupBox Header="{DynamicResource Bot_EventSubChat}" 
+                                x:Name="GroupBox_Twitch_StartBots_EventSubBot">
+                                                        <WrapPanel>
+                                                            <Border BorderBrush="{DynamicResource PartBackground}" 
+                                    BorderThickness="2" Margin="5,10">
+                                                                <Grid MinHeight="40" MaxWidth="220">
+                                                                    <Grid.Resources>
+                                                                        <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                                                        </Style>
+                                                                    </Grid.Resources>
+
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                        <RowDefinition Height="10"/>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                    </Grid.RowDefinitions>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="160"/>
+                                                                        <ColumnDefinition Width="50"/>
+                                                                    </Grid.ColumnDefinitions>
+
+                                                                    <TextBlock Text="{DynamicResource Bot_AccessAuthorized_Label}"/>
+                                                                    <TextBlock x:Name="TextBlock_EventSubChat_AccessToken_Valid" 
+                                                Grid.Column="1" 
+                                                Foreground="{DynamicResource BrightGo}" 
+                                                Visibility="Collapsed"
+                                                Text="{DynamicResource Bot_AccessValid}"/>
+                                                                    <TextBlock x:Name="TextBlock_EventSubChat_AccessToken_Invalid" 
+                                                Grid.Column="1" 
+                                                Foreground="{DynamicResource BrightStop}"
+                                                Visibility="Visible"
+                                                Text="{DynamicResource Bot_AccessInvalid}"/>
+
+                                                                    <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
+                                                x:Name="TextBlock_EventSubChat_ManualToken_Info" 
+                                                Foreground="{DynamicResource BrightStop}"
+                                                Visibility="Visible"
+                                                Text="{DynamicResource Help_Bot_EventSubChat_ManualToken}"/>
+                                                                    <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
+                                                x:Name="TextBlock_EventSubChat_AuthCode_Info" 
+                                                Foreground="{DynamicResource BrightStop}"
+                                                Visibility="Collapsed"
+                                                Text="{DynamicResource Help_Bot_EventSubChat_AuthCode}"/>
+                                                                </Grid>
+                                                            </Border>
+
+                                                            <TextBlock Text="{DynamicResource Bot_EventSubChat_Description}"/>
+
+                                                            <StackPanel Height="45">
+                                                                <Label x:Name="Label_TwitchBot_EventSubBot_Start" Visibility="Collapsed">
+                                                                    <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_EventSubChat_Start}" />
+                                                                </Label>
+                                                                <Label x:Name="Label_TwitchBot_EventSubBot_Stop" Visibility="Visible">
+                                                                    <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_EventSubChat_Stop}"/>
+                                                                </Label>
+                                                            </StackPanel>
+
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                        IsChecked="{Binding TwitchBotEventSubAutoStart}">
+                                                                <TextBlock Text="{DynamicResource Common_AutoStart}"/>
                                                             </CheckBox>
+
+                                                            <RadioButton DataContext="{Binding TwitchEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                            x:Name="Radio_Twitch_EventSubBotStart" 
+                                            IsEnabled="False" 
+                                            PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                                <TextBlock Text="{DynamicResource Bot_Start_EventSubChat}"/>
+                                                            </RadioButton>
+
+                                                            <RadioButton DataContext="{Binding TwitchEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                            x:Name="Radio_Twitch_EventSubBotStop" 
+                                            IsEnabled="False" IsChecked="True" 
+                                            PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
+                                                                <TextBlock Text="{DynamicResource Bot_Stop_EventSubChat}"/>
+                                                            </RadioButton>
+
+                                                            <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" 
+                                        Width="Auto">
+                                                                <WrapPanel>
+                                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchBotEventSubChatConnectOnline}">
+                                                                        <TextBlock Text="{DynamicResource Bot_ConnectWhenOnline}"/>
+                                                                    </CheckBox>
+                                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}"
+                                                                    IsChecked="{Binding TwitchBotEventSubChatDisconnectOffline}">
+                                                                        <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
+                                                                    </CheckBox>
+                                                                </WrapPanel>
+                                                            </GroupBox>
+                                                        </WrapPanel>
+                                                    </GroupBox>
+
+                                                    <!-- ──────────────────────────────────────────────── -->
+                                                    <!-- EventSub Bot Notifications -->
+                                                    <!-- ──────────────────────────────────────────────── -->
+                                                    <GroupBox Header="{DynamicResource Bot_EventSubNotifications}"
+                                x:Name="GroupBox_Twitch_StartBots_EventSubStreamer">
+                                                        <WrapPanel>
+                                                            <Border BorderBrush="{DynamicResource PartBackground}" 
+                                    BorderThickness="2" Margin="5,10">
+                                                                <Grid MinHeight="40" MaxWidth="220">
+                                                                    <Grid.Resources>
+                                                                        <Style TargetType="{x:Type TextBlock}">
+                                                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                                                        </Style>
+                                                                    </Grid.Resources>
+
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                        <RowDefinition Height="10"/>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                    </Grid.RowDefinitions>
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="170"/>
+                                                                        <ColumnDefinition Width="40"/>
+                                                                    </Grid.ColumnDefinitions>
+
+                                                                    <TextBlock Grid.Row="0" Text="{DynamicResource Bot_AccessAuthorizedScopes_Label}"/>
+                                                                    <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_Scopes_Valid" 
+                                                Grid.Column="1" 
+                                                Foreground="{DynamicResource BrightGo}" 
+                                                Visibility="Collapsed"
+                                                Text="{DynamicResource Bot_AccessValid}"/>
+                                                                    <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_Scopes_Invalid" 
+                                                Grid.Column="1" 
+                                                Foreground="{DynamicResource BrightStop}"
+                                                Visibility="Visible"
+                                                Text="{DynamicResource Bot_AccessInvalid}"/>
+
+                                                                    <TextBlock Grid.Row="1" Text="{DynamicResource Bot_AccessAuthorizedNoScopes_Label}"/>
+                                                                    <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_NoScopes_Valid" 
+                                                Grid.Row="1" Grid.Column="1" 
+                                                Foreground="{DynamicResource BrightGo}" 
+                                                Visibility="Collapsed"
+                                                Text="{DynamicResource Bot_AccessValid}"/>
+                                                                    <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_NoScopes_Invalid" 
+                                                Grid.Row="1" Grid.Column="1" 
+                                                Foreground="{DynamicResource BrightStop}"
+                                                Visibility="Visible"
+                                                Text="{DynamicResource Bot_AccessInvalid}"/>
+
+                                                                    <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
+                                                x:Name="TextBlock_EventSubNotify_ManualToken_Info" 
+                                                Foreground="{DynamicResource BrightStop}"
+                                                Visibility="Visible"
+                                                Text="{DynamicResource Help_Bot_EventSubNotify_ManualToken}"/>
+                                                                    <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
+                                                x:Name="TextBlock_EventSubNotify_AuthCode_Info" 
+                                                Foreground="{DynamicResource BrightStop}"
+                                                Visibility="Collapsed"
+                                                Text="{DynamicResource Help_Bot_EventSubNotify_AuthCode}"/>
+                                                                </Grid>
+                                                            </Border>
+
+                                                            <TextBlock Text="{DynamicResource Bot_EventSubNotifications_Description}"/>
+
+                                                            <StackPanel Height="45">
+                                                                <Label x:Name="Label_TwitchBot_EventSubStreamer_Start" Visibility="Collapsed">
+                                                                    <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_EventSubNotifications_Start}" />
+                                                                </Label>
+                                                                <Label x:Name="Label_TwitchBot_EventSubStreamer_Stop" Visibility="Visible">
+                                                                    <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_EventSubNotifications_Stop}" />
+                                                                </Label>
+                                                            </StackPanel>
+
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                        IsChecked="{Binding TwitchStreamEventSubAutoStart}">
+                                                                <TextBlock Text="{DynamicResource Common_AutoStart}"/>
+                                                            </CheckBox>
+
+                                                            <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                            x:Name="Radio_Twitch_EventSubStreamerStart" 
+                                            IsEnabled="False" 
+                                            PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                                <TextBlock Text="{DynamicResource Bot_Start_EventSubNotifications}"/>
+                                                            </RadioButton>
+
+                                                            <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                            x:Name="Radio_Twitch_EventSubStreamerStop" 
+                                            IsEnabled="False" IsChecked="True" 
+                                            PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown">
+                                                                <TextBlock Text="{DynamicResource Bot_Stop_EventSubNotifications}"/>
+                                                            </RadioButton>
+
+                                                            <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" 
+                                        Width="Auto">
+                                                                <WrapPanel>
+                                                                    <TextBlock Margin="0, 8" Text="{DynamicResource Bot_EventSubNotifyConnectOnlineDescription}"/>
+
+                                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" IsChecked="{Binding TwitchStreamEventSubNotifyDisconnectOffline}">
+                                                                        <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
+                                                                    </CheckBox>
+                                                                </WrapPanel>
+                                                            </GroupBox>
+                                                        </WrapPanel>
+                                                    </GroupBox>
+
+                                                    <!-- The other GroupBoxes (Live Monitor, Clip Service, Media Overlay) follow the exact same pattern -->
+
+                                                    <GroupBox Header="{DynamicResource Bot_LiveMonitor}">
+                                                        <StackPanel Orientation="Vertical">
+                                                            <WrapPanel>
+                                                                <TextBlock Text="{DynamicResource Bot_LiveMonitor_Description}"/>
+
+                                                                <StackPanel Height="45">
+                                                                    <Label x:Name="Label_TwitchMultiLive_Start" Visibility="Collapsed">
+                                                                        <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_LiveMonitor_Start}" />
+                                                                    </Label>
+                                                                    <Label x:Name="Label_TwitchMultiLive_Stop" Visibility="Visible">
+                                                                        <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_LiveMonitor_Stop}" />
+                                                                    </Label>
+                                                                </StackPanel>
+
+                                                                <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                            IsChecked="{Binding TwitchLiveStreamSvcAutoStart}">
+                                                                    <TextBlock Text="{DynamicResource Common_AutoStart}"/>
+                                                                </CheckBox>
+
+                                                                <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                                x:Name="Radio_Twitch_LiveBotStart" 
+                                                IsEnabled="False" 
+                                                PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                                    <TextBlock Text="{DynamicResource Bot_Start_LiveMonitor}"/>
+                                                                </RadioButton>
+
+                                                                <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                                x:Name="Radio_Twitch_LiveBotStop" 
+                                                IsEnabled="False" IsChecked="True" 
+                                                PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
+                                                                    <TextBlock Text="{DynamicResource Bot_Stop_LiveMonitor}"/>
+                                                                </RadioButton>
+                                                            </WrapPanel>
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                    <!-- ──────────────────────────────────────────────── -->
+                                                    <!-- Streamer-Clip Service -->
+                                                    <!-- ──────────────────────────────────────────────── -->
+                                                    <GroupBox Header="{DynamicResource Bot_ClipService}">
+                                                        <WrapPanel>
+                                                            <StackPanel Height="45">
+                                                                <Label x:Name="Label_TwitchClip_Start" Visibility="Collapsed">
+                                                                    <TextBlock Foreground="{DynamicResource Go}" Text="{DynamicResource Bot_ClipService_Start}" />
+                                                                </Label>
+                                                                <Label x:Name="Label_TwitchClip_Stop" Visibility="Visible">
+                                                                    <TextBlock Foreground="{DynamicResource Stop}" Text="{DynamicResource Bot_ClipService_Stop}" />
+                                                                </Label>
+                                                            </StackPanel>
+
+                                                            <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                          IsChecked="{Binding TwitchClipAutoStart}">
+                                                                <TextBlock Text="{DynamicResource Common_AutoStart}"/>
+                                                            </CheckBox>
+
+                                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                             x:Name="Radio_Twitch_ClipBotStart" 
+                                             IsEnabled="False" 
+                                             PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown">
+                                                                <TextBlock Text="{DynamicResource Bot_Start_ClipService}"/>
+                                                            </RadioButton>
+
+                                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}" 
+                                             x:Name="Radio_Twitch_ClipBotStop" 
+                                             IsEnabled="False" IsChecked="True" 
+                                             PreviewMouseLeftButtonDown="RadioButton_StopBot_PreviewMouseLeftButtonDown">
+                                                                <TextBlock Text="{DynamicResource Bot_Stop_ClipService}"/>
+                                                            </RadioButton>
+
+                                                            <Label x:Name="Label_TwitchClip_Error" Visibility="Collapsed" Height="Auto">
+                                                                <TextBlock Foreground="{DynamicResource Stop}">
+                                        <Run Text="{DynamicResource Bot_ClipService_Error}"/>
+                                                                </TextBlock>
+                                                            </Label>
+
+                                                            <GroupBox Header="{DynamicResource Bot_ActivatePerOnline_Header}" Width="Auto">
+                                                                <StackPanel>
+                                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                                  IsChecked="{Binding TwitchClipConnectOnline}">
+                                                                        <TextBlock Text="{DynamicResource Bot_ConnectWhenOnline}"/>
+                                                                    </CheckBox>
+                                                                    <CheckBox DataContext="{Binding Mode=OneWay, Source={x:Static s:Settings.Default}}" 
+                                                  IsChecked="{Binding TwitchClipDisconnectOffline}">
+                                                                        <TextBlock Text="{DynamicResource Bot_DisconnectWhenOffline}"/>
+                                                                    </CheckBox>
+                                                                </StackPanel>
+                                                            </GroupBox>
                                                         </WrapPanel>
                                                     </GroupBox>
                                                 </WrapPanel>
-                                            </GroupBox>
+                                            </Expander>
+
 
                                         </WrapPanel>
                                     </ScrollViewer>
@@ -1293,7 +1299,7 @@
                                         Checked="RadioButton_Theme_Checked">
                                                     <TextBlock Text="{DynamicResource Options_Theme_SilverCherry}"/>
                                                 </RadioButton>
-                                                
+
                                                 <RadioButton x:Name="RadioButton_Theme_SpringCherry" GroupName="AppThemeGroup"
                                          IsChecked="{Binding ThemeSpringCherry}" 
                                          Checked="RadioButton_Theme_Checked">
@@ -1348,7 +1354,7 @@
                                                 </RadioButton>
 
                                                 <StackPanel Height="20" />
-                                                
+
                                                 <TextBlock Text="{DynamicResource Options_Theme_Sports_Title}" 
                                                            FontWeight="Bold" Margin="0,0,0,10"/>
 
@@ -1381,7 +1387,7 @@
                      Checked="RadioButton_Theme_Checked">
                                                     <TextBlock Text="{DynamicResource Options_Theme_Hockey}"/>
                                                 </RadioButton>
- 
+
                                                 <RadioButton x:Name="RadioButton_Theme_Soccer" GroupName="AppThemeGroup"
                      IsChecked="{Binding ThemeSoccer}" 
                      Checked="RadioButton_Theme_Checked">
@@ -1796,6 +1802,10 @@
                                   Visibility="Collapsed">
                                                         <TextBlock Text="{DynamicResource Options_Currency_OnlineOnly}"/>
                                                     </CheckBox>
+                                                    <CheckBox Name="CheckBox_CurrencyFilterOnline"
+                                                              IsChecked="{Binding CurrencyFilterOnline, Mode=TwoWay}">
+                                                        <TextBlock Text="{DynamicResource Options_Currency_FilterOnline}"/>
+                                                    </CheckBox>
                                                 </StackPanel>
                                             </GroupBox>
 
@@ -1982,7 +1992,7 @@
                                                                              AllowDrop="True" 
                                                                              IsManipulationEnabled="True" 
                                                                              ScrollViewer.CanContentScroll="True">
-                                                                        
+
                                                                         <ListBox.ItemContainerStyle>
                                                                             <Style TargetType="ListBoxItem">
                                                                                 <EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListBoxItem_Options_RepeatSerialCommandList_PreviewMouseLeftButtonDown"/>
@@ -1990,7 +2000,7 @@
 
                                                                             </Style>
                                                                         </ListBox.ItemContainerStyle>
-                                                                        
+
                                                                         <ListBox.ItemTemplate>
                                                                             <DataTemplate>
                                                                                 <StackPanel Orientation="Horizontal">
@@ -3566,7 +3576,7 @@
                                                                     </DataTemplate>
                                                                 </DataGridTemplateColumn.CellEditingTemplate>
                                                             </DataGridTemplateColumn>
-                                                    <!--CellEditingTemplate="{Binding Mode=OneWay, Source={StaticResource EditCategoryDataTemplate}}"-->
+                                                            <!--CellEditingTemplate="{Binding Mode=OneWay, Source={StaticResource EditCategoryDataTemplate}}"-->
                                                         </DataGrid.Columns>
                                                         <DataGrid.GroupStyle>
                                                             <StaticResource ResourceKey="DataGrid_GroupStyle" />

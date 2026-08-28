@@ -468,6 +468,11 @@ namespace StreamerBotLib.Static
         public static bool CurrencyOnline => Settings.Default.CurrencyOnline;
 
         /// <summary>
+        /// Specifies whether to filter the currency accruals to only show users present within the channel while the stream is live (online).
+        /// </summary>
+        public static bool CurrencyFilterOnline => Settings.Default.CurrencyFilterOnline;
+
+        /// <summary>
         /// Specifies the value where the House stands.
         /// </summary>
         public static int GameBlackJackHouseStands => Settings.Default.GameBlackJackHouseStands;

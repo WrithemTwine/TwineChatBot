@@ -174,7 +174,7 @@ namespace StreamerBotLib.Systems
                 if (Enabled)
                 {
                     LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Sending welcome message.");
-                    SendMessage(
+                    SendMessage(User.Platform,
                         VariableParser.ParseReplace(
                             msg,
                             VariableParser.BuildDictionary(
@@ -324,7 +324,7 @@ namespace StreamerBotLib.Systems
                             new(MsgVars.category, GameName.CategoryName )
                             });
 
-                        SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Raid), Multi);
+                        SendMessage(User.Platform, VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Raid), Multi);
                     }
 
                     CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid.ToString(), User);
@@ -377,6 +377,11 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Detected a new livestream and starting up activities.");
 
             CurrStream = new(); // start over
+
+            if (OptionFlags.CurrencyFilterOnline)
+            {
+                DataManage.StartOnlineCurrencyFilter();
+            }
 
             StartElapsedTimerThread();
 
@@ -443,6 +448,16 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Received notice event the channel livestream is offline.");
             LogWriter.DebugLog("StreamOffline", DebugLogTypes.StatSystem, "Clearing user list with stream end time, to end watchtime & currency accrual.");
+
+            List<LiveUser> CurrViewers = [];
+
+            DataManage.StopOnlineCurrencyFilter();
+
+            lock (StreamViewers)
+            {
+                CurrViewers = StreamViewers.GetCurrentActiveUsers(isRegistered: true);
+            }
+            DataManage.UpdateCurrency(CurrViewers, Stopped);
 
             ClearUserList(Stopped);
 

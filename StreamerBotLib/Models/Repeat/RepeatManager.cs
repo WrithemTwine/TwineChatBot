@@ -68,12 +68,14 @@ namespace StreamerBotLib.Models.Repeat
                  && (!OptionFlags.RepeatAboveChatCount || chats >= OptionFlags.RepeatChatCount) // if chat threshold, check threshold, else, accept the check
                  )
             {
+                // TODO: fix repeat command platform - probably setup a new data table for messages across platforms to handle cross-platform repeat commands
                 if (e.platform == Platform.Twitch)
                 {
                     LogWriter.DebugLog("RepeatEventOccured", DebugLogTypes.RepeatCommandSystem, $"Perform the repeat command: {e.Command}.");
                     CommandData currCommand = ActionSystem.DataManage.GetCommand(e.Command);
                     OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs()
                     {
+                        Platform = e.platform,
                         Message = _actionsystem.ParseCommand(
                                                e.Command,
                                                new(OptionFlags.TwitchBotUserName, e.platform),

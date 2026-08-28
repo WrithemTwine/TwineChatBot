@@ -70,7 +70,7 @@ namespace StreamerBotLib.DataSQL
 
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
-            LogWriter.DebugLog("_dataManager_OnDataCollectionUpdated", DebugLogTypes.DataManager, "OnDataCollectionUpdated event triggered.");
+            LogWriter.DebugLog("_dataManager_OnDataCollectionUpdated", DebugLogTypes.DataManager, $"OnDataCollectionUpdated event triggered, {e.DatabaseModelName} table.");
             OnDataCollectionUpdated?.Invoke(this, e);
         }
 
@@ -1219,6 +1219,18 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        public void StartOnlineCurrencyFilter()
+        {
+            LogWriter.DebugLog("StartOnlineCurrencyFilter", DebugLogTypes.DataManager, "Starting online currency filter.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.StartOnlineCurrencyFilter();
+                });
+            }
+        }
+
         public void UpdateCurrency(List<LiveUser> Users, DateTime dateTime)
         {
             LogWriter.DebugLog("UpdateCurrency", DebugLogTypes.DataManager, "Updating currency.");
@@ -1227,6 +1239,18 @@ namespace StreamerBotLib.DataSQL
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
                     await _dataManager.UpdateCurrency(Users, dateTime);
+                });
+            }
+        }
+
+        public void StopOnlineCurrencyFilter()
+        {
+            LogWriter.DebugLog("StopOnlineCurrencyFilter", DebugLogTypes.DataManager, "Stopping online currency filter.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.StopOnlineCurrencyFilter();
                 });
             }
         }
@@ -1304,7 +1328,7 @@ namespace StreamerBotLib.DataSQL
 
         public void UserLeft(LiveUser User, DateTime LastSeen)
         {
-            LogWriter.DebugLog("UserLeft", DebugLogTypes.DataManager, "User left.");
+            LogWriter.DebugLog("UserLeft", DebugLogTypes.DataManager, $"User, {User.UserName}, left.");
             lock (GUIDataManagerLock.Lock)
             {
                 ThreadManager.AddTaskToGUIDispatcher(async () =>

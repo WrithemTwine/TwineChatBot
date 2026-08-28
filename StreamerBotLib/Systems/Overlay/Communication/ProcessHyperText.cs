@@ -69,6 +69,7 @@ namespace StreamerBotLib.Systems.Overlay.Communication
             }
 
             string Media = string.Empty;
+            string ClipStyles = string.Empty;
 
             Dictionary<string, string> audio = new() { { ".mp3", "audio/mpeg" }, { ".wav", "audio/wav" } };
             Dictionary<string, string> video = new() { { ".mp4", "video/mp4" }, { ".webm", "video/webm" }, { ".ogg", "video/ogg" } };
@@ -82,11 +83,32 @@ namespace StreamerBotLib.Systems.Overlay.Communication
             if (overlayActionType.OverlayType == OverlayTypes.Commands && overlayActionType.ActionValue == DefaultCommand.so.ToString())
             {
                 ShoutClip = true;
-                Media = new XElement("iframe",
-                            new XAttribute("src", overlayActionType.MediaFile + $"&muted=false&parent=localhost&autoplay=true"),
-                            new XAttribute("height", OptionFlags.MediaOverlayClipHeight),
-                            new XAttribute("width", OptionFlags.MediaOverlayClipWidth)
-                    ).ToString();
+                string clipUrl = overlayActionType.MediaFile;
+
+                if (string.IsNullOrEmpty(clipUrl))
+                {
+                    Media = "<div style='color:red;padding:20px;'>No clip URL provided</div>";
+                }
+                else
+                {
+                    if (!clipUrl.Contains("?")) clipUrl += "?";
+                    else clipUrl += "&autoplay=true&parent=localhost";   // only parent is strictly required
+
+                    Media = $@"
+    <iframe id='twitchclip' 
+            src='{clipUrl}' 
+            allow=""autoplay; fullscreen""
+            allowfullscreen>
+    </iframe>";
+                }
+
+                ClipStyles = @"
+iframe {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border: none;
+}";
             }
             else if (overlayActionType.MediaFile.Contains("http"))
             {
@@ -104,7 +126,7 @@ namespace StreamerBotLib.Systems.Overlay.Communication
             string Msg = $"<div class=\"message\">{overlayActionType.Message}</div>";
 
             ImageHyperText = ProcessPage(overlayStyle.OverlayStyleText, Img, overlayActionType.Duration);
-            VideoHyperText = ProcessPage(overlayStyle.OverlayStyleText, Media, overlayActionType.Duration, Media != "" && !ShoutClip);
+            VideoHyperText = ProcessPage(overlayStyle.OverlayStyleText + ClipStyles, Media, overlayActionType.Duration, Media != "" && !ShoutClip);
 
             return ProcessPage(overlayStyle.OverlayStyleText, Msg, overlayActionType.Duration);
         }

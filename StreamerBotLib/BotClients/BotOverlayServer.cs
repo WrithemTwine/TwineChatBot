@@ -9,6 +9,8 @@ namespace StreamerBotLib.BotClients
 {
     public class BotOverlayServer : IOModule, IBotTypes
     {
+        public Platform Platform { get; set; } = Platform.Service;
+
         /// <summary>
         /// Interface handler, primarily for emitting events to BotController - this bot doesn't use.
         /// </summary>

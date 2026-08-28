@@ -155,7 +155,7 @@
     <system:String x:Key="Bot_Stop_EventSubNotifications">Stop EventSub Bot</system:String>
 
     --><!-- Help messages (move to GUI_HelpMsgs.xaml if you prefer) --><!--
-    <system:String x:Key="Help_Bots_UsageInfo">The bot credentials form needs to be completed with at least client id and access token.\nThe LiveStreamMonitor Service monitors multiple channels for live status.\nFor optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.\nChanging the Twitch username and/or password can invalidate the access token.\nStart and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being active, as it awaits for a new 'Stream Online' event.</system:String>
+    <system:String x:Key="Help_Bots_UsageInfo">The bot credentials form needs to be completed with at least client id and access token.&#10;The LiveStreamMonitor Service monitors multiple channels for live status.&#10;For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.&#10;Changing the Twitch username and/or password can invalidate the access token.&#10;Start and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being active, as it awaits for a new 'Stream Online' event.</system:String>
 
     <system:String x:Key="Help_Bot_EventSubNotify_ManualToken">Use the updated access scopes and obtain a new access token.</system:String>
     <system:String x:Key="Help_Bot_EventSubNotify_AuthCode">Use the "Authorize Token" button on Twitch tab to re-authorize the app.</system:String>
@@ -530,7 +530,7 @@
     <system:String x:Key="Data_Moderation_SubHeader">Moderation</system:String>
 
     --><!-- Webhooks --><!--
-    <system:String x:Key="Data_Webhooks_Instructions">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.\nUse 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.</system:String>
+    <system:String x:Key="Data_Webhooks_Instructions">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.&#10;Use 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.</system:String>
     <system:String x:Key="Data_Webhooks_Id_Column">Id</system:String>
     <system:String x:Key="Data_Webhooks_AddEveryone_Column">Add @Everyone</system:String>
     <system:String x:Key="Data_Webhooks_Source_Column">Webhook Source</system:String>
@@ -539,18 +539,18 @@
 
     --><!-- Moderation --><!--
     <system:String x:Key="Data_Moderation_UserApprove_SubHeader">User Approve</system:String>
-    <system:String x:Key="Data_Moderation_UserApprove_Instructions">Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.\nModActionType-the type of defined action-a command, channel point redeem, etc\nModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro\nModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.\nModPerformAction-the name of the action to perform once approved\nThe default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".</system:String>
+    <system:String x:Key="Data_Moderation_UserApprove_Instructions">Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.&#10;ModActionType-the type of defined action-a command, channel point redeem, etc&#10;ModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro&#10;ModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.&#10;ModPerformAction-the name of the action to perform once approved&#10;The default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".</system:String>
     <system:String x:Key="Data_Moderation_ModActionType_Column">ModActionType</system:String>
     <system:String x:Key="Data_Moderation_ModActionName_Column">ModActionName</system:String>
     <system:String x:Key="Data_Moderation_ModPerformType_Column">ModPerformType</system:String>
     <system:String x:Key="Data_Moderation_ModPerformAction_Column">ModPerformAction</system:String>
 
     <system:String x:Key="Data_Moderation_MsgMod_SubHeader">Msg Mod</system:String>
-    <system:String x:Key="Data_Moderation_MsgMod_Instructions">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified.\nThis procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment.\nCaution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</system:String>
+    <system:String x:Key="Data_Moderation_MsgMod_Instructions">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified.&#10;This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment.&#10;Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</system:String>
     <system:String x:Key="Data_Mod_Id_Column">Id</system:String>
     <system:String x:Key="Data_Mod_MsgType_Column">Msg Type</system:String>
     <system:String x:Key="Data_Mod_BanReason_Column">BanReason</system:String>
-    <system:String x:Key="Data_Mod_TimeoutNote">Timeout is marked in seconds, minimum is 1 and max is 1,209,600 (2 weeks).\nWhen 'ModAction' is set to 'Ban', the timeout isn't used.\nIt's probable sometimes messages from long term followers/users are a little more tolerable than new arrivals, options provided for to help with this.</system:String>
+    <system:String x:Key="Data_Mod_TimeoutNote">Timeout is marked in seconds, minimum is 1 and max is 1,209,600 (2 weeks).&#10;When 'ModAction' is set to 'Ban', the timeout isn't used.&#10;It's probable sometimes messages from long term followers/users are a little more tolerable than new arrivals, options provided for to help with this.</system:String>
     <system:String x:Key="Data_Mod_ModAction_Column">ModAction</system:String>
     <system:String x:Key="Data_Mod_TimeoutSecs_Column">Timeout Secs</system:String>
     <system:String x:Key="Data_Mod_ViewerTypes_Column">Viewer Types</system:String>
@@ -603,7 +603,7 @@
     
     --><!-- Quotes (if not already added) --><!--
     <system:String x:Key="Data_Quotes_SubHeader">Quotes</system:String>
-    <system:String x:Key="Data_Quotes_Instructions">Quotes are saved from chat messages with !quote or !addquote commands.\nThe 'Cited By' column is the user who added the quote (not necessarily the original speaker).\nQuotes can be used in other commands with $quote(#) or $randomquote.</system:String>
+    <system:String x:Key="Data_Quotes_Instructions">Quotes are saved from chat messages with !quote or !addquote commands.&#10;The 'Cited By' column is the user who added the quote (not necessarily the original speaker).&#10;Quotes can be used in other commands with $quote(#) or $randomquote.</system:String>
     <system:String x:Key="Data_Quotes_Number_Column">Number</system:String>
     <system:String x:Key="Data_Quotes_Quote_Column">Quote</system:String>
     <system:String x:Key="Data_Quotes_CitedBy_Column">Cited By</system:String>
@@ -622,7 +622,7 @@
 
     --><!-- Giveaways --><!--
     <system:String x:Key="Data_Giveaways_SubHeader">Giveaways</system:String>
-    <system:String x:Key="Data_Giveaways_SetupNote">Setup Giveaways!\nBe sure to start "Twitch Chat Client" bot to read channel points, viewer entries, and provide giveaway details and winner(s) to viewers.</system:String>
+    <system:String x:Key="Data_Giveaways_SetupNote">Setup Giveaways!&#10;Be sure to start "Twitch Chat Client" bot to read channel points, viewer entries, and provide giveaway details and winner(s) to viewers.</system:String>
     <system:String x:Key="Data_Giveaways_Condition_Header">Select Giveaway Condition</system:String>
     <system:String x:Key="Data_Giveaways_Condition_Tooltip">Select the "Command" or "Channel Points" item a viewer uses to enter the giveaway.</system:String>
     <system:String x:Key="Data_Giveaways_Command_Label">Command</system:String>
@@ -642,13 +642,13 @@
     <system:String x:Key="Data_Giveaways_EndMessage_Label">Giveaway end message:</system:String>
     <system:String x:Key="Data_Giveaways_WinnerMessage_Label">Winner Message (#winner):</system:String>
     <system:String x:Key="Data_Giveaways_CurrentEntrants_Label">Current Giveaway Entrants:</system:String>
-    <system:String x:Key="Data_Giveaways_ResultsNote">Results of prior Giveaways recorded here!\nData management is enabled or disabled in the Options tab.</system:String>
+    <system:String x:Key="Data_Giveaways_ResultsNote">Results of prior Giveaways recorded here!&#10;Data management is enabled or disabled in the Options tab.</system:String>
     <system:String x:Key="Data_Giveaways_DateTime_Column">Date Time</system:String>
 
     --><!-- System Events --><!--
     <system:String x:Key="Data_SystemEvents_SubHeader">System Events</system:String>
-    <system:String x:Key="Data_SystemEvents_Instructions">These are system-level events (stream start/end, bot connect/disconnect, etc.) that can trigger messages or actions.\nEnable/disable individual events, add /me, announce in chat, or set custom repeat messages.\nUse $variable syntax for dynamic content (e.g. $streamtitle, $uptime, $category).</system:String>
-    <system:String x:Key="Data_SystemEvents_Tooltip">Double-click a row to edit the message or variables.\nSome events only trigger when the relevant bot/service is running (e.g. EventSub for stream online/offline).</system:String>
+    <system:String x:Key="Data_SystemEvents_Instructions">These are system-level events (stream start/end, bot connect/disconnect, etc.) that can trigger messages or actions.&#10;Enable/disable individual events, add /me, announce in chat, or set custom repeat messages.&#10;Use $variable syntax for dynamic content (e.g. $streamtitle, $uptime, $category).</system:String>
+    <system:String x:Key="Data_SystemEvents_Tooltip">Double-click a row to edit the message or variables.&#10;Some events only trigger when the relevant bot/service is running (e.g. EventSub for stream online/offline).</system:String>
     <system:String x:Key="Data_SystemEvents_Name_Column">Event Name</system:String>
     <system:String x:Key="Data_SystemEvents_AddMe_Column">/me</system:String>
     <system:String x:Key="Data_SystemEvents_Announce_Column">Announce</system:String>
@@ -663,7 +663,7 @@
     <system:String x:Key="Data_Commands_Help_BuiltInNote">Built-in commands are always enabled and cannot be deleted or renamed. They are core to bot operation.</system:String>
     <system:String x:Key="Data_Commands_ViewerTypes_Label">Viewer Types</system:String>
     <system:String x:Key="Data_Commands_ViewerTypes_Tooltip">These are permission levels for commands. Set in the 'Permission' column.</system:String>
-    <system:String x:Key="Data_Commands_ViewerTypes_Explanation">Everyone - any viewer\nFollower - followers only\nSubscriber - subs only\nVIP - VIPs only\nModerator - mods only\nBroadcaster - streamer only\nCustom - use custom role list</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Explanation">Everyone - any viewer&#10;Follower - followers only&#10;Subscriber - subs only&#10;VIP - VIPs only&#10;Moderator - mods only&#10;Broadcaster - streamer only&#10;Custom - use custom role list</system:String>
 
     <system:String x:Key="Data_Commands_Category_Column">Category</system:String>
     <system:String x:Key="Data_Commands_Command_Column">Command</system:String>
@@ -696,7 +696,7 @@
     <system:String x:Key="Data_Overlays_SubHeader">Overlays</system:String>
     <system:String x:Key="Data_Overlays_Events_SubHeader">Events</system:String>
     <system:String x:Key="Data_Overlays_Events_Header">Overlay Events Help</system:String>
-    <system:String x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).\nDuration is in seconds.\nImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.\nUseChatMsg = show message in chat when triggered.\nUserName = optional filter for specific user triggering the event.</system:String>
+    <system:String x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).&#10;Duration is in seconds.&#10;ImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.&#10;UseChatMsg = show message in chat when triggered.&#10;UserName = optional filter for specific user triggering the event.</system:String>
     <system:String x:Key="Data_Overlays_Type_Column">Type</system:String>
     <system:String x:Key="Data_Overlays_Action_Column">Action</system:String>
     <system:String x:Key="Data_Overlays_Duration_Column">Duration (s)</system:String>
@@ -885,6 +885,8 @@
     <!--                     Bots Tab                                  -->
     <!-- ============================================================= -->
 
+    <system:String x:Key="Bots_Category_Twitch">Platform-Twitch</system:String>
+    
     <system:String x:Key="Bots_TabHeader">Bots</system:String>
     <system:String x:Key="Bots_StartAll">Start All Bots</system:String>
     <system:String x:Key="Bots_StopAll">Stop All Bots</system:String>
@@ -946,7 +948,7 @@
     <system:String x:Key="Bot_DisconnectWhenOffline">Disconnect when stream is offline</system:String>
 
     <system:String x:Key="Bots_UsageInfo_Header">Bot Usage Info</system:String>
-    <system:String x:Key="Help_Bots_UsageInfo">The bot credentials form needs to be completed with at least client id and access token.\nThe LiveStreamMonitor Service monitors multiple channels for live status.\nFor optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.\nChanging the Twitch username and/or password can invalidate the access token.\nStart and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being active, as it awaits for a new 'Stream Online' event.</system:String>
+    <system:String x:Key="Help_Bots_UsageInfo">The bot credentials form needs to be completed with at least client id and access token.&#10;The LiveStreamMonitor Service monitors multiple channels for live status.&#10;For optimal operation, don't turn start and stop the bots rapidly - allow some time between each operation.&#10;Changing the Twitch username and/or password can invalidate the access token.&#10;Start and Stop certain bots when stream goes online! Depends on Streamer-EventSub Bot being active, as it awaits for a new 'Stream Online' event.</system:String>
 
     <!-- ============================================================= -->
     <!--                     Twitch Tab                                -->
@@ -1155,6 +1157,7 @@
     <system:String x:Key="Options_Currency_Header">Currency System</system:String>
     <system:String x:Key="Options_Currency_Enable">Enable Currency Accrual - still permits adding currencies</system:String>
     <system:String x:Key="Options_Currency_OnlineOnly">Enable Currency Accrual only when Streaming Online</system:String>
+    <system:String x:Key="Options_Currency_FilterOnline">Enable, when stream is online, to view the currency accrual for active viewers.</system:String>
 
     <!-- Options → Welcome -->
     <system:String x:Key="Options_Welcome_Header">Welcome Viewers</system:String>
@@ -1321,7 +1324,7 @@
     <system:String x:Key="Data_MultiLive_SubHeader">MultiLive Monitor</system:String>
 
     <!-- Webhooks -->
-    <system:String x:Key="Data_Webhooks_Instructions">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.\nUse 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.</system:String>
+    <system:String x:Key="Data_Webhooks_Instructions">Add Webhook links, one per line. Bot will report notifications to each Webhook. *The incorrect 'Kind' will prevent the notification.&#10;Use 'AddEveryone'=true (checkmark) to replace #everyone with @everyone, but 'AddEveryone'=false removes 'everyone' from message, some servers don't permit full notification tagging.</system:String>
     <system:String x:Key="Data_Webhooks_Id_Column">Id</system:String>
     <system:String x:Key="Data_Webhooks_AddEveryone_Column">Add @Everyone</system:String>
     <system:String x:Key="Data_Webhooks_Source_Column">Webhook Source</system:String>
@@ -1330,18 +1333,18 @@
 
     <!-- Moderation -->
     <system:String x:Key="Data_Moderation_UserApprove_SubHeader">User Approve</system:String>
-    <system:String x:Key="Data_Moderation_UserApprove_Instructions">Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.\nModActionType-the type of defined action-a command, channel point redeem, etc\nModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro\nModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.\nModPerformAction-the name of the action to perform once approved\nThe default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".</system:String>
+    <system:String x:Key="Data_Moderation_UserApprove_Instructions">Use this tab to establish the moderator+ limited actions a user requests and requires mod approval to perform.&#10;ModActionType-the type of defined action-a command, channel point redeem, etc&#10;ModActionName-the name of the action based on the type. e.g. Type=command, Name=setuserintro&#10;ModPerformType-the type of action to perform, to specify a name that may exist in different contexts, e.g. a command-!raid.&#10;ModPerformAction-the name of the action to perform once approved&#10;The default channel point approval takes user supplied text and submits it to a specific command, eg. "!command 'username' 'channelpoint text'".</system:String>
     <system:String x:Key="Data_Moderation_ModActionType_Column">ModActionType</system:String>
     <system:String x:Key="Data_Moderation_ModActionName_Column">ModActionName</system:String>
     <system:String x:Key="Data_Moderation_ModPerformType_Column">ModPerformType</system:String>
     <system:String x:Key="Data_Moderation_ModPerformAction_Column">ModPerformAction</system:String>
 
     <system:String x:Key="Data_Moderation_MsgMod_SubHeader">Msg Mod</system:String>
-    <system:String x:Key="Data_Moderation_MsgMod_Instructions">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified.\nThis procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment.\nCaution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</system:String>
+    <system:String x:Key="Data_Moderation_MsgMod_Instructions">Use this tab to manage bot moderation settings, such as banning users based on their chat messages or chat activity. To identify a message for action, the bot needs a group of similar messages so a new message can be reviewed and identified.&#10;This procedure uses Machine Learning (hence the 'training'); and uses "BagOfWords" to convert messages (strings into number vectors) such that the "Naive Bayes" classifier can probabilistically determine if a message falls within the same range of trained messages already identified as spam or harrassment.&#10;Caution, the messages of hate and spam need to be included here so similar message can be identified as hate or spam.</system:String>
     <system:String x:Key="Data_Mod_Id_Column">Id</system:String>
     <system:String x:Key="Data_Mod_MsgType_Column">Msg Type</system:String>
     <system:String x:Key="Data_Mod_BanReason_Column">BanReason</system:String>
-    <system:String x:Key="Data_Mod_TimeoutNote">Timeout is marked in seconds, minimum is 1 and max is 1,209,600 (2 weeks).\nWhen 'ModAction' is set to 'Ban', the timeout isn't used.\nIt's probable sometimes messages from long term followers/users are a little more tolerable than new arrivals, options provided for to help with this.</system:String>
+    <system:String x:Key="Data_Mod_TimeoutNote">Timeout is marked in seconds, minimum is 1 and max is 1,209,600 (2 weeks).&#10;When 'ModAction' is set to 'Ban', the timeout isn't used.&#10;It's probable sometimes messages from long term followers/users are a little more tolerable than new arrivals, options provided for to help with this.</system:String>
     <system:String x:Key="Data_Mod_ModAction_Column">ModAction</system:String>
     <system:String x:Key="Data_Mod_TimeoutSecs_Column">Timeout Secs</system:String>
     <system:String x:Key="Data_Mod_ViewerTypes_Column">Viewer Types</system:String>
@@ -1386,7 +1389,7 @@
     <system:String x:Key="Data_Currency_Blackjack_PayoutMessage">Payout Message (use #value):</system:String>
 
     <!-- Giveaways -->
-    <system:String x:Key="Data_Giveaways_SetupNote">Setup Giveaways!\nBe sure to start "Twitch Chat Client" bot to read channel points, viewer entries, and provide giveaway details and winner(s) to viewers.</system:String>
+    <system:String x:Key="Data_Giveaways_SetupNote">Setup Giveaways!&#10;Be sure to start "Twitch Chat Client" bot to read channel points, viewer entries, and provide giveaway details and winner(s) to viewers.</system:String>
     <system:String x:Key="Data_Giveaways_Condition_Header">Select Giveaway Condition</system:String>
     <system:String x:Key="Data_Giveaways_Condition_Tooltip">Select the "Command" or "Channel Points" item a viewer uses to enter the giveaway.</system:String>
     <system:String x:Key="Data_Giveaways_Command_Label">Command</system:String>
@@ -1406,11 +1409,11 @@
     <system:String x:Key="Data_Giveaways_EndMessage_Label">Giveaway end message:</system:String>
     <system:String x:Key="Data_Giveaways_WinnerMessage_Label">Winner Message (#winner):</system:String>
     <system:String x:Key="Data_Giveaways_CurrentEntrants_Label">Current Giveaway Entrants:</system:String>
-    <system:String x:Key="Data_Giveaways_ResultsNote">Results of prior Giveaways recorded here!\nData management is enabled or disabled in the Options tab.</system:String>
+    <system:String x:Key="Data_Giveaways_ResultsNote">Results of prior Giveaways recorded here!&#10;Data management is enabled or disabled in the Options tab.</system:String>
     <system:String x:Key="Data_Giveaways_DateTime_Column">Date Time</system:String>
 
     <!-- Quotes -->
-    <system:String x:Key="Data_Quotes_Instructions">Quotes are saved from chat messages with !quote or !addquote commands.\nThe 'Cited By' column is the user who added the quote (not necessarily the original speaker).\nQuotes can be used in other commands with $quote(#) or $randomquote.</system:String>
+    <system:String x:Key="Data_Quotes_Instructions">Quotes are saved from chat messages with !quote or !addquote commands.&#10;The 'Cited By' column is the user who added the quote (not necessarily the original speaker).&#10;Quotes can be used in other commands with $quote(#) or $randomquote.</system:String>
     <system:String x:Key="Data_Quotes_Number_Column">Number</system:String>
     <system:String x:Key="Data_Quotes_Quote_Column">Quote</system:String>
 
@@ -1426,8 +1429,8 @@
     <system:String x:Key="Data_AutoSO_Message_Column">Message</system:String>
 
     <!-- System Events -->
-    <system:String x:Key="Data_SystemEvents_Instructions">These are system-level events (stream start/end, bot connect/disconnect, etc.) that can trigger messages or actions.\nEnable/disable individual events, add /me, announce in chat, or set custom repeat messages.\nUse $variable syntax for dynamic content (e.g. $streamtitle, $uptime, $category).</system:String>
-    <system:String x:Key="Data_SystemEvents_Tooltip">Double-click a row to edit the message or variables.\nSome events only trigger when the relevant bot/service is running (e.g. EventSub for stream online/offline).</system:String>
+    <system:String x:Key="Data_SystemEvents_Instructions">These are system-level events (stream start/end, bot connect/disconnect, etc.) that can trigger messages or actions.&#10;Enable/disable individual events, add /me, announce in chat, or set custom repeat messages.&#10;Use $variable syntax for dynamic content (e.g. $streamtitle, $uptime, $category).</system:String>
+    <system:String x:Key="Data_SystemEvents_Tooltip">Double-click a row to edit the message or variables.&#10;Some events only trigger when the relevant bot/service is running (e.g. EventSub for stream online/offline).</system:String>
     <system:String x:Key="Data_SystemEvents_Name_Column">Event Name</system:String>
     <system:String x:Key="Data_SystemEvents_AddMe_Column">/me</system:String>
     <system:String x:Key="Data_SystemEvents_Announce_Column">Announce</system:String>
@@ -1440,7 +1443,7 @@
     <system:String x:Key="Data_Commands_Help_BuiltInNote">Built-in commands are always enabled and cannot be deleted or renamed. They are core to bot operation.</system:String>
     <system:String x:Key="Data_Commands_ViewerTypes_Label">Viewer Types</system:String>
     <system:String x:Key="Data_Commands_ViewerTypes_Tooltip">These are permission levels for commands. Set in the 'Permission' column.</system:String>
-    <system:String x:Key="Data_Commands_ViewerTypes_Explanation">Everyone - any viewer\nFollower - followers only\nSubscriber - subs only\nVIP - VIPs only\nModerator - mods only\nBroadcaster - streamer only\nCustom - use custom role list</system:String>
+    <system:String x:Key="Data_Commands_ViewerTypes_Explanation">Everyone - any viewer&#10;Follower - followers only&#10;Subscriber - subs only&#10;VIP - VIPs only&#10;Moderator - mods only&#10;Broadcaster - streamer only&#10;Custom - use custom role list</system:String>
 
     <system:String x:Key="Data_Commands_BuiltIn_SubHeader">Built-In</system:String>
     <!-- Commands tab - Built-In -->
@@ -1464,7 +1467,7 @@
     <!-- Overlays tab -->
     <system:String x:Key="Data_Overlays_Events_SubHeader">Events</system:String>
     <system:String x:Key="Data_Overlays_Events_Header">Overlay Events Help</system:String>
-    <system:String x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).\nDuration is in seconds.\nImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.\nUseChatMsg = show message in chat when triggered.\nUserName = optional filter for specific user triggering the event.</system:String>
+    <system:String x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).&#10;Duration is in seconds.&#10;ImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.&#10;UseChatMsg = show message in chat when triggered.&#10;UserName = optional filter for specific user triggering the event.</system:String>
 
     <system:String x:Key="Data_Overlays_Type_Column">Type</system:String>
     <system:String x:Key="Data_Overlays_Action_Column">Action</system:String>

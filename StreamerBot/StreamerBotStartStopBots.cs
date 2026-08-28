@@ -134,7 +134,10 @@ namespace StreamerBot
         {
             foreach (var B in BotOps)
             {
-                DispatchStopBot(B.Item3.DataContext as IOModule);
+                if ((B.Item3.DataContext as IOModule).IsActive == true)
+                {
+                    DispatchStopBot(B.Item3.DataContext as IOModule);
+                }
             }
         }
 

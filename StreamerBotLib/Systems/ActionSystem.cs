@@ -381,16 +381,16 @@ namespace StreamerBotLib.Systems
         private void Command_ProcessedCommand(object sender, PostChannelMessageEventArgs e)
         {
             LogWriter.DebugLog("Command_ProcessedCommand", DebugLogTypes.SystemController, "Processing command message.");
-            SendMessage(e.Msg, e.Announcement, e.RepeatMsg);
+            SendMessage(e.Platform, e.Msg, e.Announcement, e.RepeatMsg);
         }
 
-        private void SendMessage(string message, bool Announcement = false, int Repeat = 0)
+        private void SendMessage(Platform platform, string message, bool Announcement = false, int Repeat = 0)
         {
             LogWriter.DebugLog("SendMessage", DebugLogTypes.SystemController, "Sending message.");
             if (message is not "" and not "/me ")
             {
                 LogWriter.DebugLog("SendMessage", DebugLogTypes.SystemController, $"Sending message: {message}");
-                PostChannelMessage?.Invoke(this, new() { Msg = message, Announcement = Announcement, RepeatMsg = Repeat });
+                PostChannelMessage?.Invoke(this, new() { Platform = platform, Msg = message, Announcement = Announcement, RepeatMsg = Repeat });
             }
         }
 
@@ -531,12 +531,12 @@ namespace StreamerBotLib.Systems
                 catch (InvalidOperationException InvalidOp)
                 {
                     LogWriter.LogException(InvalidOp, "ProcessCommand");
-                    SendMessage(InvalidOp.Message);
+                    SendMessage(Source, InvalidOp.Message);
                 }
                 catch (NullReferenceException NullRef)
                 {
                     LogWriter.LogException(NullRef, "ProcessCommand");
-                    SendMessage(NullRef.Message);
+                    SendMessage(Source, NullRef.Message);
                 }
                 catch (Exception ex)
                 {
@@ -558,7 +558,7 @@ namespace StreamerBotLib.Systems
                 //    x++;
                 //} while (x <= e.RepeatMsg);
 
-                SendMessage(e.Message, e.Announcement, e.RepeatMsg);
+                SendMessage(e.Platform, e.Message, e.Announcement, e.RepeatMsg);
             }
             UpdatedStat(StreamStatType.AutoCommands);
         }
@@ -595,7 +595,7 @@ namespace StreamerBotLib.Systems
                                 new(MsgVars.bits, FormatData.Plurality(Bits, MsgVars.Pluralbits) )
                             });
 
-                            SendMessage(VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Bits), Multi);
+                            SendMessage(User.Platform, VariableParser.ParseReplace(msg, dictionary), DataManage.GetEventAnnounce(ChannelEventActions.Bits), Multi);
 
                             UpdatedStat(StreamStatType.Bits, Bits);
                             UpdatedStat(StreamStatType.AutoEvents);
@@ -626,11 +626,11 @@ namespace StreamerBotLib.Systems
                 {
                     if (action.Item1 is ModActions.Ban or ModActions.Timeout)
                     {
-                        SendMessage($"Moderator should {action.Item1} User for {action.Item4} due to {action.Item3} message.");
+                        SendMessage(User.Platform, $"Moderator should {action.Item1} User for {action.Item4} due to {action.Item3} message.");
                     }
                     else if (action.Item3 == MsgTypes.LearnMore)
                     {
-                        SendMessage("I am unable to make a determination. Please teach me more so I can better decide.");
+                        SendMessage(User.Platform, "I am unable to make a determination. Please teach me more so I can better decide.");
                     }
                 }
                 else if (OptionFlags.ModerateUsersAction)
@@ -804,7 +804,7 @@ namespace StreamerBotLib.Systems
                                 {
                                     LogWriter.DebugLog("ProcessFollow", DebugLogTypes.SystemController, "Sending message about user.");
                                     string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, f.FromUserName) }));
-                                    SendMessage(message);
+                                    SendMessage(f.FromUser.Platform, message);
 
                                     CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), f.FromUser, UserMsg: message);
                                 }
@@ -829,7 +829,7 @@ namespace StreamerBotLib.Systems
                         while (i * Pick < UserList.Count)
                         {
                             string message = VariableParser.ParseReplace(msg, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[] { new(MsgVars.user, string.Join(',', UserList.Skip(i * Pick).Take(Pick))) }));
-                            SendMessage(message);
+                            SendMessage(FollowList.First().FromUser.Platform, message);
                             CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.NewFollow.ToString(), null, UserMsg: message);
 
                             i++;
@@ -914,7 +914,8 @@ namespace StreamerBotLib.Systems
                         {
                             ProcMsgQueue.Enqueue(new Task(() =>
                             {
-                                SendMessage(c.Url);
+                                // Twitch section
+                                SendMessage(Platform.Twitch, c.Url);
                             }));
                         }
                     }

@@ -7,7 +7,7 @@ namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem
     {
-        private const int TaskDelay = 10000; // in milliseconds
+        private const int TaskDelay = 90000; // in milliseconds
 
         private bool CurAccrualStarted;
         private bool WatchStarted;
@@ -32,14 +32,16 @@ namespace StreamerBotLib.Systems
                     ThreadManager.CreateThreadStart("AccrualClocks", async () =>
                     {
                         // watch time and currency accruing only works when stream is online <- i.e. watched!
+                        List<LiveUser> CurrViewers = [];
+
                         while (OptionFlags.IsStreamOnline && OptionFlags.ManageUsers)
                         {
                             DateTime CurrTime = DateTime.Now.ToLocalTime();
 
                             lock (StreamViewers)
                             {
-                                var CurrViewers = StreamViewers.GetCurrentActiveUsers(isRegistered: true);
-
+                                CurrViewers = StreamViewers.GetCurrentActiveUsers(isRegistered: true);
+                            }
                                 if (OptionFlags.CurrencyStart)
                                 {
                                     DataManage.UpdateCurrency(CurrViewers, CurrTime);
@@ -48,7 +50,7 @@ namespace StreamerBotLib.Systems
                                 {
                                     DataManage.UpdateWatchTime(CurrViewers, CurrTime);
                                 }
-                            }
+                            
                             await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
                         }
 
