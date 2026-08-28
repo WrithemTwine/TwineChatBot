@@ -4,6 +4,8 @@
 
 #if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
+using MASES.EntityFrameworkCore.KNet.Extensions;
+
 #endif
 
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +19,7 @@ using System.IO;
 #endif
 
 using StreamerBotLib.DataSQL.Models;
+using StreamerBotLib.Static;
 
 
 
@@ -82,6 +85,10 @@ namespace StreamerBotLib.DataSQL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+#if RELEASE_KNET
+            modelBuilder.UseKEFCoreTopicPrefix(OptionFlags.EFCDbNameKNet);
+#endif
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<CategoryList>()

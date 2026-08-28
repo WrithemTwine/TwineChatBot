@@ -11,6 +11,9 @@ using Microsoft.Extensions.Logging;
 
 using StreamerBotLib.Static;
 
+using MASES.EntityFrameworkCore.KNet.Extensions;
+
+
 #if RELEASE_KNET
 using MASES.EntityFrameworkCore.KNet;
 #endif
@@ -25,42 +28,49 @@ namespace StreamerBotLib.DataSQL
         {
             var options = new DbContextOptionsBuilder<SQLDBContext>()
 
-            // these flags build the different connections to specific databases
-            // for splitting code to each release build package
 #if DEBUG || DEBUG_VIEWXAML || RELEASE_SQLITE
-                .UseSqlite(OptionFlags.EFCConnectStringSqlite)
+        .UseSqlite(OptionFlags.EFCConnectStringSqlite)
 #if DEBUG_LOG
-                            .LogTo(LogWriter.WriteLog, LogLevel.Information) // This line enables logging to a file
+        .LogTo(LogWriter.WriteLog, LogLevel.Information)
 #endif
 
 #elif RELEASE_POSTGRE
-                        .UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL)
+        .UseNpgsql(connectionString: OptionFlags.EFCConnectStringPostgreSQL)
+
 #elif RELEASE_COSMOS
-                        .UseCosmos(OptionFlags.EFCConnectStringCosmos, OptionFlags.EFCDbNameCosmos)
+        .UseCosmos(OptionFlags.EFCConnectStringCosmos, OptionFlags.EFCDbNameCosmos)
+
 #elif RELEASE_KNET
-                        .UseKafkaCluster(
-                            OptionFlags.EFCKNetApplicationId, 
-                            OptionFlags.EFCDbNameKNet, 
-                            OptionFlags.EFCKNetBootstrapServers
-                            )
+                .UseKEFCore(
+                    OptionFlags.EFCKNetApplicationId,
+                    OptionFlags.EFCKNetBootstrapServers
+                // add other singleton options here if needed, e.g.
+                // .WithPersistentStorage()
+                // .WithSecurityProtocol(...)
+                )
+
 #elif RELEASE_SQLSERVER
-                        .UseSqlServer(OptionFlags.EFCConnectStringSqlServer)
+        .UseSqlServer(OptionFlags.EFCConnectStringSqlServer)
+
 #elif RELEASE_MYSQL
-                        .UseMySQL(OptionFlags.EFCConnectStringMySql)
+        .UseMySQL(OptionFlags.EFCConnectStringMySql)
+
 #elif RELEASE_POMELOMYSQL
-                        .UseMySql(
-                            OptionFlags.EFCConnectStringMySql, 
-                            ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql))
+        .UseMySql(
+            OptionFlags.EFCConnectStringMySql,
+            ServerVersion.AutoDetect(OptionFlags.EFCConnectStringMySql))
 #endif
-            .Options;
-
-
+                .Options;
 
             _pooledDbContextFactory = new PooledDbContextFactory<SQLDBContext>(options, poolSize: 64);
         }
 
         public SQLDBContext CreateDbContext()
         {
+#if RELEASE_KNET
+            KEFCore.CreateGlobalInstance();   // or MASES.EntityFrameworkCore.KNet.Infrastructure.KEFCore.CreateGlobalInstance();
+#endif
+
             SetupDataManagerFactory();
             return _pooledDbContextFactory.CreateDbContext();
         }
