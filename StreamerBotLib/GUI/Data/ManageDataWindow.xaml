@@ -1,0 +1,193 @@
+﻿<Window x:Class="StreamerBotLib.GUI.Data.ManageDataWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:StreamerBotLib.Models"
+    xmlns:data="clr-namespace:StreamerBotLib.GUI.Data"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    mc:Ignorable="d"
+    Title="Edit DataGrid" 
+    Height="250" Width="450" MinHeight="250" 
+    MaxHeight="800" MaxWidth="550" 
+    SnapsToDevicePixels="True" 
+    Closing="Window_Closing" 
+    SizeToContent="WidthAndHeight" 
+    UseLayoutRounding="True" 
+    Topmost="True">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="Width" Value="150" />
+            <Setter Property="MaxWidth" Value="150" />
+        </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Width" Value="325" />
+            <Setter Property="MaxWidth" Value="325" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="MinWidth" Value="150" />
+        </Style>        
+
+        <DataTemplate x:Key="StringTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <StackPanel>
+                    <TextBox Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                    <TextBlock Text="{Binding Value.Length, StringFormat=Current Chars: {0}}" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="FilePathTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <StackPanel>
+                    <TextBox Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+PreviewMouseDoubleClick="FileBrowser_TextBox_MouseDoubleClick" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="BoolTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <CheckBox IsChecked="{Binding Value, Mode=OneWayToSource, 
+UpdateSourceTrigger=PropertyChanged}"  />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="DateTimeTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <TextBox Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TableTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox x:Name="ComboBox_SelectTable" Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+SelectionChanged="ComboBox_SelectTable_SelectionChanged"
+Initialized="ComboBox_SelectTable_Initialized" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TableKeyFieldTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox x:Name="ComboBox_SelectTableKeyField" Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TableCurrencyFieldTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox x:Name="ComboBox_SelectTableCurrencyField" Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TableDataFieldTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox x:Name="ComboBox_SelectTableDataField" Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="OverlayActionTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox x:Name="ComboBox_SelectOverlayAction" Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ModActionTypeTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                          Initialized="ComboBox_ModActionType_Initialized"
+                          SelectionChanged="ComboBox_SelectModActionType_SelectionChanged" />
+            </StackPanel>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="ModPerformNameTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox x:Name="ComboBox_SelectModActionList" Text="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                          Initialized="ComboBox_ModPerformName_Initialized"
+                          />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="EnumTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+                <ComboBox x:Name="ComboBox_SelectEnum" SelectedItem="{Binding Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Initialized="ComboBox_SelectEnum_Initialized" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CategoryTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{Binding Name}" />
+
+                <TextBox x:Name="TextBox_CategoryText"
+                 IsReadOnly="True"
+                 Cursor="Hand"
+                 PreviewMouseLeftButtonDown="Category_TextBox_PreviewMouseLeftButtonDown"
+                 Initialized="TextBox_CategoryText_Initialized" />
+
+                <ListBox x:Name="ListBox_CategoryList"
+                 MinHeight="50" MaxHeight="200" Width="325"
+                 Visibility="Collapsed"
+                 LostFocus="CategoryList_LostFocus"
+                 PreviewMouseLeftButtonDown="Category_ListBox_PreviewLeftMouseDown"
+                 Initialized="ListBox_CategoryList_Initialized" />
+            </StackPanel>
+        </DataTemplate>
+        
+        <data:ManageDataTemplateSelector x:Key="PopupTemplateSelector"
+StringTemplate="{StaticResource StringTemplate}"
+FilePathTemplate="{StaticResource FilePathTemplate}"
+BoolTemplate="{StaticResource BoolTemplate}"
+DateTimeTemplate="{StaticResource DateTimeTemplate}"
+EnumTemplate="{StaticResource EnumTemplate}"
+TableTemplate="{StaticResource TableTemplate}"
+TableKeyFieldTemplate="{StaticResource TableKeyFieldTemplate}"
+TableCurrencyFieldTemplate="{StaticResource TableCurrencyFieldTemplate}"
+TableDataFieldTemplate="{StaticResource TableDataFieldTemplate}"
+OverlayActionTemplate="{StaticResource OverlayActionTemplate}"
+ModActionTypeTemplate="{StaticResource ModActionTypeTemplate}"
+ModPerformNameTemplate="{StaticResource ModPerformNameTemplate}"
+CategoryTemplate="{StaticResource CategoryTemplate}"
+/>
+
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock TextWrapping="Wrap" Margin="5,0,0,0">
+                - This feature is currently in testing. Please report any complications.<LineBreak />
+                - Ensure dates are formatted properly, the way presented.<LineBreak />
+                - A red box means the date or item isn't formatted properly.<LineBreak />
+                - When specifying media files, *DO NOT* exceed 2GB limit per file.<LineBreak />
+                - The data field name on the left shows character count for text fields. The Twitch chat bot will split messages exceeding the 500 character limit per message.<LineBreak />
+                - Existing data will always be saved. New data will only save with "OK", while clicking close or cancel will not save the record.<LineBreak />
+            </TextBlock>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,8">
+            <Button Content="Ok" Margin="20,0" Click="Button_OKClick" Padding="10,2" />
+            <Button x:Name="Button_Cancel" Content="Cancel" Click="CancelButton_Click" Padding="10,2" />
+        </StackPanel>
+        <ListBox x:Name="ListBox_DataList" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,5,0,10"
+                 IsSynchronizedWithCurrentItem="True"
+                 ItemsSource="{Binding}"
+                 ItemTemplateSelector="{StaticResource PopupTemplateSelector}"
+                 />
+    </DockPanel>
+</Window>

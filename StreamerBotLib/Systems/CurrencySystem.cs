@@ -42,15 +42,15 @@ namespace StreamerBotLib.Systems
                             {
                                 CurrViewers = StreamViewers.GetCurrentActiveUsers(isRegistered: true);
                             }
-                                if (OptionFlags.CurrencyStart)
-                                {
-                                    DataManage.UpdateCurrency(CurrViewers, CurrTime);
-                                }
-                                else
-                                {
-                                    DataManage.UpdateWatchTime(CurrViewers, CurrTime);
-                                }
-                            
+                            if (OptionFlags.CurrencyStart)
+                            {
+                                DataManage.UpdateCurrency(CurrViewers, CurrTime);
+                            }
+                            else
+                            {
+                                DataManage.UpdateWatchTime(CurrViewers, CurrTime);
+                            }
+
                             await Task.Delay(TaskDelay * (1 + (DateTime.Now.Second / 60)));
                         }
 

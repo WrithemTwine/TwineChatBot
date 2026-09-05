@@ -35,7 +35,7 @@ namespace StreamerBotLib.DataSQL.EFC10
         //}
         internal async Task StartOnlineCurrencyFilter()
         {
-            await Task.Run(()=>
+            await Task.Run(() =>
             {
                 _CurrencyFilterActive = true;
             });
@@ -43,7 +43,7 @@ namespace StreamerBotLib.DataSQL.EFC10
 
         internal async Task StopOnlineCurrencyFilter()
         {
-            await Task.Run(async ()=>
+            await Task.Run(async () =>
             {
                 _CurrencyFilterActive = false;
                 await RefreshCurrencyList(); // return the currency list to the default state when the filter is stopped

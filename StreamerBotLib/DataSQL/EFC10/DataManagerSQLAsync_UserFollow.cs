@@ -184,7 +184,7 @@ namespace StreamerBotLib.DataSQL.EFC10
             //await RefreshUserStatsList(true);
         }
 
-#endregion
+        #endregion
 
         #region Followers
 

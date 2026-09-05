@@ -1,3 +1,4 @@
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Interfaces;
 
 namespace StreamerBotLib.DataSQL.TableMeta
@@ -8,6 +9,26 @@ namespace StreamerBotLib.DataSQL.TableMeta
 
         public object DataEntity { get; private set; }
 
+        public class EntityData(string name, TableMeta tableMeta)
+        {
+            private TableMeta _tableMeta = tableMeta;
+            public string Name { get; } = name;
+            public Type ColType => _tableMeta.CurrEntity.Meta[Name];
+            public object Value
+            {
+                get
+                {
+                    return _tableMeta.CurrEntity.Values[Name];
+                }
+                set
+                {
+                    _tableMeta.CurrEntity.Values[Name] = value;
+                }
+            }
+            public PopupEditTableDataType TableDataType => _tableMeta.CheckColumn(Name);
+        }
+
+        public List<EntityData> BindingList { get; } = [];
 
         public TableMeta SetNewEntity(Type Entity)
         {
@@ -131,6 +152,8 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new Webhooks(new Models.Webhooks());
             }
+
+            SetBindingList();
 
             return this;
         }
@@ -260,8 +283,14 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 CurrEntity = new Webhooks((Models.Webhooks)Entity);
             }
 
+            SetBindingList();
+
             return this;
         }
+
+        private void SetBindingList() => BindingList.AddRange(from K in CurrEntity.Values.Keys
+                                                              where (K is not "Id")
+                                                              select new EntityData(K, this));
 
         public object GetUpdatedEntity(IDatabaseTableMeta Update)
         {
@@ -293,6 +322,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
             else if (DataEntity.GetType() == typeof(Models.Commands))
             {
                 ((Commands)Update).CopyUpdates((Models.Commands)DataEntity);
+                return DataEntity;
+            }
+            else if (DataEntity.GetType() == typeof(Models.CommandPlatformMessages))
+            {
+                ((CommandPlatformMessages)Update).CopyUpdates((Models.CommandPlatformMessages)DataEntity);
                 return DataEntity;
             }
             else if (DataEntity.GetType() == typeof(Models.CommandsUser))
@@ -419,6 +453,92 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Maps a column name (and optionally its Type) to the correct UI element kind.
+        /// </summary>
+        public PopupEditTableDataType CheckColumn(string columnName)
+        {
+            // ----- 1. Exact name matches (highest priority) -----
+            switch (columnName)
+            {
+                // Booleans
+                case "IsFollower":
+                case "AddMe":
+                case "IsEnabled":
+                case "AllowParam":
+                case "AddEveryone":
+                case "LookupData":
+                case "UseChatMsg":
+                case "Announce":
+                    return PopupEditTableDataType.Bool;
+
+                // File paths
+                case "MediaFile":
+                case "ImageFile":
+                    return PopupEditTableDataType.FilePath;
+
+                // Category multi-select
+                case "Category":
+                    return PopupEditTableDataType.Category;
+
+                // Table + dependent fields
+                case "Table":
+                    return PopupEditTableDataType.Table;
+
+                case "KeyField":
+                case "DataField":
+                case "CurrencyField":
+                    return PopupEditTableDataType.TableField;
+
+                // Overlay cascade
+                case "OverlayAction":
+                    return PopupEditTableDataType.OverlayAction;
+
+                // ModeratorApprove cascades
+                case "ModActionType":
+                case "ModPerformType":
+                    return PopupEditTableDataType.ModActionType;
+
+                case "ModActionName":
+                case "ModPerformAction":
+                    return PopupEditTableDataType.ModPerformName;
+
+                // Common date columns
+                case "FollowedDate":
+                case "FirstDateSeen":
+                case "CurrLoginDate":
+                case "LastDateSeen":
+                case "CreatedAt":
+                case "DateTime":
+                case "StreamStart":
+                case "StreamEnd":
+                case "StatusChangeDate":
+                case "AddDate":
+                    return PopupEditTableDataType.DateTime;
+            }
+
+            // ----- 2. Fall back to Type information -----
+            return DetermineElementTypeByType(CurrEntity.Meta[columnName]);
+        }
+
+        private static PopupEditTableDataType DetermineElementTypeByType(Type columnType)
+        {
+            if (columnType == null)
+                return PopupEditTableDataType.Text;
+
+            if (columnType.IsEnum || (columnType.FullName?.Contains("Enums") ?? false))
+                return PopupEditTableDataType.Enum;
+
+            if (columnType == typeof(bool) || columnType == typeof(bool?))
+                return PopupEditTableDataType.Bool;
+
+            if (columnType == typeof(DateTime) || columnType == typeof(DateTime?))
+                return PopupEditTableDataType.DateTime;
+
+            // Everything else (string, int, long, short, TimeSpan, Uri, etc.)
+            return PopupEditTableDataType.Text;
         }
     }
 }

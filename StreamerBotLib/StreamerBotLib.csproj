@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.1.0.4</Version>
+		<Version>2.1.0.5</Version>
 		<TargetFramework>net10.0-windows7.0</TargetFramework>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<Nullable>disable</Nullable>
@@ -76,6 +76,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="DataSQL\AccessPolicy\PermissionDigest.xml" />
 	  <None Remove="Systems\Overlay\img\DefaultLastBits.png" />
 	  <None Remove="Systems\Overlay\img\DefaultLastDonation.png" />
 	  <None Remove="Systems\Overlay\img\DefaultLastFollower.png" />
@@ -93,6 +94,7 @@
 	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastGiftSub.png" />
 	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastInRaid.png" />
 	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastSubscriber.png" />
+	  <Resource Include="DataSQL\AccessPolicy\PermissionDigest.xml" />
 	  <Resource Include="Systems\Overlay\img\seconds.png" />
 	  <Resource Include="Systems\Overlay\seconds.png" />
 	</ItemGroup>

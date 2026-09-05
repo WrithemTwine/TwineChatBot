@@ -650,7 +650,7 @@ namespace StreamerBotLib.Systems
                 if (cmdrow.Message.Contains(VariableParser.Prefix + MsgVars.random.ToString()))
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, "Command contains #random_N_D, adding random number to variable dictionary.");
-                    
+
                     string msg = cmdrow.Message;
                     int r_index = msg.IndexOf(VariableParser.Prefix + MsgVars.random.ToString());
                     string randomVar = msg.Substring(r_index, msg.IndexOf(' ', r_index) - r_index); // get the full #random_N_D or #random_N_D_% variable with the N and D
@@ -658,12 +658,12 @@ namespace StreamerBotLib.Systems
                     string[] randomParams = randomVar.Split('_'); // split into parts
 
                     Random rnd = new();
-                    string randomNumber = Math.Round( 
-                                                rnd.NextDouble() * (randomParams.Length > 1 ? Convert.ToInt32(randomParams[1]) : 100), 
-                                                Convert.ToInt32(randomParams.Length > 2 ? randomParams[2] : 0) 
+                    string randomNumber = Math.Round(
+                                                rnd.NextDouble() * (randomParams.Length > 1 ? Convert.ToInt32(randomParams[1]) : 100),
+                                                Convert.ToInt32(randomParams.Length > 2 ? randomParams[2] : 0)
                                             ).ToString();
 
-                    if(randomParams.Length == 4)
+                    if (randomParams.Length == 4)
                     {
                         randomNumber += $" {randomParams[3]}"; // append the optional suffix if it exists
                     }

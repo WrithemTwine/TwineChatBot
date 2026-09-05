@@ -277,6 +277,12 @@ namespace StreamerBotLib.Systems
             return DataManage.GetGameCategories();
         }
 
+        public List<string> GetTableFields(string TableName)
+        {
+            LogWriter.DebugLog("GetTableFields", DebugLogTypes.OverlayBot, $"Getting the table fields for {TableName}.");
+            return DataManage.GetTableFields(TableName);
+        }
+
         #endregion
 
         /// <summary>

@@ -10,6 +10,7 @@
         Commands,
         CommandsBase,
         CommandsUser,
+        CommandPlatformMessages,
         Currency,
         CurrencyType,
         CustomWelcome,

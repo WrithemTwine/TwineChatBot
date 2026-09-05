@@ -40,6 +40,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<Followers> Followers { get; private set; }
         public ObservableCollection<CommandsUser> CommandsUser { get; private set; }
         public ObservableCollection<Commands> Commands { get; private set; }
+        public ObservableCollection<CommandPlatformMessages> CommandPlatformMessages { get; private set; }
 
         public ObservableCollection<BanRules> BanRules { get; private set; }
         public ObservableCollection<BanReasons> BanReasons { get; private set; }
@@ -108,6 +109,7 @@ namespace StreamerBotLib.GUI
             dataBot.GetICollection(DataTables.Followers, (source) => AssignCollection(source, nameof(Followers), true));
             dataBot.GetICollection(DataTables.CommandsUser, (source) => AssignCollection(source, nameof(CommandsUser), true));
             dataBot.GetICollection(DataTables.Commands, (source) => AssignCollection(source, nameof(Commands), true));
+            dataBot.GetICollection(DataTables.CommandPlatformMessages, (source) => AssignCollection(source, nameof(CommandPlatformMessages)));
 
             // continue setting collections for remaining tables
             dataBot.GetICollection(DataTables.BanReasons, (source) => AssignCollection(source, nameof(BanReasons)));

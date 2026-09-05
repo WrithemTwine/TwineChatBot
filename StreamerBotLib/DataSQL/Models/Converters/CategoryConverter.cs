@@ -40,10 +40,27 @@ namespace StreamerBotLib.DataSQL.Models.Converters
             // source data requires SQL-safe escaping, ' , due to SQL queries using source text and mismatching- ' -in the where clause
             List<string> output = [];
 
-            if (value is string)
+            if (value is null)
+            {
+                output.Add("All"); // fallback to "All"
+            }
+            else if (value is string)
             {
                 LogWriter.DebugLog("CategoryConverter.Convert", DebugLogTypes.Converters, $"Converting {value}");
                 output.AddRange((value as string).Split(","));
+            }
+            else if (value is List<CheckBox>)
+            {
+                LogWriter.DebugLog("CategoryConverter.Convert", DebugLogTypes.Converters, $"Converting {string.Join(", ", value)}");
+                output.AddRange((value as List<CheckBox>).Where(c => c.IsChecked == true).Select(c => (string)c.Content));
+            }
+            else if (value is CheckBox)
+            {
+                LogWriter.DebugLog("CategoryConverter.Convert", DebugLogTypes.Converters, $"Converting {value}");
+                if ((value as CheckBox).IsChecked == true)
+                {
+                    output.Add((string)(value as CheckBox).Content);
+                }
             }
             else
             {
@@ -105,7 +122,11 @@ namespace StreamerBotLib.DataSQL.Models.Converters
             List<CheckBox> checkBoxes = [];
             List<string> categories = [];
 
-            if (value.GetType() == typeof(string))
+            if (value is null)
+            {
+                categories.Add("All"); // fallback to "All"
+            }
+            else if (value.GetType() == typeof(string))
             {
                 categories.Add((string)value);
             }
@@ -152,16 +173,17 @@ namespace StreamerBotLib.DataSQL.Models.Converters
                                      select new CheckBox() { Content = FormatData.RemoveEscapeFormat(C.Item1), IsChecked = C.Item2 })]);
             }
 
-            // add Click event handler to each checkbox
-            foreach (var check in checkBoxes)
-            {
-                check.Checked += StreamStats_CategoryCheckBox_Click;
-            }
+            //// add Click event handler to each checkbox
+            //foreach (var check in checkBoxes)
+            //{
+            //    check.Click += CategoryCheckBox_Clicked;
+            //}
 
             return checkBoxes;
         }
 
-        private void StreamStats_CategoryCheckBox_Click(object sender, RoutedEventArgs e)
+
+        private void CategoryCheckBox_Clicked(object sender, RoutedEventArgs e)
         {
             List<string> Selected = [];
 
@@ -170,7 +192,7 @@ namespace StreamerBotLib.DataSQL.Models.Converters
 
             bool AllCategory = (string)((CheckBox)temp).Content == "All" && ((CheckBox)temp).IsChecked == true;
 
-            LogWriter.DebugLog("EditConvertCategory.StreamStats_CategoryCheckBox_Click", DebugLogTypes.Converters, $"Converting {(string)((CheckBox)temp).Content}");
+            LogWriter.DebugLog("EditConvertCategory.CategoryCheckBox_Clicked", DebugLogTypes.Converters, $"Converting {(string)((CheckBox)temp).Content}");
 
             do
             {
@@ -179,9 +201,9 @@ namespace StreamerBotLib.DataSQL.Models.Converters
 
             categories = temp as ListBox;
 
-            var items = categories.Items.Cast<CheckBox>();
+            ICollection<CheckBox> items = categories.ItemsSource as ICollection<CheckBox>;
 
-            if (!AllCategory && items.Select(c => c.IsChecked).Count() > 1)
+            if (!AllCategory && items.Select(c => c.IsChecked).Count() > 0)
             {
                 var allItem = items.Where(c => (string)c.Content == "All").Select(c => c).FirstOrDefault();
                 if (allItem != default)
@@ -208,11 +230,6 @@ namespace StreamerBotLib.DataSQL.Models.Converters
             }
 
             categories.SelectedItem = Selected;
-            //categories.SelectedItems.Clear();
-            //foreach (var s in Selected)
-            //{
-            //    categories.SelectedItems.Add(s);
-            //}
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

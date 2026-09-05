@@ -1,6 +1,6 @@
-﻿#define EFC9_OBSCOL_ISSUE_REFRESHCONTEXT_DATA  // This is a workaround for the issue with ObservableCollection in EF Core 9
+﻿#define EFC10_OBSCOL_ISSUE_REFRESHCONTEXT_DATA  // This is a workaround for the issue with ObservableCollection in EF Core 10
 
-#if EFC9_OBSCOL_ISSUE_REFRESHCONTEXT_DATA
+#if EFC10_OBSCOL_ISSUE_REFRESHCONTEXT_DATA
 
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +22,7 @@ namespace StreamerBotLib.DataSQL.EFC10
         private readonly ObservableCollection<Followers> Followers = [];
         private readonly ObservableCollection<CommandsUser> CommandsUser = [];
         private readonly ObservableCollection<Commands> Commands = [];
+        private readonly ObservableCollection<CommandPlatformMessages> CommandPlatformMessages = [];
 
         private readonly ObservableCollection<BanRules> BanRules = [];
         private readonly ObservableCollection<Models.BanReasons> BanReasons = [];
@@ -71,6 +72,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                 DataTables.Clips => GetClipsLocalObservableAsync().Result,
                 DataTables.Commands => GetCommandsLocalObservableAsync().Result,
                 DataTables.CommandsBase => throw new NotImplementedException(),
+                DataTables.CommandPlatformMessages => GetCommandPlatformMessagesLocalObservableAsync().Result,
                 DataTables.CommandsUser => GetCommandsUserLocalObservableAsync().Result,
                 DataTables.Currency => GetCurrencyLocalObservableAsync().Result,
                 DataTables.CurrencyType => GetCurrencyTypeLocalObservableAsync().Result,
@@ -159,6 +161,16 @@ namespace StreamerBotLib.DataSQL.EFC10
                 await GUIContext.Commands.LoadAsync();
                 Commands.AddRange([.. GUIContext.Commands.Local]);
                 return Commands;
+            });
+        }
+
+        private Task<ObservableCollection<CommandPlatformMessages>> GetCommandPlatformMessagesLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.CommandPlatformMessages.LoadAsync();
+                CommandPlatformMessages.AddRange([.. GUIContext.CommandPlatformMessages.Local]);
+                return CommandPlatformMessages;
             });
         }
 
@@ -516,6 +528,20 @@ namespace StreamerBotLib.DataSQL.EFC10
             });
         }
 
+        private async Task RefreshCommandPlatformMessageList(bool RecordCountChange = false)
+        {
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.CommandPlatformMessages.LoadAsync();
+                    CommandPlatformMessages.Clear();
+                    CommandPlatformMessages.AddRange([.. GUIContext.CommandPlatformMessages.Local]);
+                    NotifyDataCollectionUpdated(nameof(GUIContext.CommandPlatformMessages), RecordCountChange);
+                });
+            });
+        }
         private async Task RefreshCurrencyList(bool RecordCountChange = false)
         {
             await Task.Run(async () =>

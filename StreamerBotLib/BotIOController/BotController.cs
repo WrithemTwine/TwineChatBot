@@ -1190,7 +1190,7 @@ namespace StreamerBotLib.BotIOController
         {
             HandleIncomingRaidData(e.LiveUser, e.RaidTime, e.ViewerCount, e.Category);
         }
-        
+
         /// <summary>
         /// When a Twitch raid is outgoing, the Twitch bot captures the data about the raid and sends it to the system to handle the outgoing raid data, which may include posting messages to the channel about the raid, and posting notifications to any webhooks about the raid.
         /// </summary>
@@ -1631,7 +1631,7 @@ namespace StreamerBotLib.BotIOController
 
                 if (OptionFlags.MsgBotConnection)
                 { // only show if user spcified they want the welcome message sent to chat
-                    Send( Platform.Default, LocalizedMsgSystem.GetTwineBotAuthorInfo());
+                    Send(Platform.Default, LocalizedMsgSystem.GetTwineBotAuthorInfo());
                 }
                 DataBot.NotifyBotStart();
             }

@@ -608,11 +608,11 @@ namespace StreamerBotLib.DataSQL.EFC10
                                                  .Select(CL => CL).FirstOrDefaultAsync();
             category.StreamCount++;
             StreamStats currStream = await context.StreamStats
-                      .Where(S => S.StreamStart == CurrStreamStart)
+                      .Where(S => S.StreamStart == CurrStreamStart && S.StreamEnd == default)
                       .Select(S => S)
                       .FirstOrDefaultAsync();
             if (currStream != default)
-            {
+            { // only post if stream is continuing and hasn't ended (S.StreamEnd == default ==> not ended)
                 currStream.Category.UniqueAdd(categoryData.CategoryName);
             }
 
@@ -1065,6 +1065,12 @@ namespace StreamerBotLib.DataSQL.EFC10
             {
                 await context.Database.BeginTransactionAsync();
                 currStream.Update(streamStat);
+
+                if (currStream.StreamEnd != default)
+                { // if the stream has ended, reset the current stream start to default
+                    CurrStreamStart = default;
+                }
+                   
                 LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, $"Updated stream stats for stream started {streamStat.StreamStart}.");
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);

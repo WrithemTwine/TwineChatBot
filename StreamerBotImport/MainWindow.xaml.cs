@@ -38,6 +38,7 @@ namespace StreamerBotImport
             if (Settings.Default.EFCDataImportedDataGram)
             {
                 ImportFrame.Visibility = Visibility.Collapsed;
+                PerformMigration();
             }
         }
 
@@ -134,6 +135,11 @@ namespace StreamerBotImport
         }
 
         private void MainWindow_ImportCompleted(object? sender, EventArgs e)
+        {
+            PerformMigration();
+        }
+
+        private void PerformMigration()
         {
             Label_BeginMigration.Visibility = Visibility.Visible;
             using var context = dbContextFactory.CreateDbContext();

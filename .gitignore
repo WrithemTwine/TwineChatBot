@@ -349,3 +349,5 @@ healthchecksdb
 *.txt
 *.db-shm
 *.db-wal
+/BuildPermissionDigestXML/BuildPermissionDigestXML.csproj
+/BuildPermissionDigestXML/Program.cs

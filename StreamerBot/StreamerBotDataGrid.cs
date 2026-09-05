@@ -1,8 +1,9 @@
 ﻿using StreamerBotLib.BotIOController;
+using StreamerBotLib.DataSQL.AccessPolicy;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.TableMeta;
 using StreamerBotLib.GUI;
-using StreamerBotLib.GUI.Windows;
+using StreamerBotLib.GUI.Data;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
@@ -13,30 +14,76 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
         #region DataGrid Columns and Editing
-        private ManageWindows PopupWindows { get; set; } = new();
+        private ManageDataEdit PopupWindows { get; set; }
         private Thread GUIDataGridUpdates { get; set; }
         private ConcurrentQueue<Task> GUIDataGridUpdateQueue { get; set; } = new();
 
         private GUIDataManagerViews GUIDataManagerViews { get; set; }
 
-        #region GUI DataManager View Update Queue
-
-        private void GUIDataGridUpdateThread()
+        #region View - New-Edit Data Records - PopuWindow
+        private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
-            while (!GUIDataGridUpdateQueue.IsEmpty || OptionFlags.ActiveToken)
+            DataGrid item = GetMenuDataGrid(sender);
+
+            DGOpenEditWindow(item, true);
+        }
+
+        private void DGOpenEditWindow(DataGrid item, bool IsNew)
+        {
+            Type SqlModel = item.Name switch
             {
-                while (GUIDataGridUpdateQueue.TryDequeue(out Task task))
-                {
-                    task.Start();
-                    Task.Delay(200).Wait(); // Allow some time for the task to complete before processing the next one.
-                }
-            }
+                nameof(DG_BuiltInCommands) => typeof(Commands),
+                nameof(DG_CategoryList) => typeof(CategoryList),
+                nameof(DG_Clips) => typeof(Clips),
+                nameof(DG_CurrencyType) => typeof(StreamerBotLib.DataSQL.Models.CurrencyType),
+                nameof(DG_Currency) => typeof(Currency),
+                nameof(DG_CustomWelcome) => typeof(CustomWelcome),
+                nameof(DG_DeathCounter) => typeof(GameDeadCounter),
+                nameof(DG_Followers) => typeof(Followers),
+                nameof(DG_InRaids) => typeof(InRaidData),
+                nameof(DG_ModApprove) => typeof(ModeratorApprove),
+                nameof(DG_Mod_BanReasons) => typeof(StreamerBotLib.DataSQL.Models.BanReasons),
+                nameof(DG_Mod_BanRules) => typeof(BanRules),
+                nameof(DG_Mod_LearnMsgs) => typeof(LearnedMessage),
+                nameof(DG_OldFollowUsers) => typeof(OldFollowUsers),
+                nameof(DG_OutRaids) => typeof(OutRaidData),
+                nameof(DG_OverlayService_Actions) => typeof(OverlayServices),
+                nameof(DG_OverlayService_Ticker) => typeof(OverlayTicker),
+                nameof(DG_StreamData_Stats) => typeof(StreamStats),
+                nameof(DG_UserDefinedCommands) => typeof(CommandsUser),
+                nameof(DG_Users) => typeof(Users),
+                nameof(DG_User_Giveaway) => typeof(GiveawayUserData),
+                nameof(DG_User_Quotes) => typeof(Quotes),
+                nameof(DG_User_Shoutouts) => typeof(ShoutOuts),
+                nameof(DG_Webhooks) => typeof(Webhooks),
+                _ => typeof(object)
+            };
+
+            TableMeta tableMeta = new();
+
+            Controller.GetOverlayActions(PopupWindows.SetTableData);
+
+            PopupWindows.EditItem(
+                // establish existing or new record entity
+                (IsNew ?
+                          tableMeta.SetNewEntity(SqlModel)
+                        : tableMeta.SetExistingEntity(item.SelectedItem)),
+                IsNew);
+        }
+
+        private void MenuItem_EditClick(object sender, RoutedEventArgs e)
+        {
+            DataGrid item = GetMenuDataGrid(sender);
+
+            DGOpenEditWindow(item, false);
         }
 
         #endregion
@@ -169,121 +216,105 @@ namespace StreamerBot
         {
             Controller.ClearUsersNonFollowers();
         }
+
+        private readonly Dictionary<string, string> MenuAccessMap = new()
+        {
+            {"DataGridContextMenu_AddItem", "AddRow" },
+            {"DataGridContextMenu_EditItem", "EditRow" },
+            {"DataGridContextMenu_DeleteItems", "DeleteRow" },
+            {"DataGridContextMenu_AutoShout", "AutoShout" },
+            {"DataGridContextMenu_LiveMonitor", "MonitorLive" },
+            {"DataGridContextMenu_EnableItems", "EnableItems" },
+            {"DataGridContextMenu_DisableItems", "DisableItems" }
+        };
+
         private void DG_Edit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (sender.GetType() == typeof(DataGrid))
             {
-                bool FoundAddShout = ((DataGrid)sender).Name is nameof(DG_Users) or nameof(DG_Followers);
-                bool FoundIsEnabled = ((DataGrid)sender).Columns.Any((c) => (string)c.Header == "Enabled");
-                bool FoundAddItem = ((DataGrid)sender).Name is
-                       nameof(DG_CurrencyType)
-                    or nameof(DG_CustomWelcome)
-                    or nameof(DG_InRaids)
-                    or nameof(DG_OutRaids)
-                    or nameof(DG_Mod_LearnMsgs)
-                    or nameof(DG_ModApprove)
-                    or nameof(DG_OverlayService_Actions)
-                    or nameof(DG_User_Quotes)
-                    or nameof(DG_User_Shoutouts)
-                    or nameof(DG_UserDefinedCommands)
-                    or nameof(DG_Webhooks);
+                // menu access permissions for the current DataGrid table
+                MenuAccess tableMenuAccess = PermissionDigest.GetTableMenuAccess(GetTableName((DataGrid)sender));
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
                     {
-                        if (((MenuItem)M).Name is "DataGridContextMenu_AutoShout" or "DataGridContextMenu_LiveMonitor")
-                        {
-                            ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
-                        }
-                        else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
-                        {
-                            ((MenuItem)M).IsEnabled = FoundIsEnabled;
-                        }
-                        else if (((MenuItem)M).Name is "DataGridContextMenu_AddItem")
-                        {
-                            ((MenuItem)M).Visibility = FoundAddItem ? Visibility.Visible : Visibility.Collapsed;
-                        }
-                        else if (((MenuItem)M).Name is "DataGridContextMenu_DeleteItems")
-                        {
-                            ((MenuItem)M).Visibility = ((DataGrid)sender).CanUserDeleteRows ? Visibility.Visible : Visibility.Collapsed;
-                        }
+                        MenuItem menuitem = (MenuItem)M;
+                        menuitem.Visibility = (bool)tableMenuAccess[MenuAccessMap[menuitem.Name]] ? Visibility.Visible : Visibility.Collapsed;
                     }
                     else if (M.GetType() == typeof(Separator))
                     {
                         if (((Separator)M).Name == "DataGridContextMenu_Separator1")
                         {
-                            ((Separator)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
+                            ((Separator)M).Visibility = tableMenuAccess.AutoShout || tableMenuAccess.MonitorLive ? Visibility.Visible : Visibility.Collapsed;
                         }
                     }
                 }
             }
-        }
-        private void MenuItem_AddClick(object sender, RoutedEventArgs e)
-        {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            DGOpenEditWindow(item);
-        }
-        private void DGOpenEditWindow(DataGrid item)
-        {
-            Type SqlModel = item.Name switch
-            {
-                nameof(DG_BuiltInCommands) => typeof(Commands),
-                nameof(DG_CategoryList) => typeof(CategoryList),
-                nameof(DG_Clips) => typeof(Clips),
-                nameof(DG_CurrencyType) => typeof(StreamerBotLib.DataSQL.Models.CurrencyType),
-                nameof(DG_Currency) => typeof(Currency),
-                nameof(DG_CustomWelcome) => typeof(CustomWelcome),
-                nameof(DG_DeathCounter) => typeof(GameDeadCounter),
-                nameof(DG_Followers) => typeof(Followers),
-                nameof(DG_InRaids) => typeof(InRaidData),
-                nameof(DG_ModApprove) => typeof(ModeratorApprove),
-                nameof(DG_Mod_BanReasons) => typeof(StreamerBotLib.DataSQL.Models.BanReasons),
-                nameof(DG_Mod_BanRules) => typeof(BanRules),
-                nameof(DG_Mod_LearnMsgs) => typeof(LearnedMessage),
-                nameof(DG_OldFollowUsers) => typeof(OldFollowUsers),
-                nameof(DG_OutRaids) => typeof(OutRaidData),
-                nameof(DG_OverlayService_Actions) => typeof(OverlayServices),
-                nameof(DG_OverlayService_Ticker) => typeof(OverlayTicker),
-                nameof(DG_StreamData_Stats) => typeof(StreamStats),
-                nameof(DG_UserDefinedCommands) => typeof(CommandsUser),
-                nameof(DG_Users) => typeof(Users),
-                nameof(DG_User_Giveaway) => typeof(GiveawayUserData),
-                nameof(DG_User_Quotes) => typeof(Quotes),
-                nameof(DG_User_Shoutouts) => typeof(ShoutOuts),
-                nameof(DG_Webhooks) => typeof(Webhooks),
-                _ => typeof(object)
-            };
-
-            TableMeta tableMeta = new();
-
-            //if (item.Name is "DG_OverlayService_Actions" or "DG_ModApprove")
+            //if (sender.GetType() == typeof(DataGrid))
             //{
-            UpdateOverlays();
+            //    bool FoundAddShout = ((DataGrid)sender).Name is nameof(DG_Users) or nameof(DG_Followers);
+            //    bool FoundIsEnabled = ((DataGrid)sender).Columns.Any((c) => (string)c.Header == "Enabled");
+            //    bool FoundAddItem = ((DataGrid)sender).Name is
+            //           nameof(DG_CurrencyType)
+            //        or nameof(DG_CustomWelcome)
+            //        or nameof(DG_InRaids)
+            //        or nameof(DG_OutRaids)
+            //        or nameof(DG_Mod_LearnMsgs)
+            //        or nameof(DG_ModApprove)
+            //        or nameof(DG_OverlayService_Actions)
+            //        or nameof(DG_User_Quotes)
+            //        or nameof(DG_User_Shoutouts)
+            //        or nameof(DG_UserDefinedCommands)
+            //        or nameof(DG_Webhooks);
+
+            //    foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
+            //    {
+            //        if (M.GetType() == typeof(MenuItem))
+            //        {
+            //            if (((MenuItem)M).Name is "DataGridContextMenu_AutoShout" or "DataGridContextMenu_LiveMonitor")
+            //            {
+            //                ((MenuItem)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
+            //            }
+            //            else if (((MenuItem)M).Name is "DataGridContextMenu_EnableItems" or "DataGridContextMenu_DisableItems")
+            //            {
+            //                ((MenuItem)M).IsEnabled = FoundIsEnabled;
+            //            }
+            //            else if (((MenuItem)M).Name is "DataGridContextMenu_AddItem")
+            //            {
+            //                ((MenuItem)M).Visibility = FoundAddItem ? Visibility.Visible : Visibility.Collapsed;
+            //            }
+            //            else if (((MenuItem)M).Name is "DataGridContextMenu_DeleteItems")
+            //            {
+            //                ((MenuItem)M).Visibility = ((DataGrid)sender).CanUserDeleteRows ? Visibility.Visible : Visibility.Collapsed;
+            //            }
+            //        }
+            //        else if (M.GetType() == typeof(Separator))
+            //        {
+            //            if (((Separator)M).Name == "DataGridContextMenu_Separator1")
+            //            {
+            //                ((Separator)M).Visibility = FoundAddShout ? Visibility.Visible : Visibility.Collapsed;
+            //            }
+            //        }
+            //    }
             //}
-
-            PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
         }
-        private void UpdateOverlays()
+        private static DataGrid GetMenuDataGrid(object sender)
         {
-            Controller.GetOverlayActions((actions) => PopupWindows.SetTableData(actions));
+            return (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
         }
-        private void MenuItem_EditClick(object sender, RoutedEventArgs e)
-        {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
 
-            DGOpenEditWindow(item);
-        }
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            DataGrid item = GetMenuDataGrid(sender);
 
             Controller.DeleteDataRows((IEnumerable<object>)item.SelectedItems, GetTableName(item));
         }
+
         private void MenuItem_LearnMsgTypeClick(object sender, RoutedEventArgs e)
         {
-            DataGrid CurrLrnMsg = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            DataGrid CurrLrnMsg = GetMenuDataGrid(sender);
             MsgTypes SelectedType = Enum.Parse<MsgTypes>((string)(sender as MenuItem).Header);
 
             foreach (LearnMsgs row in CurrLrnMsg.SelectedItems)
@@ -308,7 +339,7 @@ namespace StreamerBot
         }
         private void MenuItem_AutoShoutClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            DataGrid item = GetMenuDataGrid(sender);
 
             foreach (UserBase dr in new List<UserBase>(item.SelectedItems.Cast<UserBase>().Select(DRV => DRV)))
             {
@@ -317,7 +348,7 @@ namespace StreamerBot
         }
         private void MenuItem_LiveMonitorClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            DataGrid item = GetMenuDataGrid(sender);
 
             // cast the selected items to the appropriate type based on the DataGrid
             if (item.Name is "DG_Users")
@@ -331,7 +362,7 @@ namespace StreamerBot
         }
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            DataGrid item = GetMenuDataGrid(sender);
 
             var rows = item.SelectedItems;
 
@@ -356,6 +387,7 @@ namespace StreamerBot
                 nameof(DG_Clips) => "Clips",
                 nameof(DG_BuiltInCommands) => "Commands",
                 nameof(DG_UserDefinedCommands) => "CommandsUser",
+                nameof(DG_CommandPlatformMessages) => "CommandPlatformMessages",
                 nameof(DG_Currency) => "Currency",
                 nameof(DG_CurrencyType) => "CurrencyType",
                 nameof(DG_CustomWelcome) => "CustomWelcome",
@@ -384,7 +416,7 @@ namespace StreamerBot
         }
         private void DataGridContextMenu_DisableItems_Click(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+            DataGrid item = GetMenuDataGrid(sender);
 
             var rows = item.SelectedItems;
 
@@ -400,30 +432,49 @@ namespace StreamerBot
         }
 
         #region DataGrid ListBox Editing (for CategoryList and ChannelEvents "EventType" column)
+
+        private ListBox _categoryListBox;
+
+        private void DataGridEdit_ListBox_Category_Initialized(object sender, EventArgs e)
+        {
+            _categoryListBox = sender as ListBox;
+        }
+
         private void DataGridEdit_ListBox_PreviewLeftMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             e.Handled = true;
 
-            ListBox CatList = ((ListBox)sender);
+            // Find the actual CheckBox that was clicked
+            DependencyObject current = e.OriginalSource as DependencyObject;
+            while (current != null && current is not CheckBox && current is not ListBox)
+                current = VisualTreeHelper.GetParent(current);
 
-            if (CatList.SelectedItem == DataGridEdit_ListBox_SelectedItem)
-            { // check if we're selecting the same item
-                DataGrid_ListBox_Edit_SetSelectedItem(CatList);
-            }
-            else
-            { // we selected another item, the SelectionChanged event will handle the rest, so we just update the selected item variable
-                DataGridEdit_ListBox_SelectedItem = CatList.SelectedItem;
+            if (current is CheckBox checkBox)
+            {
+                checkBox.IsChecked = !checkBox.IsChecked;
+                // Now run the “All” logic
+                DGrid_Category_ListBoxItem_CheckBox_Checked(checkBox, e);
             }
         }
 
-        private object DataGridEdit_ListBox_SelectedItem = null;
+        private void DataGridEdit_ListBox_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            if (e.Source is List<CheckBox> checkBoxes)
+            {
+                foreach (var cb in checkBoxes)
+                {
+                    cb.Checked += DGrid_Category_ListBoxItem_CheckBox_Checked;
+                    cb.Unchecked += DGrid_Category_ListBoxItem_CheckBox_Checked;
+                }
+            }
+        }
 
         private void DataGridEdit_ListBox_CategorySelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             e.Handled = true;
 
-            ListBox CatList = ((ListBox)sender);
-            DataGrid_ListBox_Edit_SetSelectedItem(CatList);
+            //ListBox CatList = ((ListBox)sender);
+            //DataGrid_ListBox_Edit_SetSelectedItem(CatList);
         }
 
         private static void DataGrid_ListBox_Edit_SetSelectedItem(ListBox CatList)
@@ -468,7 +519,57 @@ namespace StreamerBot
                     selected.Add(c.Content.ToString());
                 }
             }
+
+            if (selected.Count == 0 || selected.Contains("All"))
+            {
+                CatList.SelectedItem = new List<string> { "All" };
+            }
+            else
+            {
+                CatList.SelectedItem = selected;
+            }
         }
+
+        private void DGrid_Category_ListBoxItem_CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            e.Handled = true;
+            var checkBox = sender as CheckBox;
+            if (_categoryListBox.ItemsSource is not ICollection<CheckBox> items) return;
+
+            bool allJustChecked = (string)checkBox.Content == "All" && checkBox.IsChecked == true;
+
+            List<string> selected = [];
+
+            if (allJustChecked)
+            {
+                // User turned “All” on → clear everything else
+                foreach (var cb in items)
+                {
+                    cb.IsChecked = (string)cb.Content == "All";
+                }
+                selected = ["All"];
+            }
+            else
+            {
+                // User clicked a normal category
+                var allItem = items.FirstOrDefault(c => (string)c.Content == "All");
+                allItem?.IsChecked = false;
+
+                selected = [.. items
+                    .Where(c => c.IsChecked == true)
+                    .Select(c => (string)c.Content)];
+
+                // If nothing left checked, force “All”
+                if (selected.Count == 0)
+                {
+                    allItem?.IsChecked = true;
+                    selected = ["All"];
+                }
+            }
+
+            _categoryListBox.SelectedItem = selected;
+        }
+
         #endregion
 
         #endregion

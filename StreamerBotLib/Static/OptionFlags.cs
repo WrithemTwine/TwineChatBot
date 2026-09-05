@@ -1099,7 +1099,7 @@ namespace StreamerBotLib.Static
         public static bool ThemeSummerBeach => Settings.Default.ThemeSummerBeach;
         public static bool ThemeSummer => Settings.Default.ThemeSummer;
         public static bool ThemeWinter => Settings.Default.ThemeWinter;
- 
+
         public static bool ThemeSilverCherry => Settings.Default.ThemeSilverCherry;
 
         public static bool ThemeBaseball => Settings.Default.ThemeBaseball;

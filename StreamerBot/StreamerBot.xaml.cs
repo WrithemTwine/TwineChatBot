@@ -4,7 +4,6 @@ using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
-using StreamerBotLib.Models.Repeat;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -95,6 +94,8 @@ namespace StreamerBot
             StatusBar_Label_Version.Content = $"Version: {version}";
 
             ConstructEvents();
+
+            PopupWindows = new(BotController.DataBot);
         }
 
         #region Bot_Ops
@@ -440,7 +441,7 @@ namespace StreamerBot
             // setup the repeat timer; setting is unchecked so the repeat timer should be started for the user
             Controller.ActivateRepeatTimers();
         }
- 
+
         private void TextBox_Follower_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox src = (TextBox)sender;
@@ -616,7 +617,6 @@ namespace StreamerBot
             TwitchCheckFocusAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
-
 
     }
 }

@@ -57,6 +57,8 @@ namespace StreamerBotLib.DataSQL.Models
         public CommandTypes Commandtype { get; set; }
         public int Calls { get; set; } = calls;
 
+        public ICollection<CommandPlatformMessages> CommandPlatformMessages { get; set; } = [];
+
         public static CommandsBase GetCommands(CommandData commandData)
         {
             return new(

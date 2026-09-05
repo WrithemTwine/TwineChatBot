@@ -19,7 +19,10 @@ using System.IO;
 #endif
 
 using StreamerBotLib.DataSQL.Models;
+<<<<<<< HEAD
+=======
 using StreamerBotLib.Static;
+>>>>>>> 2b53979a51dbc5889630f6a83862ac95405d5e5d
 
 namespace StreamerBotLib.DataSQL
 {
@@ -62,6 +65,7 @@ namespace StreamerBotLib.DataSQL
         public DbSet<CommandsBase> CommandsBase { get; set; }
         public DbSet<Commands> Commands { get; set; }
         public DbSet<CommandsUser> CommandsUser { get; set; }
+        public DbSet<CommandPlatformMessages> CommandPlatformMessages { get; set; }
         public DbSet<ModeratorApprove> ModeratorApprove { get; set; }
         #endregion
 
@@ -185,6 +189,13 @@ namespace StreamerBotLib.DataSQL
             modelBuilder.Entity<LearnMsgs>()
                 .Property(i => i.Id)
                 .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<CommandsBase>()
+                .HasMany(c => c.CommandPlatformMessages)
+                .WithOne(c => c.CommandsBase)
+                .HasForeignKey(c => new { c.CmdName })
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
 
             // Discriminators for Type-Per-Hierarchy -entity derived types will coalesce in base table
             // discriminators distinguish between base type and other derived types

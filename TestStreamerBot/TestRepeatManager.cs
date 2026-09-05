@@ -3,11 +3,11 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Models.Repeat;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
-using StreamerBotLib.Models.Repeat;
 
 using System.Reflection;
 

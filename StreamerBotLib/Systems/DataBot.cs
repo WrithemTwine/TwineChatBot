@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
@@ -54,8 +53,6 @@ namespace StreamerBotLib.Systems
         {
             SystemAction = new ActionSystem();
             ThreadManager.CreateThreadStart("DataBotActionThread", ActionThread);
-
-            ManageWindows.DataGridUpdatedRowHandler = DataGridUpdatedRow;
         }
 
         public void NotifyBotStart()
@@ -374,6 +371,14 @@ namespace StreamerBotLib.Systems
             }));
         }
 
+        public void GetTableFields(string tableName, Action<IEnumerable<string>> callback)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("GetTableFields", DebugLogTypes.DataBot, $"Getting table fields for table: {tableName}.");
+                callback?.Invoke(SystemAction.GetTableFields(tableName));
+            }));
+        }
 
         #endregion
 

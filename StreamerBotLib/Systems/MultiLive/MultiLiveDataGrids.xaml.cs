@@ -1,5 +1,4 @@
 ﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.GUI.Windows;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
@@ -32,7 +31,7 @@ namespace StreamerBotLib.Systems.MultiLive
 
         public event EventHandler<EventArgs> DebugAddNewMultiLiveData;
 
-        private ManageWindows PopupWindows { get; set; } = new();
+        //private ManageDataEdit PopupWindows { get; set; } = new();
 
         public MultiLiveDataGrids()
         {
@@ -135,7 +134,7 @@ namespace StreamerBotLib.Systems.MultiLive
             };
 
             DataSQL.TableMeta.TableMeta tableMeta = new();
-            PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
+            //PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
         }
 
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)

@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:SqlModelConverters="clr-namespace:StreamerBotLib.DataSQL.Models.Converters"
+    xmlns:access="clr-namespace:StreamerBotLib.DataSQL.AccessPolicy"
     xmlns:GUI="clr-namespace:StreamerBotLib.GUI"
     xmlns:Converter="clr-namespace:StreamerBotLib.Models.Converters"
     xmlns:StaticLib="clr-namespace:StreamerBotLib.Static"
@@ -71,6 +72,19 @@
             </Setter.Value>
         </Setter>
 
+        <Setter Property="RowStyle">
+            <Setter.Value>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource LightBackground}" />
+                            <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="DataGridEditingTextBoxStyle" 
@@ -91,11 +105,20 @@
 
     </Style>
 
+    <Style x:Key="DataGridComboBoxColumnStyle"
+           TargetType="{x:Type ComboBox}"
+           BasedOn="{StaticResource {x:Type ComboBox}}" />
+
 
     <!--#region DataGrid RowDetail DataTemplates -->
 
     <DataTemplate x:Key="DG_RowDetailDT_Clips">
         <Border BorderThickness="2">
+            <Border.Resources>
+                <Style TargetType="{x:Type StackPanel}" BasedOn="{StaticResource {x:Type StackPanel}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
             <StackPanel Orientation="Vertical">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
@@ -127,6 +150,11 @@
 
     <DataTemplate x:Key="DG_RowDetailDT_Commands">
         <Border BorderThickness="2">
+            <Border.Resources>
+                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
@@ -185,31 +213,41 @@
 
     <DataTemplate x:Key="DG_RowDetailDT_Followers">
         <Border BorderThickness="2">
-            <StackPanel Orientation="Vertical">
-                <StackPanel.Resources>
+            <Border.Resources>
+                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
+            <DockPanel>
+                <DockPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
                         <Setter Property="Margin" Value="0,3" />
                         <Setter Property="Orientation" Value="Horizontal" />
                     </Style>
-                </StackPanel.Resources>
-                <StackPanel>
+                </DockPanel.Resources>
+                <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Category when Followed:</TextBlock>
                     <TextBlock Text="{Binding Category, Converter={StaticResource CategoryConverter}}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Followed Date:</TextBlock>
                     <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:F}}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Status Changed Date:</TextBlock>
                     <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:F}}" />
                 </StackPanel>
-            </StackPanel>
+            </DockPanel>
         </Border>
     </DataTemplate>
 
     <DataTemplate x:Key="DG_RowDetailDT_OverlayServices">
         <Border BorderThickness="2">
+            <Border.Resources>
+                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
@@ -227,6 +265,11 @@
 
     <DataTemplate x:Key="DG_RowDetailDT_Webhooks">
         <Border BorderThickness="1">
+            <Border.Resources>
+                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
@@ -248,29 +291,39 @@
 
     <DataTemplate x:Key="DG_RowDetailDT_MultiChannelNames">
         <Border BorderThickness="1">
-            <StackPanel Orientation="Vertical">
-                <StackPanel.Resources>
+            <Border.Resources>
+                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
+            <DockPanel>
+                <DockPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
                         <Setter Property="Margin" Value="0,3" />
                         <Setter Property="Orientation" Value="Horizontal" />
                     </Style>
-                </StackPanel.Resources>
-                <TextBlock>Summary Data, if available:<LineBreak />
+                </DockPanel.Resources>
+                <TextBlock DockPanel.Dock="Top">Summary Data, if available:<LineBreak />
                 (use archive tab to compact daily data)</TextBlock>
-                <StackPanel>
+                <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Through Date:</TextBlock>
                     <TextBlock Text="{Binding MultiSummaryLiveStreams.ThroughDate, FallbackValue=1/1/1900}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel DockPanel.Dock="Top">
                     <TextBlock>Number of Streams:</TextBlock>
                     <TextBlock Text="{Binding MultiSummaryLiveStreams.StreamCount, FallbackValue=0, StringFormat={}{0:N0}}" />
                 </StackPanel>
-            </StackPanel>
+            </DockPanel>
         </Border>
     </DataTemplate>
 
     <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
         <Border BorderThickness="2">
+            <Border.Resources>
+                <Style TargetType="{x:Type Grid}" BasedOn="{StaticResource {x:Type Grid}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -370,6 +423,11 @@
 
     <DataTemplate x:Key="DG_RowDetailDT_Users">
         <Border BorderThickness="1">
+            <Border.Resources>
+                <Style TargetType="{x:Type Grid}" BasedOn="{StaticResource {x:Type Grid}}">
+                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                </Style>
+            </Border.Resources>
             <Grid Margin="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -388,22 +446,22 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Row="0" Grid.Column="0">First Date seen:</TextBlock>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FirstDateSeen, StringFormat={}{0:g}}" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
 
                 <TextBlock Grid.Row="1" Grid.Column="0">Followed Date:</TextBlock>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Follower.FollowedDate, FallbackValue=\&quot;Not a Follower\&quot;, StringFormat=\{0:g\}}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Follower.FollowedDate, FallbackValue=\&quot;Not a Follower\&quot;, StringFormat={}{0:F}}" />
 
                 <TextBlock Grid.Row="3" Grid.Column="0">Current Login:</TextBlock>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
                 <TextBlock Grid.Row="4" VerticalAlignment="Bottom" >Activity Stats:</TextBlock>
                 <TextBlock Grid.Row="5" Grid.Column="0">Commands called:</TextBlock>
-                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
                 <TextBlock Grid.Row="6" Grid.Column="0">Chats:</TextBlock>
-                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
                 <TextBlock Grid.Row="7" Grid.Column="0">Clips created:</TextBlock>
-                <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
                 <TextBlock Grid.Row="8" Grid.Column="0">Channel Point Rewards:</TextBlock>
-                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
 
             </Grid>
         </Border>
@@ -443,6 +501,12 @@
     <CollectionViewSource x:Key="DG_CommandsUser_CVS" Source="{Binding CommandsUser, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="CmdName"/>
+        </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_CommandPlatformMessages_CVS" Source="{Binding CommandPlatformMessages, Source={StaticResource DataViews}}">
+        <CollectionViewSource.SortDescriptions>
+            <scm:SortDescription PropertyName="CmdName"/>
+            <scm:SortDescription PropertyName="Platform"/>
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_Currency_CVS" Source="{Binding Currency, Source={StaticResource DataViews}}">

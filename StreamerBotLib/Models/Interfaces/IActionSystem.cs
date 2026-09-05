@@ -82,6 +82,7 @@ namespace StreamerBotLib.Models.Interfaces
         void GetApprovalRule(ModActionType type, string rewardTitle, Action<Tuple<string, string>> callback);
         void GetDiscordWebhooks(WebhooksKind webhooksKind, Action<IEnumerable<Tuple<bool, Uri>>> callback);
         void GetEventAnnounce(ChannelEventActions channelEventActions, Action<bool> callback);
+        void GetTableFields(string tableName, Action<IEnumerable<string>> callback);
         void CheckForOverlayEvent(OverlayTypes overlayType, string eventAction, LiveUser user, string UserMsg = null);
         void PostMultiStreamDate(LiveUser User, DateTime currTime, Action<bool> callback);
         void DeleteDataRows(IEnumerable<object> dataRows, string TableName);
