@@ -1,3 +1,4 @@
+using StreamerBotLib.DataSQL.AccessPolicy;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Interfaces;
 
@@ -9,10 +10,14 @@ namespace StreamerBotLib.DataSQL.TableMeta
 
         public object DataEntity { get; private set; }
 
-        public class EntityData(string name, TableMeta tableMeta)
+        public class EntityData(string name, TableMeta tableMeta, bool IsNew)
         {
             private TableMeta _tableMeta = tableMeta;
             public string Name { get; } = name;
+            public bool IsReadOnly { get; } = IsNew ? 
+                                                    PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsNewReadOnly :
+                                                    PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsEditReadOnly;
+            public bool IsEnabled => !IsReadOnly;
             public Type ColType => _tableMeta.CurrEntity.Meta[Name];
             public object Value
             {
@@ -153,7 +158,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 CurrEntity = new Webhooks(new Models.Webhooks());
             }
 
-            SetBindingList();
+            SetBindingList(true);
 
             return this;
         }
@@ -283,16 +288,21 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 CurrEntity = new Webhooks((Models.Webhooks)Entity);
             }
 
-            SetBindingList();
+            SetBindingList(false);
 
             return this;
         }
 
-        private void SetBindingList() => BindingList.AddRange(from K in CurrEntity.Values.Keys
+        private void SetBindingList(bool IsNew) => BindingList.AddRange(from K in CurrEntity.Values.Keys
                                                               where (K is not "Id")
-                                                              select new EntityData(K, this));
+                                                              select new EntityData(K, this, IsNew));
 
-        public object GetUpdatedEntity(IDatabaseTableMeta Update)
+        public object GetEditedEntity()
+        {
+            return GetUpdatedEntity(CurrEntity);
+        }
+
+        private object GetUpdatedEntity(IDatabaseTableMeta Update)
         {
             if (DataEntity.GetType() == typeof(Models.BanReasons))
             {

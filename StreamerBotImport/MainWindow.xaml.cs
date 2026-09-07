@@ -26,20 +26,17 @@ namespace StreamerBotImport
             ChooseDatabase();
 
             ThreadManager.SetGUIDispatcher(Dispatcher);
+            PerformMigration();
 
-            using var context = dbContextFactory.CreateDbContext();
-            context.Database.EnsureCreated();
-            context.SaveChanges();
-
-            InitializeComponent();
-
-            SetTheme();
 
             if (Settings.Default.EFCDataImportedDataGram)
             {
                 ImportFrame.Visibility = Visibility.Collapsed;
-                PerformMigration();
             }
+
+            InitializeComponent();
+
+            SetTheme();
         }
 
         /// <summary>
@@ -136,7 +133,7 @@ namespace StreamerBotImport
 
         private void MainWindow_ImportCompleted(object? sender, EventArgs e)
         {
-            PerformMigration();
+            Button_Close.Visibility = Visibility.Visible;
         }
 
         private void PerformMigration()
@@ -146,8 +143,6 @@ namespace StreamerBotImport
             context.Database.MigrateAsync().Wait();
             Label_EndMigration.Visibility = Visibility.Visible;
             context.SaveChanges();
-
-            Button_Close.Visibility = Visibility.Visible;
         }
 
         private void ChooseDatabase_ExitApp(object sender, EventArgs e)

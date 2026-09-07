@@ -594,12 +594,12 @@ namespace StreamerBotLib.Systems
 
         #region Commands & Repeater
 
-        public void ProcessCommand(CmdMessage commandmsg, Platform source)
+        public void ProcessCommand(CmdMessage commandmsg)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
-                LogWriter.DebugLog("ProcessCommand", DebugLogTypes.DataBot, $"Processing command: {commandmsg.CommandText} from source: {source}.");
-                SystemAction.ProcessCommand(commandmsg, source);
+                LogWriter.DebugLog("ProcessCommand", DebugLogTypes.DataBot, $"Processing command: {commandmsg.CommandText} from source: {commandmsg.User.Platform}.");
+                SystemAction.ProcessCommand(commandmsg);
             }));
         }
         public void ActivateRepeatTimers()

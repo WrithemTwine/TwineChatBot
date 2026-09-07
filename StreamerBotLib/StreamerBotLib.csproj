@@ -94,7 +94,7 @@
 	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastGiftSub.png" />
 	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastInRaid.png" />
 	  <EmbeddedResource Include="Systems\Overlay\img\DefaultLastSubscriber.png" />
-	  <Resource Include="DataSQL\AccessPolicy\PermissionDigest.xml" />
+	  <EmbeddedResource Include="DataSQL\AccessPolicy\PermissionDigest.xml" />
 	  <Resource Include="Systems\Overlay\img\seconds.png" />
 	  <Resource Include="Systems\Overlay\seconds.png" />
 	</ItemGroup>

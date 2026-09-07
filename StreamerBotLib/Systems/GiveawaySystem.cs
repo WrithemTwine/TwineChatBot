@@ -30,7 +30,7 @@ namespace StreamerBotLib.Systems
         /// <summary>
         /// Adds a viewer DisplayName to the active giveaway list. The giveaway must be started through <code>BeginGiveaway()</code>.
         /// </summary>
-        /// <param name="DisplayName"></param>
+        /// <param name="User"></param>
         public void ManageGiveaway(LiveUser User)
         {
             LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.SystemController, "Managing giveaway.");
@@ -39,6 +39,8 @@ namespace StreamerBotLib.Systems
             {
                 LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.SystemController, "Adding user to giveaway list.");
                 GiveawayCollection.Add(User);
+
+                UpdateUserStats(DBUserStats.GiveawaysEntered, User);
             }
 
             LogWriter.DebugLog("ManageGiveaway", DebugLogTypes.SystemController, "Checking for max entries for user.");
@@ -84,6 +86,8 @@ namespace StreamerBotLib.Systems
                     {
                         LogWriter.DebugLog("PostGiveawayResult", DebugLogTypes.SystemController, "Posting giveaway data to database.");
                         DataManage.PostGiveawayData(winner.UserId, DateTime.Now.ToLocalTime());
+
+                        UpdateUserStats(DBUserStats.GiveawaysWon, winner);
                     }
                     x++;
                 }

@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace StreamerBotLib.Models
 {
     [DebuggerDisplay("CommandText={CommandText}, Channel={Channel}, UserId={UserId}, DisplayName={DisplayName}")]
-    public record CmdMessage
+    public record CmdMessage()
     {
         public string CommandText { get; set; }
         public List<string> CommandArguments { get; set; }
@@ -25,5 +25,6 @@ namespace StreamerBotLib.Models
         public string Message { get; set; }
         public int Bits { get; set; }
         public ViewerTypes UserType { get; set; }
+        public LiveUser User { get; set; }
     }
 }

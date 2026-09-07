@@ -170,7 +170,12 @@ namespace BuildDatabaseMeta
                 $"            return this;\r\n" +
                 $"        }}\r\n" +
                 $"\r\n" +
-                $"        public object GetUpdatedEntity(IDatabaseTableMeta Update)\r\n" +
+                $"        public object GetEditedEntity()" +
+                $"        {{\r\n" +
+                $"            return GetUpdatedEntity(CurrEntity);\r\n" +
+                $"        }}\r\n" +
+                $"\r\n" +
+                $"        private object GetUpdatedEntity(IDatabaseTableMeta Update)\r\n" +
                 $"        {{\r\n" +
                 $"            {GetEntity}" +
                 $"            else return null;\r\n" +

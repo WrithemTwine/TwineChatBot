@@ -53,7 +53,7 @@ namespace StreamerBotLib.DataSQL.EFC10
         /// </summary>
         /// <param name="User">The username to check for follower status. Cannot be null or empty.</param>
         /// <returns><see langword="true"/> if the specified user is a follower; otherwise, <see langword="false"/>.</returns>
-        internal async Task<bool> CheckFollower(string User)
+        internal async Task<bool> CheckFollower(LiveUser User)
         {
             return await CheckFollower(User, default);
         }
@@ -69,13 +69,13 @@ namespace StreamerBotLib.DataSQL.EFC10
         /// <see langword="default"/> is provided, all followers are considered.</param>
         /// <returns><see langword="true"/> if the user has at least one follower that matches the criteria;  otherwise, <see
         /// langword="false"/>.</returns>
-        internal async Task<bool> CheckFollower(string User, DateTime ToDateTime)
+        internal async Task<bool> CheckFollower(LiveUser User, DateTime ToDateTime)
         {
             using var context = BuildDataContext();
 
             return await context.Followers
                                 .Include(user => user.User)
-                                .Where(f => f.User.UserName == User && (f.IsFollower && (ToDateTime == default || f.FollowedDate < ToDateTime)))
+                                .Where(f => f.User.UserName == User.UserName && f.User.Platform == User.Platform && (f.IsFollower && (ToDateTime == default || f.FollowedDate < ToDateTime)))
                                 .Select(f => f)
                                 .AnyAsync();
         }
@@ -143,12 +143,12 @@ namespace StreamerBotLib.DataSQL.EFC10
         /// </summary>
         /// <param name="UserName">The UserName to shoutout.</param>
         /// <returns>true if in the ShoutOut table.</returns>
-        internal async Task<bool> CheckShoutName(string UserId)
+        internal async Task<bool> CheckShoutName(LiveUser User)
         {
             using var context = BuildDataContext();
 
             return await context.ShoutOuts
-                                .Where(s => s.UserId == UserId)
+                                .Where(s => s.UserId == User.UserId)
                                 .Select(s => s)
                                 .AnyAsync();
         }
@@ -198,17 +198,13 @@ namespace StreamerBotLib.DataSQL.EFC10
         /// </summary>
         /// <param name="User">The user to check for a welcome message.</param>
         /// <returns>The welcome message if user is available, or empty string if not found.</returns>
-        internal async Task<string> CheckWelcomeUser(string UserId)
+        internal async Task<string> CheckWelcomeUser(LiveUser User)
         {
             using var context = BuildDataContext();
 
-            string result = (from s in context.CustomWelcome
-                             where s.UserId == UserId
-                             select s.Message).FirstOrDefault() ?? "";
-
             return await context.CustomWelcome
-                                .Where(s => s.UserId == UserId)
-                                .Select(s => s.Message)
+                                .Where(c => c.UserId == User.UserId)
+                                .Select(c => c.Message)
                                 .FirstOrDefaultAsync() ?? "";
         }
 

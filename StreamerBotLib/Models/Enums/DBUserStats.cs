@@ -2,6 +2,14 @@
 {
     public enum DBUserStats
     {
-        Commands, Clips, Chats, ChannelRewards
+        Commands,
+        Clips,
+        Chats,
+        ChannelRewards,
+        ShoutOutsGiven,
+        CustomWelcomeMessages,
+        GiveawaysEntered,
+        GiveawaysWon,
+        RaidsReceived
     }
 }

@@ -49,7 +49,7 @@ namespace StreamerBotLib.Models.Interfaces
 
 
         // Channel events
-        void ProcessCommand(CmdMessage commandmsg, Platform source);
+        void ProcessCommand(CmdMessage commandmsg);
 
         // Timers
         void ActivateRepeatTimers();

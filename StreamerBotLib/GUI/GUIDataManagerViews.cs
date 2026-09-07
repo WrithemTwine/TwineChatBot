@@ -23,7 +23,7 @@ namespace StreamerBotLib.GUI
         private Action<bool, Action<IEnumerable<string>>> GetDataCommandsNoParams { get; set; }
 
         public FlowDocument ChatData { get; private set; }
-        public ObservableCollection<string> CurrUserList { get; private set; }
+        public ObservableCollection<LiveUser> CurrUserList { get; private set; }
 
         public ObservableCollection<UserJoin> JoinCollection { get; set; }
         public ObservableCollection<string> CommandCollection { get; set; } = [];

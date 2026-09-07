@@ -9,7 +9,7 @@ namespace StreamerBotLib.Models.Interfaces
         bool GetEventAnnounce(ChannelEventActions EventName);
         bool CheckField(string table, string field);
         bool CheckPermission(string cmd, ViewerTypes permission);
-        bool CheckShoutName(string UserName);
+        bool CheckShoutName(LiveUser User);
         string GetKey(string Table);
         string GetSocials();
         string GetUsage(string command);
@@ -23,9 +23,9 @@ namespace StreamerBotLib.Models.Interfaces
         List<string> GetTableNames();
         List<CategoryData> GetGameCategories();
         List<string> GetCurrencyNames();
-        bool CheckFollower(string User);
+        bool CheckFollower(LiveUser User);
         bool CheckUser(LiveUser User);
-        bool CheckFollower(string User, DateTime ToDateTime);
+        bool CheckFollower(LiveUser User, DateTime ToDateTime);
         bool CheckUser(LiveUser User, DateTime ToDateTime);
         string GetUserId(LiveUser User);
         IEnumerable<string> GetKeys(string Table);

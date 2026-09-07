@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StreamerBotLib.DataSQL;
 
@@ -10,9 +11,11 @@ using StreamerBotLib.DataSQL;
 namespace StreamerBotLib.Migrations
 {
     [DbContext(typeof(SQLDBContext))]
-    partial class SQLDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260906052044_PlatformMessages_UserStats")]
+    partial class PlatformMessages_UserStats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
@@ -738,7 +741,22 @@ namespace StreamerBotLib.Migrations
                     b.Property<int>("ClipsCreated")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("CustomWelcomeMessages")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GiveawaysEntered")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GiveawaysWon")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RaidsReceived")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("RewardRedeems")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ShoutOutsGiven")
                         .HasColumnType("INTEGER");
 
                     b.Property<TimeSpan>("WatchTime")

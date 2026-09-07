@@ -1,3 +1,0 @@
-﻿rem use this command line style to add a new migration; change the EFC database model(s), update the [MigrationName] to identify the migration, and run. 
-
-dotnet ef migrations add [MigrationName-tool prepends datetime stamp] --output-dir ..\StreamerBotImport\Migrations --project StreamerBotLib\StreamerBotLib.csproj

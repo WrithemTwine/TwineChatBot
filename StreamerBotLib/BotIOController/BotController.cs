@@ -1177,7 +1177,8 @@ namespace StreamerBotLib.BotIOController
                     IsTurbo = false,
                     IsVip = e.ChannelChatMessage.IsVip,
                     Message = e.ChannelChatMessage.Message.Text,
-                    Bits = e.ChannelChatMessage.Cheer?.Bits ?? 0
+                    Bits = e.ChannelChatMessage.Cheer?.Bits ?? 0,
+                    User = new LiveUser(e.ChannelChatMessage.ChatterUserName, Platform.Twitch, e.ChannelChatMessage.ChatterUserId)
                 }
                 , Platform.Twitch);
         }
@@ -1928,7 +1929,7 @@ namespace StreamerBotLib.BotIOController
             {
                 HandleGiveawayPostName(new(commandmsg.DisplayName, Source, commandmsg.UserId));
             }
-            DataBot.ProcessCommand(commandmsg, Source);
+            DataBot.ProcessCommand(commandmsg);
         }
 
         /// <summary>

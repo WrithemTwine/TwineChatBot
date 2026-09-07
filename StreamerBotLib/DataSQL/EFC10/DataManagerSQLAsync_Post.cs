@@ -1070,7 +1070,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                 { // if the stream has ended, reset the current stream start to default
                     CurrStreamStart = default;
                 }
-                   
+
                 LogWriter.DebugLog("PostStreamStat", DebugLogTypes.DataManager, $"Updated stream stats for stream started {streamStat.StreamStart}.");
                 await context.Database.CommitTransactionAsync();
                 await context.SaveChangesAsync(true);

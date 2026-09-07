@@ -15,7 +15,7 @@ namespace StreamerBotLib.DataSQL.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.4");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
             modelBuilder.Entity("StreamerBotLib.DataSQL.Models.BanReasons", b =>
                 {
@@ -136,9 +136,27 @@ namespace StreamerBotLib.DataSQL.Migrations
 
                     b.HasKey("ClipId", "CategoryId");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("ClipId", "CreatedAt", "CategoryId");
 
                     b.ToTable("Clips");
+                });
+
+            modelBuilder.Entity("StreamerBotLib.DataSQL.Models.CommandPlatformMessages", b =>
+                {
+                    b.Property<string>("CmdName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Platform")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CmdName", "Platform");
+
+                    b.ToTable("CommandPlatformMessages");
                 });
 
             modelBuilder.Entity("StreamerBotLib.DataSQL.Models.CommandsBase", b =>
@@ -299,6 +317,7 @@ namespace StreamerBotLib.DataSQL.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FollowedDate")
@@ -719,7 +738,22 @@ namespace StreamerBotLib.DataSQL.Migrations
                     b.Property<int>("ClipsCreated")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("CustomWelcomeMessages")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GiveawaysEntered")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GiveawaysWon")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RaidsReceived")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("RewardRedeems")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ShoutOutsGiven")
                         .HasColumnType("INTEGER");
 
                     b.Property<TimeSpan>("WatchTime")
@@ -826,6 +860,28 @@ namespace StreamerBotLib.DataSQL.Migrations
                     b.HasDiscriminator().HasValue(1);
                 });
 
+            modelBuilder.Entity("StreamerBotLib.DataSQL.Models.Clips", b =>
+                {
+                    b.HasOne("StreamerBotLib.DataSQL.Models.CategoryList", "CategoryList")
+                        .WithMany("Clips")
+                        .HasForeignKey("CategoryId")
+                        .HasPrincipalKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CategoryList");
+                });
+
+            modelBuilder.Entity("StreamerBotLib.DataSQL.Models.CommandPlatformMessages", b =>
+                {
+                    b.HasOne("StreamerBotLib.DataSQL.Models.CommandsBase", "CommandsBase")
+                        .WithMany("CommandPlatformMessages")
+                        .HasForeignKey("CmdName")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("CommandsBase");
+                });
+
             modelBuilder.Entity("StreamerBotLib.DataSQL.Models.Currency", b =>
                 {
                     b.HasOne("StreamerBotLib.DataSQL.Models.CurrencyType", "CurrencyType")
@@ -837,8 +893,7 @@ namespace StreamerBotLib.DataSQL.Migrations
                     b.HasOne("StreamerBotLib.DataSQL.Models.Users", "User")
                         .WithMany("Currency")
                         .HasForeignKey("UserId", "Platform")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("CurrencyType");
 
@@ -849,7 +904,8 @@ namespace StreamerBotLib.DataSQL.Migrations
                 {
                     b.HasOne("StreamerBotLib.DataSQL.Models.Users", "User")
                         .WithOne("CustomWelcome")
-                        .HasForeignKey("StreamerBotLib.DataSQL.Models.CustomWelcome", "UserId", "Platform");
+                        .HasForeignKey("StreamerBotLib.DataSQL.Models.CustomWelcome", "UserId", "Platform")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -859,7 +915,9 @@ namespace StreamerBotLib.DataSQL.Migrations
                     b.HasOne("StreamerBotLib.DataSQL.Models.CategoryList", "CategoryList")
                         .WithMany("Followers")
                         .HasForeignKey("Category")
-                        .HasPrincipalKey("Category");
+                        .HasPrincipalKey("Category")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("StreamerBotLib.DataSQL.Models.Users", "User")
                         .WithOne("Follower")
@@ -884,13 +942,12 @@ namespace StreamerBotLib.DataSQL.Migrations
 
             modelBuilder.Entity("StreamerBotLib.DataSQL.Models.GiveawayUserData", b =>
                 {
-                    b.HasOne("StreamerBotLib.DataSQL.Models.Users", "Users")
+                    b.HasOne("StreamerBotLib.DataSQL.Models.Users", "User")
                         .WithMany("GiveawayUserData")
                         .HasForeignKey("UserId", "Platform")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StreamerBotLib.DataSQL.Models.InRaidData", b =>
@@ -930,7 +987,8 @@ namespace StreamerBotLib.DataSQL.Migrations
                 {
                     b.HasOne("StreamerBotLib.DataSQL.Models.Users", "User")
                         .WithOne("ShoutOuts")
-                        .HasForeignKey("StreamerBotLib.DataSQL.Models.ShoutOuts", "UserId", "Platform");
+                        .HasForeignKey("StreamerBotLib.DataSQL.Models.ShoutOuts", "UserId", "Platform")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });
@@ -948,9 +1006,16 @@ namespace StreamerBotLib.DataSQL.Migrations
 
             modelBuilder.Entity("StreamerBotLib.DataSQL.Models.CategoryList", b =>
                 {
+                    b.Navigation("Clips");
+
                     b.Navigation("Followers");
 
                     b.Navigation("GameDeadCounter");
+                });
+
+            modelBuilder.Entity("StreamerBotLib.DataSQL.Models.CommandsBase", b =>
+                {
+                    b.Navigation("CommandPlatformMessages");
                 });
 
             modelBuilder.Entity("StreamerBotLib.DataSQL.Models.CurrencyType", b =>

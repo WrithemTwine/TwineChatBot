@@ -61,16 +61,16 @@ namespace TestStreamerBot
             public void AddAsyncTaskToGUIDispatcher(string CallMethodName, Action action) => throw new NotImplementedException();
             public bool CheckCurrency(LiveUser User, double value, string CurrencyName) => throw new NotImplementedException();
             bool CheckField(string table, string field) => throw new NotImplementedException();
-            bool CheckFollower(string User) => throw new NotImplementedException();
-            bool CheckFollower(string User, DateTime ToDateTime) => throw new NotImplementedException();
+            bool CheckFollower(LiveUser User) => throw new NotImplementedException();
+            bool CheckFollower(LiveUser User, DateTime ToDateTime) => throw new NotImplementedException();
             public Tuple<string, string> CheckModApprovalRule(ModActionType modActionType, string ModAction) => throw new NotImplementedException();
             public bool CheckStreamDate(DateTime streamStart) => throw new NotImplementedException();
             bool CheckPermission(string cmd, ViewerTypes permission) => throw new NotImplementedException();
-            bool CheckShoutName(string UserId) => throw new NotImplementedException();
+            bool CheckShoutName(LiveUser User) => throw new NotImplementedException();
             public bool CheckStreamTime(DateTime CurrTime) => throw new NotImplementedException();
             bool CheckUser(LiveUser User) => throw new NotImplementedException();
             bool CheckUser(LiveUser User, DateTime ToDateTime) => throw new NotImplementedException();
-            string CheckWelcomeUser(string User) => throw new NotImplementedException();
+            string CheckWelcomeUser(LiveUser User) => throw new NotImplementedException();
             public void ClearAllCurrencyValues() => throw new NotImplementedException();
             public void ClearUsersNotFollowers() => throw new NotImplementedException();
             public void ClearWatchTime() => throw new NotImplementedException();
@@ -145,7 +145,7 @@ namespace TestStreamerBot
             public void UpdateFollowers(IEnumerable<Follow> follows) => throw new NotImplementedException();
             public List<LearnMsgRecord> UpdateLearnedMsgs() => throw new NotImplementedException();
             public void UpdateOverlayTicker(OverlayTickerItem item, string name) => throw new NotImplementedException();
-            public void UpdateStats(DBUserStats Stat, string userId, Platform platform) => throw new NotImplementedException();
+            public void UpdateStats(DBUserStats Stat, LiveUser User) => throw new NotImplementedException();
             public void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime) => throw new NotImplementedException();
             public void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen) => throw new NotImplementedException();
             public void UserLeft(LiveUser User, DateTime LastSeen) => throw new NotImplementedException();
@@ -165,12 +165,12 @@ namespace TestStreamerBot
                 return CheckField(table, field);
             }
 
-            bool IDataManager.CheckFollower(string User)
+            bool IDataManager.CheckFollower(LiveUser User)
             {
                 return CheckFollower(User);
             }
 
-            bool IDataManager.CheckFollower(string User, DateTime ToDateTime)
+            bool IDataManager.CheckFollower(LiveUser User, DateTime ToDateTime)
             {
                 return CheckFollower(User, ToDateTime);
             }
@@ -180,9 +180,9 @@ namespace TestStreamerBot
                 return CheckPermission(cmd, permission);
             }
 
-            bool IDataManager.CheckShoutName(string UserId)
+            bool IDataManager.CheckShoutName(LiveUser User)
             {
-                return CheckShoutName(UserId);
+                return CheckShoutName(User);
             }
 
             bool IDataManager.CheckUser(LiveUser User)
@@ -195,7 +195,7 @@ namespace TestStreamerBot
                 return CheckUser(User, ToDateTime);
             }
 
-            string IDataManager.CheckWelcomeUser(string User)
+            string IDataManager.CheckWelcomeUser(LiveUser User)
             {
                 return CheckWelcomeUser(User);
             }
@@ -240,9 +240,9 @@ namespace TestStreamerBot
                 return CheckPermission(cmd, permission);
             }
 
-            bool IDataManagerReadOnly.CheckShoutName(string UserName)
+            bool IDataManagerReadOnly.CheckShoutName(LiveUser User)
             {
-                return CheckShoutName(UserName);
+                return CheckShoutName(User);
             }
 
             Tuple<string, int, List<string>> IDataManagerReadOnly.GetTimerCommand(string Cmd)
@@ -250,7 +250,7 @@ namespace TestStreamerBot
                 throw new NotImplementedException();
             }
 
-            bool IDataManagerReadOnly.CheckFollower(string User)
+            bool IDataManagerReadOnly.CheckFollower(LiveUser User)
             {
                 return CheckFollower(User);
             }
@@ -260,7 +260,7 @@ namespace TestStreamerBot
                 return CheckUser(User);
             }
 
-            bool IDataManagerReadOnly.CheckFollower(string User, DateTime ToDateTime)
+            bool IDataManagerReadOnly.CheckFollower(LiveUser User, DateTime ToDateTime)
             {
                 return CheckFollower(User, ToDateTime);
             }

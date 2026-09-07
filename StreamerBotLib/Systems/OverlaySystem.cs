@@ -107,7 +107,7 @@ namespace StreamerBotLib.Systems
 
             if (overlayType == OverlayTypes.ChannelPoints && User.UserId != null)
             {
-                DataManage.UpdateStats(DBUserStats.ChannelRewards, User.UserId, User.Platform);
+                DataManage.UpdateStats(DBUserStats.ChannelRewards, User);
             }
 
             if (User?.UserName != null && overlayActionTypes.Count > 0)

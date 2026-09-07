@@ -1,17 +1,18 @@
-﻿using System.Xml.Linq;
+﻿using System.Reflection;
+using System.Xml.Linq;
 
 namespace StreamerBotLib.DataSQL.AccessPolicy
 {
-    public static class PermissionDigest
+    public class PermissionDigest
     {
-        private static readonly XElement Digest;
-
         public static List<Table> TablePermissions { get; set; } = [];
 
-        static PermissionDigest()
+        public PermissionDigest()
         {
-            Digest = XElement.Load("PermissionDigest.xml");
-            TablePermissions.AddRange(Digest.Elements("Table").Select(tableNode => new Table(tableNode)));
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("StreamerBotLib.DataSQL.AccessPolicy.PermissionDigest.xml");
+            XElement Digest = XElement.Load(stream);
+
+            TablePermissions.AddRange(Digest.Elements("Table").Select(e => new Table(e)));
         }
 
         public static Table GetTablePermissions(string tableName)
@@ -19,8 +20,9 @@ namespace StreamerBotLib.DataSQL.AccessPolicy
             return TablePermissions.FirstOrDefault(t => t.Name == tableName);
         }
 
-        public static Columns GetColumnPermissions(string tableName, string columnName)
+        public static Column GetColumnPermissions(string tableName, string columnName)
         {
+            if (columnName == null) return null;
             var table = GetTablePermissions(tableName);
             return table?.Columns.FirstOrDefault(c => c.Name == columnName);
         }

@@ -3,6 +3,8 @@ using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 
+using System.Windows.Controls;
+
 namespace StreamerBotLib.GUI.Data
 {
     public class ManageDataEdit
@@ -13,6 +15,7 @@ namespace StreamerBotLib.GUI.Data
         private Dictionary<string, List<string>> _TableDataPairs = [];
 
         private bool IsNewRow;
+
 
         internal event EventHandler<AddNewRowEventArgs> DataAddNewRowEvent;
         internal event EventHandler<UpdatedDataRowArgs> DataEditRowEvent;
@@ -26,7 +29,8 @@ namespace StreamerBotLib.GUI.Data
             DataAddNewRowEvent += this.dataBot.DataGridUpdatedRow;
             DataEditRowEvent += (sender, e) =>
             {
-                this.dataBot.GUISaveDataGridEdits((e.UpdatedData.TableName is "DG_BuiltInCommands" or "DG_BuiltInResponses"), e.UpdatedData.TableName);
+                e.UpdatedData.GetEditedEntity();
+                this.dataBot.GUISaveDataGridEdits((e.UpdatedData.CurrEntity.TableName is "DG_BuiltInCommands" or "DG_BuiltInResponses"), e.UpdatedData.CurrEntity.TableName);
             };
         }
 
@@ -46,7 +50,7 @@ namespace StreamerBotLib.GUI.Data
             }
         }
 
-        public void EditItem(TableMeta tableMeta, bool isNewRow)
+        public void EditItem(TableMeta tableMeta, bool isNewRow, DataGrid EditSource = null)
         {
             CurrTableRow = tableMeta;
             IsNewRow = isNewRow;
@@ -65,12 +69,13 @@ namespace StreamerBotLib.GUI.Data
 
             ThreadManager.AddTaskToGUIDispatcher(() =>
             {
+                string titleText = (IsNewRow
+                            ? LocalizedMsgSystem.GetVar("MsgPopupNewRow")
+                            : LocalizedMsgSystem.GetVar("MsgPopupEditRow"));
+
                 ManageDataWindow DataEditWindow = new()
                 {
-                    Title = string.Format(
-                            (IsNewRow
-                            ? LocalizedMsgSystem.GetVar("MsgPopupNewRow")
-                            : LocalizedMsgSystem.GetVar("MsgPopupEditRow")), CurrTableRow.CurrEntity.TableName),
+                    Title = titleText.Replace("{0}", CurrTableRow.CurrEntity.TableName),
                     SetTableMeta = CurrTableRow,
                     SetDataBot = dataBot,
                     TableDataPairs = _TableDataPairs
@@ -80,14 +85,14 @@ namespace StreamerBotLib.GUI.Data
                     // save a new record - add to the database, an existing record is already tracked in EF Core so it just needs EFCore to save changes
                     IsNewRow ?
                       (sender, e) => DataAddNewRowEvent?.Invoke(sender, new AddNewRowEventArgs(CurrTableRow.CurrEntity))
-                    : (sender, e) => DataEditRowEvent?.Invoke(sender, new UpdatedDataRowArgs(CurrTableRow.CurrEntity));
+                    : (sender, e) => DataEditRowEvent?.Invoke(sender, new UpdatedDataRowArgs(CurrTableRow));
 
 
                 DataEditWindow.CancelRecordEvent +=
                     // discard a canceled new row, but save any existing record because the GUI needs to sync any adjustments the user made.
                     IsNewRow ?
                       (sender, e) => { return; }
-                : (sender, e) => DataEditRowEvent?.Invoke(sender, new UpdatedDataRowArgs(CurrTableRow.CurrEntity));
+                : (sender, e) => { return; };
 
                 DataEditWindow.TableDataPairs = _TableDataPairs;
                 DataEditWindow.ShowDialog();

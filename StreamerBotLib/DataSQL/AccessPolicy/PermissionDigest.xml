@@ -996,9 +996,9 @@
   </Table>
   <Table Name="CurrencyType">
       <MenuAccess>
-          <AddRow>False</AddRow>
-          <EditRow>False</EditRow>
-          <DeleteRow>False</DeleteRow>
+          <AddRow>True</AddRow>
+          <EditRow>True</EditRow>
+          <DeleteRow>True</DeleteRow>
           <AutoShout>False</AutoShout>
           <MonitorLive>False</MonitorLive>
           <EnableItems>False</EnableItems>
@@ -1179,7 +1179,7 @@
   </Table>
   <Table Name="GameDeadCounter">
       <MenuAccess>
-          <AddRow>True</AddRow>
+          <AddRow>False</AddRow>
           <EditRow>True</EditRow>
           <DeleteRow>True</DeleteRow>
           <AutoShout>False</AutoShout>
@@ -1190,7 +1190,7 @@
       <Columns>
           <Column>
               <Name>CategoryId</Name>
-              <IsNewReadOnly>False</IsNewReadOnly>
+              <IsNewReadOnly>True</IsNewReadOnly>
               <IsEditReadOnly>True</IsEditReadOnly>
               <IsDataGridReadOnly>True</IsDataGridReadOnly>
               <IsDataGridVisible>True</IsDataGridVisible>
@@ -1198,7 +1198,7 @@
           </Column>
           <Column>
               <Name>Category</Name>
-              <IsNewReadOnly>False</IsNewReadOnly>
+              <IsNewReadOnly>True</IsNewReadOnly>
               <IsEditReadOnly>True</IsEditReadOnly>
               <IsDataGridReadOnly>True</IsDataGridReadOnly>
               <IsDataGridVisible>True</IsDataGridVisible>
@@ -1243,28 +1243,28 @@
           </Column>
           <Column>
               <Name>User</Name>
-			  <IsNewReadOnly>True</IsNewReadOnly>
-			  <IsEditReadOnly>True</IsEditReadOnly>
-			  <IsDataGridReadOnly>True</IsDataGridReadOnly>
-			  <IsDataGridVisible>True</IsDataGridVisible>
-			  <IsEditPopupVisible>True</IsEditPopupVisible>
-		  </Column>
+              <IsNewReadOnly>True</IsNewReadOnly>
+              <IsEditReadOnly>True</IsEditReadOnly>
+              <IsDataGridReadOnly>True</IsDataGridReadOnly>
+              <IsDataGridVisible>True</IsDataGridVisible>
+              <IsEditPopupVisible>True</IsEditPopupVisible>
+          </Column>
           <Column>
               <Name>UserId</Name>
-			  <IsNewReadOnly>True</IsNewReadOnly>
-			  <IsEditReadOnly>True</IsEditReadOnly>
-			  <IsDataGridReadOnly>True</IsDataGridReadOnly>
-			  <IsDataGridVisible>True</IsDataGridVisible>
-			  <IsEditPopupVisible>True</IsEditPopupVisible>
-		  </Column>
+              <IsNewReadOnly>True</IsNewReadOnly>
+              <IsEditReadOnly>True</IsEditReadOnly>
+              <IsDataGridReadOnly>True</IsDataGridReadOnly>
+              <IsDataGridVisible>True</IsDataGridVisible>
+              <IsEditPopupVisible>True</IsEditPopupVisible>
+          </Column>
           <Column>
               <Name>Platform</Name>
-			  <IsNewReadOnly>True</IsNewReadOnly>
-			  <IsEditReadOnly>True</IsEditReadOnly>
-			  <IsDataGridReadOnly>True</IsDataGridReadOnly>
-			  <IsDataGridVisible>True</IsDataGridVisible>
-			  <IsEditPopupVisible>True</IsEditPopupVisible>
-		  </Column>
+              <IsNewReadOnly>True</IsNewReadOnly>
+              <IsEditReadOnly>True</IsEditReadOnly>
+              <IsDataGridReadOnly>True</IsDataGridReadOnly>
+              <IsDataGridVisible>True</IsDataGridVisible>
+              <IsEditPopupVisible>True</IsEditPopupVisible>
+      </Column>
       </Columns>
   </Table>
   <Table Name="InRaidData">
@@ -1913,7 +1913,7 @@
   </Table>
   <Table Name="ShoutOuts">
       <MenuAccess>
-          <AddRow>True</AddRow>
+          <AddRow>False</AddRow>
           <EditRow>False</EditRow>
           <DeleteRow>True</DeleteRow>
           <AutoShout>False</AutoShout>
@@ -2344,6 +2344,46 @@
           </Column>
           <Column>
               <Name>ClipsCreated</Name>
+              <IsNewReadOnly>False</IsNewReadOnly>
+              <IsEditReadOnly>False</IsEditReadOnly>
+              <IsDataGridReadOnly>False</IsDataGridReadOnly>
+              <IsDataGridVisible>False</IsDataGridVisible>
+              <IsEditPopupVisible>False</IsEditPopupVisible>
+          </Column>
+          <Column>
+              <Name>ShoutOutsGiven</Name>
+              <IsNewReadOnly>False</IsNewReadOnly>
+              <IsEditReadOnly>False</IsEditReadOnly>
+              <IsDataGridReadOnly>False</IsDataGridReadOnly>
+              <IsDataGridVisible>False</IsDataGridVisible>
+              <IsEditPopupVisible>False</IsEditPopupVisible>
+          </Column>
+          <Column>
+              <Name>CustomWelcomeMessages</Name>
+              <IsNewReadOnly>False</IsNewReadOnly>
+              <IsEditReadOnly>False</IsEditReadOnly>
+              <IsDataGridReadOnly>False</IsDataGridReadOnly>
+              <IsDataGridVisible>False</IsDataGridVisible>
+              <IsEditPopupVisible>False</IsEditPopupVisible>
+          </Column>
+          <Column>
+              <Name>GiveawaysEntered</Name>
+              <IsNewReadOnly>False</IsNewReadOnly>
+              <IsEditReadOnly>False</IsEditReadOnly>
+              <IsDataGridReadOnly>False</IsDataGridReadOnly>
+              <IsDataGridVisible>False</IsDataGridVisible>
+              <IsEditPopupVisible>False</IsEditPopupVisible>
+          </Column>
+          <Column>
+              <Name>GiveawaysWon</Name>
+              <IsNewReadOnly>False</IsNewReadOnly>
+              <IsEditReadOnly>False</IsEditReadOnly>
+              <IsDataGridReadOnly>False</IsDataGridReadOnly>
+              <IsDataGridVisible>False</IsDataGridVisible>
+              <IsEditPopupVisible>False</IsEditPopupVisible>
+          </Column>
+          <Column>
+              <Name>RaidsReceived</Name>
               <IsNewReadOnly>False</IsNewReadOnly>
               <IsEditReadOnly>False</IsEditReadOnly>
               <IsDataGridReadOnly>False</IsDataGridReadOnly>

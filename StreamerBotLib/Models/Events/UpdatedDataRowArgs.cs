@@ -1,9 +1,9 @@
-﻿using StreamerBotLib.Models.Interfaces;
+﻿using StreamerBotLib.DataSQL.TableMeta;
 
 namespace StreamerBotLib.Models.Events
 {
-    public class UpdatedDataRowArgs(IDatabaseTableMeta DataRow) : EventArgs
+    public class UpdatedDataRowArgs(TableMeta DataRow) : EventArgs
     {
-        public IDatabaseTableMeta UpdatedData => DataRow;
+        public TableMeta UpdatedData => DataRow;
     }
 }

@@ -212,16 +212,15 @@ namespace StreamerBotLib.DataSQL.EFC10
 
         #region Update User Stats
 
-        internal async Task UpdateStats(DBUserStats Stat, string userId, Platform platform)
+        internal async Task UpdateStats(DBUserStats Stat, LiveUser User)
         {
             using var context = BuildDataContext();
 
-            if (userId != null)
+            if (User.UserId != null)
             {
                 UserStats userStats = await context.UserStats
-                                      .Where(U => U.UserId == userId && U.Platform == platform)
+                                      .Where(U => U.UserId == User.UserId && U.Platform == User.Platform)
                                        .Select(U => U).FirstOrDefaultAsync();
-
 
                 if (userStats != null)
                 {
@@ -239,6 +238,21 @@ namespace StreamerBotLib.DataSQL.EFC10
                             break;
                         case DBUserStats.ChannelRewards:
                             userStats.RewardRedeems++;
+                            break;
+                        case DBUserStats.ShoutOutsGiven:
+                            userStats.ShoutOutsGiven++;
+                            break;
+                        case DBUserStats.CustomWelcomeMessages:
+                            userStats.CustomWelcomeMessages++;
+                            break;
+                        case DBUserStats.GiveawaysEntered:
+                            userStats.GiveawaysEntered++;
+                            break;
+                        case DBUserStats.GiveawaysWon:
+                            userStats.GiveawaysWon++;
+                            break;
+                        case DBUserStats.RaidsReceived:
+                            userStats.RaidsReceived++;
                             break;
                     }
                     await context.Database.CommitTransactionAsync();

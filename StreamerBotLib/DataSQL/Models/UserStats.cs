@@ -26,8 +26,11 @@ namespace StreamerBotLib.DataSQL.Models
                             int callCommands = 0,
                             int rewardRedeems = 0,
                             int clipsCreated = 0,
-                            int shoutoutsgiven = 0,
-                            int customwelcomesgiven = 0,
+                            int ShoutOutsGiven = 0,
+                            int customWelcomeMessages = 0,
+                            int giveawaysEntered = 0,
+                            int giveawaysWon = 0,
+                            int raidsReceived = 0,
                             string userId = null,
                             Platform platform = Platform.Default)
 #endif
@@ -38,9 +41,11 @@ namespace StreamerBotLib.DataSQL.Models
         public int CallCommands { get; set; } = callCommands;
         public int RewardRedeems { get; set; } = rewardRedeems;
         public int ClipsCreated { get; set; } = clipsCreated;
-        public int ShoutOutsGiven { get; set; } = shoutoutsgiven;
-        public int CustomWelcomeMsgs { get; set; } = customwelcomesgiven;
-
+        public int ShoutOutsGiven { get; set; } = ShoutOutsGiven;
+        public int CustomWelcomeMessages { get; set; } = customWelcomeMessages;
+        public int GiveawaysEntered { get; set; } = giveawaysEntered;
+        public int GiveawaysWon { get; set; } = giveawaysWon;
+        public int RaidsReceived { get; set; } = raidsReceived;
 
         public Users User { get; set; } = null!;
 
@@ -52,7 +57,10 @@ namespace StreamerBotLib.DataSQL.Models
             userStats.RewardRedeems += otherStats.RewardRedeems;
             userStats.ClipsCreated += otherStats.ClipsCreated;
             userStats.ShoutOutsGiven += otherStats.ShoutOutsGiven;
-            userStats.CustomWelcomeMsgs += otherStats.CustomWelcomeMsgs;
+            userStats.CustomWelcomeMessages += otherStats.CustomWelcomeMessages;
+            userStats.GiveawaysEntered += otherStats.GiveawaysEntered;
+            userStats.GiveawaysWon += otherStats.GiveawaysWon;
+            userStats.RaidsReceived += otherStats.RaidsReceived;
 
             return userStats;
         }

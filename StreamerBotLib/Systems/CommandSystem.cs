@@ -48,7 +48,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="chatMessage">The ChatMessage holding the characteristics of the user who invoked the chat command, which parses out the user permissions.</param>
         /// <returns>The ViewerType corresponding to the user's highest permission.</returns>
-        public static ViewerTypes ParsePermission(CmdMessage chatMessage)
+        public static ViewerTypes ParsePermission(CmdMessage chatMessage, LiveUser User)
         {
             LogWriter.DebugLog("ParsePermission", DebugLogTypes.CommandSystem, $"Parsing user permissions for {chatMessage.DisplayName}.");
             if (chatMessage.IsBroadcaster)
@@ -63,7 +63,7 @@ namespace StreamerBotLib.Systems
             {
                 return ViewerTypes.VIP;
             }
-            else if (DataManage.CheckFollower(chatMessage.DisplayName))
+            else if (DataManage.CheckFollower(User))
             {
                 return ViewerTypes.Follower;
             }
@@ -82,11 +82,11 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="cmdMessage">The whole message bundle from the calling user.</param>
         /// <param name="source">The platform of the call, for performing any API calls to that platform.</param>
-        public void EvalCommand(CmdMessage cmdMessage, Platform source)
+        public void EvalCommand(CmdMessage cmdMessage)
         {
             LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Evaluating command: {cmdMessage.CommandText} from {cmdMessage.DisplayName}.");
             string result;
-            cmdMessage.UserType = ParsePermission(cmdMessage);
+            cmdMessage.UserType = ParsePermission(cmdMessage, cmdMessage.User);
             short multi = 0;
 
             CommandData cmdrow = DataManage.GetCommand(cmdMessage.CommandText);
@@ -116,8 +116,8 @@ namespace StreamerBotLib.Systems
                     LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command requires approval: {cmdMessage.CommandText}.");
 
                     PostApproval($"{cmdMessage.CommandText} {cmdMessage.DisplayName} {cmdMessage.Message}",
-                        new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
-                    result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotUserName, source), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
+                        new(() => { FormatResult(ParseCommand(cmdMessage.CommandText, cmdMessage.User, cmdMessage.CommandArguments, cmdrow, out multi), multi, cmdrow); }));
+                    result = ParseCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve), new LiveUser(BotUserName, cmdMessage.User.Platform), [], DataManage.GetCommand(LocalizedMsgSystem.GetVar(DefaultCommand.approve)), out multi);
                 }
             }
             else
@@ -125,8 +125,8 @@ namespace StreamerBotLib.Systems
                 LogWriter.DebugLog("EvalCommand", DebugLogTypes.CommandSystem, $"Command is valid: {cmdMessage.CommandText}.");
 
                 // parse commands, either built-in or custom
-                result = ParseCommand(cmdMessage.CommandText, new(cmdMessage.DisplayName, source, cmdMessage.UserId), cmdMessage.CommandArguments, cmdrow, out multi);
-                DataManage.UpdateStats(DBUserStats.Commands, cmdMessage.UserId, source);
+                result = ParseCommand(cmdMessage.CommandText, cmdMessage.User, cmdMessage.CommandArguments, cmdrow, out multi);
+                DataManage.UpdateStats(DBUserStats.Commands, cmdMessage.User);
             }
 
             FormatResult(result, multi, cmdrow);
@@ -170,7 +170,7 @@ namespace StreamerBotLib.Systems
         public void CheckShout(LiveUser User, out string response, bool AutoShout = true)
         {
             response = "";
-            if (!AutoShout || DataManage.CheckShoutName(User.UserId))
+            if (!AutoShout || DataManage.CheckShoutName(User))
             {
                 LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, $"User {User.UserName} is on the shout list.");
                 if (OptionFlags.MsgSendSOToChat)
@@ -187,6 +187,8 @@ namespace StreamerBotLib.Systems
                     OnProcessCommand(response, DataManage.GetCmdAnnounce(LocalizedMsgSystem.GetVar(DefaultCommand.so)), multi);
                     LogWriter.DebugLog("CheckShout", DebugLogTypes.CommandSystem, "Sent message with no #category symbol.");
                 }
+
+                UpdateUserStats(DBUserStats.ShoutOutsGiven, User); // add a user shoutout stat item, regardless if auto or shoutout list
             }
         }
 
@@ -195,11 +197,11 @@ namespace StreamerBotLib.Systems
         /// </summary>
         /// <param name="User">The user to check.</param>
         /// <returns>The user's welcome message, or empty string if it's not found.</returns>
-        public static string CheckWelcomeUser(string UserId)
+        public static string CheckWelcomeUser(LiveUser User)
         {
-            LogWriter.DebugLog("CheckWelcomeUser", DebugLogTypes.CommandSystem, $"Checking for welcome message for user {UserId}.");
+            LogWriter.DebugLog("CheckWelcomeUser", DebugLogTypes.CommandSystem, $"Checking for welcome message for user {User.UserId}.");
 
-            return DataManage.CheckWelcomeUser(UserId);
+            return DataManage.CheckWelcomeUser(User);
         }
 
         internal string ParseCommand(string command, LiveUser User, List<string> arglist, CommandData cmdrow, out short multi, bool ElapsedTimer = false)

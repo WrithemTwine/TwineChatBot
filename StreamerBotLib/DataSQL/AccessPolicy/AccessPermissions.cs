@@ -1,14 +1,22 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using System.Xml.Linq;
 
 namespace StreamerBotLib.DataSQL.AccessPolicy
 {
+    [DebuggerDisplay("Name={Name}")]
     public class Table
     {
         public string Name { get; init; }
+        public bool IsDataGridReadOnly
+        {
+            get
+            {
+                return !Columns.Any(c => c.IsDataGridReadOnly == false && c.IsDataGridVisible == true);
+            }
+        }
         public MenuAccess MenuAccess { get; init; }
-        public List<Columns> Columns { get; init; } = [];
-
+        public List<Column> Columns { get; init; } = [];
         public Table(XElement tableNode)
         {
             Name = tableNode.Attribute("Name")?.Value;
@@ -24,14 +32,16 @@ namespace StreamerBotLib.DataSQL.AccessPolicy
                 EnableItems = bool.Parse(menuAccessNode?.Element("EnableItems")?.Value),
                 DisableItems = bool.Parse(menuAccessNode?.Element("DisableItems")?.Value)
             };
-            foreach (var columnNode in tableNode.Elements("Columns"))
+            foreach (var columnNode in tableNode.Element("Columns").Elements("Column"))
             {
-                Columns.Add(new Columns
+                Columns.Add(new Column
                 {
                     Name = columnNode.Element("Name")?.Value,
                     IsNewReadOnly = bool.Parse(columnNode.Element("IsNewReadOnly")?.Value),
                     IsEditReadOnly = bool.Parse(columnNode.Element("IsEditReadOnly")?.Value),
-                    IsDataGridReadOnly = bool.Parse(columnNode.Element("IsDataGridReadOnly")?.Value)
+                    IsDataGridReadOnly = bool.Parse(columnNode.Element("IsDataGridReadOnly")?.Value),
+                    IsDataGridVisible = bool.Parse(columnNode.Element("IsDataGridVisible")?.Value),
+                    IsEditPopupVisible = bool.Parse(columnNode.Element("IsEditPopupVisible")?.Value)
                 });
             }
         }
@@ -58,11 +68,14 @@ namespace StreamerBotLib.DataSQL.AccessPolicy
         }
     }
 
-    public class Columns
+    [DebuggerDisplay("Name={Name}, {IsNewReadOnly}, {IsEditReadOnly}, {IsDataGridReadOnly}, {IsDataGridVisible}, {IsEditPopupVisible}")]
+    public class Column
     {
         public string Name { get; init; }
         public bool IsNewReadOnly { get; init; }
         public bool IsEditReadOnly { get; init; }
         public bool IsDataGridReadOnly { get; init; }
+        public bool IsDataGridVisible { get; init; }
+        public bool IsEditPopupVisible { get; init; }
     }
 }

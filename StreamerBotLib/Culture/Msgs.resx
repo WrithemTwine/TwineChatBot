@@ -636,7 +636,7 @@
     <value>User not found.</value>
   </data>
   <data name="MsgPopupEditRow" xml:space="preserve">
-    <value>Edit Existing {0] Row</value>
+    <value>Edit Existing {0} Row</value>
     <comment>can be translated, use {0} to place table name</comment>
   </data>
   <data name="MsgPopupNewRow" xml:space="preserve">

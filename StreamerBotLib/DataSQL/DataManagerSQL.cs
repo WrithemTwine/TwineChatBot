@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.DataSQL.EFC10;
+﻿using StreamerBotLib.DataSQL.AccessPolicy;
+using StreamerBotLib.DataSQL.EFC10;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
@@ -38,6 +39,8 @@ namespace StreamerBotLib.DataSQL
         public DataManagerSQL()
         {
             _dataManager = new DataManagerSQLAsync();
+
+            PermissionDigest temp = new();
 
             _dataManager.OnDataCollectionUpdated += DataManager_OnDataCollectionUpdated;
             _dataManager.OnBulkFollowersAddFinished += DataManager_OnBulkFollowersAddFinished;
@@ -93,7 +96,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool CheckFollower(string User)
+        public bool CheckFollower(LiveUser User)
         {
             LogWriter.DebugLog("CheckFollower", DebugLogTypes.DataManager, "Checking follower.");
             lock (GUIDataManagerLock.Lock)
@@ -102,7 +105,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool CheckFollower(string User, DateTime ToDateTime)
+        public bool CheckFollower(LiveUser User, DateTime ToDateTime)
         {
             LogWriter.DebugLog("CheckFollower", DebugLogTypes.DataManager, "Checking follower.");
             lock (GUIDataManagerLock.Lock)
@@ -156,12 +159,12 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public bool CheckShoutName(string UserId)
+        public bool CheckShoutName(LiveUser User)
         {
             LogWriter.DebugLog("CheckShoutName", DebugLogTypes.DataManager, "Checking shout name.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.CheckShoutName(UserId).Result;
+                return _dataManager.CheckShoutName(User).Result;
             }
         }
 
@@ -192,7 +195,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public string CheckWelcomeUser(string User)
+        public string CheckWelcomeUser(LiveUser User)
         {
             LogWriter.DebugLog("CheckWelcomeUser", DebugLogTypes.DataManager, "Checking welcome user.");
             lock (GUIDataManagerLock.Lock)
@@ -1288,14 +1291,14 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public void UpdateStats(DBUserStats Stat, string userId, Platform platform)
+        public void UpdateStats(DBUserStats Stat, LiveUser User)
         {
             LogWriter.DebugLog("UpdateStats", DebugLogTypes.DataManager, "Updating stats.");
             lock (GUIDataManagerLock.Lock)
             {
                 ThreadManager.AddTaskToGUIDispatcher(async () =>
                 {
-                    await _dataManager.UpdateStats(Stat, userId, platform);
+                    await _dataManager.UpdateStats(Stat, User);
                 });
             }
         }

@@ -150,7 +150,8 @@ namespace StreamerBotLib.Systems
                && (!User.UserName.Equals(BotUserName, StringComparison.CurrentCultureIgnoreCase)))
                || OptionFlags.MsgWelcomeStreamer)
             {
-                string msg = CheckWelcomeUser(User.UserId);
+                string msg = CheckWelcomeUser(User);
+                bool foundCustom = msg != "";
 
                 ChannelEventActions selected = ChannelEventActions.UserJoined;
 
@@ -158,7 +159,7 @@ namespace StreamerBotLib.Systems
                 {
                     LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Using custom welcome message.");
                     selected =
-                        IsFollower(User.UserName) ?
+                        IsFollower(User) ?
                         ChannelEventActions.SupporterJoined :
                             IsReturningUser(User) ?
                                 ChannelEventActions.ReturnUserJoined : ChannelEventActions.UserJoined;
@@ -185,6 +186,7 @@ namespace StreamerBotLib.Systems
                             )
                         )
                     , Repeat: Multi);
+                    if (foundCustom) UpdateUserStats(DBUserStats.CustomWelcomeMessages, User);
                 }
 
                 LogWriter.DebugLog("UserWelcomeMessage", DebugLogTypes.SystemController, "Checking for overlay event.");
@@ -227,7 +229,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void ModJoined(string User)
+        public void ModJoined(LiveUser User)
         {
             LogWriter.DebugLog("ModJoined", DebugLogTypes.StatSystem, "Adding a moderator to the list of joined moderators.");
             if (OptionFlags.IsStreamOnline)
@@ -236,7 +238,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void SubJoined(string User)
+        public void SubJoined(LiveUser User)
         {
             LogWriter.DebugLog("SubJoined", DebugLogTypes.StatSystem, "Adding a subscriber to the list of joined subscribers.");
             if (OptionFlags.IsStreamOnline)
@@ -245,7 +247,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public void VIPJoined(string User)
+        public void VIPJoined(LiveUser User)
         {
             LogWriter.DebugLog("VIPJoined", DebugLogTypes.StatSystem, "Adding a VIP to the list of joined VIPs.");
             if (OptionFlags.IsStreamOnline)
@@ -293,7 +295,7 @@ namespace StreamerBotLib.Systems
             }
         }
 
-        public bool IsFollower(string User)
+        public bool IsFollower(LiveUser User)
         {
             LogWriter.DebugLog("IsFollower", DebugLogTypes.StatSystem, "Checking if the user is a follower of the channel.");
             return DataManage.CheckFollower(User, CurrStream.StreamStart);
@@ -330,6 +332,7 @@ namespace StreamerBotLib.Systems
                     CheckForOverlayEvent(OverlayTypes.ChannelEvents, ChannelEventActions.Raid.ToString(), User);
 
                     UpdatedStat(StreamStatType.Raids, StreamStatType.AutoEvents);
+                    UpdateUserStats(DBUserStats.RaidsReceived, User);
 
                     if (OptionFlags.TwitchRaidShoutOut)
                     {

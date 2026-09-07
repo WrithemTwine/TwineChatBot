@@ -11,10 +11,12 @@ using StreamerBotLib.Static;
 
 using System.Collections.Concurrent;
 using System.Data;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace StreamerBot
@@ -24,9 +26,106 @@ namespace StreamerBot
         #region DataGrid Columns and Editing
         private ManageDataEdit PopupWindows { get; set; }
         private Thread GUIDataGridUpdates { get; set; }
-        private ConcurrentQueue<Task> GUIDataGridUpdateQueue { get; set; } = new();
-
         private GUIDataManagerViews GUIDataManagerViews { get; set; }
+
+
+        private void DataGrid_Initialized(object sender, EventArgs e)
+        {
+            string ParseColumnPath(DataGridColumn column)
+            {
+                return column switch
+                {
+                    DataGridBoundColumn b when b.Binding is Binding bind
+                     => bind.Path?.Path,
+                    DataGridComboBoxColumn c
+                        => (c.SelectedItemBinding as Binding)?.Path?.Path
+                        ?? (c.SelectedValueBinding as Binding)?.Path?.Path,
+                    DataGridTemplateColumn c => GetAllBindingPaths(c).FirstOrDefault(),
+                    _ => column.SortMemberPath
+                };
+            }
+
+            string GetColumnPath(DataGridColumn column)
+            {
+                string subpath = ParseColumnPath(column);
+
+                return subpath?.Contains('.') == true ? subpath[..subpath.IndexOf('.')] : subpath;
+            }
+
+
+
+            DataGrid curr = sender as DataGrid;
+
+            Table AccessPermissions = PermissionDigest.GetTablePermissions(GetTableName(curr));
+
+            curr.CanUserAddRows = false; // don't add inline DataGrid rows
+            curr.CanUserDeleteRows = AccessPermissions.MenuAccess.DeleteRow;
+            curr.IsReadOnly = AccessPermissions.IsDataGridReadOnly;
+
+            foreach (var c in curr.Columns)
+            {
+                Column currColumn = PermissionDigest.GetColumnPermissions(GetTableName(curr), GetColumnPath(c));
+
+                c.IsReadOnly = currColumn?.IsDataGridReadOnly ?? false;
+            }
+        }
+
+        private static List<string> GetAllBindingPaths(DataGridTemplateColumn column, bool fromEditingTemplate = false)
+        {
+            var result = new List<string>();
+            if (column == null) return result;
+
+            DataTemplate template = fromEditingTemplate
+                ? column.CellEditingTemplate
+                : column.CellTemplate;
+
+            if (template == null) return result;
+
+            var content = template.LoadContent();
+            if (content is FrameworkElement fe)
+            {
+                FindBindingsRecursive(fe, result);
+            }
+
+            return result.Distinct().ToList();
+        }
+
+        private static void FindBindingsRecursive(object element, List<string> paths)
+        {
+            if (element == null) return;
+
+            // Check all dependency properties for bindings
+            var dpFields = element.GetType()
+                .GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                .Where(f => f.FieldType == typeof(DependencyProperty));
+
+            foreach (var dpField in dpFields)
+            {
+                var dp = (DependencyProperty)dpField.GetValue(null);
+                var binding = BindingOperations.GetBinding(element as DependencyObject, dp);
+                if (binding?.Path?.Path != null)
+                {
+                    paths.Add(binding.Path.Path);
+                }
+            }
+
+            // Recurse into children
+            if (element is Panel panel)
+            {
+                foreach (var child in panel.Children)
+                    FindBindingsRecursive(child, paths);
+            }
+            else if (element is ContentControl cc && cc.Content != null)
+            {
+                FindBindingsRecursive(cc.Content, paths);
+            }
+            else if (element is ItemsControl ic && ic.ItemsSource == null)
+            {
+                foreach (var item in ic.Items)
+                    FindBindingsRecursive(item, paths);
+            }
+        }
+
 
         #region View - New-Edit Data Records - PopuWindow
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
@@ -75,8 +174,9 @@ namespace StreamerBot
                 // establish existing or new record entity
                 (IsNew ?
                           tableMeta.SetNewEntity(SqlModel)
-                        : tableMeta.SetExistingEntity(item.SelectedItem)),
-                IsNew);
+                        : tableMeta.SetExistingEntity(item.SelectedItem))
+                , IsNew
+                , item);
         }
 
         private void MenuItem_EditClick(object sender, RoutedEventArgs e)
@@ -323,6 +423,21 @@ namespace StreamerBot
             }
 
             Controller.GUISaveDataGridEdits(false, GetTableName(CurrLrnMsg));
+        }
+
+
+        private void DG_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGrid curr = sender as DataGrid;
+
+            if (PermissionDigest.GetTablePermissions(GetTableName(curr)).MenuAccess.EditRow)
+            {
+                DGOpenEditWindow(curr, false);
+            }
+            else if (PermissionDigest.GetTablePermissions(GetTableName(curr)).MenuAccess.AddRow)
+            {
+                DGOpenEditWindow(curr, true);
+            }
         }
 
         private void DG_PreviewKeyDown_Click(object sender, System.Windows.Input.KeyEventArgs e)

@@ -14,16 +14,16 @@ namespace StreamerBotLib.Models.Interfaces
 
         bool CheckCurrency(LiveUser User, double value, string CurrencyName);
         new bool CheckField(string table, string field);
-        new bool CheckFollower(string User);
-        new bool CheckFollower(string User, DateTime ToDateTime);
+        new bool CheckFollower(LiveUser User);
+        new bool CheckFollower(LiveUser User, DateTime ToDateTime);
         Tuple<string, string> CheckModApprovalRule(ModActionType modActionType, string ModAction);
         bool CheckStreamDate(DateTime streamStart);
         new bool CheckPermission(string cmd, ViewerTypes permission);
-        new bool CheckShoutName(string UserId);
+        new bool CheckShoutName(LiveUser User);
         bool CheckStreamTime(DateTime CurrTime);
         new bool CheckUser(LiveUser User);
         new bool CheckUser(LiveUser User, DateTime ToDateTime);
-        string CheckWelcomeUser(string User);
+        string CheckWelcomeUser(LiveUser User);
         void ClearAllCurrencyValues();
         void ClearUsersNotFollowers();
         void ClearWatchTime();
@@ -105,7 +105,7 @@ namespace StreamerBotLib.Models.Interfaces
         void UpdateFollowers(IEnumerable<Follow> follows);
         new List<LearnMsgRecord> UpdateLearnedMsgs();
         void UpdateOverlayTicker(OverlayTickerItem item, string name);
-        void UpdateStats(DBUserStats Stat, string userId, Platform platform);
+        void UpdateStats(DBUserStats Stat, LiveUser User);
         void UpdateWatchTime(List<LiveUser> Users, DateTime CurrTime);
         void UserJoined(IEnumerable<LiveUser> Users, DateTime NowSeen);
         void UserLeft(LiveUser User, DateTime LastSeen);

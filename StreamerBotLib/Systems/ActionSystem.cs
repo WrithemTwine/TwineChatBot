@@ -33,7 +33,7 @@ namespace StreamerBotLib.Systems
         public FlowDocument ChatData { get; private set; } = new();
         public ObservableCollection<UserJoin> JoinCollection { get; set; } = [];
         public ObservableCollection<LiveUser> GiveawayCollection { get; set; } = [];
-        public ObservableCollection<string> CurrUserJoin { get; private set; } = [];
+        public ObservableCollection<LiveUser> CurrUserJoin { get; private set; } = [];
 
         private static CategoryData CurrCategory { get; set; } = new("", "");
 
@@ -59,9 +59,9 @@ namespace StreamerBotLib.Systems
 
         internal static ManageStreamViewers StreamViewers { get; } = new();
 
-        protected static List<string> ModUsers { get; private set; } = [];
-        protected static List<string> SubUsers { get; private set; } = [];
-        protected static List<string> VIPUsers { get; private set; } = [];
+        protected static List<LiveUser> ModUsers { get; private set; } = [];
+        protected static List<LiveUser> SubUsers { get; private set; } = [];
+        protected static List<LiveUser> VIPUsers { get; private set; } = [];
 
         protected static StreamStat CurrStream { get; set; } = new();
 
@@ -326,7 +326,7 @@ namespace StreamerBotLib.Systems
 
             foreach (LiveUser liveUser in curr)
             {
-                CurrUserJoin.Add(liveUser.UserName);
+                CurrUserJoin.Add(liveUser);
             }
         }
 
@@ -518,7 +518,7 @@ namespace StreamerBotLib.Systems
         }
 #endif
 
-        public void ProcessCommand(CmdMessage cmdMessage, Platform Source)
+        public void ProcessCommand(CmdMessage cmdMessage)
         {
             ThreadManager.AddTaskToGUIDispatcher(() =>
             {
@@ -530,19 +530,19 @@ namespace StreamerBotLib.Systems
                         ProcMsgQueue.Enqueue(new Task(() =>
                         {
                             LogWriter.DebugLog("ProcessCommand", DebugLogTypes.SystemController, "Evaluating command.");
-                            EvalCommand(cmdMessage, Source);
+                            EvalCommand(cmdMessage);
                         }));
                     }
                 }
                 catch (InvalidOperationException InvalidOp)
                 {
                     LogWriter.LogException(InvalidOp, "ProcessCommand");
-                    SendMessage(Source, InvalidOp.Message);
+                    SendMessage(cmdMessage.User.Platform, InvalidOp.Message);
                 }
                 catch (NullReferenceException NullRef)
                 {
                     LogWriter.LogException(NullRef, "ProcessCommand");
-                    SendMessage(Source, NullRef.Message);
+                    SendMessage(cmdMessage.User.Platform, NullRef.Message);
                 }
                 catch (Exception ex)
                 {
@@ -569,10 +569,10 @@ namespace StreamerBotLib.Systems
             UpdatedStat(StreamStatType.AutoCommands);
         }
 
-        public void UpdateUserStats(DBUserStats dBUserStats, string userId, Platform platform)
+        public void UpdateUserStats(DBUserStats dBUserStats, LiveUser User)
         {
             LogWriter.DebugLog("UpdateUserStats", DebugLogTypes.SystemController, "Updating user statistics in database.");
-            DataManage.UpdateStats(dBUserStats, userId, platform);
+            DataManage.UpdateStats(dBUserStats, User);
         }
 
         private void RequestBanUser(LiveUser User, BanReasons Reason, int Duration = 0)
@@ -619,9 +619,9 @@ namespace StreamerBotLib.Systems
         public void MessageReceived(CmdMessage MsgReceived, LiveUser User)
         {
             LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, "Message received.");
-            UpdateUserStats(DBUserStats.Chats, User.UserId, User.Platform);
+            UpdateUserStats(DBUserStats.Chats, User);
 
-            MsgReceived.UserType = ParsePermission(MsgReceived);
+            MsgReceived.UserType = ParsePermission(MsgReceived, User);
 
             if ((OptionFlags.ModerateUsersAction || OptionFlags.ModerateUsersWarn) && MsgReceived.DisplayName != OptionFlags.TwitchBotUserName)
             {
@@ -672,17 +672,17 @@ namespace StreamerBotLib.Systems
             if (MsgReceived.IsSubscriber)
             {
                 LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, $"User {User.UserName} is a subscriber.");
-                SubJoined(MsgReceived.DisplayName);
+                SubJoined(User);
             }
             if (MsgReceived.IsVip)
             {
                 LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, $"User {User.UserName} is a VIP.");
-                VIPJoined(MsgReceived.DisplayName);
+                VIPJoined(User);
             }
             if (MsgReceived.IsModerator)
             {
                 LogWriter.DebugLog("MessageReceived", DebugLogTypes.SystemController, $"User {User.UserName} is a moderator.");
-                ModJoined(MsgReceived.DisplayName);
+                ModJoined(User);
             }
 
             if (OptionFlags.FirstUserChatMsg)

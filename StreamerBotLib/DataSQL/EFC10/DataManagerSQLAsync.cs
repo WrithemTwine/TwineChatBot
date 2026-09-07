@@ -39,10 +39,6 @@ namespace StreamerBotLib.DataSQL.EFC10
         {
             GUIContext = BuildDataContext();
             GUIContext.Database.AutoTransactionBehavior = AutoTransactionBehavior.WhenNeeded;
-
-            //OnInitialize += OnInitializeHandler;
-
-            //ThreadManager.CreateThreadStart(".ctor_DataManagerSQLAsync", () => { OnInitialize?.Invoke(this, EventArgs.Empty); });
         }
 
         private SQLDBContext BuildDataContext()
@@ -50,15 +46,10 @@ namespace StreamerBotLib.DataSQL.EFC10
             return dbContextFactory.CreateDbContext();
         }
 
-        //private void OnInitializeHandler(object sender, EventArgs e)
-        //{
-        //    _ = InitializeDataBaseAsync();
-        //}
-
         public async Task InitializeDataBaseAsync()
         {
             var initialcontext = BuildDataContext();
-            initialcontext.Database.EnsureCreated();
+            await initialcontext.Database.MigrateAsync();
             await initialcontext.SaveChangesAsync(true);
             initialcontext.Dispose();
 
