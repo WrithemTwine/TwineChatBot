@@ -23,6 +23,8 @@ namespace StreamerBot
             (MultiLive_Data.Content as MultiLiveDataGrids).AddNewMultiChannelUser += StreamerBotWindow_AddNewMultiChannelUser;
             (MultiLive_Data.Content as MultiLiveDataGrids).GUISaveEdits = Controller.GUISaveDataGridEdits;
             (MultiLive_Data.Content as MultiLiveDataGrids).PreviewKeyDownDeleteRows += MultiLive_DG_PreviewKeyDown_Click;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemAddClick += MenuItem_AddClick;
+            (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemEditClick += MenuItem_EditClick;
             (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemDeleteClick += MenuItem_DeleteClick;
             (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemEnabledClick += DataGridContextMenu_EnableItems_Click;
             (MultiLive_Data.Content as MultiLiveDataGrids).MenuItemDisabledClick += DataGridContextMenu_DisableItems_Click;

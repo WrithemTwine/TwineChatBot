@@ -1,12 +1,14 @@
-﻿using StreamerBotLib.DataSQL.Models;
+﻿using StreamerBotLib.DataSQL.AccessPolicy;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 
 namespace StreamerBotLib.Systems.MultiLive
 {
@@ -27,11 +29,11 @@ namespace StreamerBotLib.Systems.MultiLive
         public event EventHandler<RoutedEventArgs> MenuItemDeleteClick;
         public event EventHandler<RoutedEventArgs> MenuItemEnabledClick;
         public event EventHandler<RoutedEventArgs> MenuItemDisabledClick;
+        public event EventHandler<RoutedEventArgs> MenuItemAddClick;
+        public event EventHandler<RoutedEventArgs> MenuItemEditClick;
         public event EventHandler<PreviewKeyDownDeleteRowsEventArgs> PreviewKeyDownDeleteRows;
 
         public event EventHandler<EventArgs> DebugAddNewMultiLiveData;
-
-        //private ManageDataEdit PopupWindows { get; set; } = new();
 
         public MultiLiveDataGrids()
         {
@@ -40,7 +42,6 @@ namespace StreamerBotLib.Systems.MultiLive
 #if DEBUG // Show debug tools in debug builds
             SP_MultiLive_Debug.Visibility = Visibility.Visible;
 #endif
-
             GetSummarizeData = false;
         }
 
@@ -73,6 +74,18 @@ namespace StreamerBotLib.Systems.MultiLive
             Routed += SettingsLostFocus;
         }
 
+        private string GetTableName(DataGrid item)
+        {
+            return item.Name switch
+            {
+                nameof(DG_Multi_ChannelNames) => "MultiChannels",
+                nameof(DG_Multi_LiveStreamStats) => "MultiLiveStreams",
+                nameof(DG_Multi_WebHooks) => "MultiWebhooks",
+                nameof(DG_Multi_SummaryLiveStreamStats) => "MultiSummaryLiveStreams",
+                _ => ""
+            };
+        }
+
         //private void DG_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         //{
         //    DataGrid item = sender as DataGrid;
@@ -82,33 +95,60 @@ namespace StreamerBotLib.Systems.MultiLive
         //        Popup_DataEdit(item, false);
         //    }
         //}
+        private readonly Dictionary<string, string> MenuAccessMap = new()
+        {
+            {"DataGridContextMenu_Multi_AddItem", "AddRow" },
+            {"DataGridContextMenu_Multi_EditItem", "EditRow" },
+            {"DataGridContextMenu_Multi_DeleteItems", "DeleteRow" },
+            {"DataGridContextMenu_Multi_EnableItems", "EnableItems" },
+            {"DataGridContextMenu_Multi_DisableItems", "DisableItems" }
+        };
 
         private void DG_MultiEdit_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             if (sender.GetType() == typeof(DataGrid))
             {
-                bool FoundAddEdit = ((DataGrid)sender).Name is nameof(DG_Multi_WebHooks)
-                                                            or nameof(DG_Multi_ChannelNames);
-                bool FoundIsEnabled = nameof(DG_Multi_WebHooks) == (sender as DataGrid).Name;
+                DataGrid curr = sender as DataGrid;
+
+                MenuAccess tableMenuAccess = PermissionDigest.GetTableMenuAccess(GetTableName(curr));
 
                 foreach (var M in ((ContextMenu)Resources["DataGrid_Multi_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
                     {
-                        switch (((MenuItem)M).Name)
+                        MenuItem menuitem = (MenuItem)M;
+                        menuitem.Visibility = (bool)tableMenuAccess[MenuAccessMap[menuitem.Name]] ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                    else if (M.GetType() == typeof(Separator))
+                    {
+                        if (((Separator)M).Name == "DataGridContextMenu_Separator1")
                         {
-                            case "DataGridContextMenu_Multi_AddItem":
-                                ((MenuItem)M).IsEnabled = FoundAddEdit;
-                                break;
-                            case "DataGridContextMenu_Multi_DeleteItem":
-                                ((MenuItem)M).IsEnabled = true;
-                                break;
-                            case "DataGridContextMenu_Multi_EnableItems" or "DataGridContextMenu_Multi_DisableItems":
-                                ((MenuItem)M).IsEnabled = FoundIsEnabled;
-                                break;
+                            ((Separator)M).Visibility = tableMenuAccess.EnableItems || tableMenuAccess.DisableItems ? Visibility.Visible : Visibility.Collapsed;
                         }
                     }
                 }
+                //bool FoundAddEdit = ((DataGrid)sender).Name is nameof(DG_Multi_WebHooks)
+                //                                            or nameof(DG_Multi_ChannelNames);
+                //bool FoundIsEnabled = nameof(DG_Multi_WebHooks) == (sender as DataGrid).Name;
+
+                //foreach (var M in ((ContextMenu)Resources["DataGrid_Multi_ContextMenu"]).Items)
+                //{
+                //    if (M.GetType() == typeof(MenuItem))
+                //    {
+                //        switch (((MenuItem)M).Name)
+                //        {
+                //            case "DataGridContextMenu_Multi_AddItem":
+                //                ((MenuItem)M).IsEnabled = FoundAddEdit;
+                //                break;
+                //            case "DataGridContextMenu_Multi_DeleteItem":
+                //                ((MenuItem)M).IsEnabled = true;
+                //                break;
+                //            case "DataGridContextMenu_Multi_EnableItems" or "DataGridContextMenu_Multi_DisableItems":
+                //                ((MenuItem)M).IsEnabled = FoundIsEnabled;
+                //                break;
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -122,40 +162,20 @@ namespace StreamerBotLib.Systems.MultiLive
             }
         }
 
-        private void Popup_DataEdit(DataGrid item)
-        {
-            Type SqlModel = item.Name switch
-            {
-                nameof(DG_Multi_WebHooks) => typeof(MultiWebhooks),
-                nameof(DG_Multi_ChannelNames) => typeof(MultiChannels),
-                nameof(DG_Multi_LiveStreamStats) => typeof(MultiLiveStreams),
-                nameof(DG_Multi_SummaryLiveStreamStats) => typeof(MultiSummaryLiveStreams),
-                _ => typeof(object)
-            };
-
-            DataSQL.TableMeta.TableMeta tableMeta = new();
-            //PopupWindows.AddNewItem(tableMeta.SetNewEntity(SqlModel));
-        }
-
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
-            DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
-            Popup_DataEdit(item);
+            MenuItemAddClick?.Invoke(sender, e);
         }
 
-        //private void MenuItem_EditClick(object sender, RoutedEventArgs e)
-        //{
-        //    DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
+        private void MenuItem_EditClick(object sender, RoutedEventArgs e)
+        {
+            MenuItemEditClick?.Invoke(sender, e);
+        }
 
-        //    Popup_DataEdit(item, false);
-        //}
-
-        //private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
-        //{
-        //    DataGrid item = (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
-
-        //    SystemsController.DeleteRows(new List<DataRow>(item.SelectedItems.Cast<DataRowView>().Select(DRV => DRV.Row)));
-        //}
+        private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
+        {
+            MenuItemDeleteClick?.Invoke(sender, e);
+        }
 
         private void DataGridContextMenu_EnableItems_Click(object sender, RoutedEventArgs e)
         {
@@ -169,26 +189,99 @@ namespace StreamerBotLib.Systems.MultiLive
             MenuItemDisabledClick?.Invoke(sender, e);
         }
 
-        private void DG_Multi_ChannelNames_AutoGeneratedColumns(object sender, EventArgs e)
+        private void DG_Multi_Initialized(object sender, EventArgs e)
         {
-            static void Collapse(DataGridColumn dgc)
+            DataGrid curr = sender as DataGrid;
+
+            string ParseColumnPath(DataGridColumn column)
             {
-                dgc.Visibility = Visibility.Collapsed;
+                return column switch
+                {
+                    DataGridBoundColumn b when b.Binding is Binding bind
+                     => bind.Path?.Path,
+                    DataGridComboBoxColumn c
+                        => (c.SelectedItemBinding as Binding)?.Path?.Path
+                        ?? (c.SelectedValueBinding as Binding)?.Path?.Path,
+                    DataGridTemplateColumn c => GetAllBindingPaths(c).FirstOrDefault(),
+                    _ => column.SortMemberPath
+                };
             }
 
-            DataGrid dg = (DataGrid)sender;
-
-            switch (dg.Name)
+            string GetColumnPath(DataGridColumn column)
             {
-                case "DG_Multi_ChannelNames":
-                    foreach (DataGridColumn dc in dg.Columns)
-                    {
-                        if (dc.Header.ToString() is not "Id" and not "ChannelName" and not "UserId")
-                        {
-                            Collapse(dc);
-                        }
-                    }
-                    break;
+                string subpath = ParseColumnPath(column);
+
+                return subpath?.Contains('.') == true ? subpath[..subpath.IndexOf('.')] : subpath;
+            }
+
+
+            Table AccessPermissions = PermissionDigest.GetTablePermissions(GetTableName(curr));
+
+            curr.CanUserAddRows = false; // don't add inline DataGrid rows
+            curr.CanUserDeleteRows = AccessPermissions.MenuAccess.DeleteRow;
+            curr.IsReadOnly = AccessPermissions.IsDataGridReadOnly;
+
+            foreach (var c in curr.Columns)
+            {
+                Column currColumn = PermissionDigest.GetColumnPermissions(GetTableName(curr), GetColumnPath(c));
+
+                c.IsReadOnly = currColumn?.IsDataGridReadOnly ?? false;
+            }
+        }
+
+        private static List<string> GetAllBindingPaths(DataGridTemplateColumn column, bool fromEditingTemplate = false)
+        {
+            var result = new List<string>();
+            if (column == null) return result;
+
+            DataTemplate template = fromEditingTemplate
+                ? column.CellEditingTemplate
+                : column.CellTemplate;
+
+            if (template == null) return result;
+
+            var content = template.LoadContent();
+            if (content is FrameworkElement fe)
+            {
+                FindBindingsRecursive(fe, result);
+            }
+
+            return result.Distinct().ToList();
+        }
+
+        private static void FindBindingsRecursive(object element, List<string> paths)
+        {
+            if (element == null) return;
+
+            // Check all dependency properties for bindings
+            var dpFields = element.GetType()
+                .GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+                .Where(f => f.FieldType == typeof(DependencyProperty));
+
+            foreach (var dpField in dpFields)
+            {
+                var dp = (DependencyProperty)dpField.GetValue(null);
+                var binding = BindingOperations.GetBinding(element as DependencyObject, dp);
+                if (binding?.Path?.Path != null)
+                {
+                    paths.Add(binding.Path.Path);
+                }
+            }
+
+            // Recurse into children
+            if (element is Panel panel)
+            {
+                foreach (var child in panel.Children)
+                    FindBindingsRecursive(child, paths);
+            }
+            else if (element is ContentControl cc && cc.Content != null)
+            {
+                FindBindingsRecursive(cc.Content, paths);
+            }
+            else if (element is ItemsControl ic && ic.ItemsSource == null)
+            {
+                foreach (var item in ic.Items)
+                    FindBindingsRecursive(item, paths);
             }
         }
 
@@ -285,18 +378,6 @@ namespace StreamerBotLib.Systems.MultiLive
             }));
         }
 
-        private string GetTableName(DataGrid item)
-        {
-            return item.Name switch
-            {
-                "DG_Multi_ChannelNames" => "MultiChannels",
-                "DG_Multi_LiveStreams" => "MultiLiveStreams",
-                "DG_Multi_Webhooks" => "MultiWebhooks",
-                "DG_Multi_SummaryLiveStreams" => "MultiSummaryLiveStreams",
-                _ => ""
-            };
-        }
-
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit)
@@ -341,13 +422,6 @@ namespace StreamerBotLib.Systems.MultiLive
         private void Debug_Button_AddNew_Click(object sender, RoutedEventArgs e)
         {
             DebugAddNewMultiLiveData?.Invoke(this, EventArgs.Empty);
-        }
-        private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
-        {
-            if (e.OriginalSource is MenuItem)
-            {
-                MenuItemDeleteClick?.Invoke(sender, e);
-            }
         }
 
         private void DG_PreviewKeyDown_Click(object sender, System.Windows.Input.KeyEventArgs e)

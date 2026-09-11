@@ -14,7 +14,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
         {
             private TableMeta _tableMeta = tableMeta;
             public string Name { get; } = name;
-            public bool IsReadOnly { get; } = IsNew ? 
+            public bool IsReadOnly { get; } = IsNew ?
                                                     PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsNewReadOnly :
                                                     PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsEditReadOnly;
             public bool IsEnabled => !IsReadOnly;
@@ -294,8 +294,8 @@ namespace StreamerBotLib.DataSQL.TableMeta
         }
 
         private void SetBindingList(bool IsNew) => BindingList.AddRange(from K in CurrEntity.Values.Keys
-                                                              where (K is not "Id")
-                                                              select new EntityData(K, this, IsNew));
+                                                                        where (K is not "Id")
+                                                                        select new EntityData(K, this, IsNew));
 
         public object GetEditedEntity()
         {

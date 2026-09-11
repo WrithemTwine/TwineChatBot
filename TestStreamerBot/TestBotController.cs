@@ -111,8 +111,9 @@ namespace TestStreamerBot
             lock (DatabaseName)
             {
                 Initialize();
-                botController.HandleAddChat(UserName, Source);
-                botController.HandleUserJoined([new(UserName, Source)]);
+                LiveUser testUser = new(UserName, Source);
+                botController.HandleAddChat(testUser);
+                botController.HandleUserJoined([testUser]);
             }
         }
 
@@ -157,14 +158,14 @@ namespace TestStreamerBot
                 {
                     botController.HandleUserJoined([new(U, Platform.Twitch)]);
                     Thread.Sleep(Random.Next(10000, 80000));
-                    botController.HandleMessageReceived(new() { DisplayName = U, IsSubscriber = 0 == Random.Next(0, 1), Message = "Hey stud!" }, Platform.Twitch);
+                    botController.HandleMessageReceived(new() { DisplayName = U, IsSubscriber = 0 == Random.Next(0, 1), Platform = Platform.Twitch, Message = "Hey stud!" });
                 }
 
                 // wait a little more
                 Thread.Sleep(18000);
 
                 // receive the hostile ban message
-                botController.HandleMessageReceived(new() { DisplayName = UserName, IsSubscriber = 0 == Random.Next(0, 1), Message = Msg }, Platform.Twitch);
+                botController.HandleMessageReceived(new() { DisplayName = UserName, IsSubscriber = 0 == Random.Next(0, 1), Platform = Platform.Twitch, Message = Msg });
 
                 // wait a moment to recognize the message
                 Thread.Sleep(5000);
@@ -408,7 +409,7 @@ namespace TestStreamerBot
 
                 botController.HandleIncomingRaidData(new("Pitcy", Platform.Twitch), DateTime.Now.ToLocalTime(), 13, new("284757", "Fortnite"));
                 botController.HandleUserJoined([new("Pitcy", Platform.Twitch), new("DarkStreamPhantom", Platform.Twitch), new("OutlawTorn14", Platform.Twitch), new("MrTopiczz", Platform.Twitch), new("pitcyissmelly", Platform.Twitch)]);
-                botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName = "Pitcy", IsModerator = true, Message = "!followage" }, Platform.Twitch);
+                botController.HandleChatCommandReceived(new() { UserType = ViewerTypes.Mod, DisplayName = "Pitcy", IsModerator = true, Platform = Platform.Twitch, Message = "!followage" });
             }
         }
 

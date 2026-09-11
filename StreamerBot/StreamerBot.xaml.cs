@@ -122,17 +122,13 @@ namespace StreamerBot
         private void ShoutUsers_Click(object sender, RoutedEventArgs e)
         {
             Controller.HandleChatCommandReceived(
-                new()
-                {
-                    CommandText = $"{DefaultCommand.soactive}",
-                    CommandArguments = [""],
-                    UserType = ViewerTypes.Broadcaster,
-                    IsBroadcaster = true,
-                    DisplayName = OptionFlags.TwitchChannelName,
-                    Channel = OptionFlags.TwitchChannelName,
-                    Message = $"{DefaultCommand.soactive}"
-                },
-                Platform.Twitch);
+                new(commandText: $"{DefaultCommand.soactive}",
+                     commandArguments: [""],
+                     userType: ViewerTypes.Broadcaster,
+                     isBroadcaster: true,
+                     displayName: OptionFlags.TwitchChannelName,
+                     channel: OptionFlags.TwitchChannelName,
+                     message: $"{DefaultCommand.soactive}"));
         }
 
         #region Refresh data from bot

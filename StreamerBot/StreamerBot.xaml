@@ -9,6 +9,7 @@
     xmlns:local="clr-namespace:StreamerBot"
     xmlns:GUI="clr-namespace:StreamerBotLib.GUI;assembly=StreamerBotLib"
     xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
+    xmlns:sched="clr-namespace:StreamerBotLib.Models.Schedule;assembly=StreamerBotLib"
     xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
     xmlns:Converters="clr-namespace:StreamerBotLib.DataSQL.Models.Converters;assembly=StreamerBotLib"
     mc:Ignorable="d"
@@ -3701,6 +3702,65 @@
                         </TabControl>
                     </TabItem>
                     <TabItem
+                        Header="{DynamicResource Schedule_TabHeader}"
+                        x:Name="TabItem_Schedule"
+                        VerticalAlignment="Stretch">
+                        <TabControl>
+                            <TabItem
+                                Header="{DynamicResource ResourceKey=Schedule_TwitchSubTabHeader}">
+                                <TabItem.Resources>
+                                    <sched:ScheduleTwitch
+                                        x:Key="ScheduleItem_Twitch" />
+                                </TabItem.Resources>
+                                <ListView
+                                    ItemsSource="{Binding TwitchSchedule, Source={StaticResource ScheduleItem_Twitch}}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <!-- Day column (read-only) -->
+                                            <GridViewColumn
+                                                Header="{DynamicResource Schedule_Day}"
+                                                Width="100">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Text="{Binding Day}"
+                                                            VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <!-- Title column -->
+                                            <GridViewColumn
+                                                Header="{DynamicResource Schedule_Title}"
+                                                Width="150">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBox
+                                                            Width="130"
+                                                            Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                                                            VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <!-- Category column -->
+                                            <GridViewColumn
+                                                Header="{DynamicResource Schedule_Category}"
+                                                Width="150">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBox
+                                                            Width="130"
+                                                            Text="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                                                            VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </TabItem>
+                        </TabControl>
+                    </TabItem>
+                    <TabItem
                         Header="{DynamicResource Data_TabHeader}"
                         VerticalAlignment="Stretch"
                         d:LayoutOverrides="Height">
@@ -3710,7 +3770,38 @@
                                 <TabItem
                                     Header="{DynamicResource Data_Variables_SubHeader}">
                                     <DockPanel>
-                                        <ListBox
+                                        <ListView
+                                            DockPanel.Dock="Left"
+                                            DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}"
+                                            ItemsSource="{Binding Collection}">
+                                            <ListView.View>
+                                                <GridView>
+                                                    <GridViewColumn
+                                                        Header="{DynamicResource Data_Variables_Parameter}"
+                                                        Width="150">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Text="{Binding Parameter}"
+                                                                    VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <GridViewColumn
+                                                        Header="{DynamicResource Data_Variables_Value}"
+                                                        Width="300">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock
+                                                                    Text="{Binding Value}"
+                                                                    VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                        <!--<ListBox
                                             DockPanel.Dock="Left"
                                             DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}"
                                             ItemsSource="{Binding Collection}"
@@ -3730,7 +3821,7 @@
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
-                                        </ListBox>
+                                        </ListBox>-->
                                     </DockPanel>
                                 </TabItem>
                                 <!-- Webhooks sub-tab -->
@@ -3766,7 +3857,6 @@
                                             RowDetailsTemplate="{StaticResource DG_RowDetailDT_Webhooks}"
                                             Initialized="DataGrid_Initialized"
                                             PreviewKeyDown="DG_PreviewKeyDown_Click"
-                                            
                                             ContextMenuOpening="DG_Edit_ContextMenuOpening"
                                             RowEditEnding="DataGrid_RowEditEnding"
                                             MouseDoubleClick="DG_MouseDoubleClick">

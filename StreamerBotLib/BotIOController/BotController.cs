@@ -1161,26 +1161,18 @@ namespace StreamerBotLib.BotIOController
             LogWriter.DebugLog("TwitchMessageReceived", DebugLogTypes.BotController, $"Received message {e.ChannelChatMessage.Message.Text} from {e.ChannelChatMessage.ChatterUserName} in {e.ChannelChatMessage.BroadcasterUserName} channel.");
 
             HandleMessageReceived(
-                new()
-                {
-                    UserId = e.ChannelChatMessage.ChatterUserId,
-                    DisplayName = e.ChannelChatMessage.ChatterUserName,
-                    Channel = e.ChannelChatMessage.BroadcasterUserName,
-                    IsBroadcaster = e.ChannelChatMessage.IsBroadcaster,
-                    IsHighlighted = false,
-                    IsMe = false,
-                    IsModerator = e.ChannelChatMessage.IsModerator,
-                    IsPartner = false,
-                    IsSkippingSubMode = false,
-                    IsStaff = e.ChannelChatMessage.IsStaff,
-                    IsSubscriber = e.ChannelChatMessage.IsSubscriber,
-                    IsTurbo = false,
-                    IsVip = e.ChannelChatMessage.IsVip,
-                    Message = e.ChannelChatMessage.Message.Text,
-                    Bits = e.ChannelChatMessage.Cheer?.Bits ?? 0,
-                    User = new LiveUser(e.ChannelChatMessage.ChatterUserName, Platform.Twitch, e.ChannelChatMessage.ChatterUserId)
-                }
-                , Platform.Twitch);
+                new(
+                channel: e.ChannelChatMessage.BroadcasterUserName,
+                userId: e.ChannelChatMessage.ChatterUserId,
+                displayName: e.ChannelChatMessage.ChatterUserName,
+                isBroadcaster: e.ChannelChatMessage.IsBroadcaster,
+                isModerator: e.ChannelChatMessage.IsModerator,
+                isStaff: e.ChannelChatMessage.IsStaff,
+                isSubscriber: e.ChannelChatMessage.IsSubscriber,
+                isVip: e.ChannelChatMessage.IsVip,
+                message: e.ChannelChatMessage.Message.Text,
+                bits: e.ChannelChatMessage.Cheer?.Bits ?? 0,
+                userType: ViewerTypes.Viewer, platform: Platform.Twitch));
         }
 
         /// <summary>
@@ -1228,25 +1220,24 @@ namespace StreamerBotLib.BotIOController
 
             LogWriter.DebugLog("TwitchMessageReceived", DebugLogTypes.BotController, $"Received message {e.ChannelChatMessage.Message.Text} from {e.ChannelChatMessage.ChatterUserName} in {e.ChannelChatMessage.BroadcasterUserName} channel.");
 
-            HandleChatCommandReceived(new()
-            {
-                CommandArguments = cmdarglist,
-                CommandText = commandtext,
-                UserId = e.ChannelChatMessage.ChatterUserId,
-                DisplayName = e.ChannelChatMessage.ChatterUserName,
-                Channel = e.ChannelChatMessage.BroadcasterUserName,
-                IsBroadcaster = e.ChannelChatMessage.IsBroadcaster,
-                IsHighlighted = false,
-                IsMe = false,
-                IsModerator = e.ChannelChatMessage.IsModerator,
-                IsPartner = false,
-                IsSkippingSubMode = false,
-                IsStaff = e.ChannelChatMessage.IsStaff,
-                IsSubscriber = e.ChannelChatMessage.IsSubscriber,
-                IsTurbo = false,
-                IsVip = e.ChannelChatMessage.IsVip,
-                Message = e.ChannelChatMessage.Message.Text
-            }, Platform.Twitch);
+            HandleChatCommandReceived(
+                new(
+                    commandtext, cmdarglist,
+                    e.ChannelChatMessage.BroadcasterUserName,
+                    e.ChannelChatMessage.ChatterUserId,
+                    e.ChannelChatMessage.ChatterUserName,
+                    e.ChannelChatMessage.IsBroadcaster,
+                    false, false,
+                    e.ChannelChatMessage.IsModerator,
+                    false, false,
+                    e.ChannelChatMessage.IsStaff,
+                    e.ChannelChatMessage.IsSubscriber,
+                    false,
+                    e.ChannelChatMessage.IsVip,
+                    e.ChannelChatMessage.Message.Text,
+                    bits: 0,
+                    userType: ViewerTypes.Viewer,
+                    platform: Platform.Twitch));
         }
 
         /// <summary>
@@ -1255,7 +1246,7 @@ namespace StreamerBotLib.BotIOController
         /// <param name="e">The chat command event data</param>
         public void TwitchBotCommandCall(SendBotCommandEventArgs e)
         {
-            HandleChatCommandReceived(e.CmdMessage, Platform.Twitch);
+            HandleChatCommandReceived(e.CmdMessage);
         }
 
         /// <summary>
@@ -1880,19 +1871,18 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         /// <param name="UserName">The name of the user who joined.</param>
         /// <param name="Source">The platform from which the user joined.</param>
-        public void HandleAddChat(string UserName, Platform Source)
+        public void HandleAddChat(LiveUser user)
         {
-            DataBot.UserJoined([new(UserName, Source)]);
+            DataBot.UserJoined([user]);
         }
 
         /// <summary>
         /// When a message is received in the chat, this method is called to handle the message received event, which includes parsing the message data, building the message to be sent to the channel and webhooks, posting messages to the channel about the received message, and posting notifications to any webhooks about the received message. This method is specifically for handling when a message is received in the chat, and may be called multiple times if multiple messages are received. The method also checks for any overlay events related to the received message.
         /// </summary>
         /// <param name="MsgReceived">The message that was received.</param>
-        /// <param name="Source">The platform from which the message was received.</param>
-        public void HandleMessageReceived(Models.CmdMessage MsgReceived, Platform Source)
+        public void HandleMessageReceived(Models.CmdMessage MsgReceived)
         {
-            DataBot.MessageReceived(MsgReceived, new(MsgReceived.DisplayName, Source, MsgReceived.UserId));
+            DataBot.MessageReceived(MsgReceived, MsgReceived.User);
         }
 
         /// <summary>
@@ -1923,11 +1913,11 @@ namespace StreamerBotLib.BotIOController
         /// </summary>
         /// <param name="commandmsg">The chat command message received.</param>
         /// <param name="Source">The platform from which the command was received.</param>
-        public void HandleChatCommandReceived(Models.CmdMessage commandmsg, Platform Source)
+        public void HandleChatCommandReceived(Models.CmdMessage commandmsg)
         {
             if (GiveawayItemType == GiveawayTypes.Command && commandmsg.CommandText == GiveawayItemName)
             {
-                HandleGiveawayPostName(new(commandmsg.DisplayName, Source, commandmsg.UserId));
+                HandleGiveawayPostName(commandmsg.User);
             }
             DataBot.ProcessCommand(commandmsg);
         }

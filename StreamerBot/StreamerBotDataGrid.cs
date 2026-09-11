@@ -9,7 +9,6 @@ using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
-using System.Collections.Concurrent;
 using System.Data;
 using System.Reflection;
 using System.Windows;
@@ -27,7 +26,6 @@ namespace StreamerBot
         private ManageDataEdit PopupWindows { get; set; }
         private Thread GUIDataGridUpdates { get; set; }
         private GUIDataManagerViews GUIDataManagerViews { get; set; }
-
 
         private void DataGrid_Initialized(object sender, EventArgs e)
         {
@@ -51,8 +49,6 @@ namespace StreamerBot
 
                 return subpath?.Contains('.') == true ? subpath[..subpath.IndexOf('.')] : subpath;
             }
-
-
 
             DataGrid curr = sender as DataGrid;
 
@@ -126,7 +122,6 @@ namespace StreamerBot
             }
         }
 
-
         #region View - New-Edit Data Records - PopuWindow
         private void MenuItem_AddClick(object sender, RoutedEventArgs e)
         {
@@ -163,6 +158,11 @@ namespace StreamerBot
                 nameof(DG_User_Quotes) => typeof(Quotes),
                 nameof(DG_User_Shoutouts) => typeof(ShoutOuts),
                 nameof(DG_Webhooks) => typeof(Webhooks),
+                "DG_Multi_WebHooks" => typeof(MultiWebhooks),
+                "DG_Multi_ChannelNames" => typeof(MultiChannels),
+                "DG_Multi_LiveStreamStats" => typeof(MultiLiveStreams),
+                "DG_Multi_SummaryLiveStreamStats" => typeof(MultiSummaryLiveStreams),
+
                 _ => typeof(object)
             };
 
@@ -203,7 +203,6 @@ namespace StreamerBot
                 LrnMsgMenuItems.Items.Add(temp);
             }
         }
-
         private void DataManager_OnDataCollectionUpdated(object sender, OnDataCollectionUpdatedEventArgs e)
         {
             //GUIDataGridUpdateQueue.Enqueue(new Task(() =>
@@ -316,7 +315,6 @@ namespace StreamerBot
         {
             Controller.ClearUsersNonFollowers();
         }
-
         private readonly Dictionary<string, string> MenuAccessMap = new()
         {
             {"DataGridContextMenu_AddItem", "AddRow" },
@@ -347,6 +345,10 @@ namespace StreamerBot
                         if (((Separator)M).Name == "DataGridContextMenu_Separator1")
                         {
                             ((Separator)M).Visibility = tableMenuAccess.AutoShout || tableMenuAccess.MonitorLive ? Visibility.Visible : Visibility.Collapsed;
+                        }
+                        else if (((Separator)M).Name == "DataGridContextMenu_Separator2")
+                        {
+                            ((Separator)M).Visibility = tableMenuAccess.EnableItems || tableMenuAccess.DisableItems ? Visibility.Visible : Visibility.Collapsed;
                         }
                     }
                 }
@@ -523,9 +525,9 @@ namespace StreamerBot
                 nameof(DG_Webhooks) => "Webhooks",
                 // specific to MultiLiveDataGrids.xaml, also routed through here
                 "DG_Multi_ChannelNames" => "MultiChannels",
-                "DG_Multi_LiveStreams" => "MultiLiveStreams",
+                "DG_Multi_LiveStreamStats" => "MultiLiveStreams",
                 "DG_Multi_WebHooks" => "MultiWebhooks",
-                "DG_Multi_SummaryLiveStreams" => "MultiSummaryLiveStreams",
+                "DG_Multi_SummaryLiveStreamStats" => "MultiSummaryLiveStreams",
                 _ => ""
             };
         }
