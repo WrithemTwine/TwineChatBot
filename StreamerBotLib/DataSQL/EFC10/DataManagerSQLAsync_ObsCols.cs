@@ -552,9 +552,38 @@ namespace StreamerBotLib.DataSQL.EFC10
                      await GUIContext.Currency.Include(u => u.User).ThenInclude(F => F.Follower).Include(u => u.User).ThenInclude(S => S.UserStats).LoadAsync();
 
                      var CurrCurrency = _CurrencyFilterActive ? [.. GUIContext.Currency.Local.Where((c) => c.User.LastDateSeen >= CurrStreamStart)] : GUIContext.Currency.Local.ToList();
-                     Currency.Clear();
-                     Currency.AddRange(CurrCurrency);
+
+                     var toRemove = (from U in Currency
+                                     where !CurrCurrency.Contains(U)
+                                     select U).ToList();
+                     // trim excess rows
+                     foreach(var item in toRemove)
+                     {
+                         Currency.Remove(item);
+                     }
+
+                     // add any new user rows into the collection
+                     Currency.AddRange((from C in CurrCurrency
+                                        where !Currency.Any(o => o.UserId == C.UserId && o.Platform == C.Platform && o.CurrencyName == C.CurrencyName)
+                                        select C));
+
+                     // update changed values
+                     foreach(var curr in CurrCurrency)
+                     {
+                         Currency.Where(c => c.User == curr.User && c.CurrencyName == curr.CurrencyName).Select(c => c).FirstOrDefault()?.Value = curr.Value;
+                     }
+
                      NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
+
+
+                     //GUIContext.ChangeTracker.Clear();
+                     //await GUIContext.Currency.Include(u => u.User).ThenInclude(F => F.Follower).Include(u => u.User).ThenInclude(S => S.UserStats).LoadAsync();
+
+                     //var CurrCurrency = _CurrencyFilterActive ? [.. GUIContext.Currency.Local.Where((c) => c.User.LastDateSeen >= CurrStreamStart)] : GUIContext.Currency.Local.ToList();
+                     //Currency.Clear();
+                     //Currency.AddRange(CurrCurrency);
+                     //NotifyDataCollectionUpdated(nameof(GUIContext.Currency), RecordCountChange);
+
                  });
             });
         }

@@ -274,6 +274,7 @@
                     x:Name="DG_Multi_LiveStreamStats"
                     ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiLiveStreams_CVS}}"
                     ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                    ContextMenuOpening="DG_MultiEdit_ContextMenuOpening"
                     Initialized="DG_Multi_Initialized"
                     PreviewKeyDown="DG_PreviewKeyDown_Click"
                     RowEditEnding="DataGrid_RowEditEnding">
@@ -309,6 +310,7 @@
                     x:Name="DG_Multi_SummaryLiveStreamStats"
                     ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_MultiSummaryLiveStreams_CVS}}"
                     ContextMenu="{StaticResource DataGrid_Multi_ContextMenu}"
+                    ContextMenuOpening="DG_MultiEdit_ContextMenuOpening"
                     Initialized="DG_Multi_Initialized"
                     PreviewKeyDown="DG_PreviewKeyDown_Click"
                     RowEditEnding="DataGrid_RowEditEnding">

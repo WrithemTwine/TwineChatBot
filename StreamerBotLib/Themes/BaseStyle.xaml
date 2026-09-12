@@ -74,9 +74,9 @@
         <Setter Property="Margin" Value="5" />
     </Style>
 
-    <Style TargetType="{x:Type StackPanel}">
+    <!--<Style TargetType="{x:Type StackPanel}">
         <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
-    </Style>
+    </Style>-->
 
     <Style TargetType="{x:Type GroupBox}">
         <Setter Property="BorderBrush" Value="{DynamicResource Borders}" />

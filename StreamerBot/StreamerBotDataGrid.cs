@@ -207,7 +207,7 @@ namespace StreamerBot
         {
             //GUIDataGridUpdateQueue.Enqueue(new Task(() =>
             //{
-            Dispatcher.BeginInvoke(() =>
+            Dispatcher.BeginInvoke(() => 
             {
                 LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
                    DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");
@@ -406,14 +406,12 @@ namespace StreamerBot
         {
             return (((sender as MenuItem).Parent as ContextMenu).Parent as Popup).PlacementTarget as DataGrid;
         }
-
         private void MenuItem_DeleteClick(object sender, RoutedEventArgs e)
         {
             DataGrid item = GetMenuDataGrid(sender);
 
             Controller.DeleteDataRows((IEnumerable<object>)item.SelectedItems, GetTableName(item));
         }
-
         private void MenuItem_LearnMsgTypeClick(object sender, RoutedEventArgs e)
         {
             DataGrid CurrLrnMsg = GetMenuDataGrid(sender);
@@ -426,7 +424,6 @@ namespace StreamerBot
 
             Controller.GUISaveDataGridEdits(false, GetTableName(CurrLrnMsg));
         }
-
 
         private void DG_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -523,7 +520,7 @@ namespace StreamerBot
                 nameof(DG_StreamData_Stats) => "StreamStats",
                 nameof(DG_Users) => "Users",
                 nameof(DG_Webhooks) => "Webhooks",
-                // specific to MultiLiveDataGrids.xaml, also routed through here
+                // from MultiLiveDataGrids.xaml, also routed through here
                 "DG_Multi_ChannelNames" => "MultiChannels",
                 "DG_Multi_LiveStreamStats" => "MultiLiveStreams",
                 "DG_Multi_WebHooks" => "MultiWebhooks",

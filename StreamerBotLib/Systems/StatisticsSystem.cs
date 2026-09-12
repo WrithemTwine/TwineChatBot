@@ -380,6 +380,7 @@ namespace StreamerBotLib.Systems
             LogWriter.DebugLog("StreamOnline", DebugLogTypes.StatSystem, "Detected a new livestream and starting up activities.");
 
             CurrStream = new(); // start over
+            OptionFlags.IsStreamOnline = true;
 
             if (OptionFlags.CurrencyFilterOnline)
             {
@@ -388,7 +389,6 @@ namespace StreamerBotLib.Systems
 
             StartElapsedTimerThread();
 
-            OptionFlags.IsStreamOnline = true;
             CurrStream.StreamStart = Started;
             CurrStream.StreamEnd = Started; // temp assign ending time as start
             LastLiveViewerCount = 0; // reset count to 0 for new stream

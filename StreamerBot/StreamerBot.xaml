@@ -1801,7 +1801,8 @@
                     <TabItem
                         Header="{DynamicResource Options_TabHeader}"
                         x:Name="TabItem_DataOptions"
-                        VerticalAlignment="Stretch">
+                        VerticalAlignment="Stretch"
+                      >
                         <TabItem.Resources>
                             <Style
                                 TargetType="{x:Type StackPanel}">
@@ -3704,7 +3705,8 @@
                     <TabItem
                         Header="{DynamicResource Schedule_TabHeader}"
                         x:Name="TabItem_Schedule"
-                        VerticalAlignment="Stretch">
+                        VerticalAlignment="Stretch" 
+                        Visibility="Collapsed">
                         <TabControl>
                             <TabItem
                                 Header="{DynamicResource ResourceKey=Schedule_TwitchSubTabHeader}">
@@ -5295,6 +5297,7 @@
                                         </TabItem>
                                         <!-- Command Platform Messages -->
                                         <TabItem
+                                            Visibility="Collapsed"
                                             Header="{DynamicResource Data_Commands_PlatformMessages_SubHeader}">
                                             <Grid>
                                                 <DataGrid

@@ -1066,7 +1066,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                 await context.Database.BeginTransactionAsync();
                 currStream.Update(streamStat);
 
-                if (currStream.StreamEnd != default)
+                if (currStream.StreamEnd != default || currStream.StreamEnd != currStream.StreamStart)
                 { // if the stream has ended, reset the current stream start to default
                     CurrStreamStart = default;
                 }

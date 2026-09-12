@@ -722,6 +722,8 @@ namespace StreamerBotLib.BotIOController
             }
         }
 
+
+        // Todo: add GUI schedule linker here for category & title
         /// <summary>
         /// A request to modify the Twitch channel information, which can include the stream title and the stream category. This is used to update the Twitch channel information based on changes made in the system, such as changing the stream title or category from the GUI or from a command, and then sending that update to Twitch to change the channel information accordingly. The Title, CategoryName, and CategoryId parameters are optional, so you can choose to update just one of those values or all of them at once depending on what information you want to change for the Twitch channel.
         /// </summary>

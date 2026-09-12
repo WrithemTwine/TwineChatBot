@@ -54,8 +54,6 @@
         <Setter Property="CanUserAddRows" Value="False" />
         <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
 
-
-
         <Setter Property="ColumnHeaderStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -117,37 +115,36 @@
 
     <DataTemplate x:Key="DG_RowDetailDT_Clips">
         <Border BorderThickness="2">
-            <Border.Resources>
-                <Style TargetType="{x:Type StackPanel}" BasedOn="{StaticResource {x:Type StackPanel}}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-                </Style>
-            </Border.Resources>
-            <StackPanel Orientation="Vertical">
-                <StackPanel.Resources>
+            <DockPanel>
+                <DockPanel.Resources>
                     <Style TargetType="{x:Type StackPanel}">
                         <Setter Property="Margin" Value="0,3" />
                         <Setter Property="Orientation" Value="Horizontal" />
                     </Style>
-                </StackPanel.Resources>
-                <StackPanel>
+                </DockPanel.Resources>
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Category:</TextBlock>
                     <TextBlock Text="{Binding CategoryId}" />
                     <TextBlock> -</TextBlock>
                     <TextBlock Text="{Binding CategoryList.Category}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Language:</TextBlock>
                     <TextBlock Text="{Binding Language}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Title:</TextBlock>
                     <TextBlock Text="{Binding Title}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>URL:</TextBlock>
                     <TextBlock Text="{Binding Url}" />
                 </StackPanel>
-            </StackPanel>
+            </DockPanel>
         </Border>
     </DataTemplate>
 
@@ -531,9 +528,9 @@
         <CollectionViewSource.SortDescriptions>
             <scm:SortDescription PropertyName="User.UserName" />
         </CollectionViewSource.SortDescriptions>
-        <CollectionViewSource.GroupDescriptions>
+        <!--<CollectionViewSource.GroupDescriptions>
             <PropertyGroupDescription PropertyName="CurrencyName" />
-        </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource.GroupDescriptions>-->
     </CollectionViewSource>
     <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}">
