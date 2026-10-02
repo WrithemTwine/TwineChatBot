@@ -26,6 +26,9 @@ namespace StreamerBot
         {
             const int NewVersionIntervalHours = 18;
             DateTime VersionCheckDate = DateTime.Now.AddHours(NewVersionIntervalHours);
+            DateTime lastCheck = DateTime.Now;
+            DateTime resetSchedule = DateTime.Today;
+            DateTime sendSchedule = DateTime.Today.Add(OptionFlags.ScheduleSendTime.TimeOfDay);
 
             const int sleep = 2000;
 
@@ -33,6 +36,8 @@ namespace StreamerBot
             {
                 while (WatchProcessOps)
                 {
+                    DateTime currTime = DateTime.Now;
+
                     if (!OptionFlags.TwitchTokenUseAuth && OptionFlags.CurrentToTwitchRefreshDate(OptionFlags.TwitchBotTokenDate) <= new TimeSpan(0, 5, sleep / 1000))
                     {
 #if DEBUG
@@ -41,22 +46,46 @@ namespace StreamerBot
 #endif
                     }
 
-                    if (OptionFlags.TwitchFollowerAutoRefresh && DateTime.Now >= TwitchFollowRefresh)
+                    if (OptionFlags.TwitchFollowerAutoRefresh && currTime >= TwitchFollowRefresh)
                     {
                         Controller.TwitchStartUpdateAllFollowers();
-                        TwitchFollowRefresh = DateTime.Now.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
+                        TwitchFollowRefresh = currTime.AddHours(OptionFlags.TwitchFollowerRefreshHrs);
                     }
 
-                    if (DateTime.Now >= VersionCheckDate)
+                    if (currTime >= VersionCheckDate)
                     {
                         VersionCheckDate.AddHours(NewVersionIntervalHours);
 
                         VerifyNewVersion?.Invoke(this, new());
                     }
 
+                    if (OptionFlags.ScheduleUseSchedule)
+                    {
+                        if (OptionFlags.ScheduleResetDaily)
+                        {
+                            if (currTime > resetSchedule)
+                            {
+                                ThreadManager.AddTaskToGUIDispatcher(ResetSchedule);
+                                resetSchedule = resetSchedule.AddDays(1);
+                            }
+                        }
+
+                        if (OptionFlags.ScheduleSendScheduleDaily)
+                        {
+                            if (currTime > sendSchedule)
+                            {// setup new check time for tomorrow, check OptionFlags.ScheduleSendTime for updated send time
+                                sendSchedule = DateTime.Today.AddDays(1)
+                                                            .Add(OptionFlags.ScheduleSendTime.TimeOfDay);
+                                ThreadManager.AddTaskToGUIDispatcher(CheckSchedule);
+                            }
+
+                        }
+                    }
+
                     UpdateAppTime();
 
                     Thread.Sleep(sleep);
+                    lastCheck = currTime;
                 }
             }
             catch (ThreadInterruptedException ex) // will always throw exception when exiting during a Sleep

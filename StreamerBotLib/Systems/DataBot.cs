@@ -401,12 +401,26 @@ namespace StreamerBotLib.Systems
             }));
         }
 
+        internal void SyncOverlayActionSelections(OverlayTypes overlayType, string overlayAction)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("SyncOverlayActionSelections", DebugLogTypes.DataBot, $"Syncing overlay action selections for type: {overlayType} with action: {overlayAction}.");
+                SystemAction.SyncOverlayActionSelections(overlayType, overlayAction);
+            }));
+        }
+
         internal void DataGridUpdatedRow(object sender, AddNewRowEventArgs e)
         {
             ActionQueue.Enqueue(new Task(() =>
             {
                 LogWriter.DebugLog("DataGridUpdatedRow", DebugLogTypes.DataBot, $"Updating data grid row: {e.NewRow?.TableName}.");
                 SystemAction.PostDataGridGUIAddRow(e.NewRow);
+
+                if (e.NewRow?.TableName == DataTables.OverlayServices.ToString())
+                {
+                    SyncOverlayActionSelections((OverlayTypes)e.NewRow.Values["OverlayType"], (string)e.NewRow.Values["OverlayAction"]);
+                }
             }));
         }
 

@@ -4,13 +4,13 @@ namespace StreamerBotLib.DataSQL.TableMeta
 {
     internal class Clips : IDatabaseTableMeta
     {
-        public System.String ClipId { get => (System.String)Values["ClipId"]; set => Values["ClipId"] = value; }
-        public System.DateTime CreatedAt { get => (System.DateTime)Values["CreatedAt"]; set => Values["CreatedAt"] = value; }
-        public System.String Title { get => (System.String)Values["Title"]; set => Values["Title"] = value; }
-        public System.String CategoryId { get => (System.String)Values["CategoryId"]; set => Values["CategoryId"] = value; }
-        public System.String Language { get => (System.String)Values["Language"]; set => Values["Language"] = value; }
+        public System.String ClipId { get => (string)Values["ClipId"]; set => Values["ClipId"] = value; }
+        public System.DateTime CreatedAt { get => Convert.ToDateTime(Values["CreatedAt"]); set => Values["CreatedAt"] = value; }
+        public System.String Title { get => (string)Values["Title"]; set => Values["Title"] = value; }
+        public System.String CategoryId { get => (string)Values["CategoryId"]; set => Values["CategoryId"] = value; }
+        public System.String Language { get => (string)Values["Language"]; set => Values["Language"] = value; }
         public System.Single Duration { get => (System.Single)Values["Duration"]; set => Values["Duration"] = value; }
-        public System.String Url { get => (System.String)Values["Url"]; set => Values["Url"] = value; }
+        public System.String Url { get => (string)Values["Url"]; set => Values["Url"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -29,6 +29,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "Url", tableData.Url }
             };
         }
+
         public Dictionary<string, Type> Meta => new()
         {
               { "ClipId", typeof(System.String) },
@@ -39,6 +40,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "Duration", typeof(System.Single) },
               { "Url", typeof(System.String) }
         };
+
         public object GetModelEntity()
         {
             return new Models.Clips(
@@ -47,42 +49,41 @@ namespace StreamerBotLib.DataSQL.TableMeta
             title: Title,
             categoryId: CategoryId,
             language: Language,
+            duration: Duration,
             url: Url
-        );
+            );
         }
+
         public void CopyUpdates(Models.Clips modelData)
         {
             if (modelData.ClipId != ClipId)
             {
                 modelData.ClipId = ClipId;
             }
-
             if (modelData.CreatedAt != CreatedAt)
             {
                 modelData.CreatedAt = CreatedAt;
             }
-
             if (modelData.Title != Title)
             {
                 modelData.Title = Title;
             }
-
             if (modelData.CategoryId != CategoryId)
             {
                 modelData.CategoryId = CategoryId;
             }
-
             if (modelData.Language != Language)
             {
                 modelData.Language = Language;
             }
-
+            if (modelData.Duration != Duration)
+            {
+                modelData.Duration = Duration;
+            }
             if (modelData.Url != Url)
             {
                 modelData.Url = Url;
             }
-
         }
     }
 }
-

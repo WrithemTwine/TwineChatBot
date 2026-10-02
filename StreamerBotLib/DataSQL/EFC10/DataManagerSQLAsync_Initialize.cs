@@ -26,6 +26,7 @@ namespace StreamerBotLib.DataSQL.EFC10
             await SetLearnedMessages(context);
             //CleanCategories(context);
             CleanStreamCategories(context);
+            CleanQuotes(context);
 
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
@@ -290,6 +291,21 @@ namespace StreamerBotLib.DataSQL.EFC10
                     stat.Category.Remove("''''");
                 }
             }
+        }
+
+        private void CleanQuotes(SQLDBContext Refcontext = null)
+        {
+            var Category = Refcontext.StreamStats.OrderBy(s => s.StreamEnd).LastOrDefault()?.Category.FirstOrDefault();
+
+            DateTime curr = DateTime.Now;
+            var Quotes = Refcontext.Quotes.Where(q => q.QuoteDate == new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) || q.CategoryName.Contains("''''")).Select(q => q);
+
+            foreach (var q in Quotes)
+            {
+                q.QuoteDate = curr;
+                q.CategoryName = Category ?? LocalizedMsgSystem.GetVar(Msg.MsgAllCategory);
+            }
+
         }
 
         #endregion

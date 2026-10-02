@@ -12,7 +12,7 @@ namespace StreamerBotLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.9.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.10.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -3363,6 +3363,138 @@ namespace StreamerBotLib.Properties {
             }
             set {
                 this["GUI_BotCategory_Twitch_Expand"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ScheduleTwitch {
+            get {
+                return ((string)(this["ScheduleTwitch"]));
+            }
+            set {
+                this["ScheduleTwitch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ScheduleUseSchedule {
+            get {
+                return ((bool)(this["ScheduleUseSchedule"]));
+            }
+            set {
+                this["ScheduleUseSchedule"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ScheduleResetDaily {
+            get {
+                return ((bool)(this["ScheduleResetDaily"]));
+            }
+            set {
+                this["ScheduleResetDaily"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("12")]
+        public string ScheduleSendTimeHrs {
+            get {
+                return ((string)(this["ScheduleSendTimeHrs"]));
+            }
+            set {
+                this["ScheduleSendTimeHrs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00")]
+        public string ScheduleSendTimeMin {
+            get {
+                return ((string)(this["ScheduleSendTimeMin"]));
+            }
+            set {
+                this["ScheduleSendTimeMin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ScheduleSendScheduleDaily {
+            get {
+                return ((bool)(this["ScheduleSendScheduleDaily"]));
+            }
+            set {
+                this["ScheduleSendScheduleDaily"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayUseMultipleEvents {
+            get {
+                return ((bool)(this["MediaOverlayUseMultipleEvents"]));
+            }
+            set {
+                this["MediaOverlayUseMultipleEvents"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayUseElimRandom {
+            get {
+                return ((bool)(this["MediaOverlayUseElimRandom"]));
+            }
+            set {
+                this["MediaOverlayUseElimRandom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayUseStraightRandom {
+            get {
+                return ((bool)(this["MediaOverlayUseStraightRandom"]));
+            }
+            set {
+                this["MediaOverlayUseStraightRandom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MediaOverlayUseWeightedRandom {
+            get {
+                return ((bool)(this["MediaOverlayUseWeightedRandom"]));
+            }
+            set {
+                this["MediaOverlayUseWeightedRandom"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MediaOverlayUseStraightSelection {
+            get {
+                return ((bool)(this["MediaOverlayUseStraightSelection"]));
+            }
+            set {
+                this["MediaOverlayUseStraightSelection"] = value;
             }
         }
     }

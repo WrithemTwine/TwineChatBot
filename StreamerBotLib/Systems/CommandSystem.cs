@@ -20,7 +20,6 @@ namespace StreamerBotLib.Systems
 
         internal static int LastLiveViewerCount = 0;
 
-
         /// <summary>
         /// Informs the GUI of updated info.
         /// </summary>
@@ -581,7 +580,7 @@ namespace StreamerBotLib.Systems
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Adding quote: {string.Join(' ', arglist)}.");
                     int quoteNum;
 
-                    quoteNum = DataManage.PostQuote(string.Join(' ', arglist));
+                    quoteNum = DataManage.PostQuote(string.Join(' ', arglist), DateTime.Now, CurrCategory.CategoryName);
 
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                     {
@@ -614,7 +613,7 @@ namespace StreamerBotLib.Systems
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
                             new(MsgVars.quote,
-                            $"{LocalizedMsgSystem.GetVar(DefaultCommand.quote)} {DataManage.GetQuote(Convert.ToInt32(arglist[0])) ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote)}" )
+                            $"{LocalizedMsgSystem.GetVar(DefaultCommand.quote)} {DataManage.GetQuote(Convert.ToInt32(arglist[0]))?.ToString() ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote)}" )
                         }));
                 }
             }

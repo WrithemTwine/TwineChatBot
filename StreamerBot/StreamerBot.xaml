@@ -11,7 +11,10 @@
     xmlns:s="clr-namespace:StreamerBotLib.Properties;assembly=StreamerBotLib"
     xmlns:sched="clr-namespace:StreamerBotLib.Models.Schedule;assembly=StreamerBotLib"
     xmlns:StaticLib="clr-namespace:StreamerBotLib.Static;assembly=StreamerBotLib"
+    xmlns:ModConv="clr-namespace:StreamerBotLib.Models.Converters;assembly=StreamerBotLib"
     xmlns:Converters="clr-namespace:StreamerBotLib.DataSQL.Models.Converters;assembly=StreamerBotLib"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:linq="clr-namespace:System.Linq;assembly=System.Linq"
     mc:Ignorable="d"
     Title="{DynamicResource Window_Title}"
     Top="{Binding GUITop, Mode=TwoWay, Source={x:Static s:Settings.Default}}"
@@ -1801,8 +1804,7 @@
                     <TabItem
                         Header="{DynamicResource Options_TabHeader}"
                         x:Name="TabItem_DataOptions"
-                        VerticalAlignment="Stretch"
-                      >
+                        VerticalAlignment="Stretch">
                         <TabItem.Resources>
                             <Style
                                 TargetType="{x:Type StackPanel}">
@@ -2526,8 +2528,7 @@
                                                                 Text="{DynamicResource Options_MediaOverlay_ChannelPoints}" />
                                                         </CheckBox>
                                                         <CheckBox
-                                                            IsChecked="{Binding MediaOverlayShoutoutClips}"
-                                                            Visibility="Collapsed">
+                                                            IsChecked="{Binding MediaOverlayShoutoutClips}">
                                                             <CheckBox.ToolTip>
                                                                 <TextBlock
                                                                     Text="{DynamicResource Options_MediaOverlay_ShoutoutClips_Tooltip}" />
@@ -2535,6 +2536,46 @@
                                                             <TextBlock
                                                                 Text="{DynamicResource Options_MediaOverlay_ShoutoutClips}" />
                                                         </CheckBox>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </GroupBox>
+                                            <GroupBox
+                                                Header="{DynamicResource Options_MediaOverlay_MultiEventHeader}">
+                                                <StackPanel>
+                                                    <CheckBox
+                                                        Name="Options_MediaOverlay_CheckBox_UseMultipleEvents"
+                                                        IsChecked="{Binding MediaOverlayUseMultipleEvents}"
+                                                        Checked="CheckBox_Checked_PanelVisibility"
+                                                        Unchecked="CheckBox_Checked_PanelVisibility">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_MediaOverlay_UseMultipleEvents}" />
+                                                    </CheckBox>
+                                                    <StackPanel
+                                                        Name="Options_MediaOverlay_StackPanel_MultiEventOptions"
+                                                        Loaded="CheckBox_Checked_PanelVisibility"
+                                                        Visibility="Collapsed">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_MediaOverlay_UseMultiple_Info}" />
+                                                        <RadioButton
+                                                            IsChecked="{Binding MediaOverlayUseElimRandom}">
+                                                            <TextBlock
+                                                                Text="{DynamicResource Options_MediaOverlay_UseMultiple_EliminationRandom}" />
+                                                        </RadioButton>
+                                                        <RadioButton
+                                                            IsChecked="{Binding MediaOverlayUseStraightRandom}">
+                                                            <TextBlock
+                                                                Text="{DynamicResource Options_MediaOverlay_UseMultiple_StraightRandom}" />
+                                                        </RadioButton>
+                                                        <RadioButton
+                                                            IsChecked="{Binding MediaOverlayUseWeightedRandom}">
+                                                            <TextBlock
+                                                                Text="{DynamicResource Options_MediaOverlay_UseMultiple_WeightedRandom}" />
+                                                        </RadioButton>
+                                                        <RadioButton
+                                                            IsChecked="{Binding MediaOverlayUseStraightSelection}">
+                                                            <TextBlock
+                                                                Text="{DynamicResource Options_MediaOverlay_UseMultiple_StraightSelection}" />
+                                                        </RadioButton>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </GroupBox>
@@ -3169,6 +3210,76 @@
                                                     </Label>
                                                 </StackPanel>
                                             </GroupBox>
+                                            <!-- Schedule Options -->
+                                            <GroupBox
+                                                x:Name="GroupBox_ManageScheduleOptions"
+                                                Header="{DynamicResource Options_Schedule_Header}">
+                                                <StackPanel
+                                                    Orientation="Vertical">
+                                                    <CheckBox
+                                                        x:Name="Options_CheckBox_UseSchedule"
+                                                        IsChecked="{Binding ScheduleUseSchedule}"
+                                                        Checked="CheckBox_Checked_PanelVisibility"
+                                                        Unchecked="CheckBox_Checked_PanelVisibility">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Schedule_UseSchedule}" />
+                                                    </CheckBox>
+                                                    <CheckBox
+                                                        IsChecked="{Binding ScheduleResetDaily}">
+                                                        <CheckBox.ToolTip>
+                                                            <TextBlock
+                                                                Width="80"
+                                                                TextWrapping="Wrap"
+                                                                Text="{DynamicResource Options_Schedule_ResetDaily_tooltip}" />
+                                                        </CheckBox.ToolTip>
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Schedule_ResetDaily}" />
+                                                    </CheckBox>
+                                                    <CheckBox>
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Schedule_SendTimeTextBlock}" />
+                                                    </CheckBox>
+                                                    <StackPanel
+                                                        Orientation="Horizontal">
+                                                        <StackPanel.Resources>
+                                                            <!-- Hours 1–12 -->
+                                                            <ObjectDataProvider
+                                                                x:Key="Hours"
+                                                                ObjectType="{x:Type linq:Enumerable}"
+                                                                MethodName="Range">
+                                                                <ObjectDataProvider.MethodParameters>
+                                                                    <sys:Int32>0</sys:Int32>
+                                                                    <sys:Int32>24</sys:Int32>
+                                                                </ObjectDataProvider.MethodParameters>
+                                                            </ObjectDataProvider>
+                                                            <!-- Minutes 0–59 (raw ints; format in the ComboBox if you want "00") -->
+                                                            <ObjectDataProvider
+                                                                x:Key="Minutes"
+                                                                ObjectType="{x:Type linq:Enumerable}"
+                                                                MethodName="Range">
+                                                                <ObjectDataProvider.MethodParameters>
+                                                                    <sys:Int32>0</sys:Int32>
+                                                                    <sys:Int32>60</sys:Int32>
+                                                                </ObjectDataProvider.MethodParameters>
+                                                            </ObjectDataProvider>
+                                                        </StackPanel.Resources>
+                                                        <ComboBox
+                                                            ItemsSource="{Binding Source={StaticResource Hours}}"
+                                                            SelectedItem="{Binding ScheduleSendTimeHrs, Mode=OneWay}" />
+                                                        <TextBlock>:</TextBlock>
+                                                        <ComboBox
+                                                            ItemsSource="{Binding Source={StaticResource Minutes}}"
+                                                            SelectedItem="{Binding ScheduleSendTimeMin, Mode=OneWay}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock
+                                                                        Text="{Binding StringFormat={}{0:D2}}" />
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </GroupBox>
                                         </WrapPanel>
                                     </DockPanel>
                                 </ScrollViewer>
@@ -3705,19 +3816,56 @@
                     <TabItem
                         Header="{DynamicResource Schedule_TabHeader}"
                         x:Name="TabItem_Schedule"
-                        VerticalAlignment="Stretch" 
-                        Visibility="Collapsed">
+                        Visibility="Collapsed"
+                        VerticalAlignment="Stretch">
                         <TabControl>
                             <TabItem
                                 Header="{DynamicResource ResourceKey=Schedule_TwitchSubTabHeader}">
                                 <TabItem.Resources>
                                     <sched:ScheduleTwitch
                                         x:Key="ScheduleItem_Twitch" />
+                                    <ModConv:DayOfWeekToNameConverter
+                                        x:Key="DayOfWeekToNameConverter"
+                                        x:Name="DayOfWeekToNameConverter" />
                                 </TabItem.Resources>
                                 <ListView
-                                    ItemsSource="{Binding TwitchSchedule, Source={StaticResource ScheduleItem_Twitch}}">
+                                    Name="Schedule_ListView_Twitch"
+                                    ItemsSource="{Binding PlatformSchedule, Source={StaticResource ScheduleItem_Twitch}}"
+                                    DataContextChanged="Schedule_ListView_DataContextChanged"
+                                    LostFocus="Schedule_ListView_LostFocus">
                                     <ListView.View>
                                         <GridView>
+                                            <!-- Send button column -->
+                                            <GridViewColumn
+                                                Header="{DynamicResource Schedule_Sent}"
+                                                Width="80">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button
+                                                            ClickMode="Press"
+                                                            Click="Schedule_SentButton_Click">
+                                                            <Button.Style>
+                                                                <Style
+                                                                    TargetType="Button"
+                                                                    BasedOn="{StaticResource {x:Type Button}}">
+                                                                    <Setter
+                                                                        Property="Content"
+                                                                        Value="{DynamicResource Schedule_SentButton_NotSent}" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding SentDay}"
+                                                                            Value="True">
+                                                                            <Setter
+                                                                                Property="Content"
+                                                                                Value="{DynamicResource Schedule_SentButton_Sent}" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
                                             <!-- Day column (read-only) -->
                                             <GridViewColumn
                                                 Header="{DynamicResource Schedule_Day}"
@@ -3725,7 +3873,7 @@
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
-                                                            Text="{Binding Day}"
+                                                            Text="{Binding Day, Converter={StaticResource DayOfWeekToNameConverter}}"
                                                             VerticalAlignment="Center" />
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
@@ -3746,13 +3894,16 @@
                                             <!-- Category column -->
                                             <GridViewColumn
                                                 Header="{DynamicResource Schedule_Category}"
-                                                Width="150">
+                                                Width="180">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <TextBox
-                                                            Width="130"
-                                                            Text="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
-                                                            VerticalAlignment="Center" />
+                                                        <ComboBox
+                                                            Width="150"
+                                                            ItemsSource="{Binding CategoryList.Category, Source={StaticResource DataViews}, Converter={StaticResource CategoryConverter}}"
+                                                            SelectedItem="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                                                            IsEditable="False"
+                                                            VerticalAlignment="Center"
+                                                            IsReadOnly="True" />
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -4946,6 +5097,14 @@
                                                             <DataGridTextColumn
                                                                 Header="{DynamicResource Data_Quotes_Number_Column}"
                                                                 Binding="{Binding Number}"
+                                                                EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
+                                                            <DataGridTextColumn
+                                                                Header="{DynamicResource Data_Quotes_CategoryName_Column}"
+                                                                Binding="{Binding CategoryName}"
+                                                                EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
+                                                            <DataGridTextColumn
+                                                                Header="{DynamicResource Data_Quotes_QuoteDate_Column}"
+                                                                Binding="{Binding QuoteDate}"
                                                                 EditingElementStyle="{StaticResource DataGridEditingTextBoxStyle}" />
                                                             <DataGridTextColumn
                                                                 Header="{DynamicResource Data_Quotes_Quote_Column}"

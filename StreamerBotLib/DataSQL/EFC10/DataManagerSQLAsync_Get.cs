@@ -178,12 +178,18 @@ namespace StreamerBotLib.DataSQL.EFC10
                 .ToListAsync();
         }
 
-        internal async Task<string> GetQuote(int QuoteNum)
+        internal async Task<Models.Quotes> GetQuote(int QuoteNum)
         {
             using var context = BuildDataContext();
             return await context.Quotes
                                 .Where(Q => Q.Number == QuoteNum)
-                                .Select(Q => $"{Q.Number}: {Q.Quote}")
+                                .Select(Q => new Models.Quotes
+                                (
+                                    number: Q.Number,
+                                    quote: Q.Quote,
+                                    categoryName: Q.CategoryName,
+                                    quoteDate: Q.QuoteDate
+                                ))
                                 .FirstOrDefaultAsync();
         }
 

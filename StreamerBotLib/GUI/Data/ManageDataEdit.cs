@@ -2,6 +2,7 @@
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Windows.Controls;
 
@@ -31,6 +32,10 @@ namespace StreamerBotLib.GUI.Data
             {
                 e.UpdatedData.GetEditedEntity();
                 this.dataBot.GUISaveDataGridEdits((e.UpdatedData.CurrEntity.TableName is "DG_BuiltInCommands" or "DG_BuiltInResponses"), e.UpdatedData.CurrEntity.TableName);
+                if (e.UpdatedData.CurrEntity.TableName == "OverlayServices")
+                {
+                    this.dataBot.SyncOverlayActionSelections((OverlayTypes)e.UpdatedData.CurrEntity.Values["OverlayType"], (string)e.UpdatedData.CurrEntity.Values["OverlayAction"]);
+                }
             };
         }
 

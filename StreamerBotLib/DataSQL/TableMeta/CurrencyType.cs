@@ -5,9 +5,9 @@ namespace StreamerBotLib.DataSQL.TableMeta
     internal class CurrencyType : IDatabaseTableMeta
     {
         public System.Double AccrueAmt { get => (System.Double)Values["AccrueAmt"]; set => Values["AccrueAmt"] = value; }
-        public System.Int32 Seconds { get => (System.Int32)Values["Seconds"]; set => Values["Seconds"] = value; }
-        public System.Int32 MaxValue { get => (System.Int32)Values["MaxValue"]; set => Values["MaxValue"] = value; }
-        public System.String CurrencyName { get => (System.String)Values["CurrencyName"]; set => Values["CurrencyName"] = value; }
+        public System.Int32 Seconds { get => Convert.ToInt32(Values["Seconds"]); set => Values["Seconds"] = value; }
+        public System.Int32 MaxValue { get => Convert.ToInt32(Values["MaxValue"]); set => Values["MaxValue"] = value; }
+        public System.String CurrencyName { get => (string)Values["CurrencyName"]; set => Values["CurrencyName"] = value; }
 
         public Dictionary<string, object> Values { get; }
 
@@ -23,6 +23,7 @@ namespace StreamerBotLib.DataSQL.TableMeta
                  { "CurrencyName", tableData.CurrencyName }
             };
         }
+
         public Dictionary<string, Type> Meta => new()
         {
               { "AccrueAmt", typeof(System.Double) },
@@ -30,38 +31,35 @@ namespace StreamerBotLib.DataSQL.TableMeta
               { "MaxValue", typeof(System.Int32) },
               { "CurrencyName", typeof(System.String) }
         };
+
         public object GetModelEntity()
         {
             return new Models.CurrencyType(
             accrueAmt: AccrueAmt,
-            seconds: Convert.ToInt32(Seconds),
-            maxValue: Convert.ToInt32(MaxValue),
+            seconds: Seconds,
+            maxValue: MaxValue,
             currencyName: CurrencyName
-        );
+            );
         }
+
         public void CopyUpdates(Models.CurrencyType modelData)
         {
             if (modelData.AccrueAmt != AccrueAmt)
             {
                 modelData.AccrueAmt = AccrueAmt;
             }
-
             if (modelData.Seconds != Seconds)
             {
                 modelData.Seconds = Seconds;
             }
-
             if (modelData.MaxValue != MaxValue)
             {
                 modelData.MaxValue = MaxValue;
             }
-
             if (modelData.CurrencyName != CurrencyName)
             {
                 modelData.CurrencyName = CurrencyName;
             }
-
         }
     }
 }
-

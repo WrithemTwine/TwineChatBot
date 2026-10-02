@@ -5,6 +5,7 @@ using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Models.Schedule;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -836,6 +837,28 @@ namespace StreamerBotLib.BotIOController
         public static string GetMultiChannelUserId(string UserName)
         {
             return BotsTwitch.GetUserId(UserName);
+        }
+
+        public void SendSchedule(ScheduleConfig data)
+        {
+            switch (data.Platform)
+            {
+                case Platform.Twitch:
+                    TwitchBots.SendSchedule(data);
+                    break;
+                case Platform.Service:
+                    break;
+                case Platform.YouTube:
+                    break;
+                case Platform.Rumble:
+                    break;
+                case Platform.Pilled:
+                    break;
+                case Platform.Kick:
+                    break;
+                case Platform.Default:
+                    break;
+            }
         }
 
         #endregion

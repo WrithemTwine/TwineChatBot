@@ -46,7 +46,7 @@ namespace StreamerBotLib.Models.Interfaces
         string GetNewestFollower();
         Dictionary<string, List<string>> GetOverlayActions();
         List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username);
-        string GetQuote(int QuoteNum);
+        Quotes GetQuote(int QuoteNum);
         int GetQuoteCount();
         List<string> GetSocialComs();
         new string GetSocials();
@@ -80,7 +80,7 @@ namespace StreamerBotLib.Models.Interfaces
         bool PostMultiStreamDate(LiveUser liveUser, DateTime onDate);
         void PostNewAutoShoutUser(string UserId, Platform platform);
         void PostOutgoingRaid(string HostedChannel, DateTime dateTime);
-        int PostQuote(string Text);
+        int PostQuote(string Text, DateTime curr, string categoryName);
         void PostStreamStat(StreamStat streamStat);
         void PostUserCustomWelcome(LiveUser User, string WelcomeMsg);
         void RemoveAllFollowers();

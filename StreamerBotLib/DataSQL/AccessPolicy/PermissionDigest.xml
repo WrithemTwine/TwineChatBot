@@ -1909,6 +1909,22 @@
               <IsDataGridVisible>True</IsDataGridVisible>
               <IsEditPopupVisible>True</IsEditPopupVisible>
           </Column>
+		  <Column>
+			  <Name>QuoteDate</Name>
+			  <IsNewReadOnly>False</IsNewReadOnly>
+			  <IsEditReadOnly>True</IsEditReadOnly>
+			  <IsDataGridReadOnly>True</IsDataGridReadOnly>
+			  <IsDataGridVisible>True</IsDataGridVisible>
+			  <IsEditPopupVisible>True</IsEditPopupVisible>
+		  </Column>
+		  <Column>
+			  <Name>CategoryName</Name>
+			  <IsNewReadOnly>False</IsNewReadOnly>
+			  <IsEditReadOnly>True</IsEditReadOnly>
+			  <IsDataGridReadOnly>True</IsDataGridReadOnly>
+			  <IsDataGridVisible>True</IsDataGridVisible>
+			  <IsEditPopupVisible>True</IsEditPopupVisible>
+		  </Column>		  
       </Columns>
   </Table>
   <Table Name="ShoutOuts">

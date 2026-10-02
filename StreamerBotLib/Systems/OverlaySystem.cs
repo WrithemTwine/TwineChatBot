@@ -2,6 +2,7 @@
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Overlay;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
@@ -99,6 +100,13 @@ namespace StreamerBotLib.Systems
             CheckForOverlayEvent(overlayType, enumvalue.ToString(), User, UserMsg, ProvidedURL, UrlDuration);
         }
 
+        public void SyncOverlayActionSelections(OverlayTypes overlayTypes, string action)
+        {
+            LogWriter.DebugLog("SyncOverlayActionSelections", DebugLogTypes.OverlayBot, "Syncing the Overlay Action Selections with the current Overlay Actions.");
+            List<OverlayActionType> overlayActionTypes = DataManage.GetOverlayActions(overlayTypes, action, null);
+            OverlayMultipleSelectionManager.SyncOverlayActionItems(overlayActionTypes);
+        }
+
         public void CheckForOverlayEvent(OverlayTypes overlayType, string Action, LiveUser User, string UserMsg = null, string ProvidedURL = null, float UrlDuration = 0)
         {
             LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"Checking for an Overlay Event with action data, {overlayType} and {Action}.");
@@ -112,7 +120,14 @@ namespace StreamerBotLib.Systems
 
             if (User?.UserName != null && overlayActionTypes.Count > 0)
             {
-                FoundAction = overlayActionTypes.Find(x => x.UserName == User.UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
+                if (OptionFlags.MediaOverlayUseMultipleEvents && overlayActionTypes.Count > 1)
+                {
+                    FoundAction = OverlayMultipleSelectionManager.Selection(overlayActionTypes);
+                }
+                else
+                {
+                    FoundAction = overlayActionTypes.Find(x => x.UserName == User.UserName) ?? overlayActionTypes.Find(x => (x.OverlayType == overlayType) && (x.ActionValue == Action));
+                }
 
                 LogWriter.DebugLog("CheckForOverlayEvent", DebugLogTypes.OverlayBot, $"Determined {FoundAction?.OverlayType} {FoundAction?.ActionValue} as the matching Overlay action.");
             }

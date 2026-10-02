@@ -18,7 +18,8 @@
     Closing="Window_Closing"
     SizeToContent="WidthAndHeight"
     UseLayoutRounding="True"
-    Topmost="True">
+    Topmost="True"
+    Loaded="Window_Loaded">
     <Window.Resources>
         <Style
             TargetType="{x:Type Label}">
@@ -96,7 +97,7 @@
                 Orientation="Horizontal">
                 <Label
                     Content="{Binding Name}" />
-                <TextBox
+                <DatePickerTextBox
                     IsReadOnly="{Binding IsReadOnly}"
                     Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
@@ -110,7 +111,7 @@
                     Content="{Binding Name}" />
                 <ComboBox
                     x:Name="ComboBox_SelectTable"
-                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     IsReadOnly="{Binding IsReadOnly}"
                     SelectionChanged="ComboBox_SelectTable_SelectionChanged"
                     Initialized="ComboBox_SelectTable_Initialized" />
@@ -124,8 +125,9 @@
                     Content="{Binding Name}" />
                 <ComboBox
                     x:Name="ComboBox_SelectTableKeyField"
-                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    IsReadOnly="{Binding IsReadOnly}" />
+                    SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    IsReadOnly="{Binding IsReadOnly}"
+                    Initialized="ComboBox_KeyField_Initialized" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate
@@ -136,8 +138,9 @@
                     Content="{Binding Name}" />
                 <ComboBox
                     x:Name="ComboBox_SelectTableCurrencyField"
-                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    IsReadOnly="{Binding IsReadOnly}" />
+                    SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    IsReadOnly="{Binding IsReadOnly}"
+                    Initialized="ComboBox_CurrencyField_Initialized" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate
@@ -148,8 +151,9 @@
                     Content="{Binding Name}" />
                 <ComboBox
                     x:Name="ComboBox_SelectTableDataField"
-                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    IsReadOnly="{Binding IsReadOnly}" />
+                    SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    IsReadOnly="{Binding IsReadOnly}"
+                    Initialized="ComboBox_DataField_Initialized" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate
@@ -160,7 +164,7 @@
                     Content="{Binding Name}" />
                 <ComboBox
                     x:Name="ComboBox_SelectOverlayAction"
-                    Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     IsReadOnly="{Binding IsReadOnly}" />
             </StackPanel>
         </DataTemplate>
@@ -255,7 +259,7 @@
                 - A red box means the date or item isn't formatted properly.<LineBreak />
                 - When specifying media files, *DO NOT* exceed 2GB limit per file.<LineBreak />
                 - The data field name on the left shows character count for text fields. The Twitch chat bot will split messages exceeding the 500 character limit per message.<LineBreak />
-                - Existing data will always be saved. New data will only save with "OK", while clicking close or cancel will not save the record.<LineBreak /></TextBlock>
+                - New or existing data will be saved by clicking "Ok", while clicking close or cancel will not save the record.<LineBreak /></TextBlock>
         </StackPanel>
         <StackPanel
             Orientation="Horizontal"

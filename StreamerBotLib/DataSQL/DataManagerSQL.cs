@@ -467,7 +467,7 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public string GetQuote(int QuoteNum)
+        public Quotes GetQuote(int QuoteNum)
         {
             LogWriter.DebugLog("GetQuote", DebugLogTypes.DataManager, "Getting quote.");
             lock (GUIDataManagerLock.Lock)
@@ -953,12 +953,12 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
-        public int PostQuote(string Text)
+        public int PostQuote(string Text, DateTime curr, string categoryName)
         {
             LogWriter.DebugLog("PostQuote", DebugLogTypes.DataManager, "Posting quote.");
             lock (GUIDataManagerLock.Lock)
             {
-                return _dataManager.PostQuote(Text).Result;
+                return _dataManager.PostQuote(Text, curr, categoryName).Result;
             }
         }
 

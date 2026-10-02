@@ -207,7 +207,7 @@ namespace StreamerBot
         {
             //GUIDataGridUpdateQueue.Enqueue(new Task(() =>
             //{
-            Dispatcher.BeginInvoke(() => 
+            Dispatcher.BeginInvoke(() =>
             {
                 LogWriter.DebugLog("DataManager_OnDataCollectionUpdated",
                    DebugLogTypes.GUIDataViews, $"Refreshing data for the {e.DatabaseModelName} data table.");

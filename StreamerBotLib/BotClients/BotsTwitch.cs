@@ -10,6 +10,7 @@ using StreamerBotLib.Models.AdManage;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Models.Schedule;
 using StreamerBotLib.Static;
 using StreamerBotLib.Static.Logger;
 using StreamerBotLib.Systems;
@@ -861,6 +862,10 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchCategoryUpdate, e);
         }
 
+        public void SendSchedule(ScheduleConfig data)
+        {
+            ModifyChannelInformation(data.Title, data.CategoryName);
+        }
 
         #endregion
 

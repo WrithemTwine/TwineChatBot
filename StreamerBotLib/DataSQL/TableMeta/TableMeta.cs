@@ -14,21 +14,15 @@ namespace StreamerBotLib.DataSQL.TableMeta
         {
             private TableMeta _tableMeta = tableMeta;
             public string Name { get; } = name;
-            public bool IsReadOnly { get; } = IsNew ?
-                                                    PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsNewReadOnly :
-                                                    PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsEditReadOnly;
+            public bool IsReadOnly { get; } = IsNew
+                ? PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsNewReadOnly
+                : PermissionDigest.GetColumnPermissions(tableMeta.CurrEntity.TableName, name).IsEditReadOnly;
             public bool IsEnabled => !IsReadOnly;
             public Type ColType => _tableMeta.CurrEntity.Meta[Name];
             public object Value
             {
-                get
-                {
-                    return _tableMeta.CurrEntity.Values[Name];
-                }
-                set
-                {
-                    _tableMeta.CurrEntity.Values[Name] = value;
-                }
+                get => _tableMeta.CurrEntity.Values[Name];
+                set => _tableMeta.CurrEntity.Values[Name] = value;
             }
             public PopupEditTableDataType TableDataType => _tableMeta.CheckColumn(Name);
         }
@@ -56,6 +50,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
             else if (Entity == typeof(Models.Clips))
             {
                 CurrEntity = new Clips(new Models.Clips());
+            }
+            else if (Entity == typeof(Models.CommandPlatformMessages))
+            {
+                CurrEntity = new CommandPlatformMessages(new Models.CommandPlatformMessages());
             }
             else if (Entity == typeof(Models.Commands))
             {
@@ -159,7 +157,6 @@ namespace StreamerBotLib.DataSQL.TableMeta
             }
 
             SetBindingList(true);
-
             return this;
         }
 
@@ -186,6 +183,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
             else if (Entity.GetType() == typeof(Models.Clips))
             {
                 CurrEntity = new Clips((Models.Clips)Entity);
+            }
+            else if (Entity.GetType() == typeof(Models.CommandPlatformMessages))
+            {
+                CurrEntity = new CommandPlatformMessages((Models.CommandPlatformMessages)Entity);
             }
             else if (Entity.GetType() == typeof(Models.Commands))
             {
@@ -289,18 +290,16 @@ namespace StreamerBotLib.DataSQL.TableMeta
             }
 
             SetBindingList(false);
-
             return this;
         }
 
-        private void SetBindingList(bool IsNew) => BindingList.AddRange(from K in CurrEntity.Values.Keys
-                                                                        where (K is not "Id")
-                                                                        select new EntityData(K, this, IsNew));
+        private void SetBindingList(bool IsNew) =>
+            BindingList.AddRange(
+                from K in CurrEntity.Values.Keys
+                where K is not "Id"
+                select new EntityData(K, this, IsNew));
 
-        public object GetEditedEntity()
-        {
-            return GetUpdatedEntity(CurrEntity);
-        }
+        public object GetEditedEntity() => GetUpdatedEntity(CurrEntity);
 
         private object GetUpdatedEntity(IDatabaseTableMeta Update)
         {
@@ -329,14 +328,14 @@ namespace StreamerBotLib.DataSQL.TableMeta
                 ((Clips)Update).CopyUpdates((Models.Clips)DataEntity);
                 return DataEntity;
             }
-            else if (DataEntity.GetType() == typeof(Models.Commands))
-            {
-                ((Commands)Update).CopyUpdates((Models.Commands)DataEntity);
-                return DataEntity;
-            }
             else if (DataEntity.GetType() == typeof(Models.CommandPlatformMessages))
             {
                 ((CommandPlatformMessages)Update).CopyUpdates((Models.CommandPlatformMessages)DataEntity);
+                return DataEntity;
+            }
+            else if (DataEntity.GetType() == typeof(Models.Commands))
+            {
+                ((Commands)Update).CopyUpdates((Models.Commands)DataEntity);
                 return DataEntity;
             }
             else if (DataEntity.GetType() == typeof(Models.CommandsUser))
@@ -552,4 +551,3 @@ namespace StreamerBotLib.DataSQL.TableMeta
         }
     }
 }
-

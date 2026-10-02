@@ -860,6 +860,7 @@ namespace StreamerBotLib.Static
         /// </summary>
         public static int ModeratorApprovalTimeout => Settings.Default.ModeratorApprovalTimeout;
 
+        #region MediaOverlay Options
         /// <summary>
         /// Specifies whether the Overlay Server should start and stop when the user stream is online or offline.
         /// </summary>
@@ -987,6 +988,13 @@ namespace StreamerBotLib.Static
             set => Settings.Default.MediaOverlayTickerSelected = string.Join('_', value);
         }
 
+        public static bool MediaOverlayUseMultipleEvents => Settings.Default.MediaOverlayUseMultipleEvents;
+        public static bool MediaOverlayUseElimRandom => Settings.Default.MediaOverlayUseElimRandom;
+        public static bool MediaOverlayUseStraightRandom => Settings.Default.MediaOverlayUseStraightRandom;
+        public static bool MediaOverlayUseWeightedRandom => Settings.Default.MediaOverlayUseWeightedRandom;
+        public static bool MediaOverlayUseStraightSelection => Settings.Default.MediaOverlayUseStraightSelection;
+
+        #endregion
         /// <summary>
         /// Specifies whether user wants the UserData->User Follow tab to adjust its layout when the width changes
         /// </summary>
@@ -1030,6 +1038,41 @@ namespace StreamerBotLib.Static
         /// Enables the user choice to include "seconds" as part of time messages
         /// </summary>
         public static bool FormatTimeIncludeSeconds => Settings.Default.FormatTimeIncludeSeconds;
+
+
+        #region Schedule
+
+        public static bool ScheduleUseSchedule
+        {
+            get { return Settings.Default.ScheduleUseSchedule; }
+            set { Settings.Default.ScheduleUseSchedule = value; }
+        }
+
+        public static string ScheduleTwitch
+        {
+            get { return Settings.Default.ScheduleTwitch; }
+            set { Settings.Default.ScheduleTwitch = value; }
+        }
+
+        public static bool ScheduleResetDaily
+        {
+            get { return Settings.Default.ScheduleResetDaily; }
+            set { Settings.Default.ScheduleResetDaily = value; }
+        }
+
+        public static bool ScheduleSendScheduleDaily => Settings.Default.ScheduleSendScheduleDaily;
+
+        public static string ScheduleSendTimeHrs => Settings.Default.ScheduleSendTimeHrs;
+        public static string ScheduleSendTimeMin => Settings.Default.ScheduleSendTimeMin;
+        public static DateTime ScheduleSendTime
+        {
+            get
+            {
+                return new DateTime(1, 1, 1, int.Parse(ScheduleSendTimeHrs), int.Parse(ScheduleSendTimeMin), 0);
+            }
+        }
+
+        #endregion
 
         #region Twitch Ads Notification
         /// <summary>

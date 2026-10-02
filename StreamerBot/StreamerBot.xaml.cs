@@ -413,10 +413,15 @@ namespace StreamerBot
             {
                 SetVisibility(CheckBox_MediaOverlay_Enable, StackPanel_MediaOverlay_MediaOptions);
 
-                if (TabItem_Overlays != null)
-                {
-                    TabItem_Overlays.Visibility = CheckBox_MediaOverlay_Enable.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-                }
+                TabItem_Overlays?.Visibility = CheckBox_MediaOverlay_Enable.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else if (TBSource?.Name == Options_MediaOverlay_CheckBox_UseMultipleEvents.Name || SPSource?.Name == Options_MediaOverlay_StackPanel_MultiEventOptions.Name)
+            {
+                SetVisibility(Options_MediaOverlay_CheckBox_UseMultipleEvents, Options_MediaOverlay_StackPanel_MultiEventOptions);
+            }
+            else if (TBSource?.Name == Options_CheckBox_UseSchedule.Name)
+            {
+                SetVisibility(Options_CheckBox_UseSchedule, TabItem_Schedule);
             }
             else if (TBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {

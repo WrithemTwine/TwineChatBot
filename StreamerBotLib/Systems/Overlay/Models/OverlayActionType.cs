@@ -103,5 +103,11 @@ namespace StreamerBotLib.Systems.Overlay.Models
                 }
             }
         }
+
+        public bool Equals(OverlayActionType other)
+        {
+            if (other == null) return false;
+            return ToString() == other.ToString();
+        }
     }
 }

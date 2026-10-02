@@ -90,7 +90,7 @@ namespace TestStreamerBot
             public string GetNewestFollower() => throw new NotImplementedException();
             public Dictionary<string, List<string>> GetOverlayActions() => throw new NotImplementedException();
             public List<OverlayActionType> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username) => throw new NotImplementedException();
-            public string GetQuote(int QuoteNum) => throw new NotImplementedException();
+            public Quotes GetQuote(int QuoteNum) => throw new NotImplementedException();
             public int GetQuoteCount() => throw new NotImplementedException();
             public List<string> GetSocialComs() => throw new NotImplementedException();
             public string GetSocials() => throw new NotImplementedException();
@@ -120,7 +120,7 @@ namespace TestStreamerBot
             public bool PostMultiStreamDate(LiveUser liveUser, DateTime onDate) => throw new NotImplementedException();
             public void PostNewAutoShoutUser(string UserId, Platform platform) => throw new NotImplementedException();
             public void PostOutgoingRaid(string HostedChannel, DateTime dateTime) => throw new NotImplementedException();
-            public int PostQuote(string Text) => throw new NotImplementedException();
+            public int PostQuote(string Text, DateTime QuoteDate, string CategoryName) => throw new NotImplementedException();
             public void PostStreamStat(StreamStat streamStat) => throw new NotImplementedException();
             public void PostUserCustomWelcome(LiveUser User, string WelcomeMsg) => throw new NotImplementedException();
             public void RemoveAllFollowers() => throw new NotImplementedException();

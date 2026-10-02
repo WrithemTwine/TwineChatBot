@@ -46,6 +46,47 @@ namespace StreamerBotLib.GUI.Data
             InitializeComponent();
         }
 
+        #region Window Loaded event
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Force population of every dependent list based on current values
+            PopulateDependentCombos();
+        }
+
+        private void PopulateDependentCombos()
+        {
+            // Table → Key / Data / Currency
+            if (_tableCombo?.SelectedItem != null || !string.IsNullOrEmpty(_tableCombo?.Text))
+            {
+                string tableName = _tableCombo.SelectedItem?.ToString() ?? _tableCombo.Text;
+
+                SetDataBot.GetTableFields(tableName, fields =>
+                {
+                    ThreadManager.AddTaskToGUIDispatcher(() =>
+                    {
+                        if (_keyFieldCombo != null) _keyFieldCombo.ItemsSource = fields;
+                        if (_dataFieldCombo != null) _dataFieldCombo.ItemsSource = fields;
+                        if (_currencyFieldCombo != null) _currencyFieldCombo.ItemsSource = fields;
+                    });
+                });
+            }
+
+            // OverlayType → OverlayAction (keep your existing code)
+            var overlayTypeCombo = FindComboBoxInList("OverlayType"); // or capture it too
+            if (overlayTypeCombo?.SelectedItem != null)
+                UpdateOverlayActionList(overlayTypeCombo.SelectedItem.ToString());
+
+            // Mod* cascades (already using captured fields – good)
+            if (_comboboxActionType?.SelectedItem != null)
+                ComboBox_SelectModActionType_SelectionChanged(_comboboxActionType, null);
+
+            if (_comboBoxPerformType?.SelectedItem != null)
+                ComboBox_SelectModActionType_SelectionChanged(_comboBoxPerformType, null);
+        }
+
+        #endregion
+
         #region Helper Methods
         /// <summary>
         /// Event to allow the user to click a TextBox and the cursor highlights all text.
@@ -61,26 +102,41 @@ namespace StreamerBotLib.GUI.Data
 
         #region Data Table lookup operations
 
+        private ComboBox _tableCombo;
+        private ComboBox _keyFieldCombo;
+        private ComboBox _dataFieldCombo;
+        private ComboBox _currencyFieldCombo;
+
+        // In the Table template’s Initialized (you already have this)
         private void ComboBox_SelectTable_Initialized(object sender, EventArgs e)
         {
-            (sender as ComboBox).ItemsSource = new List<string>((Enum.GetNames<DataTables>()));
+            _tableCombo = sender as ComboBox;
+            _tableCombo.ItemsSource = new List<string>(Enum.GetNames<DataTables>());
         }
+
+        // Add these three small Initialized handlers (wire them in the XAML templates)
+        private void ComboBox_KeyField_Initialized(object sender, EventArgs e)
+            => _keyFieldCombo = sender as ComboBox;
+
+        private void ComboBox_DataField_Initialized(object sender, EventArgs e)
+            => _dataFieldCombo = sender as ComboBox;
+
+        private void ComboBox_CurrencyField_Initialized(object sender, EventArgs e)
+            => _currencyFieldCombo = sender as ComboBox;
 
         private void ComboBox_SelectTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SetDataBot.GetTableFields((sender as ComboBox).SelectedItem.ToString(),
-                (fields) =>
-                    ThreadManager.AddTaskToGUIDispatcher(() =>
-                    {
-                        foreach (var combo in new List<ComboBox>
-                          { FindComboBoxInList("KeyField"),
-                            FindComboBoxInList("CurrencyField"),
-                            FindComboBoxInList("DataField") })
-                        {
-                            combo.ItemsSource = fields;
-                        }
-                    }
-            ));
+            if (_tableCombo?.SelectedItem == null) return;
+
+            SetDataBot.GetTableFields(_tableCombo.SelectedItem.ToString(), fields =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(() =>
+                {
+                    if (_keyFieldCombo != null) _keyFieldCombo.ItemsSource = fields;
+                    if (_dataFieldCombo != null) _dataFieldCombo.ItemsSource = fields;
+                    if (_currencyFieldCombo != null) _currencyFieldCombo.ItemsSource = fields;
+                });
+            });
         }
 
         private ComboBox _comboboxActionType, _comboBoxPerformType, _comboBoxActionName, _comboBoxPerformName;

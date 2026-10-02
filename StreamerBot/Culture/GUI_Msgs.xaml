@@ -567,6 +567,20 @@
         x:Key="Options_MediaOverlay_ShoutoutClips">Enable for shout-outs using a random clip from user's channel</system:String>
     <system:String
         x:Key="Options_MediaOverlay_ShoutoutClips_Tooltip">For an Overlay Service Shout-Out event, use a random clip from their channel as part of the overlay notification. Twitch currently requires SSL certs for embed videos and a domain name. Disabled for unavailable features.</system:String>
+    <system:String
+        x:Key="Options_MediaOverlay_MultiEventHeader">Media Overlay - Multiple Events</system:String>
+    <system:String
+        x:Key="Options_MediaOverlay_UseMultipleEvents">Allow Different Alerts per Event</system:String>
+    <system:String
+        x:Key="Options_MediaOverlay_UseMultiple_StraightSelection">Select each alert in order.</system:String>
+    <system:String
+        x:Key="Options_MediaOverlay_UseMultiple_StraightRandom">Randomly select alert to use each time.</system:String>
+    <system:String
+        x:Key="Options_MediaOverlay_UseMultiple_WeightedRandom">Randomly select alert, with increasing probability of unselected items.</system:String>
+    <system:String
+        x:Key="Options_MediaOverlay_UseMultiple_EliminationRandom">Randomly select alert from the remaining unselected items.</system:String>
+    <system:String
+        x:Key="Options_MediaOverlay_UseMultiple_Info">Database mechanics affect row order. The selection manager will ensure appropriate selection per method. The system resets when the whole bot restarts.</system:String>
     <!-- Options → Currency -->
     <system:String
         x:Key="Options_Currency_Header">Currency System</system:String>
@@ -700,6 +714,17 @@
         x:Key="Options_Data_ManageGiveaways">Record Giveaway Stats.*</system:String>
     <system:String
         x:Key="Options_Data_ManageTicker">Record Ticker Stats.*</system:String>
+    <!-- Options -> Schedule -->
+    <system:String
+        x:Key="Options_Schedule_Header">Schedule</system:String>
+    <system:String
+        x:Key="Options_Schedule_UseSchedule">Use Schedule</system:String>
+    <system:String
+        x:Key="Options_Schedule_ResetDaily">Daily Reset for Schedule Sent</system:String>
+    <system:String
+        x:Key="Options_Schedule_ResetDaily_tooltip">Resets the daily 'sent' flag. If false, must restart bot to permit schedule update after a week. When set to true, all items will reset.</system:String>
+    <system:String
+        x:Key="Options_Schedule_SendTimeTextBlock">Specify daily schedule update send time. Will send about this time if today's title and category are specified.</system:String>
     <!-- Options → Twitch -->
     <system:String
         x:Key="Options_Twitch_FormatBotMessages_Header">Twitch - Format Bot messages</system:String>
@@ -838,11 +863,17 @@
     <system:String
         x:Key="Schedule_TwitchSubTabHeader">Twitch</system:String>
     <system:String
+        x:Key="Schedule_Sent">Sent</system:String>
+    <system:String
         x:Key="Schedule_Day">Day</system:String>
     <system:String
         x:Key="Schedule_Title">Title</system:String>
     <system:String
         x:Key="Schedule_Category">Category</system:String>
+    <system:String
+        x:Key="Schedule_SentButton_NotSent">Not Sent</system:String>
+    <system:String
+        x:Key="Schedule_SentButton_Sent">Sent</system:String>
     <!-- ============================================================= -->
     <!--                     Data Tab                                  -->
     <!-- ============================================================= -->
@@ -1039,6 +1070,10 @@
         x:Key="Data_Quotes_Instructions">Quotes are saved from chat messages with !quote or !addquote commands.&#10;The 'Cited By' column is the user who added the quote (not necessarily the original speaker).&#10;Quotes can be used in other commands with $quote(#) or $randomquote.</system:String>
     <system:String
         x:Key="Data_Quotes_Number_Column">Number</system:String>
+    <system:String
+        x:Key="Data_Quotes_CategoryName_Column">Category Name</system:String>
+    <system:String
+        x:Key="Data_Quotes_QuoteDate_Column">Quote Date</system:String>
     <system:String
         x:Key="Data_Quotes_Quote_Column">Quote</system:String>
     <!-- Old Follows -->

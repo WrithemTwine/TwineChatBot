@@ -557,7 +557,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                                      where !CurrCurrency.Contains(U)
                                      select U).ToList();
                      // trim excess rows
-                     foreach(var item in toRemove)
+                     foreach (var item in toRemove)
                      {
                          Currency.Remove(item);
                      }
@@ -568,7 +568,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                                         select C));
 
                      // update changed values
-                     foreach(var curr in CurrCurrency)
+                     foreach (var curr in CurrCurrency)
                      {
                          Currency.Where(c => c.User == curr.User && c.CurrencyName == curr.CurrencyName).Select(c => c).FirstOrDefault()?.Value = curr.Value;
                      }

@@ -1007,7 +1007,7 @@ namespace StreamerBotLib.DataSQL.EFC10
 #endif
         }
 
-        internal async Task<int> PostQuote(string Text)
+        internal async Task<int> PostQuote(string Text, DateTime curr, string categoryName)
         {
             using var context = BuildDataContext();
 
@@ -1021,7 +1021,7 @@ namespace StreamerBotLib.DataSQL.EFC10
 
             await context.Database.BeginTransactionAsync();
             // Add the new quote
-            await context.Quotes.AddAsync(new(number: openNum, quote: Text));
+            await context.Quotes.AddAsync(new(number: openNum, quote: Text, quoteDate: curr, categoryName: categoryName));
             await context.Database.CommitTransactionAsync();
             await context.SaveChangesAsync(true);
 
