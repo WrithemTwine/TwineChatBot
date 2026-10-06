@@ -861,15 +861,19 @@
     <system:String
         x:Key="Schedule_TabHeader">Schedule</system:String>
     <system:String
+        x:Key="Schedule_Tab_OverallInfo">It can take 10-30 seconds before data updates to the platform (from a threaded app). "Sent" button will send that record regardless of day. The daily schedule checker (if enabled) will only send the current day as platform schedule update.</system:String>
+    <system:String
         x:Key="Schedule_TwitchSubTabHeader">Twitch</system:String>
     <system:String
         x:Key="Schedule_Sent">Sent</system:String>
     <system:String
         x:Key="Schedule_Day">Day</system:String>
     <system:String
-        x:Key="Schedule_Title">Title</system:String>
+        x:Key="Schedule_Title">Title (140 characters max)</system:String>
     <system:String
-        x:Key="Schedule_Category">Category</system:String>
+        x:Key="Schedule_Category">Category (Existing Categories Only)</system:String>
+    <system:String
+        x:Key="Schedule_Category_Tooltip">Bot needs the category to exist in the database first before it appears in this combo box. Enable the data saving and change to the new category for the channel. Click the "Category" button along the bottom statusbar if the category doesn't update (especially when offline).</system:String>
     <system:String
         x:Key="Schedule_SentButton_NotSent">Not Sent</system:String>
     <system:String
@@ -1160,7 +1164,7 @@
     <system:String
         x:Key="Data_Overlays_Events_Header">Overlay Events Help</system:String>
     <system:String
-        x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).&#10;Duration is in seconds.&#10;ImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.&#10;UseChatMsg = show message in chat when triggered.&#10;UserName = optional filter for specific user triggering the event.</system:String>
+        x:Key="Data_Overlays_Events_Instructions">Each row defines an overlay action triggered by a specific event (follow, sub, channel point redeem, command, etc.).&#10;Duration is in seconds.&#10;ImageFile / MediaFile paths are relative to the overlay server media folder or full URLs.&#10;UseChatMsg = show message in chat when triggered.&#10;UserName = optional filter for specific user triggering the event. The selection method for multiple items follows the global option "Options" tab, or override the selection method under the "Selection" tab per alert type.</system:String>
     <system:String
         x:Key="Data_Overlays_Type_Column">Type</system:String>
     <system:String
@@ -1185,6 +1189,25 @@
         x:Key="Data_Overlays_ActionItems_Label">action items queued</system:String>
     <system:String
         x:Key="Data_Overlays_ChannelPoints_Header">Channel Points</system:String>
+    <system:String
+        x:Key="Data_Overlays_Bulk_Header">Bulk Overlay Loading</system:String>
+    <system:String x:Key="Data_Overlays_Bulk_Info">
+        Use this form to load multiple overlay events for the same Overlay alert. Specifically, the "multi-event" Overlay option allows more than one image/video per alert, so this form helps add multiple images/videos.
+    </system:String>
+    <system:String
+        x:Key="Data_Overlays_Bulk_Instruction">Select the Type and Action and click the Bulk Load button.</system:String>
+    <system:String
+        x:Key="Data_Overlays_Bulk_Type">Overlay Type</system:String>
+    <system:String
+        x:Key="Data_Overlays_Bulk_Action">Overlay Action</system:String>
+    <system:String
+        x:Key="Data_Overlays_Bulk_ButtonLoad">Bulk Load</system:String>
+    <system:String
+        x:Key="Data_Overlays_Selection_SubHeader">Selection</system:String>
+    <system:String
+        x:Key="Data_Overlays_Selection_Info">This table allows specifying Overlay Alert selection methods other than the global method from the 'Options" tab. Once added, only the selection method can be edited.</system:String>
+    <system:String
+        x:Key="Data_Overlays_Selection">Selection Type</system:String>
     <system:String
         x:Key="Data_Overlays_Ticker_SubHeader">Ticker</system:String>
     <system:String

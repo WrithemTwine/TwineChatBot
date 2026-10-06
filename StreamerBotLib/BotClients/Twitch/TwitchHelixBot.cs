@@ -174,7 +174,7 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             if (Title != null)
             {
-                request.Title = Title;
+                request.Title = Title.Length > 140 ? Title[..140] : Title; // 140 maximum title limit
             }
             if (Delay != -1)
             {
@@ -510,6 +510,17 @@ namespace StreamerBotLib.BotClients.Twitch
             return PerformAction("SetChannelTitle", () =>
             {
                 _ = ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, Title: Title);
+                return true;
+            });
+        }
+
+        public bool SetChannelTitleCategory(string Title, string CategoryName=null, string CategoryId = null)
+        {
+            LogWriter.DebugLog("SetChannelTitleCategory", DebugLogTypes.TwitchHelixBot, $"Setting the channel title to {Title} and category to {CategoryName}.");
+
+            return PerformAction("SetChannelTitleCategory", () => {
+                CategoryId ??= GetGameId(CategoryName);
+                _ = ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, Title: Title, GameId: CategoryId);
                 return true;
             });
         }

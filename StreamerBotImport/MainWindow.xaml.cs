@@ -62,7 +62,7 @@ namespace StreamerBotImport
 
                 // reserved for clearing tokens when there is an access scope change
 
-                //Version? thisversion = this.GetType().Assembly.GetName().Version;
+                //Version? thisversion = App.Version;
 
                 //if (thisversion?.Major == 1 && thisversion?.MajorRevision == 3 && thisversion?.Minor == 1 && thisversion?.MinorRevision == 3)
                 //{ // reset the credentials, new access scopes for each token

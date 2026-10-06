@@ -4,6 +4,7 @@ using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
 
 using System.Collections.Concurrent;
 using System.Data;
@@ -313,14 +314,14 @@ namespace StreamerBotLib.Systems
                 callback?.Invoke(SystemAction.GetEventAnnounce(channelEventActions));
             }));
         }
-        public void GetOverlayActions(Action<Dictionary<string, List<string>>> callback)
-        {
-            ActionQueue.Enqueue(new Task(() =>
-            {
-                LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.DataBot, "Getting overlay actions.");
-                callback?.Invoke(SystemAction.GetOverlayActions());
-            }));
-        }
+        //public void GetOverlayActions(Action<Dictionary<string, List<string>>> callback)
+        //{
+        //    ActionQueue.Enqueue(new Task(() =>
+        //    {
+        //        LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.DataBot, "Getting overlay actions.");
+        //        callback?.Invoke(SystemAction.GetOverlayActions());
+        //    }));
+        //}
         public void GetCommandList(bool prefix, Action<IEnumerable<string>> callback)
         {
             ActionQueue.Enqueue(new Task(() =>
@@ -360,6 +361,14 @@ namespace StreamerBotLib.Systems
             {
                 LogWriter.DebugLog("GetGameCategories", DebugLogTypes.DataBot, "Getting game categories.");
                 callback?.Invoke(SystemAction.GetGameCategories());
+            }));
+        }
+        public void GetGameCategory(string categoryName, Action<CategoryData> callback)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("GetGameCategory", DebugLogTypes.DataBot, $"Getting game category for: {categoryName}.");
+                callback?.Invoke(SystemAction.GetGameCategory(categoryName));
             }));
         }
         public void GetUserId(LiveUser liveUser, Action<string> callback)
@@ -424,22 +433,25 @@ namespace StreamerBotLib.Systems
             }));
         }
 
-        public void SetChannelRewardList(List<string> channelPointNames)
-        {
-            ActionQueue.Enqueue(new Task(() =>
-            {
-                LogWriter.DebugLog("SetChannelRewardList", DebugLogTypes.DataBot, "Setting channel reward list.");
-                SystemAction.SetChannelRewardList(channelPointNames);
-            }));
-        }
+        //public void SetChannelRewardList(List<string> channelPointNames)
+        //{
+        //    ActionQueue.Enqueue(new Task(() =>
+        //    {
+        //        LogWriter.DebugLog("SetChannelRewardList", DebugLogTypes.DataBot, "Setting channel reward list.");
+        //        SystemAction.SetChannelRewardList(channelPointNames);
+        //    }));
+        //}
 
         public void SetCategory(CategoryData categoryData)
         {
-            ActionQueue.Enqueue(new Task(() =>
-            {
-                LogWriter.DebugLog("SetCategory", DebugLogTypes.DataBot, $"Setting category: {categoryData.CategoryName}.");
-                SystemAction.SetCategory(categoryData);
-            }));
+            if (categoryData != null && categoryData.CategoryName != null && categoryData.CategoryId != null)
+            { // ensure valid category data
+                ActionQueue.Enqueue(new Task(() =>
+                {
+                    LogWriter.DebugLog("SetCategory", DebugLogTypes.DataBot, $"Setting category: {categoryData.CategoryName}.");
+                    SystemAction.SetCategory(categoryData);
+                }));
+            }
         }
 
         /// <summary>
@@ -496,6 +508,15 @@ namespace StreamerBotLib.Systems
             {
                 LogWriter.DebugLog("SetDiscordWebhooksEnabled", DebugLogTypes.DataBot, $"Setting Discord webhooks enabled: {enabled}.");
                 SystemAction.SetDiscordWebhooksEnabled(enabled);
+            }));
+        }
+
+        public void SetOverlayServicesBulkLoad(List<OverlayActionType> overlayActionTypes)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("SetOverlayServicesBulkLoad", DebugLogTypes.DataBot, $"Loading {overlayActionTypes.Count} bulk overlay alerts.");
+                SystemAction.PostBulkOverlayAlerts(overlayActionTypes);
             }));
         }
 
@@ -750,6 +771,15 @@ namespace StreamerBotLib.Systems
             {
                 LogWriter.DebugLog("AddNewOverlayTickerItem", DebugLogTypes.DataBot, $"Adding new overlay ticker item: {item} with value: {value}.");
                 SystemAction.AddNewOverlayTickerItem(item, value);
+            }));
+        }
+
+        public void PostBulkOverlayActions(List<OverlayActionType> data)
+        {
+            ActionQueue.Enqueue(new Task(() =>
+            {
+                LogWriter.DebugLog("PostBulkOverlayActions", DebugLogTypes.DataBot, $"Posting bulk overlay actions to the database.");
+                SystemAction.PostBulkOverlayAlerts(data);
             }));
         }
 

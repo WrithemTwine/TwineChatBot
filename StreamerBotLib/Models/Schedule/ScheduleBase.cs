@@ -1,61 +1,91 @@
-﻿using StreamerBotLib.Models.Enums;
+﻿using Microsoft.Extensions.Options;
+
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Static;
 
 using System.ComponentModel;
 using System.Globalization;
 
 namespace StreamerBotLib.Models.Schedule
-{
+{       
+    // add platforms for each built platform-schedule
+    public enum SchedulePlatform { Twitch };
+    
     public class ScheduleBase : IEquatable<ScheduleBase>
     {
-        protected Platform Platform;
+        public SchedulePlatform Platform;
         protected const string Delimiter = "|data|";
-        public List<ScheduleConfig> PlatformSchedule { get; } = [];
+        public static Dictionary<SchedulePlatform, List<ScheduleConfig>> PlatformSchedule { get; } = [];
 
-        protected static List<string> _daysOfWeek = [.. Enum.GetNames<DayOfWeek>()];
+        private string CurrData = "";
 
-        public virtual void Save()
+        public ScheduleBase()
         {
+            int x = Enum.GetNames<SchedulePlatform>().Length;
+            int savecount = OptionFlags.ScheduleData.Count;
+
+            if (savecount < x)
+            { // fill up the storage list with empty strings to match the number of platforms
+                for (int i = savecount; i < x; i++)
+                {
+                    OptionFlags.ScheduleData.Add("");
+                }
+            }
         }
 
-        protected string PrepareSaveData()
+        public void Save()
         {
-            return string.Join(Delimiter, (from s in PlatformSchedule
-                                           select s.ToString()));
+            string current = GetCurrDataString();
+
+            if (current != CurrData)
+            { // only save if the current content is different
+                OptionFlags.ScheduleData[(int)Platform] = current;
+                CurrData = current;
+                OptionFlags.SaveSettings();
+            }
         }
 
-        protected void PrepareLoadData(string srcdata)
+        private string GetCurrDataString()
         {
+            return string.Join(Delimiter, PlatformSchedule[Platform].Select(s => s.ToString()));
+        }
+
+        protected void PrepareLoadData(SchedulePlatform platform)
+        {
+            Platform = platform;
             var culture = CultureInfo.CurrentCulture;
             var firstDay = culture.DateTimeFormat.FirstDayOfWeek;
+            string srcdata = OptionFlags.ScheduleData[(int)platform];
+            PlatformSchedule[platform] = [];
 
             if (!string.IsNullOrEmpty(srcdata))
             {
-                PlatformSchedule.Clear();
-                PlatformSchedule.AddRange(from s in srcdata.Split(Delimiter)
-                                          select ScheduleConfig.FromString(s, Platform));
+                PlatformSchedule[platform].Clear();
+                PlatformSchedule[platform].AddRange(from s in srcdata.Split(Delimiter)
+                                                    select ScheduleConfig.FromString(s, Platform));
             }
-
-            if (PlatformSchedule.Count == 0)
+            else
             {
-                PlatformSchedule.AddRange(Enumerable.Range(0, 7)
+                PlatformSchedule[platform].AddRange(Enumerable.Range(0, 7)
                 .Select(i =>
                 {
                     var dayOfWeek = (DayOfWeek)(((int)firstDay + i) % 7);
-                    return new ScheduleConfig(false, dayOfWeek, "", "", Platform);
+                    return new ScheduleConfig(dayOfWeek, "", "", Platform);
                 }));
             }
+
+            CurrData = GetCurrDataString();
         }
 
         public ScheduleConfig GetCurrDayConfig(DateTime currTime)
         {
-            string day = CultureInfo.CurrentCulture.DateTimeFormat
-       .GetDayName(currTime.DayOfWeek);
-            return PlatformSchedule.FirstOrDefault(s => s.Day == currTime.DayOfWeek);
+            Save();
+            return PlatformSchedule[Platform].FirstOrDefault(s => s.Day == currTime.DayOfWeek);
         }
 
         public void ResetDay()
         {
-            foreach (var sched in PlatformSchedule)
+            foreach (var sched in PlatformSchedule[Platform])
             {
                 sched.SentDay = false;
             }
@@ -64,6 +94,16 @@ namespace StreamerBotLib.Models.Schedule
         public bool Equals(ScheduleBase other)
         {
             return this.Platform == other.Platform;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ScheduleBase);
+        }
+
+        public override int GetHashCode()
+        {
+            return Platform.GetHashCode();
         }
     }
 
@@ -74,7 +114,7 @@ namespace StreamerBotLib.Models.Schedule
     /// <param name="day"></param>
     /// <param name="title"></param>
     /// <param name="categoryName"></param>
-    public class ScheduleConfig(bool sentDay, DayOfWeek day, string title, string categoryName, Platform platform = Platform.Default) : INotifyPropertyChanged
+    public class ScheduleConfig(DayOfWeek day, string title, string categoryName, SchedulePlatform platform = SchedulePlatform.Twitch) : INotifyPropertyChanged
     {
         private bool _sentDay;
 
@@ -93,17 +133,17 @@ namespace StreamerBotLib.Models.Schedule
         public DayOfWeek Day { get; set; } = day;
         public string Title { get; set; } = title;
         public string CategoryName { get; set; } = categoryName;
-        public Platform Platform { get; set; } = platform;
+        public SchedulePlatform Platform { get; set; } = platform;
 
         public override string ToString()
         {
             return string.Join("|", [(int)Day, Title, CategoryName]);
         }
 
-        public static ScheduleConfig FromString(string data, Platform platform)
+        public static ScheduleConfig FromString(string data, SchedulePlatform platform)
         {
             string[] source = data.Split("|");
-            return new ScheduleConfig(false, (DayOfWeek)int.Parse(source[0]), source[1], source[2], platform);
+            return new ScheduleConfig((DayOfWeek)int.Parse(source[0]), source[1], source[2], platform);
         }
 
         private void OnPropertyChanged(string propertyName)

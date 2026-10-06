@@ -2678,7 +2678,7 @@
                                                         <StackPanel>
                                                             <TextBlock
                                                                 TextDecorations="Strikethrough">
-                                    <Run
+                                                                <Run
                                                                     Text="{DynamicResource Options_ModerateFollows_Enable}" /></TextBlock>
                                                             <TextBlock
                                                                 Text="{DynamicResource Options_ModerateFollows_Note}" />
@@ -3219,6 +3219,7 @@
                                                     <CheckBox
                                                         x:Name="Options_CheckBox_UseSchedule"
                                                         IsChecked="{Binding ScheduleUseSchedule}"
+                                                        Loaded="CheckBox_Checked_PanelVisibility"
                                                         Checked="CheckBox_Checked_PanelVisibility"
                                                         Unchecked="CheckBox_Checked_PanelVisibility">
                                                         <TextBlock
@@ -3242,7 +3243,7 @@
                                                     <StackPanel
                                                         Orientation="Horizontal">
                                                         <StackPanel.Resources>
-                                                            <!-- Hours 1–12 -->
+                                                            <!-- Hours 0–23 -->
                                                             <ObjectDataProvider
                                                                 x:Key="Hours"
                                                                 ObjectType="{x:Type linq:Enumerable}"
@@ -3264,12 +3265,14 @@
                                                             </ObjectDataProvider>
                                                         </StackPanel.Resources>
                                                         <ComboBox
+                                                            Width="60"
                                                             ItemsSource="{Binding Source={StaticResource Hours}}"
-                                                            SelectedItem="{Binding ScheduleSendTimeHrs, Mode=OneWay}" />
+                                                            SelectedItem="{Binding ScheduleSendTimeHrs, Mode=TwoWay}" />
                                                         <TextBlock>:</TextBlock>
                                                         <ComboBox
+                                                            Width="60"
                                                             ItemsSource="{Binding Source={StaticResource Minutes}}"
-                                                            SelectedItem="{Binding ScheduleSendTimeMin, Mode=OneWay}">
+                                                            SelectedItem="{Binding ScheduleSendTimeMin, Mode=TwoWay}">
                                                             <ComboBox.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <TextBlock
@@ -3818,7 +3821,9 @@
                         x:Name="TabItem_Schedule"
                         Visibility="Collapsed"
                         VerticalAlignment="Stretch">
-                        <TabControl>
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Schedule_Tab_OverallInfo}"/>
+                            <TabControl>
                             <TabItem
                                 Header="{DynamicResource ResourceKey=Schedule_TwitchSubTabHeader}">
                                 <TabItem.Resources>
@@ -3830,9 +3835,9 @@
                                 </TabItem.Resources>
                                 <ListView
                                     Name="Schedule_ListView_Twitch"
-                                    ItemsSource="{Binding PlatformSchedule, Source={StaticResource ScheduleItem_Twitch}}"
-                                    DataContextChanged="Schedule_ListView_DataContextChanged"
-                                    LostFocus="Schedule_ListView_LostFocus">
+                                    DataContext="{StaticResource ScheduleItem_Twitch}"
+                                    ItemsSource="{Binding TwitchSchedule}"
+                                    DataContextChanged="Schedule_ListView_DataContextChanged">
                                     <ListView.View>
                                         <GridView>
                                             <!-- Send button column -->
@@ -3869,7 +3874,7 @@
                                             <!-- Day column (read-only) -->
                                             <GridViewColumn
                                                 Header="{DynamicResource Schedule_Day}"
-                                                Width="100">
+                                                Width="Auto">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock
@@ -3881,11 +3886,13 @@
                                             <!-- Title column -->
                                             <GridViewColumn
                                                 Header="{DynamicResource Schedule_Title}"
-                                                Width="150">
+                                                Width="220">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBox
-                                                            Width="130"
+                                                            Width="200"
+                                                            TextWrapping="Wrap"
+                                                            MaxLength="140"
                                                             Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                                                             VerticalAlignment="Center" />
                                                     </DataTemplate>
@@ -3894,16 +3901,17 @@
                                             <!-- Category column -->
                                             <GridViewColumn
                                                 Header="{DynamicResource Schedule_Category}"
-                                                Width="180">
+                                                Width="Auto" ToolTipService.ToolTip="{DynamicResource Schedule_Category_Tooltip}">
                                                 <GridViewColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox
-                                                            Width="150"
-                                                            ItemsSource="{Binding CategoryList.Category, Source={StaticResource DataViews}, Converter={StaticResource CategoryConverter}}"
+                                                            Width="240"
+                                                            ItemsSource="{Binding CategoryNames, Source={StaticResource DataViews}}"
                                                             SelectedItem="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
                                                             IsEditable="False"
                                                             VerticalAlignment="Center"
-                                                            IsReadOnly="True" />
+                                                            IsReadOnly="True"
+                                                            ToolTip="{DynamicResource Schedule_Category_Tooltip}" />
                                                     </DataTemplate>
                                                 </GridViewColumn.CellTemplate>
                                             </GridViewColumn>
@@ -3912,6 +3920,7 @@
                                 </ListView>
                             </TabItem>
                         </TabControl>
+                        </StackPanel>
                     </TabItem>
                     <TabItem
                         Header="{DynamicResource Data_TabHeader}"
@@ -4055,7 +4064,7 @@
                                         <!-- User Approve -->
                                         <TabItem
                                             Header="{DynamicResource Data_Moderation_UserApprove_SubHeader}"
-                                            GotFocus="TabItem_ModApprove_GotFocus">
+                                            >
                                             <DockPanel>
                                                 <TextBlock
                                                     DockPanel.Dock="Top"
@@ -5476,7 +5485,7 @@
                                 <TabItem
                                     x:Name="TabItem_Overlays"
                                     Header="{DynamicResource Data_Overlays_SubHeader}"
-                                    GotFocus="TabItem_Overlays_GotFocus">
+                                    >
                                     <TabControl>
                                         <!-- Events inner tab -->
                                         <TabItem
@@ -5546,8 +5555,44 @@
                                                                 Height="21"
                                                                 Width="180"
                                                                 SelectedIndex="0"
-                                                                PreviewMouseLeftButtonDown="ComboBox_Giveaway_PreviewMouseLeftButtonDown"
-                                                                DropDownClosed="ComboBox_Giveaway_DropDownClosed" />
+                                                                 />
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                    <GroupBox
+                                                        Header="{DynamicResource Data_Overlays_Bulk_Header}"
+                                                        ToolTip="{DynamicResource Data_Overlays_Bulk_Info}"
+                                                        Width="Auto" >
+                                                        <StackPanel>
+                                                            <TextBlock
+                                                                Text="{DynamicResource Data_Overlays_Bulk_Instruction}" />
+                                                            <StackPanel
+                                                                Orientation="Horizontal">
+                                                            <StackPanel Margin="0,5">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Width="100"
+                                                                        Text="{DynamicResource Data_Overlays_Bulk_Type}" />
+                                                                        <ComboBox
+                                                                            Name="OverlayService_Bulk_ComboBoxType"
+                                                                            Width="150" 
+                                                                            SelectionChanged="OverlayService_Bulk_ComboBoxType_SelectionChanged"/>
+                                                                </StackPanel>
+                                                                    <StackPanel
+                                                                        Margin="0,5"
+                                                                        Orientation="Horizontal">
+                                                                        <TextBlock
+                                                                            Width="100"
+                                                                            Text="{DynamicResource Data_Overlays_Bulk_Action}" />
+                                                                        <ComboBox
+                                                                            Name="OverlayService_Bulk_ComboBoxAction"
+                                                                            Width="150"
+                                                                            SelectionChanged="OverlayService_Bulk_ComboBoxAction_SelectionChanged"/>
+                                                                    </StackPanel>
+                                                                </StackPanel>
+                                                            <Button Name="OverlayService_Bulk_ButtonLoad" 
+                                                                    Content="{DynamicResource Data_Overlays_Bulk_ButtonLoad}" Margin="5" Height="25" Width="80" 
+                                                                    IsEnabled="False"
+                                                                    Click="OverlayService_Bulk_ButtonLoad_Click" />
+                                                            </StackPanel>
                                                         </StackPanel>
                                                     </GroupBox>
                                                 </WrapPanel>
@@ -5601,6 +5646,38 @@
                                                         <StaticResource
                                                             ResourceKey="DataGrid_GroupStyle" />
                                                     </DataGrid.GroupStyle>
+                                                </DataGrid>
+                                            </DockPanel>
+                                        </TabItem>
+                                        <!-- Selection Method inner tab -->
+                                        <TabItem
+                                            Header="{DynamicResource Data_Overlays_Selection_SubHeader}">
+                                            <DockPanel>
+                                                <TextBlock
+                                                    DockPanel.Dock="Top"
+                                                    Text="{DynamicResource Data_Overlays_Selection_Info}" />
+                                                <DataGrid
+                                                    x:Name="DG_OverlayServicesSelection"
+                                                    ItemsSource="{Binding Mode=OneWay, Source={StaticResource DG_OverlayServicesSelection_CVS}}"
+                                                    DockPanel.Dock="Top"
+                                                    ContextMenuOpening="DG_Edit_ContextMenuOpening"
+                                                    Initialized="DataGrid_Initialized"
+                                                    PreviewKeyDown="DG_PreviewKeyDown_Click"
+                                                    RowEditEnding="DataGrid_RowEditEnding"
+                                                    MouseDoubleClick="DG_MouseDoubleClick">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn
+                                                            Header="{DynamicResource Data_Overlays_Type_Column}"
+                                                            Binding="{Binding OverlayType}" />
+                                                        <DataGridTextColumn
+                                                            Header="{DynamicResource Data_Overlays_Action_Column}"
+                                                            Binding="{Binding OverlayAction}" />
+                                                        <DataGridComboBoxColumn
+                                                            Header="{DynamicResource Data_Overlays_Selection}"
+                                                            SelectedItemBinding="{Binding SelectionType}"
+                                                            ItemsSource="{Binding Source={StaticResource EnumOverlayMultiSelectionTypes}}"
+                                                            EditingElementStyle="{StaticResource DataGridComboBoxColumnStyle}" />
+                                                    </DataGrid.Columns>
                                                 </DataGrid>
                                             </DockPanel>
                                         </TabItem>

@@ -82,6 +82,7 @@ namespace StreamerBotLib.BotIOController
 
             TwitchBots = new();
             TwitchBots.BotEvent += HandleBotEvent;
+            BotsTwitch.StaticBotEvent += HandleStaticBotEvent;
 
             TwitchBots.NotifyAdSoon += TwitchBots_NotifyAdSoon;
             TwitchBots.NotifyAdStarted += TwitchBots_NotifyAdStarted;
@@ -319,6 +320,135 @@ namespace StreamerBotLib.BotIOController
                     LogWriter.LogException(ex, "HandleBotEvent");
                 }
             });
+        }
+
+        private void HandleStaticBotEvent(object sender, BotEventArgs e)
+        {
+            ThreadManager.CreateThreadStart("HandleStaticBotEvent", () =>
+            {
+                LogWriter.DebugLog("HandleStaticBotEvent", DebugLogTypes.BotController, $"Event, {e.MethodName}, received from bots to post into system.");
+
+                try
+                {
+                    //_ = typeof(BotController).InvokeMember(
+                    //        name: e.MethodName,
+                    //        invokeAttr: BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.OptionalParamBinding,
+                    //        binder: null,
+                    //        target: this,
+                    //        args: e.e == null ? null : [e.e],
+                    //        culture: null);
+
+                    switch (e.MethodName)
+                    {
+                        case BotEvents.TwitchBotEventSubStarted:
+                            TwitchBotEventSubStarted(e.e);
+                            break;
+                        case BotEvents.TwitchBotEventSubStopping:
+                            TwitchBotEventSubStopping(e.e);
+                            break;
+                        case BotEvents.TwitchBotEventSubStopped:
+                            TwitchBotEventSubStopped(e.e);
+                            break;
+                        case BotEvents.TwitchBeingHosted:
+                            break;
+                        case BotEvents.TwitchBulkPostFollowers:
+                            TwitchBulkPostFollowers((OnNewFollowersDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStartBulkFollowers:
+                            TwitchStartBulkFollowers();
+                            break;
+                        case BotEvents.TwitchStopBulkFollowers:
+                            TwitchStopBulkFollowers();
+                            break;
+                        case BotEvents.TwitchCommunitySubscription:
+                            TwitchCommunitySubscription((NewChannelSubscriptionGiftEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchGiftSubscription:
+                            TwitchGiftSubscription((NewChannelSubscribeEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchNewSubscriber:
+                            TwitchNewSubscriber((NewChannelSubscribeEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchPostNewClip:
+                            TwitchPostNewClip((OnNewClipsDetectedArgs)e.e);
+                            break;
+                        case BotEvents.TwitchClipSvcOnClipFound:
+                            TwitchClipSvcOnClipFound((ClipFoundEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchPostNewFollowers:
+                            TwitchPostNewFollowers((NewChannelFollowEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchReSubscriber:
+                            TwitchReSubscriber((NewChannelSubscriptionMessageEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStreamOffline:
+                            TwitchStreamOffline((NewStreamOfflineEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchMultiStreamOnline:
+                            TwitchMultiStreamOnline((OnStreamOnlineArgs)e.e);
+                            break;
+                        case BotEvents.TwitchMultiGetChannels:
+                            break;
+                        case BotEvents.TwitchStreamOnline:
+                            TwitchStreamOnline((NewStreamOnlineEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchResumeStreamOnline:
+                            TwitchResumeStreamOnline((ResumeStreamOnlineEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchStreamUpdate:
+                            TwitchStreamUpdate((NewChannelUpdateEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchCategoryUpdate:
+                            TwitchCategoryUpdate((FindChannelCategoryEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchFoundViewerCategory:
+                            TwitchFoundViewerCategory((FindChannelCategoryEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchNowHosting:
+                            break;
+                        case BotEvents.TwitchOnUserLeft:
+                            TwitchOnUserLeft((StreamerOnUserLeftArgs)e.e);
+                            break;
+                        //case BotEvents.TwitchOnUserTimedout:
+                        //    TwitchOnUserTimedout((OnUserTimedoutArgs)e.e);
+                        //    break;
+                        //case BotEvents.TwitchOnUserBanned:
+                        //    TwitchOnUserBanned((OnUserBannedArgs)e.e);
+                        //    break;
+                        case BotEvents.TwitchRitualNewChatter:
+                            break;
+                        case BotEvents.TwitchMessageReceived:
+                            TwitchMessageReceived((ChannelChatMessageEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchIncomingRaid:
+                            TwitchIncomingRaid((OnIncomingRaidArgs)e.e);
+                            break;
+                        case BotEvents.TwitchChatCommandReceived:
+                            TwitchChatCommandReceived((ChannelChatMessageEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchChannelPointsRewardRedeemed:
+                            TwitchChannelPointsRewardRedeemed((NewChannelCustomRewardRedemptionEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchOutgoingRaid:
+                            TwitchOutgoingRaid((OnStreamRaidResponseEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchBotCommandCall:
+                            TwitchBotCommandCall((SendBotCommandEventArgs)e.e);
+                            break;
+                        case BotEvents.TwitchCurrentUsers:
+                            TwitchCurrentUsers((StreamerOnExistingUserDetectedArgs)e.e);
+                            break;
+                        case BotEvents.HandleBotEventEmpty:
+                            break;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    LogWriter.LogException(ex, "HandleBotEvent");
+                }
+            });
+
         }
 
         /// <summary>
@@ -568,15 +698,6 @@ namespace StreamerBotLib.BotIOController
                 $"request to add= {Userid} =to the database.");
 
             DataBot.AddNewAutoShoutUser(Userid, platform);
-        }
-
-        /// <summary>
-        /// Request the database to provide the overlay actions for each overlay type, which then sends the data back through the provided callback method to handle the data once retrieved. This is used to get the current overlay actions from the database to display in the GUI or to use in the overlay server for posting events to the overlay based on the configured actions for each event type.
-        /// </summary>
-        /// <param name="callback">The callback method to handle the retrieved overlay actions.</param>
-        public void GetOverlayActions(Action<Dictionary<string, List<string>>> callback)
-        {
-            DataBot.GetOverlayActions(callback);
         }
 
         /// <summary>
@@ -841,24 +962,19 @@ namespace StreamerBotLib.BotIOController
 
         public void SendSchedule(ScheduleConfig data)
         {
-            switch (data.Platform)
+            ThreadManager.CreateThreadStart("SendSchedule", () =>
             {
-                case Platform.Twitch:
-                    TwitchBots.SendSchedule(data);
-                    break;
-                case Platform.Service:
-                    break;
-                case Platform.YouTube:
-                    break;
-                case Platform.Rumble:
-                    break;
-                case Platform.Pilled:
-                    break;
-                case Platform.Kick:
-                    break;
-                case Platform.Default:
-                    break;
-            }
+                DataBot.GetGameCategory(data.CategoryName, (category) =>
+                {
+                    LogWriter.DebugLog("SendSchedule", DebugLogTypes.BotController, $"Received a request to send a schedule to the bot for platform: {data.Platform}.");
+                    switch (data.Platform)
+                    {
+                        case SchedulePlatform.Twitch:
+                            TwitchBots.SendSchedule(data, category);
+                            break;
+                    }
+                });
+            });
         }
 
         #endregion
@@ -2094,15 +2210,6 @@ namespace StreamerBotLib.BotIOController
         public void SendInitialTickerItems()
         {
             DataBot.SendInitialTickerItems();
-        }
-
-        /// <summary>
-        /// Sets the list of channel rewards that the data bot should be aware of for processing custom reward redemptions and managing any related functionality, such as checking for giveaway entries or handling approval processes. This method is specifically for updating the data bot with the current list of channel rewards from Twitch, and may be called whenever there are changes to the channel rewards (e.g. new rewards added, rewards removed, or reward names changed) to ensure that the data bot has the most accurate information for handling custom reward redemptions.
-        /// </summary>
-        /// <param name="channelPointNames">The list of channel point names.</param>
-        public void SetChannelRewardList(List<string> channelPointNames)
-        {
-            DataBot.SetChannelRewardList(channelPointNames);
         }
 
         #endregion

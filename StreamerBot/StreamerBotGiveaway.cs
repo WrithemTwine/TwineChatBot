@@ -23,7 +23,7 @@ namespace StreamerBot
         {
             if (e.BotName == Bots.TwitchBotSendChatClient)
             {
-                BeginGiveawayChannelPtsUpdate();
+                RefreshUpdateOverlayTypeChannelPoints();
             }
         }
 
@@ -32,26 +32,26 @@ namespace StreamerBot
             Button_Giveaway_RefreshChannelPoints.IsEnabled = false;
             Button_ChannelPts_Refresh.IsEnabled = false;
             ChannelPtRetrievalDate = DateTime.MinValue; // reset the retrieve date to force retrieval
-            BeginGiveawayChannelPtsUpdate();
+            RefreshUpdateOverlayTypeChannelPoints();
         }
 
-        private void BeginGiveawayChannelPtsUpdate()
-        {
-            if (DateTime.Now >= ChannelPtRetrievalDate + ChannelPtRefresh)
-            {
-                _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>(GUITwitchBots.GetChannelPoints));
-                ChannelPtRetrievalDate = DateTime.Now;
-            }
-        }
+        //private void BeginGiveawayChannelPtsUpdate()
+        //{
+        //    if (DateTime.Now >= ChannelPtRetrievalDate + ChannelPtRefresh)
+        //    {
+        //        _ = Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_Giveaway_RefreshChannelPoints, new Action<string>(GUITwitchBots.GetChannelPoints));
+        //        ChannelPtRetrievalDate = DateTime.Now;
+        //    }
+        //}
 
-        private void TwitchBotUserSvc_GetChannelPoints(object sender, OnGetChannelPointsEventArgs e)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                UpdateGiveawayList(e.ChannelPointNames);
-                UpdateOverlayChannelPointList(e.ChannelPointNames);
-            });
-        }
+        //private void TwitchBotUserSvc_GetChannelPoints(object sender, OnGetChannelPointsEventArgs e)
+        //{
+        //    Dispatcher.Invoke(() =>
+        //    {
+        //        UpdateGiveawayList(e.ChannelPointNames);
+        //        UpdateOverlayChannelPointList(e.ChannelPointNames);
+        //    });
+        //}
 
         private void UpdateGiveawayList(List<string> ChannelPointNames)
         {

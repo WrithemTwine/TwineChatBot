@@ -7,10 +7,10 @@ using StreamerBotLib.Models.Events;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -29,6 +29,8 @@ namespace StreamerBot
     /// </summary>
     public partial class StreamerBotWindow : Window, INotifyPropertyChanged
     {
+        internal static GUIOverlayTypeAlerts GUIOverlayTypeAlerts { get; set; }
+
         internal static BotController Controller { get; private set; }
 
         private readonly GUITwitchBots guiTwitchBot;
@@ -54,9 +56,7 @@ namespace StreamerBot
             StartBotDate = DateTime.Now;
             ThreadManager.SetGUIDispatcher(Dispatcher.CurrentDispatcher);
 
-            Version version = Assembly.GetEntryAssembly().GetName().Version;
-
-            LogWriter.WriteLog(StartBotDate, $"Now starting active bot session status log. Bot version {version}.");
+            LogWriter.WriteLog(StartBotDate, $"Now starting active bot session status log. Bot version {App.Version}.");
 
             CheckSettings();
             SetDatabaseChoice();
@@ -64,6 +64,7 @@ namespace StreamerBot
             WatchProcessOps = true;
 
             Controller = new BotController(DataManage_OnLoadCompleted);
+            GUIOverlayTypeAlerts = ActionSystem.GUIOverlayTypeAlerts;
 
             InitializeComponent();
 
@@ -90,8 +91,8 @@ namespace StreamerBot
 
             ThreadManager.CreateThreadStart(".ctor_StreamerBotWindow", ProcessWatcher);
 
-            StatusBarItem_BetaLabel.Visibility = version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
-            StatusBar_Label_Version.Content = $"Version: {version}";
+            StatusBarItem_BetaLabel.Visibility = App.Version.Revision != 0 ? Visibility.Visible : Visibility.Collapsed;
+            StatusBar_Label_Version.Content = $"Version: {App.Version}";
 
             ConstructEvents();
 
@@ -137,8 +138,8 @@ namespace StreamerBot
         /// The GUI provides buttons to click and refresh data to the interface. Still must handle response events from the bot.
         /// </summary>
         /// <param name="targetclick">The button to disable while the operation begins./param>
-        /// <param name="InvokeMethod">The bot method to invoke for the refresh operation.</param>
-        private void UpdateData(Button targetclick, Action<string> InvokeMethod)
+        /// <param name="invokeMethod">The bot method to invoke for the refresh operation.</param>
+        private void UpdateData(Button targetclick, Action<string> invokeMethod)
         {
             if (!OptionFlags.CheckSettingIsDefault(nameof(OptionFlags.TwitchChannelName))) // prevent operation if default value
             {
@@ -148,7 +149,7 @@ namespace StreamerBot
                 {
                     try
                     {
-                        InvokeMethod.Invoke(OptionFlags.TwitchChannelName);
+                        invokeMethod.Invoke(OptionFlags.TwitchChannelName);
                     }
                     catch (Exception ex)
                     {
@@ -175,12 +176,14 @@ namespace StreamerBot
 
             BeginUpdateCategory();
         }
+
         private void BeginUpdateCategory()
         {
             LogWriter.DebugLog("BeginUpdateCategory", DebugLogTypes.GUIBotComs, "Received request to begin updating the channel category.");
 
             Dispatcher.BeginInvoke(new RefreshBotOp(UpdateData), Button_RefreshCategory, new Action<string>((s) => BotController.GetUserCategory()));
         }
+
         private void BotEvents_GetChannelGameName(object sender, FindChannelCategoryEventArgs e)
         {
             LogWriter.DebugLog("BotEvents_GetChannelGameName", DebugLogTypes.GUIEvents, "Received update to the channel game category.");
@@ -422,6 +425,8 @@ namespace StreamerBot
             else if (TBSource?.Name == Options_CheckBox_UseSchedule.Name)
             {
                 SetVisibility(Options_CheckBox_UseSchedule, TabItem_Schedule);
+
+                TabItem_Schedule?.Visibility = Options_CheckBox_UseSchedule.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
             }
             else if (TBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
             {
@@ -500,6 +505,39 @@ namespace StreamerBot
         #endregion
 
         #region Data side
+
+        private void BeginUpdateOverlayTypes()
+        {
+            ThreadManager.CreateThreadStart("BeginUpdateOverlayTypes", () =>
+            {
+                GUIOverlayTypeAlerts.AddData(OverlayTypes.Giveaway, [OverlayTypes.Giveaway.ToString()]);
+                GUIOverlayTypeAlerts.AddData(OverlayTypes.ChannelEvents, Enum.GetNames<ChannelEventActions>());
+
+                BotController.DataBot.GetCommandList(false, (data) =>
+                {
+                    GUIOverlayTypeAlerts.AddData(OverlayTypes.Commands, data);
+                });
+                RefreshUpdateOverlayTypeChannelPoints();
+            });
+        }
+
+        private void RefreshUpdateOverlayTypeChannelPoints()
+        {
+            GUITwitchBots.GetChannelPoints(OptionFlags.TwitchChannelName);
+        }
+
+        private void TwitchBotUserSvc_GetChannelPoints(object sender, OnGetChannelPointsEventArgs e)
+        {
+            GUIOverlayTypeAlerts.AddData(OverlayTypes.ChannelPoints,
+                e.ChannelPointNames);
+
+            ThreadManager.AddTaskToGUIDispatcher(() =>
+            {
+                UpdateGiveawayList(e.ChannelPointNames);
+
+                OverlayService_Bulk_ComboBoxType.ItemsSource = GUIOverlayTypeAlerts.TypeNames;
+            });
+        }
 
         private void RadioButton_StartBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -618,6 +656,5 @@ namespace StreamerBot
             TwitchCheckFocusAsync();
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
-
     }
 }

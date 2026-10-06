@@ -32,7 +32,7 @@ namespace StreamerBotLib.Systems
         /// </summary>
         public static event EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerItems;
 
-        private readonly List<string> ChannelPointRewards = [];
+        //private readonly List<string> ChannelPointRewards = [];
 
         public void SetNewOverlayEventHandler(EventHandler<NewOverlayEventArgs> NewOverlayeventHandler, EventHandler<UpdatedTickerItemsEventArgs> UpdatedTickerEventHandler)
         {
@@ -41,37 +41,42 @@ namespace StreamerBotLib.Systems
             UpdatedTickerItems += UpdatedTickerEventHandler;
         }
 
-        /// <summary>
-        /// Setup the channel points reward list, update the new information.
-        /// </summary>
-        /// <param name="RewardList">The list of rewards. Internal list updates for any new data.</param>
-        public void SetChannelRewardList(List<string> RewardList)
+        ///// <summary>
+        ///// Setup the channel points reward list, update the new information.
+        ///// </summary>
+        ///// <param name="RewardList">The list of rewards. Internal list updates for any new data.</param>
+        //public void SetChannelRewardList(List<string> RewardList)
+        //{
+        //    LogWriter.DebugLog("SetChannelRewardList", DebugLogTypes.OverlayBot, $"Setting the Channel Reward List with {RewardList.Count} rewards.");
+        //    ChannelPointRewards.UniqueAddRange(RewardList);
+        //}
+
+        //public Dictionary<string, List<string>> GetOverlayActions()
+        //{
+        //    LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.OverlayBot, "Getting the Overlay Actions for the Overlay Server.");
+        //    Dictionary<string, List<string>> OverlayActionPairs = new()
+        //    {
+        //        // if there are no channel point rewards, the streamers credentials
+        //        // may need to be loaded or there aren't any channel points
+        //        { OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : ["None or Not Loaded!"] },
+        //        { OverlayTypes.Giveaway.ToString(), [OverlayTypes.Giveaway.ToString()] },
+        //        { OverlayTypes.Commands.ToString(), new(DataManage.GetCommandList(false)) },
+        //        { OverlayTypes.ChannelEvents.ToString(), new(Enum.GetNames<ChannelEventActions>()) }
+        //    };
+
+        //    //OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
+
+        //    foreach (string K in OverlayActionPairs.Keys)
+        //    {
+        //        OverlayActionPairs[K].Sort();
+        //    }
+
+        //    return OverlayActionPairs;
+        //}
+
+        public void PostBulkOverlayAlerts(List<OverlayActionType> overlayActionTypes)
         {
-            LogWriter.DebugLog("SetChannelRewardList", DebugLogTypes.OverlayBot, $"Setting the Channel Reward List with {RewardList.Count} rewards.");
-            ChannelPointRewards.UniqueAddRange(RewardList);
-        }
-
-        public Dictionary<string, List<string>> GetOverlayActions()
-        {
-            LogWriter.DebugLog("GetOverlayActions", DebugLogTypes.OverlayBot, "Getting the Overlay Actions for the Overlay Server.");
-            Dictionary<string, List<string>> OverlayActionPairs = new()
-            {
-                // if there are no channel point rewards, the streamers credentials
-                // may need to be loaded or there aren't any channel points
-                { OverlayTypes.ChannelPoints.ToString(), ChannelPointRewards.Count > 0 ? ChannelPointRewards : ["None or Not Loaded!"] },
-                { OverlayTypes.Giveaway.ToString(), [OverlayTypes.Giveaway.ToString()] },
-                { OverlayTypes.Commands.ToString(), new(DataManage.GetCommandList(false)) },
-                { OverlayTypes.ChannelEvents.ToString(), new(Enum.GetNames<ChannelEventActions>()) }
-            };
-
-            //OverlayActionPairs.Add(OverlayTypes.Clip.ToString(), new() { OverlayTypes.Clip.ToString() });
-
-            foreach (string K in OverlayActionPairs.Keys)
-            {
-                OverlayActionPairs[K].Sort();
-            }
-
-            return OverlayActionPairs;
+            DataManage.PostBulkOverlayAlerts(overlayActionTypes);
         }
 
         private static void CheckURL(string ProvidedURL, float UrlDuration, ref OverlayActionType data, bool Clip = false)

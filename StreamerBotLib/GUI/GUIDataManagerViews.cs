@@ -35,6 +35,8 @@ namespace StreamerBotLib.GUI
         public int CurrBuiltInComCount => Commands?.Count ?? 0;
         public int CurrUserComsCount => CommandsUser?.Count ?? 0;
 
+        public ObservableCollection<string> CategoryNames => new(CategoryList?.OrderBy(c => c.Category).Select(c => FormatData.RemoveEscapeFormat(c.Category)) ?? []);
+
         public static ObservableCollection<CategoryList> CurrCategoryList { get; private set; }
         public ObservableCollection<Users> Users { get; private set; }
         public ObservableCollection<Followers> Followers { get; private set; }
@@ -58,6 +60,7 @@ namespace StreamerBotLib.GUI
         public ObservableCollection<OldFollowUsers> OldFollowUsers { get; private set; }
         public ObservableCollection<OutRaidData> OutRaidData { get; private set; }
         public ObservableCollection<OverlayServices> OverlayServices { get; private set; }
+        public ObservableCollection<OverlayServicesSelection> OverlayServicesSelection { get; private set; }
         public ObservableCollection<OverlayTicker> OverlayTicker { get; private set; }
         public ObservableCollection<Quotes> Quotes { get; private set; }
         public ObservableCollection<ShoutOuts> ShoutOuts { get; private set; }
@@ -132,6 +135,7 @@ namespace StreamerBotLib.GUI
             dataBot.GetICollection(DataTables.OldFollowUsers, (source) => AssignCollection(source, nameof(OldFollowUsers)));
             dataBot.GetICollection(DataTables.OutRaidData, (source) => AssignCollection(source, nameof(OutRaidData)));
             dataBot.GetICollection(DataTables.OverlayServices, (source) => AssignCollection(source, nameof(OverlayServices)));
+            dataBot.GetICollection(DataTables.OverlayServicesSelection, (source) => AssignCollection(source, nameof(OverlayServicesSelection)));
             dataBot.GetICollection(DataTables.OverlayTicker, (source) => AssignCollection(source, nameof(OverlayTicker)));
             dataBot.GetICollection(DataTables.Quotes, (source) => AssignCollection(source, nameof(Quotes)));
             dataBot.GetICollection(DataTables.ShoutOuts, (source) => AssignCollection(source, nameof(ShoutOuts)));
@@ -215,6 +219,9 @@ namespace StreamerBotLib.GUI
                     break;
                 case nameof(OverlayServices):
                     OverlayServices = (ObservableCollection<OverlayServices>)source;
+                    break;
+                case nameof(OverlayServicesSelection):
+                    OverlayServicesSelection = (ObservableCollection<OverlayServicesSelection>)source;
                     break;
                 case nameof(OverlayTicker):
                     OverlayTicker = (ObservableCollection<OverlayTicker>)source;

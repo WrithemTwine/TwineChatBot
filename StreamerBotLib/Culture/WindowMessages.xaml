@@ -1,0 +1,26 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    
+    <!-- BulkLoad Window -->
+    <system:String
+        x:Key="BulkLoad_Title">Overlay Services - Bulk Load</system:String>
+    <system:String
+        x:Key="BulkLoad_Overlay">Overlay Type</system:String>
+    <system:String
+        x:Key="BulkLoad_Action">Action Value</system:String>
+    <system:String x:Key="BulkLoad_UserName">User Name</system:String>
+    <system:String x:Key="BulkLoad_UseChatMsg">Use Chat Message</system:String>
+    <system:String x:Key="BulkLoad_Message">Message</system:String>
+    <system:String x:Key="BulkLoad_Duration">Duration (sec)</system:String>
+    <system:String x:Key="BulkLoad_ImageFile">Image File</system:String>
+    <system:String x:Key="BulkLoad_UseSameImage">Use the same image for all media files</system:String>
+    <system:String x:Key="BulkLoad_MediaFile">Media File(s)</system:String>
+    <system:String
+        x:Key="BulkLoad_Browse">Browse...</system:String>
+    <system:String
+        x:Key="BulkLoad_CreateRecords">Create Records</system:String>
+    <system:String
+        x:Key="BulkLoad_Cancel">Cancel</system:String>
+    <!-- Manage Data Window -->
+</ResourceDictionary>

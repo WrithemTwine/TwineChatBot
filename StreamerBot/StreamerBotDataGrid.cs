@@ -150,6 +150,7 @@ namespace StreamerBot
                 nameof(DG_OldFollowUsers) => typeof(OldFollowUsers),
                 nameof(DG_OutRaids) => typeof(OutRaidData),
                 nameof(DG_OverlayService_Actions) => typeof(OverlayServices),
+                nameof(DG_OverlayServicesSelection) => typeof(OverlayServicesSelection),
                 nameof(DG_OverlayService_Ticker) => typeof(OverlayTicker),
                 nameof(DG_StreamData_Stats) => typeof(StreamStats),
                 nameof(DG_UserDefinedCommands) => typeof(CommandsUser),
@@ -167,8 +168,6 @@ namespace StreamerBot
             };
 
             TableMeta tableMeta = new();
-
-            Controller.GetOverlayActions(PopupWindows.SetTableData);
 
             PopupWindows.EditItem(
                 // establish existing or new record entity
@@ -275,6 +274,9 @@ namespace StreamerBot
                             break;
                         case "OverlayServices":
                             DG_OverlayService_Actions.Items.Refresh();
+                            break;
+                        case "OverlayServicesSelection":
+                             DG_OldFollowUsers.Items.Refresh();
                             break;
                         case "OverlayTicker":
                             DG_OverlayService_Ticker.Items.Refresh();
@@ -514,6 +516,7 @@ namespace StreamerBot
                 nameof(DG_ModApprove) => "ModeratorApprove",
                 nameof(DG_OutRaids) => "OutRaidData",
                 nameof(DG_OverlayService_Actions) => "OverlayServices",
+                nameof(DG_OverlayServicesSelection) => "OverlayServicesSelection",
                 nameof(DG_OverlayService_Ticker) => "OverlayTicker",
                 nameof(DG_User_Quotes) => "Quotes",
                 nameof(DG_User_Shoutouts) => "ShoutOuts",

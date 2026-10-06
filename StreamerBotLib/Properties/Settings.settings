@@ -839,23 +839,23 @@
     <Setting Name="GUI_BotCategory_Twitch_Expand" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="ScheduleTwitch" Type="System.String" Scope="User">
+    <Setting Name="ScheduleData" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ScheduleUseSchedule" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ScheduleResetDaily" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="ScheduleSendTimeHrs" Type="System.String" Scope="User">
-      <Value Profile="(Default)">12</Value>
+    <Setting Name="ScheduleSendTimeHrs" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="ScheduleSendTimeMin" Type="System.String" Scope="User">
-      <Value Profile="(Default)">00</Value>
+    <Setting Name="ScheduleSendTimeMin" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="ScheduleSendScheduleDaily" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="MediaOverlayUseMultipleEvents" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

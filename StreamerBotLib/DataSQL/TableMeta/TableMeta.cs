@@ -127,6 +127,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
             {
                 CurrEntity = new OverlayServices(new Models.OverlayServices());
             }
+            else if (Entity == typeof(Models.OverlayServicesSelection))
+            {
+                CurrEntity = new OverlayServicesSelection(new Models.OverlayServicesSelection());
+            }
             else if (Entity == typeof(Models.OverlayTicker))
             {
                 CurrEntity = new OverlayTicker(new Models.OverlayTicker());
@@ -259,6 +263,10 @@ namespace StreamerBotLib.DataSQL.TableMeta
             else if (Entity.GetType() == typeof(Models.OverlayServices))
             {
                 CurrEntity = new OverlayServices((Models.OverlayServices)Entity);
+            }
+            else if (Entity.GetType() == typeof(Models.OverlayServicesSelection))
+            {
+                CurrEntity = new OverlayServicesSelection((Models.OverlayServicesSelection)Entity);
             }
             else if (Entity.GetType() == typeof(Models.OverlayTicker))
             {
@@ -421,6 +429,11 @@ namespace StreamerBotLib.DataSQL.TableMeta
             else if (DataEntity.GetType() == typeof(Models.OverlayServices))
             {
                 ((OverlayServices)Update).CopyUpdates((Models.OverlayServices)DataEntity);
+                return DataEntity;
+            }
+            else if (DataEntity.GetType() == typeof(Models.OverlayServicesSelection))
+            {
+                ((OverlayServicesSelection)Update).CopyUpdates((Models.OverlayServicesSelection)DataEntity);
                 return DataEntity;
             }
             else if (DataEntity.GetType() == typeof(Models.OverlayTicker))

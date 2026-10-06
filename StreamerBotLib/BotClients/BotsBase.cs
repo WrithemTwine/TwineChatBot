@@ -11,6 +11,8 @@ namespace StreamerBotLib.BotClients
     {
         public event EventHandler<BotEventArgs> BotEvent;
 
+        public static event EventHandler<BotEventArgs> StaticBotEvent;
+
         public virtual Platform Platform { get; set; } = Platform.Default;
 
         protected Collection<Thread> MultiThreadOps = [];
@@ -67,6 +69,11 @@ namespace StreamerBotLib.BotClients
         protected void InvokeBotEvent(object sender, BotEvents Botevent, EventArgs eventargs)
         {
             BotEvent?.Invoke(sender, new() { MethodName = Botevent, e = eventargs });
+        }
+
+        protected static void InvokeStaticBotEvent(object sender, BotEvents Botevent, EventArgs eventargs)
+        {
+            StaticBotEvent?.Invoke(sender, new() { MethodName = Botevent, e = eventargs });
         }
 
         public virtual void GetAllFollowers()

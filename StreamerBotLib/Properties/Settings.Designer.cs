@@ -3368,19 +3368,18 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string ScheduleTwitch {
+        public global::System.Collections.Specialized.StringCollection ScheduleData {
             get {
-                return ((string)(this["ScheduleTwitch"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["ScheduleData"]));
             }
             set {
-                this["ScheduleTwitch"] = value;
+                this["ScheduleData"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ScheduleUseSchedule {
             get {
                 return ((bool)(this["ScheduleUseSchedule"]));
@@ -3392,7 +3391,7 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ScheduleResetDaily {
             get {
                 return ((bool)(this["ScheduleResetDaily"]));
@@ -3404,10 +3403,10 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("12")]
-        public string ScheduleSendTimeHrs {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ScheduleSendTimeHrs {
             get {
-                return ((string)(this["ScheduleSendTimeHrs"]));
+                return ((int)(this["ScheduleSendTimeHrs"]));
             }
             set {
                 this["ScheduleSendTimeHrs"] = value;
@@ -3416,10 +3415,10 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00")]
-        public string ScheduleSendTimeMin {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ScheduleSendTimeMin {
             get {
-                return ((string)(this["ScheduleSendTimeMin"]));
+                return ((int)(this["ScheduleSendTimeMin"]));
             }
             set {
                 this["ScheduleSendTimeMin"] = value;
@@ -3428,7 +3427,7 @@ namespace StreamerBotLib.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ScheduleSendScheduleDaily {
             get {
                 return ((bool)(this["ScheduleSendScheduleDaily"]));

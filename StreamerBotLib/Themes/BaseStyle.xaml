@@ -3,6 +3,7 @@
                     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
                     xmlns:Enums="clr-namespace:StreamerBotLib.Models.Enums;assembly=StreamerBotLib"         
                     xmlns:OEnums="clr-namespace:StreamerBotLib.Systems.Overlay.Enums;assembly=StreamerBotLib"
+                    xmlns:OSEnums="clr-namespace:StreamerBotLib.Models.Overlay;assembly=StreamerBotLib"
 
                     xmlns:core="clr-namespace:System;assembly=mscorlib">
 
@@ -1136,13 +1137,27 @@
             <x:Type TypeName="OEnums:OverlayTickerItem" />
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
-
-    <ObjectDataProvider x:Key="EnumOverlayServiceTypes" MethodName="GetValues" ObjectType="{x:Type core:Enum}" >
+    
+    <ObjectDataProvider
+        x:Key="EnumOverlayServiceTypes"
+        MethodName="GetValues"
+        ObjectType="{x:Type core:Enum}">
         <ObjectDataProvider.MethodParameters>
-            <x:Type TypeName="OEnums:OverlayTypes" />
+            <x:Type
+                TypeName="OEnums:OverlayTypes" />
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
-
+    
+    <ObjectDataProvider
+        x:Key="EnumOverlayMultiSelectionTypes"
+        MethodName="GetValues"
+        ObjectType="{x:Type core:Enum}">
+        <ObjectDataProvider.MethodParameters>
+            <x:Type
+                TypeName="OSEnums:OverlayMultiSelectionTypes" />
+        </ObjectDataProvider.MethodParameters>
+    </ObjectDataProvider>
+    
     <!--#endregion-->
 
     

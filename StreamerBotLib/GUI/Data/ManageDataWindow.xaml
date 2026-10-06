@@ -21,6 +21,8 @@
     Topmost="True"
     Loaded="Window_Loaded">
     <Window.Resources>
+        <ResourceDictionary>
+            
         <Style
             TargetType="{x:Type Label}">
             <Setter
@@ -113,6 +115,7 @@
                     x:Name="ComboBox_SelectTable"
                     SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     IsReadOnly="{Binding IsReadOnly}"
+                    IsEnabled="{Binding IsEnabled}"
                     SelectionChanged="ComboBox_SelectTable_SelectionChanged"
                     Initialized="ComboBox_SelectTable_Initialized" />
             </StackPanel>
@@ -127,6 +130,7 @@
                     x:Name="ComboBox_SelectTableKeyField"
                     SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     IsReadOnly="{Binding IsReadOnly}"
+                    IsEnabled="{Binding IsEnabled}"
                     Initialized="ComboBox_KeyField_Initialized" />
             </StackPanel>
         </DataTemplate>
@@ -140,6 +144,7 @@
                     x:Name="ComboBox_SelectTableCurrencyField"
                     SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     IsReadOnly="{Binding IsReadOnly}"
+                    IsEnabled="{Binding IsEnabled}"
                     Initialized="ComboBox_CurrencyField_Initialized" />
             </StackPanel>
         </DataTemplate>
@@ -153,6 +158,7 @@
                     x:Name="ComboBox_SelectTableDataField"
                     SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     IsReadOnly="{Binding IsReadOnly}"
+                    IsEnabled="{Binding IsEnabled}"
                     Initialized="ComboBox_DataField_Initialized" />
             </StackPanel>
         </DataTemplate>
@@ -165,7 +171,8 @@
                 <ComboBox
                     x:Name="ComboBox_SelectOverlayAction"
                     SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    IsReadOnly="{Binding IsReadOnly}" />
+                    IsReadOnly="{Binding IsReadOnly}" 
+                    IsEnabled="{Binding IsEnabled}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate
@@ -178,6 +185,7 @@
                     Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Initialized="ComboBox_ModActionType_Initialized"
                     IsReadOnly="{Binding IsReadOnly}"
+                    IsEnabled="{Binding IsEnabled}"
                     SelectionChanged="ComboBox_SelectModActionType_SelectionChanged" />
             </StackPanel>
         </DataTemplate>
@@ -191,7 +199,8 @@
                     x:Name="ComboBox_SelectModActionList"
                     Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Initialized="ComboBox_ModPerformName_Initialized"
-                    IsReadOnly="{Binding IsReadOnly}" />
+                    IsReadOnly="{Binding IsReadOnly}"
+                    IsEnabled="{Binding IsEnabled}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate
@@ -204,7 +213,8 @@
                     x:Name="ComboBox_SelectEnum"
                     SelectedItem="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Initialized="ComboBox_SelectEnum_Initialized"
-                    IsReadOnly="{Binding IsReadOnly}" />
+                    IsReadOnly="{Binding IsReadOnly}"
+                    IsEnabled="{Binding IsEnabled}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate
@@ -246,6 +256,12 @@
             ModActionTypeTemplate="{StaticResource ModActionTypeTemplate}"
             ModPerformNameTemplate="{StaticResource ModPerformNameTemplate}"
             CategoryTemplate="{StaticResource CategoryTemplate}" />
+                
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary 
+                Source="pack://application:,,,/StreamerBotLib;component/Culture/WindowMessages.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     <DockPanel
         LastChildFill="True">

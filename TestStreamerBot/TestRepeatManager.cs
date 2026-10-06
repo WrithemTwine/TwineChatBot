@@ -85,6 +85,7 @@ namespace TestStreamerBot
             public string GetEventRowData(ChannelEventActions rowcriteria, out bool Enabled, out short Multi) => throw new NotImplementedException();
             public int GetFollowerCount() => throw new NotImplementedException();
             public List<CategoryData> GetGameCategories() => throw new NotImplementedException();
+            public CategoryData GetGameCategory(string CategoryName) => throw new NotImplementedException();
             public string GetKey(string Table) => throw new NotImplementedException();
             public IEnumerable<string> GetKeys(string Table) => throw new NotImplementedException();
             public string GetNewestFollower() => throw new NotImplementedException();
@@ -316,6 +317,11 @@ namespace TestStreamerBot
             }
 
             public void StopOnlineCurrencyFilter()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void PostBulkOverlayAlerts(List<OverlayActionType> overlayActionTypes)
             {
                 throw new NotImplementedException();
             }

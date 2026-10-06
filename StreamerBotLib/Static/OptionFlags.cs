@@ -1048,10 +1048,9 @@ namespace StreamerBotLib.Static
             set { Settings.Default.ScheduleUseSchedule = value; }
         }
 
-        public static string ScheduleTwitch
+        public static StringCollection ScheduleData
         {
-            get { return Settings.Default.ScheduleTwitch; }
-            set { Settings.Default.ScheduleTwitch = value; }
+            get { return Settings.Default.ScheduleData ??= []; }
         }
 
         public static bool ScheduleResetDaily
@@ -1062,13 +1061,13 @@ namespace StreamerBotLib.Static
 
         public static bool ScheduleSendScheduleDaily => Settings.Default.ScheduleSendScheduleDaily;
 
-        public static string ScheduleSendTimeHrs => Settings.Default.ScheduleSendTimeHrs;
-        public static string ScheduleSendTimeMin => Settings.Default.ScheduleSendTimeMin;
+        public static int ScheduleSendTimeHrs => Settings.Default.ScheduleSendTimeHrs;
+        public static int ScheduleSendTimeMin => Settings.Default.ScheduleSendTimeMin;
         public static DateTime ScheduleSendTime
         {
             get
             {
-                return new DateTime(1, 1, 1, int.Parse(ScheduleSendTimeHrs), int.Parse(ScheduleSendTimeMin), 0);
+                return new DateTime(1, 1, 1,ScheduleSendTimeHrs, ScheduleSendTimeMin, 0);
             }
         }
 
@@ -1375,6 +1374,14 @@ namespace StreamerBotLib.Static
             {
                 throw new ArgumentException($"Setting '{SettingName}' not found in Settings.Default.");
             }
+        }
+
+        /// <summary>
+        /// Ability to save settings for changing collection contents that don't activate the auto-save mechanism.
+        /// </summary>
+        public static void SaveSettings()
+        {
+            Settings.Default.Save();
         }
     }
 }

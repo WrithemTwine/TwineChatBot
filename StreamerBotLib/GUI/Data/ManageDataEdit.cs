@@ -13,15 +13,10 @@ namespace StreamerBotLib.GUI.Data
         private DataBot dataBot { get; }
         //private ManageDataWindow DataEditWindow { get; set; }
         private TableMeta CurrTableRow { get; set; }
-        private Dictionary<string, List<string>> _TableDataPairs = [];
-
         private bool IsNewRow;
-
 
         internal event EventHandler<AddNewRowEventArgs> DataAddNewRowEvent;
         internal event EventHandler<UpdatedDataRowArgs> DataEditRowEvent;
-
-        private bool _setTableData, _openNewWindow;
 
         public ManageDataEdit(DataBot dataBot)
         {
@@ -39,22 +34,6 @@ namespace StreamerBotLib.GUI.Data
             };
         }
 
-        public void SetTableData(Dictionary<string, List<string>> SourceData)
-        {
-            _TableDataPairs.Clear();
-            foreach (var D in SourceData)
-            {
-                _TableDataPairs.Add(D.Key, D.Value);
-            }
-            _setTableData = true;
-
-            if (_openNewWindow) // If the window was already requested to open, open it now that the data is set
-            {
-                _openNewWindow = false;
-                OpenGridWindow();
-            }
-        }
-
         public void EditItem(TableMeta tableMeta, bool isNewRow, DataGrid EditSource = null)
         {
             CurrTableRow = tableMeta;
@@ -65,13 +44,6 @@ namespace StreamerBotLib.GUI.Data
 
         private void OpenGridWindow()
         {
-            // two entry points, if the table data is set, skip this, otherwise, cancel but wait for the table data and the other method starts this method
-            if (!_setTableData)
-            {
-                _openNewWindow = true;
-                return;
-            }
-
             ThreadManager.AddTaskToGUIDispatcher(() =>
             {
                 string titleText = (IsNewRow
@@ -82,8 +54,7 @@ namespace StreamerBotLib.GUI.Data
                 {
                     Title = titleText.Replace("{0}", CurrTableRow.CurrEntity.TableName),
                     SetTableMeta = CurrTableRow,
-                    SetDataBot = dataBot,
-                    TableDataPairs = _TableDataPairs
+                    SetDataBot = dataBot
                 };
 
                 DataEditWindow.SaveRecordEvent +=
@@ -99,7 +70,6 @@ namespace StreamerBotLib.GUI.Data
                       (sender, e) => { return; }
                 : (sender, e) => { return; };
 
-                DataEditWindow.TableDataPairs = _TableDataPairs;
                 DataEditWindow.ShowDialog();
             });
         }

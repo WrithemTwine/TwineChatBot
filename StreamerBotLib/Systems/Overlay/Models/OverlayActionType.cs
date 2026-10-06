@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Systems.Overlay.Enums;
+﻿using StreamerBotLib.Models.Overlay;
+using StreamerBotLib.Systems.Overlay.Enums;
 
 namespace StreamerBotLib.Systems.Overlay.Models
 {
@@ -48,6 +49,24 @@ namespace StreamerBotLib.Systems.Overlay.Models
         /// The path to the audio/video media for the event.
         /// </summary>
         public string MediaFile { get; set; } = string.Empty;
+
+        public OverlayMultiSelectionTypes? MultiSelectionType { get; set; } = null;
+
+        public OverlayActionType Copy()
+        {
+            return new()
+            {
+                OverlayType = OverlayType,
+                ActionValue = ActionValue,
+                UserName = UserName,
+                UseChatMsg = UseChatMsg,
+                Message = Message,
+                Duration = Duration,
+                ImageFile = ImageFile,
+                MediaFile = MediaFile,
+                MultiSelectionType = MultiSelectionType
+            };
+        }
 
         /// <summary>
         /// Object HashCode.

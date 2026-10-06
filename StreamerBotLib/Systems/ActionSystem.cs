@@ -2,6 +2,7 @@
 
 using StreamerBotLib.BotClients;
 using StreamerBotLib.DataSQL;
+using StreamerBotLib.GUI;
 using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
@@ -26,6 +27,7 @@ namespace StreamerBotLib.Systems
     /// </summary>
     public partial class ActionSystem
     {
+        public static GUIOverlayTypeAlerts GUIOverlayTypeAlerts { get; private set; }
         public event EventHandler<PostChannelMessageEventArgs> PostChannelMessage;
         public event EventHandler<BanUserRequestEventArgs> BanUserRequest;
 
@@ -84,6 +86,8 @@ namespace StreamerBotLib.Systems
             RepeatManager.OnRepeatCheckStopped += RepeatManager_OnRepeatCheckStopped;
 
             DataManage.OnBulkFollowersAddFinished += DataManage_OnBulkFollowersAddFinished;
+
+            GUIOverlayTypeAlerts = new();
         }
 
         public async Task InitializeDataManager()
@@ -275,6 +279,11 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("GetGameCategories", DebugLogTypes.CommonSystem, "Getting Game Categories.");
             return DataManage.GetGameCategories();
+        }
+        public CategoryData GetGameCategory(string CategoryName)
+        {
+            LogWriter.DebugLog("GetGameCategory", DebugLogTypes.CommonSystem, $"Getting Game Category for: {CategoryName}");
+            return DataManage.GetGameCategory(CategoryName);
         }
 
         public List<string> GetTableFields(string TableName)

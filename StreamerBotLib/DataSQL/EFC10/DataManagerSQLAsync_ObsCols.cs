@@ -40,6 +40,7 @@ namespace StreamerBotLib.DataSQL.EFC10
         private readonly ObservableCollection<OldFollowUsers> OldFollowUsers = [];
         private readonly ObservableCollection<OutRaidData> OutRaidData = [];
         private readonly ObservableCollection<OverlayServices> OverlayServices = [];
+        private readonly ObservableCollection<OverlayServicesSelection> OverlayServicesSelection = [];
         private readonly ObservableCollection<OverlayTicker> OverlayTicker = [];
         private readonly ObservableCollection<Quotes> Quotes = [];
         private readonly ObservableCollection<ShoutOuts> ShoutOuts = [];
@@ -90,6 +91,7 @@ namespace StreamerBotLib.DataSQL.EFC10
                 DataTables.OldFollowUsers => GetOldFollowUsersLocalObservableAsync().Result,
                 DataTables.OutRaidData => GetOutRaidDataLocalObservableAsync().Result,
                 DataTables.OverlayServices => GetOverlayServicesLocalObservableAsync().Result,
+                DataTables.OverlayServicesSelection => GetOverlayServicesSelectionLocalObservableAsync().Result,
                 DataTables.OverlayTicker => GetOverlayTickerLocalObservableAsync().Result,
                 DataTables.Quotes => GetQuotesLocalObservableAsync().Result,
                 DataTables.ShoutOuts => GetShoutOutsLocalObservableAsync().Result,
@@ -341,6 +343,16 @@ namespace StreamerBotLib.DataSQL.EFC10
                 await GUIContext.OverlayServices.LoadAsync();
                 OverlayServices.AddRange([.. GUIContext.OverlayServices.Local]);
                 return OverlayServices;
+            });
+        }
+
+        private Task<ObservableCollection<OverlayServicesSelection>> GetOverlayServicesSelectionLocalObservableAsync()
+        {
+            return Task.Run(async () =>
+            {
+                await GUIContext.OverlayServicesSelection.LoadAsync();
+                OverlayServicesSelection.AddRange([.. GUIContext.OverlayServicesSelection.Local]);
+                return OverlayServicesSelection;
             });
         }
 
@@ -809,6 +821,21 @@ namespace StreamerBotLib.DataSQL.EFC10
                     OverlayServices.Clear();
                     OverlayServices.AddRange([.. GUIContext.OverlayServices.Local]);
                     NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServices), RecordCountChange);
+                });
+            });
+        }
+
+        private async Task RefreshOverlayServicesSelectionList(bool RecordCountChange = false)
+        {
+            await Task.Run(() =>
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    GUIContext.ChangeTracker.Clear();
+                    await GUIContext.OverlayServicesSelection.LoadAsync();
+                    OverlayServicesSelection.Clear();
+                    OverlayServicesSelection.AddRange([.. GUIContext.OverlayServicesSelection.Local]);
+                    NotifyDataCollectionUpdated(nameof(GUIContext.OverlayServicesSelection), RecordCountChange);
                 });
             });
         }

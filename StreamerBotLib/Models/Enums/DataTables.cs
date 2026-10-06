@@ -27,6 +27,7 @@
         OldFollowUsers,
         OutRaidData,
         OverlayServices,
+        OverlayServicesSelection,
         OverlayTicker,
         Quotes,
         ShoutOuts,

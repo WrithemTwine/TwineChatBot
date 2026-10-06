@@ -749,13 +749,27 @@ namespace StreamerBotLib.BotClients
 
             bool result = false;
 
-            if (Title != null)
+            if (Title != null && (CategoryName != null || CategoryId != null))
             {
-                result = TwitchHelixBot.SetChannelTitle(Title);
+                result = TwitchHelixBot.SetChannelTitleCategory(Title, CategoryName, CategoryId);
             }
-            if (CategoryName != null || CategoryId != null)
+            else
             {
-                result = TwitchHelixBot.SetChannelCategory(CategoryName, CategoryId);
+                if (Title != null)
+                {
+                    result = TwitchHelixBot.SetChannelTitle(Title);
+                }
+                if (CategoryName != null || CategoryId != null)
+                {
+                    result = TwitchHelixBot.SetChannelCategory(CategoryName, CategoryId);
+                }
+            }
+
+            if (!OptionFlags.IsStreamOnline)
+            {
+                InvokeStaticBotEvent(null, BotEvents.TwitchStreamUpdate, 
+                    new NewChannelUpdateEventArgs(
+                        new TwitchLib.EventSub.Core.SubscriptionTypes.Channel.ChannelUpdate() { CategoryId = CategoryId , CategoryName = CategoryName }));
             }
 
             return result;
@@ -862,9 +876,9 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchCategoryUpdate, e);
         }
 
-        public void SendSchedule(ScheduleConfig data)
+        public void SendSchedule(ScheduleConfig data, CategoryData category)
         {
-            ModifyChannelInformation(data.Title, data.CategoryName);
+            ModifyChannelInformation(data.Title, CategoryName: category.CategoryName, CategoryId: category.CategoryId);
         }
 
         #endregion

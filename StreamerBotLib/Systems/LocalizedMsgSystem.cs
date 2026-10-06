@@ -16,6 +16,8 @@ namespace StreamerBotLib.Systems
     /// </summary>
     public static class LocalizedMsgSystem
     {
+        private static readonly Version _version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
         /* //TODO: finish updating LocalizedMsgSystem description of how and where Enum & messages are used
          * 
         --------------------
@@ -145,15 +147,13 @@ namespace StreamerBotLib.Systems
         {
             LogWriter.DebugLog("GetTwineBotAuthorInfo", DebugLogTypes.LocalizedMessages, "Retrieving Twine Bot Author Info.");
 
-            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-
             return string.Format(VariableParser.ParseReplace(
                 Msgs.TwineBotInfo,
                 new Dictionary<string, string>() {
                     { VariableParser.Prefix + "url", Resources.AuthorTwitch},
                     { VariableParser.Prefix + "author", Resources.AuthorTwitch}
                 }
-                ), version);
+                ), _version);
         }
 
         /// <summary>

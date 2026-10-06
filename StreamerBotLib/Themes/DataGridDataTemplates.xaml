@@ -599,6 +599,7 @@
             <PropertyGroupDescription PropertyName="OverlayType" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
+    <CollectionViewSource x:Key="DG_OverlayServicesSelection_CVS" Source="{Binding OverlayServicesSelection, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_OverlayTicker_CVS" Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_Quotes_CVS" Source="{Binding Quotes, Source={StaticResource DataViews}}" />
     <CollectionViewSource x:Key="DG_ShoutOuts_CVS" Source="{Binding ShoutOuts, Source={StaticResource DataViews}}" />

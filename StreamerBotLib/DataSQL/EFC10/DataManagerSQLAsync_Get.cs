@@ -145,6 +145,15 @@ namespace StreamerBotLib.DataSQL.EFC10
                                 .ToListAsync();
         }
 
+        internal async Task<CategoryData> GetGameCategory(string CategoryName)
+        {
+            using var context = BuildDataContext();
+            return await context.CategoryList
+                                .Where(C => C.Category == CategoryName)
+                                .Select(C => new CategoryData(C.CategoryId, C.Category))
+                                .FirstOrDefaultAsync();
+        }
+
         internal async Task<string> GetKey(string table)
         {
             using var context = BuildDataContext();
@@ -162,6 +171,12 @@ namespace StreamerBotLib.DataSQL.EFC10
         internal async Task<List<OverlayActionType>> GetOverlayActions(OverlayTypes overlayType, string overlayAction, string username)
         {
             using var context = BuildDataContext();
+
+            var selection = await context.OverlayServicesSelection
+                .Where(s => s.OverlayType == overlayType && s.OverlayAction == overlayAction)
+                .Select(s => s)
+                .FirstOrDefaultAsync();
+
             return await context.OverlayServices
                 .Where(O => O.IsEnabled && O.OverlayType == overlayType && (string.IsNullOrEmpty(O.UserName) || O.UserName == username) && O.OverlayAction == overlayAction)
                 .Select(O => new OverlayActionType()
@@ -173,7 +188,8 @@ namespace StreamerBotLib.DataSQL.EFC10
                     Message = O.Message,
                     OverlayType = O.OverlayType,
                     UserName = O.UserName,
-                    UseChatMsg = O.UseChatMsg
+                    UseChatMsg = O.UseChatMsg,
+                    MultiSelectionType = selection != null ? selection.SelectionType : null
                 })
                 .ToListAsync();
         }

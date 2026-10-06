@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Models.Overlay
 {
-    internal enum OverlayMultiSelectionTypes
+    public enum OverlayMultiSelectionTypes
     {
         StraightSelection, RandomSelection, EliminationSelection, WeightedSelection
     }

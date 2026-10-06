@@ -63,8 +63,9 @@ namespace StreamerBotLib.Models.Interfaces
         void Initialize();
         object[] PerformQuery(CommandsBase row, int Top = 0);
         object PerformQuery(CommandsBase row, string ParamValue);
+        void PostBulkOverlayAlerts(List<OverlayActionType> overlayActionTypes);
         bool PostCategory(CategoryData categoryData);
-        public void PostCategoryStream(CategoryData category, int StreamCount = 0);
+        void PostCategoryStream(CategoryData category, int StreamCount = 0);
         bool PostClip(string ClipId, DateTime CreatedAt, decimal Duration, string GameId, string Language, string Title, string Url, string fromUserId, string fromUserName, bool LastClip);
         IEnumerable<Clip> SyncClips(bool AllClips, IEnumerable<Clip> clips);
         string PostCommand(string cmd, CommandParams Params);
@@ -73,7 +74,7 @@ namespace StreamerBotLib.Models.Interfaces
         int PostDeathCounterUpdate(string currCategory, bool Reset = false, int updateValue = 1);
         bool PostFollower(Follow follow);
         void PostGiveawayData(string UserId, DateTime dateTime);
-        public void PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename);
+        void PostInRaidData(LiveUser user, DateTime time, int viewers, CategoryData gamename);
         void PostLearnMsgsRow(string Message, MsgTypes MsgType);
         bool PostMergeUserStats(string CurrUser, string SourceUser, Platform platform);
         void PostMonitorChannel(IEnumerable<LiveUser> liveUsers);

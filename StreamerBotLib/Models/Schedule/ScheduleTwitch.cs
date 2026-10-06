@@ -5,14 +5,11 @@ namespace StreamerBotLib.Models.Schedule
 {
     public class ScheduleTwitch : ScheduleBase
     {
+        public static List<ScheduleConfig> TwitchSchedule => PlatformSchedule[SchedulePlatform.Twitch];
+
         public ScheduleTwitch()
         {
-            Platform = Platform.Twitch;
-            Load();
+            PrepareLoadData(SchedulePlatform.Twitch);
         }
-
-        public override void Save() => OptionFlags.ScheduleTwitch = PrepareSaveData();
-
-        private void Load() => PrepareLoadData(OptionFlags.ScheduleTwitch);
     }
 }

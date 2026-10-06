@@ -12,15 +12,7 @@ namespace StreamerBot
 
         private void Schedule_ListView_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue is ScheduleBase curr)
-            {
-                ScheduleData.UniqueAdd(curr);
-            }
-        }
-
-        private void Schedule_ListView_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ((sender as FrameworkElement).DataContext as ScheduleBase)?.Save();
+            ScheduleData.UniqueAdd((sender as ListView).DataContext as ScheduleBase);
         }
 
         private void Schedule_SentButton_Click(object sender, RoutedEventArgs e)

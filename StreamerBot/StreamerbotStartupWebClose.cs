@@ -203,8 +203,7 @@ namespace StreamerBot
             string newversion = (from s in NewVersionLink.Split('/')
                                  select s).Last().Split('_').FirstOrDefault();
 
-            Version version = Assembly.GetEntryAssembly().GetName().Version;
-            string AppVersion = $"v.{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+            string AppVersion = $"v.{App.Version.Major}.{App.Version.Minor}.{App.Version.Build}.{App.Version.Revision}";
 
             // check if the saved link is the default, also check if the found link doesn't have the current version
             // true=> link not default and the stable version link doesn't have the current app version in it
@@ -258,6 +257,8 @@ namespace StreamerBot
                     CheckDebug(this, new());
                     SetVisibility(this, new());
                 });
+
+                BeginUpdateOverlayTypes();
             });
         }
 

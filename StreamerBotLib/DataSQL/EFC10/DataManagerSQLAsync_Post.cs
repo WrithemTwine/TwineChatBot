@@ -7,6 +7,7 @@ using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
+using StreamerBotLib.Systems.Overlay.Models;
 
 using System.Diagnostics;
 using System.Globalization;
@@ -505,6 +506,13 @@ namespace StreamerBotLib.DataSQL.EFC10
                     await context.SaveChangesAsync(true);
                     await RefreshOverlayServicesList(true);
                 }
+                else if (tableMeta.TableName == "OverlayServicesSelection")
+                {
+                    await context.OverlayServicesSelection.AddAsync((Models.OverlayServicesSelection)tableMeta.GetModelEntity());
+                    await context.Database.CommitTransactionAsync();
+                    await context.SaveChangesAsync(true);
+                    await RefreshOverlayServicesSelectionList(true);
+                }
                 else if (tableMeta.TableName == "OverlayTicker")
                 {
                     await context.OverlayTicker.AddAsync((Models.OverlayTicker)tableMeta.GetModelEntity());
@@ -561,6 +569,29 @@ namespace StreamerBotLib.DataSQL.EFC10
             }
         }
 
+        internal async Task PostBulkOverlayAlerts(List<OverlayActionType> overlayActionTypes)
+        {
+            using var context = BuildDataContext();
+            await context.Database.BeginTransactionAsync();
+
+            await context.OverlayServices.AddRangeAsync(from Oa in overlayActionTypes
+                                                        select 
+                                                        new OverlayServices(
+                                                            isEnabled: true, 
+                                                            overlayType: Oa.OverlayType, 
+                                                            overlayAction: Oa.ActionValue, 
+                                                            userName: Oa.UserName, 
+                                                            useChatMsg: Oa.UseChatMsg, 
+                                                            duration: Oa.Duration,
+                                                            message: Oa.Message, 
+                                                            imageFile: Oa.ImageFile, 
+                                                            mediaFile: Oa.MediaFile));
+
+            await context.Database.CommitTransactionAsync();
+            await context.SaveChangesAsync(true);
+            await RefreshOverlayServicesList(true);
+        }
+
         /// <summary>
         /// Add a category to the CategoryList table if it does not already exist.
         /// </summary>
@@ -611,8 +642,8 @@ namespace StreamerBotLib.DataSQL.EFC10
                       .Where(S => S.StreamStart == CurrStreamStart && S.StreamEnd == default)
                       .Select(S => S)
                       .FirstOrDefaultAsync();
-            if (currStream != default)
-            { // only post if stream is continuing and hasn't ended (S.StreamEnd == default ==> not ended)
+            if (currStream != default && categoryData?.CategoryName != null)
+            { // only post if stream is continuing and hasn't ended (S.StreamEnd == default ==> not ended), avoid null Category items
                 currStream.Category.UniqueAdd(categoryData.CategoryName);
             }
 

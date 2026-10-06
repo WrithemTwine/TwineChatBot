@@ -1,6 +1,7 @@
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Systems.Overlay.Enums;
+using StreamerBotLib.Systems.Overlay.Models;
 
 namespace StreamerBotLib.Models.Interfaces
 {
@@ -79,6 +80,7 @@ namespace StreamerBotLib.Models.Interfaces
         void SetDiscordWebhooksEnabled(bool enabled);
         void PostMultiLiveLog(string message);
         void GetMultiWebHooks(Action<IEnumerable<Tuple<WebhooksSource, Uri>>> callback);
+        void GetGameCategory(string categoryName, Action<CategoryData> callback);
         void GetApprovalRule(ModActionType type, string rewardTitle, Action<Tuple<string, string>> callback);
         void GetDiscordWebhooks(WebhooksKind webhooksKind, Action<IEnumerable<Tuple<bool, Uri>>> callback);
         void GetEventAnnounce(ChannelEventActions channelEventActions, Action<bool> callback);
@@ -95,5 +97,7 @@ namespace StreamerBotLib.Models.Interfaces
         void NotifyAdSoon(Platform platform, int secondsUntilAd, TimeSpan AdDuration);
         void NotifyAdStart(Platform platform, TimeSpan AdDuration);
         void NotifyAdEnd(Platform platform);
+        void SetOverlayServicesBulkLoad(List<OverlayActionType> overlayActionTypes);
+        void PostBulkOverlayActions(List<OverlayActionType> data);
     }
 }

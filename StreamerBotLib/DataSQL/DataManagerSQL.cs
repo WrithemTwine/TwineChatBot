@@ -405,6 +405,15 @@ namespace StreamerBotLib.DataSQL
             }
         }
 
+        public CategoryData GetGameCategory(string CategoryName)
+        {
+            LogWriter.DebugLog("GetGameCategory", DebugLogTypes.DataManager, "Getting game category.");
+            lock (GUIDataManagerLock.Lock)
+            {
+                return _dataManager.GetGameCategory(CategoryName).Result;
+            }
+        }
+
         public string GetKey(string Table)
         {
             LogWriter.DebugLog("GetKey", DebugLogTypes.DataManager, "Getting key.");
@@ -673,6 +682,18 @@ namespace StreamerBotLib.DataSQL
             lock (GUIDataManagerLock.Lock)
             {
                 return _dataManager.PerformQuery(row, ParamValue).Result;
+            }
+        }
+
+        public void PostBulkOverlayAlerts(List<OverlayActionType> overlayActionTypes)
+        {
+            LogWriter.DebugLog("PostBulkOverlayAlerts", DebugLogTypes.DataManager, "Posting bulk overlay alerts to database." );            
+            lock (GUIDataManagerLock.Lock)
+            {
+                ThreadManager.AddTaskToGUIDispatcher(async () =>
+                {
+                    await _dataManager.PostBulkOverlayAlerts(overlayActionTypes);
+                });
             }
         }
 

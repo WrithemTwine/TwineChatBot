@@ -49,6 +49,7 @@ namespace StreamerBotLib.DataSQL
         public DbSet<Clips> Clips { get; set; }
         public DbSet<CurrencyType> CurrencyType { get; set; }
         public DbSet<GameDeadCounter> GameDeadCounter { get; set; }
+        public DbSet<OverlayServicesSelection> OverlayServicesSelection { get; set; }
         public DbSet<OverlayServices> OverlayServices { get; set; }
         public DbSet<OverlayTicker> OverlayTicker { get; set; }
         public DbSet<Quotes> Quotes { get; set; }

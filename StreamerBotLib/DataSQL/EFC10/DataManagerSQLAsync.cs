@@ -350,6 +350,9 @@ namespace StreamerBotLib.DataSQL.EFC10
                 case "OverlayServices":
                     await RefreshOverlayServicesList();
                     break;
+                case "OverlayServicesSelection":
+                    await RefreshOverlayServicesSelectionList();
+                    break;
                 case "OverlayTicker":
                     await RefreshOverlayTickerList();
                     break;

@@ -22,6 +22,7 @@ namespace StreamerBotLib.Models.Interfaces
         List<string> GetTableFields(string TableName);
         List<string> GetTableNames();
         List<CategoryData> GetGameCategories();
+        CategoryData GetGameCategory(string CategoryName);
         List<string> GetCurrencyNames();
         bool CheckFollower(LiveUser User);
         bool CheckUser(LiveUser User);
