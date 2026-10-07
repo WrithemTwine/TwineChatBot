@@ -42,7 +42,85 @@
             </ItemsPanelTemplate>
         </GroupStyle.Panel>
     </GroupStyle>
-
+ 
+    <Style
+        TargetType="{x:Type DataGridCell}">
+        <Setter
+            Property="Foreground"
+            Value="{DynamicResource ForegroundText}" />
+        <Setter
+            Property="Background"
+            Value="Transparent" />
+        <Setter
+            Property="BorderThickness"
+            Value="0" />
+        <Setter
+            Property="Padding"
+            Value="4,2" />
+        <Setter
+            Property="Template">
+            <Setter.Value>
+                <ControlTemplate
+                    TargetType="{x:Type DataGridCell}">
+                    <Border
+                        x:Name="Bd"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="True">
+                        <ContentPresenter
+                            VerticalAlignment="Center"
+                            Margin="{TemplateBinding Padding}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Selected cell -->
+                        <Trigger
+                            Property="IsSelected"
+                            Value="True">
+                            <Setter
+                                TargetName="Bd"
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowSelected}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </Trigger>
+                        <!-- Selected + window inactive -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition
+                                    Property="IsSelected"
+                                    Value="True" />
+                                <Condition
+                                    Property="Selector.IsSelectionActive"
+                                    Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter
+                                TargetName="Bd"
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowSelectedInactive}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </MultiTrigger>
+                        <!-- Keyboard focus -->
+                        <Trigger
+                            Property="IsKeyboardFocusWithin"
+                            Value="True">
+                            <Setter
+                                TargetName="Bd"
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowHover}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
     <Style TargetType="{x:Type DataGrid}">
         <Setter Property="AlternationCount" Value="1" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
@@ -75,13 +153,54 @@
 
         <Setter Property="RowStyle">
             <Setter.Value>
-                <Style TargetType="DataGridRow">
-                    <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+                <Style
+                    TargetType="{x:Type DataGridRow}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource DataGridBackground}" />
+                    <Setter
+                        Property="Foreground"
+                        Value="{DynamicResource ForegroundText}" />
+                    <Setter
+                        Property="SnapsToDevicePixels"
+                        Value="True" />
                     <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource LightBackground}" />
-                            <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
+                        <!-- Hover -->
+                        <Trigger
+                            Property="IsMouseOver"
+                            Value="True">
+                            <Setter
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowHover}" />
                         </Trigger>
+                        <!-- Selected (focused) -->
+                        <Trigger
+                            Property="IsSelected"
+                            Value="True">
+                            <Setter
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowSelected}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </Trigger>
+                        <!-- Selected + inactive window -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition
+                                    Property="IsSelected"
+                                    Value="True" />
+                                <Condition
+                                    Property="Selector.IsSelectionActive"
+                                    Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowSelectedInactive}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </MultiTrigger>
                     </Style.Triggers>
                 </Style>
             </Setter.Value>

@@ -242,18 +242,6 @@
             Property="Margin"
             Value="0,0,0,5" />
         <Setter
-            Property="VerticalContentAlignment"
-            Value="Center" />
-        <Setter
-            Property="HorizontalContentAlignment"
-            Value="Stretch" />
-        <Setter
-            Property="BorderThickness"
-            Value="0" />
-        <Setter
-            Property="FocusVisualStyle"
-            Value="{x:Null}" />
-        <Setter
             Property="Template">
             <Setter.Value>
                 <ControlTemplate
@@ -261,15 +249,11 @@
                     <Border
                         x:Name="Bd"
                         Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
                         SnapsToDevicePixels="True">
                         <GridViewRowPresenter
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
-                        <!-- Hover -->
                         <Trigger
                             Property="IsMouseOver"
                             Value="True">
@@ -278,7 +262,6 @@
                                 Property="Background"
                                 Value="{DynamicResource ListViewControlLight}" />
                         </Trigger>
-                        <!-- Selected -->
                         <Trigger
                             Property="IsSelected"
                             Value="True">
@@ -286,40 +269,33 @@
                                 TargetName="Bd"
                                 Property="Background"
                                 Value="{DynamicResource ListViewControlMedium}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
                         </Trigger>
-                        <!-- Selected + Hover -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition
                                     Property="IsSelected"
                                     Value="True" />
                                 <Condition
-                                    Property="IsMouseOver"
-                                    Value="True" />
+                                    Property="Selector.IsSelectionActive"
+                                    Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter
                                 TargetName="Bd"
                                 Property="Background"
-                                Value="{DynamicResource ListViewControlMedium}" />
-                        </MultiTrigger>
-                        <!-- Disabled -->
-                        <Trigger
-                            Property="IsEnabled"
-                            Value="False">
+                                Value="{DynamicResource ListViewControlFull}" />
                             <Setter
-                                Property="Foreground">
-                                <Setter.Value>
-                                    <SolidColorBrush
-                                        Color="{DynamicResource DisabledForegroundColor}" />
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-     <Style
+    <Style
         TargetType="{x:Type ListViewItem}"
         BasedOn="{StaticResource {x:Static GridView.GridViewItemContainerStyleKey}}" />
    
