@@ -20,6 +20,7 @@ using System.Web;
 
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Api.Helix.Models.Channels.GetAdSchedule;
+using TwitchLib.Api.Helix.Models.Streams.CreateStreamMarker;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -879,6 +880,11 @@ namespace StreamerBotLib.BotClients
         public void SendSchedule(ScheduleConfig data, CategoryData category)
         {
             ModifyChannelInformation(data.Title, CategoryName: category.CategoryName, CategoryId: category.CategoryId);
+        }
+
+        public static CreateStreamMarkerResponse CreateStreamMarker(string Description)
+        {
+            return TwitchHelixBot.CreateStreamMarker(UserId: OptionFlags.TwitchStreamerUserId, Description: Description);
         }
 
         #endregion

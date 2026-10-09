@@ -10,29 +10,53 @@
     xmlns:StaticLib="clr-namespace:StreamerBotLib.Static"
     xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     mc:Ignorable="d">
-
-    <SqlModelConverters:IntConvert x:Name="IntConverter" x:Key="IntConverter" />
-    <SqlModelConverters:TimeoutSecondsConverter x:Name="TimeoutSecConvert" x:Key="TimeoutSecConvert" />
-    <StaticLib:MsgVarHelp x:Name="CommandInfo" x:Key="CommandInfo" />
-    <SqlModelConverters:CategoryConverter x:Name="CategoryConverter" x:Key="CategoryConverter" />
-    <SqlModelConverters:EditConvertCategory x:Name="EditConvertCategory" x:Key="EditConvertCategory" />
-    <Converter:IndexConverter x:Name="IndexConverter" x:Key="IndexConverter" />
-    <Converter:StatValueConverter x:Name="AppDataConverter" x:Key="AppDataConverter" />
-
-    <GroupStyle x:Key="DataGrid_GroupStyle">
+    <SqlModelConverters:IntConvert
+        x:Name="IntConverter"
+        x:Key="IntConverter" />
+    <SqlModelConverters:TimeoutSecondsConverter
+        x:Name="TimeoutSecConvert"
+        x:Key="TimeoutSecConvert" />
+    <StaticLib:MsgVarHelp
+        x:Name="CommandInfo"
+        x:Key="CommandInfo" />
+    <SqlModelConverters:CategoryConverter
+        x:Name="CategoryConverter"
+        x:Key="CategoryConverter" />
+    <SqlModelConverters:EditConvertCategory
+        x:Name="EditConvertCategory"
+        x:Key="EditConvertCategory" />
+    <Converter:IndexConverter
+        x:Name="IndexConverter"
+        x:Key="IndexConverter" />
+    <Converter:StatValueConverter
+        x:Name="AppDataConverter"
+        x:Key="AppDataConverter" />
+    <GroupStyle
+        x:Key="DataGrid_GroupStyle">
         <GroupStyle.HeaderTemplate>
             <DataTemplate>
-                <StackPanel Orientation="Horizontal" Margin="2,5">
+                <StackPanel
+                    Orientation="Horizontal"
+                    Margin="2,5">
                     <StackPanel.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="FontSize" Value="14" />
-                            <Setter Property="FontWeight" Value="Bold" />
+                        <Style
+                            TargetType="TextBlock">
+                            <Setter
+                                Property="FontSize"
+                                Value="14" />
+                            <Setter
+                                Property="FontWeight"
+                                Value="Bold" />
                         </Style>
                     </StackPanel.Resources>
-                    <TextBlock Text="{Binding Name}" />
-                    <TextBlock Text=" - " />
-                    <TextBlock Text="{Binding ItemCount}" />
-                    <TextBlock Text=" item(s)" />
+                    <TextBlock
+                        Text="{Binding Name}" />
+                    <TextBlock
+                        Text=" - " />
+                    <TextBlock
+                        Text="{Binding ItemCount}" />
+                    <TextBlock
+                        Text=" item(s)" />
                 </StackPanel>
             </DataTemplate>
         </GroupStyle.HeaderTemplate>
@@ -42,128 +66,77 @@
             </ItemsPanelTemplate>
         </GroupStyle.Panel>
     </GroupStyle>
- 
     <Style
-        TargetType="{x:Type DataGridCell}">
+        TargetType="{x:Type DataGrid}">
+        <Setter
+            Property="AlternationCount"
+            Value="1" />
+        <Setter
+            Property="ScrollViewer.CanContentScroll"
+            Value="True" />
+        <Setter
+            Property="AutoGenerateColumns"
+            Value="False" />
         <Setter
             Property="Foreground"
             Value="{DynamicResource ForegroundText}" />
         <Setter
             Property="Background"
-            Value="Transparent" />
+            Value="{DynamicResource PartBackground}" />
         <Setter
-            Property="BorderThickness"
-            Value="0" />
+            Property="RowBackground"
+            Value="{DynamicResource DataGridBackground}" />
         <Setter
-            Property="Padding"
-            Value="4,2" />
+            Property="AlternatingRowBackground"
+            Value="{DynamicResource DataGridAlternateColor}" />
         <Setter
-            Property="Template">
+            Property="CanUserAddRows"
+            Value="False" />
+        <Setter
+            Property="IsSynchronizedWithCurrentItem"
+            Value="True" />
+        <Setter
+            Property="ColumnHeaderStyle">
             <Setter.Value>
-                <ControlTemplate
-                    TargetType="{x:Type DataGridCell}">
-                    <Border
-                        x:Name="Bd"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="True">
-                        <ContentPresenter
-                            VerticalAlignment="Center"
-                            Margin="{TemplateBinding Padding}" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <!-- Selected cell -->
-                        <Trigger
-                            Property="IsSelected"
-                            Value="True">
-                            <Setter
-                                TargetName="Bd"
-                                Property="Background"
-                                Value="{DynamicResource DataGridRowSelected}" />
-                            <Setter
-                                Property="Foreground"
-                                Value="{DynamicResource ForegroundText}" />
-                        </Trigger>
-                        <!-- Selected + window inactive -->
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition
-                                    Property="IsSelected"
-                                    Value="True" />
-                                <Condition
-                                    Property="Selector.IsSelectionActive"
-                                    Value="False" />
-                            </MultiTrigger.Conditions>
-                            <Setter
-                                TargetName="Bd"
-                                Property="Background"
-                                Value="{DynamicResource DataGridRowSelectedInactive}" />
-                            <Setter
-                                Property="Foreground"
-                                Value="{DynamicResource ForegroundText}" />
-                        </MultiTrigger>
-                        <!-- Keyboard focus -->
-                        <Trigger
-                            Property="IsKeyboardFocusWithin"
-                            Value="True">
-                            <Setter
-                                TargetName="Bd"
-                                Property="Background"
-                                Value="{DynamicResource DataGridRowHover}" />
-                            <Setter
-                                Property="Foreground"
-                                Value="{DynamicResource ForegroundText}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    
-    <Style TargetType="{x:Type DataGrid}">
-        <Setter Property="AlternationCount" Value="1" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-        <Setter Property="AutoGenerateColumns" Value="False" />
-        <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-        <Setter Property="Background" Value="{DynamicResource PartBackground}" />
-        <Setter Property="RowBackground" Value="{DynamicResource DataGridBackground}" />
-        <Setter Property="AlternatingRowBackground" Value="{DynamicResource DataGridAlternateColor}"/>
-        <Setter Property="CanUserAddRows" Value="False" />
-        <Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
-
-        <Setter Property="ColumnHeaderStyle">
-            <Setter.Value>
-                <Style TargetType="{x:Type DataGridColumnHeader}">
-                    <Setter Property="Background" Value="{DynamicResource DataGridColumnHeaderBackground}" />
-                    <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-                    <Setter Property="Padding" Value="8,0" />
+                <Style
+                    TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource DataGridColumnHeaderBackground}" />
+                    <Setter
+                        Property="Foreground"
+                        Value="{DynamicResource ForegroundText}" />
+                    <Setter
+                        Property="Padding"
+                        Value="8,0" />
                 </Style>
             </Setter.Value>
         </Setter>
-
-        <Setter Property="RowHeaderStyle">
+        <Setter
+            Property="RowHeaderStyle">
             <Setter.Value>
-                <Style TargetType="{x:Type DataGridRowHeader}">
-                    <Setter Property="Background" Value="{DynamicResource DataGridRowHeaderBackground}" />
-                    <Setter Property="Width" Value="5" />
+                <Style
+                    TargetType="{x:Type DataGridRowHeader}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource DataGridRowHeaderBackground}" />
+                    <Setter
+                        Property="Width"
+                        Value="5" />
                 </Style>
             </Setter.Value>
         </Setter>
-
-        <Setter Property="RowStyle">
+        <Setter
+            Property="RowStyle">
             <Setter.Value>
                 <Style
                     TargetType="{x:Type DataGridRow}">
                     <Setter
                         Property="Background"
-                        Value="{DynamicResource DataGridBackground}" />
+                        Value="Transparent" />
                     <Setter
                         Property="Foreground"
                         Value="{DynamicResource ForegroundText}" />
-                    <Setter
-                        Property="SnapsToDevicePixels"
-                        Value="True" />
                     <Style.Triggers>
                         <!-- Hover -->
                         <Trigger
@@ -175,7 +148,7 @@
                         </Trigger>
                         <!-- Selected (focused) -->
                         <Trigger
-                            Property="IsSelected"
+                            Property="Selector.IsSelectionActive"
                             Value="True">
                             <Setter
                                 Property="Background"
@@ -195,6 +168,9 @@
                                     Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter
+                                Property="BorderBrush"
+                                Value="{DynamicResource DataGridRowSelectedInactive}" />
+                            <Setter
                                 Property="Background"
                                 Value="{DynamicResource DataGridRowSelectedInactive}" />
                             <Setter
@@ -205,547 +181,1072 @@
                 </Style>
             </Setter.Value>
         </Setter>
+        <Setter
+            Property="CellStyle">
+            <Setter.Value>
+                <Style
+                    TargetType="{x:Type DataGridCell}">
+                    <Setter
+                        Property="Background"
+                        Value="Transparent" />
+                    <Setter
+                        Property="BorderBrush"
+                        Value="Transparent" />
+                    <Setter
+                        Property="BorderThickness"
+                        Value="1" />
+                    <Setter
+                        Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate
+                                TargetType="{x:Type DataGridCell}">
+                                <Border
+                                    x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    SnapsToDevicePixels="True">
+                                    <ContentPresenter
+                                        VerticalAlignment="Center"
+                                        Margin="{TemplateBinding Padding}" />
+                                </Border>
+                                <ControlTemplate.Triggers></ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <!--Selected cell-->
+                        <Trigger
+                            Property="IsSelected"
+                            Value="True">
+                            <Setter
+                                Property="BorderBrush"
+                                Value="{DynamicResource DataGridRowSelected}" />
+                            <Setter
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowSelected}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </Trigger>
+                        <!--Selected + window inactive-->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition
+                                    Property="IsSelected"
+                                    Value="True" />
+                                <Condition
+                                    Property="Selector.IsSelectionActive"
+                                    Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter
+                                Property="BorderBrush"
+                                Value="{DynamicResource DataGridRowSelectedInactive}" />
+                            <Setter
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowSelectedInactive}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </MultiTrigger>
+                        <!--Keyboard focus-->
+                        <Trigger
+                            Property="IsKeyboardFocusWithin"
+                            Value="True">
+                            <Setter
+                                Property="BorderBrush"
+                                Value="{DynamicResource DataGridRowHover}" />
+                            <Setter
+                                Property="Background"
+                                Value="{DynamicResource DataGridRowHover}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource ForegroundText}" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
     </Style>
-
-    <Style x:Key="DataGridEditingTextBoxStyle" 
-       TargetType="{x:Type TextBox}"
-       BasedOn="{StaticResource {x:Type TextBox}}">
+    <Style
+        x:Key="DataGridEditingTextBoxStyle"
+        TargetType="{x:Type TextBox}"
+        BasedOn="{StaticResource {x:Type TextBox}}">
         <!-- inherits Foreground + Background -->
-
         <!-- These are the critical overrides for editing mode -->
-        <Setter Property="CaretBrush" Value="{DynamicResource ForegroundText}" />
+        <Setter
+            Property="CaretBrush"
+            Value="{DynamicResource ForegroundText}" />
         <!-- fixes invisible cursor -->
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Borders}" />
+        <Setter
+            Property="BorderThickness"
+            Value="1" />
+        <Setter
+            Property="BorderBrush"
+            Value="{DynamicResource Borders}" />
         <!-- visible border, theme-aware -->
-        <Setter Property="Padding" Value="2,1,2,1" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="TextWrapping" Value="Wrap" />
-
+        <Setter
+            Property="Padding"
+            Value="2,1,2,1" />
+        <Setter
+            Property="VerticalContentAlignment"
+            Value="Center" />
+        <Setter
+            Property="HorizontalContentAlignment"
+            Value="Left" />
+        <Setter
+            Property="TextWrapping"
+            Value="Wrap" />
     </Style>
-
-    <Style x:Key="DataGridComboBoxColumnStyle"
-           TargetType="{x:Type ComboBox}"
-           BasedOn="{StaticResource {x:Type ComboBox}}" />
-
-
+    <Style
+        x:Key="DataGridComboBoxColumnStyle"
+        TargetType="{x:Type ComboBox}"
+        BasedOn="{StaticResource {x:Type ComboBox}}" />
     <!--#region DataGrid RowDetail DataTemplates -->
-
-    <DataTemplate x:Key="DG_RowDetailDT_Clips">
-        <Border BorderThickness="2">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_Clips">
+        <Border
+            BorderThickness="2">
             <DockPanel>
                 <DockPanel.Resources>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Margin" Value="0,3" />
-                        <Setter Property="Orientation" Value="Horizontal" />
+                    <Style
+                        TargetType="{x:Type StackPanel}">
+                        <Setter
+                            Property="Margin"
+                            Value="0,3" />
+                        <Setter
+                            Property="Orientation"
+                            Value="Horizontal" />
                     </Style>
                 </DockPanel.Resources>
                 <StackPanel
                     DockPanel.Dock="Top">
                     <TextBlock>Category:</TextBlock>
-                    <TextBlock Text="{Binding CategoryId}" />
+                    <TextBlock
+                        Text="{Binding CategoryId}" />
                     <TextBlock> -</TextBlock>
-                    <TextBlock Text="{Binding CategoryList.Category}" />
+                    <TextBlock
+                        Text="{Binding CategoryList.Category}" />
                 </StackPanel>
                 <StackPanel
                     DockPanel.Dock="Top">
                     <TextBlock>Language:</TextBlock>
-                    <TextBlock Text="{Binding Language}" />
+                    <TextBlock
+                        Text="{Binding Language}" />
                 </StackPanel>
                 <StackPanel
                     DockPanel.Dock="Top">
                     <TextBlock>Title:</TextBlock>
-                    <TextBlock Text="{Binding Title}" />
+                    <TextBlock
+                        Text="{Binding Title}" />
                 </StackPanel>
                 <StackPanel
                     DockPanel.Dock="Top">
                     <TextBlock>URL:</TextBlock>
-                    <TextBlock Text="{Binding Url}" />
+                    <TextBlock
+                        Text="{Binding Url}" />
                 </StackPanel>
             </DockPanel>
         </Border>
     </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_Commands">
-        <Border BorderThickness="2">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_Commands">
+        <Border
+            BorderThickness="2">
             <Border.Resources>
-                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Style
+                    TargetType="{x:Type DockPanel}"
+                    BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource PartBackground}" />
                 </Style>
             </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Margin" Value="0,3" />
-                        <Setter Property="Orientation" Value="Horizontal" />
+                    <Style
+                        TargetType="{x:Type StackPanel}">
+                        <Setter
+                            Property="Margin"
+                            Value="0,3" />
+                        <Setter
+                            Property="Orientation"
+                            Value="Horizontal" />
                     </Style>
-                    <Style TargetType="{x:Type TextBox}" 
-                           BasedOn="{StaticResource {x:Type TextBox}}">
-                        <Setter Property="MinWidth" Value="75" />
+                    <Style
+                        TargetType="{x:Type TextBox}"
+                        BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Setter
+                            Property="MinWidth"
+                            Value="75" />
                         <!--<Setter Property="Foreground" Value="{StaticResource ForegroundText}" />-->
                     </Style>
                 </DockPanel.Resources>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Usage:</TextBlock>
-                    <TextBlock Text="{Binding Usage}" TextWrapping="Wrap" />
+                    <TextBlock
+                        Text="{Binding Usage}"
+                        TextWrapping="Wrap" />
                     <TextBlock>Allow Parameter:</TextBlock>
-                    <CheckBox IsChecked="{Binding AllowParam}" />
+                    <CheckBox
+                        IsChecked="{Binding AllowParam}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Send Message Count:</TextBlock>
-                    <TextBox Text="{Binding SendMsgCount, Converter={StaticResource IntConverter}}" />
+                    <TextBox
+                        Text="{Binding SendMsgCount, Converter={StaticResource IntConverter}}" />
                     <TextBlock>Message:</TextBlock>
-                    <TextBox Text="{Binding Message}" TextWrapping="Wrap" />
+                    <TextBox
+                        Text="{Binding Message}"
+                        TextWrapping="Wrap" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Lookup Data:</TextBlock>
-                    <CheckBox IsChecked="{Binding LookupData}" />
+                    <CheckBox
+                        IsChecked="{Binding LookupData}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Width="100">Lookup Table:</TextBlock>
-                    <TextBox Text="{Binding Table}" />
-                    <TextBlock Width="100">Key Field:</TextBlock>
-                    <TextBox Text="{Binding KeyField}" />
+                <StackPanel
+                    DockPanel.Dock="Top">
+                    <TextBlock
+                        Width="100">Lookup Table:</TextBlock>
+                    <TextBox
+                        Text="{Binding Table}" />
+                    <TextBlock
+                        Width="100">Key Field:</TextBlock>
+                    <TextBox
+                        Text="{Binding KeyField}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Width="100">Data Field:</TextBlock>
-                    <TextBox Text="{Binding DataField}" />
-                    <TextBlock Width="100">Currency Field:</TextBlock>
-                    <TextBox Text="{Binding CurrencyField}" />
+                <StackPanel
+                    DockPanel.Dock="Top">
+                    <TextBlock
+                        Width="100">Data Field:</TextBlock>
+                    <TextBox
+                        Text="{Binding DataField}" />
+                    <TextBlock
+                        Width="100">Currency Field:</TextBlock>
+                    <TextBox
+                        Text="{Binding CurrencyField}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Action:</TextBlock>
-                    <ComboBox ItemsSource="{Binding Source={StaticResource EnumCommandAction}}" SelectedItem="{Binding Action}"/>
+                    <ComboBox
+                        ItemsSource="{Binding Source={StaticResource EnumCommandAction}}"
+                        SelectedItem="{Binding Action}" />
                     <TextBlock>Sort:</TextBlock>
-                    <ComboBox ItemsSource="{Binding Source={StaticResource EnumCommandSort}}" SelectedItem="{Binding Sort}"/>
+                    <ComboBox
+                        ItemsSource="{Binding Source={StaticResource EnumCommandSort}}"
+                        SelectedItem="{Binding Sort}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Select Top N Records:</TextBlock>
-                    <TextBox Text="{Binding Top, Converter={StaticResource IntConverter}}" />
+                    <TextBox
+                        Text="{Binding Top, Converter={StaticResource IntConverter}}" />
                     <TextBlock>Record Units (e.g. chat,chats):</TextBlock>
-                    <TextBox Text="{Binding Unit}" />
+                    <TextBox
+                        Text="{Binding Unit}" />
                 </StackPanel>
             </DockPanel>
         </Border>
     </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_Followers">
-        <Border BorderThickness="2">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_Followers">
+        <Border
+            BorderThickness="2">
             <Border.Resources>
-                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Style
+                    TargetType="{x:Type DockPanel}"
+                    BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource PartBackground}" />
                 </Style>
             </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Margin" Value="0,3" />
-                        <Setter Property="Orientation" Value="Horizontal" />
+                    <Style
+                        TargetType="{x:Type StackPanel}">
+                        <Setter
+                            Property="Margin"
+                            Value="0,3" />
+                        <Setter
+                            Property="Orientation"
+                            Value="Horizontal" />
                     </Style>
                 </DockPanel.Resources>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Category when Followed:</TextBlock>
-                    <TextBlock Text="{Binding Category, Converter={StaticResource CategoryConverter}}" />
+                    <TextBlock
+                        Text="{Binding Category, Converter={StaticResource CategoryConverter}}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Followed Date:</TextBlock>
-                    <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:F}}" />
+                    <TextBlock
+                        Text="{Binding FollowedDate, StringFormat={}{0:F}}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Status Changed Date:</TextBlock>
-                    <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:F}}" />
+                    <TextBlock
+                        Text="{Binding StatusChangeDate, StringFormat={}{0:F}}" />
                 </StackPanel>
             </DockPanel>
         </Border>
     </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_OverlayServices">
-        <Border BorderThickness="2">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_OverlayServices">
+        <Border
+            BorderThickness="2">
             <Border.Resources>
-                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Style
+                    TargetType="{x:Type DockPanel}"
+                    BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource PartBackground}" />
                 </Style>
             </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Margin" Value="0,3" />
-                        <Setter Property="Orientation" Value="Horizontal" />
+                    <Style
+                        TargetType="{x:Type StackPanel}">
+                        <Setter
+                            Property="Margin"
+                            Value="0,3" />
+                        <Setter
+                            Property="Orientation"
+                            Value="Horizontal" />
                     </Style>
                 </DockPanel.Resources>
                 <StackPanel>
                     <TextBlock>Message:</TextBlock>
-                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                    <TextBlock
+                        Text="{Binding Message}"
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </DockPanel>
         </Border>
     </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_Webhooks">
-        <Border BorderThickness="1">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_Webhooks">
+        <Border
+            BorderThickness="1">
             <Border.Resources>
-                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Style
+                    TargetType="{x:Type DockPanel}"
+                    BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource PartBackground}" />
                 </Style>
             </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Margin" Value="0,3" />
-                        <Setter Property="Orientation" Value="Horizontal" />
+                    <Style
+                        TargetType="{x:Type StackPanel}">
+                        <Setter
+                            Property="Margin"
+                            Value="0,3" />
+                        <Setter
+                            Property="Orientation"
+                            Value="Horizontal" />
                     </Style>
                 </DockPanel.Resources>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Server NickName:</TextBlock>
-                    <TextBox Text="{Binding Server}" />
+                    <TextBox
+                        Text="{Binding Server}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Webhook URL:</TextBlock>
-                    <TextBox TextWrapping="Wrap" Text="{Binding Webhook}" />
+                    <TextBox
+                        TextWrapping="Wrap"
+                        Text="{Binding Webhook}" />
                 </StackPanel>
             </DockPanel>
         </Border>
     </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_MultiChannelNames">
-        <Border BorderThickness="1">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_MultiChannelNames">
+        <Border
+            BorderThickness="1">
             <Border.Resources>
-                <Style TargetType="{x:Type DockPanel}" BasedOn="{StaticResource {x:Type DockPanel}}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Style
+                    TargetType="{x:Type DockPanel}"
+                    BasedOn="{StaticResource {x:Type DockPanel}}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource PartBackground}" />
                 </Style>
             </Border.Resources>
             <DockPanel>
                 <DockPanel.Resources>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Margin" Value="0,3" />
-                        <Setter Property="Orientation" Value="Horizontal" />
+                    <Style
+                        TargetType="{x:Type StackPanel}">
+                        <Setter
+                            Property="Margin"
+                            Value="0,3" />
+                        <Setter
+                            Property="Orientation"
+                            Value="Horizontal" />
                     </Style>
                 </DockPanel.Resources>
-                <TextBlock DockPanel.Dock="Top">Summary Data, if available:<LineBreak />
+                <TextBlock
+                    DockPanel.Dock="Top">Summary Data, if available:<LineBreak />
                 (use archive tab to compact daily data)</TextBlock>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Through Date:</TextBlock>
-                    <TextBlock Text="{Binding MultiSummaryLiveStreams.ThroughDate, FallbackValue=1/1/1900}" />
+                    <TextBlock
+                        Text="{Binding MultiSummaryLiveStreams.ThroughDate, FallbackValue=1/1/1900}" />
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Top">
+                <StackPanel
+                    DockPanel.Dock="Top">
                     <TextBlock>Number of Streams:</TextBlock>
-                    <TextBlock Text="{Binding MultiSummaryLiveStreams.StreamCount, FallbackValue=0, StringFormat={}{0:N0}}" />
+                    <TextBlock
+                        Text="{Binding MultiSummaryLiveStreams.StreamCount, FallbackValue=0, StringFormat={}{0:N0}}" />
                 </StackPanel>
             </DockPanel>
         </Border>
     </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_StreamStats">
-        <Border BorderThickness="2">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_StreamStats">
+        <Border
+            BorderThickness="2">
             <Border.Resources>
-                <Style TargetType="{x:Type Grid}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Style
+                    TargetType="{x:Type Grid}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource PartBackground}" />
                 </Style>
             </Border.Resources>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="25" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="10" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="10" />
+                    <RowDefinition
+                        Height="25" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="10" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="10" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition
+                        Width="150" />
+                    <ColumnDefinition
+                        Width="30" />
+                    <ColumnDefinition
+                        Width="150" />
+                    <ColumnDefinition
+                        Width="30" />
+                    <ColumnDefinition
+                        Width="10" />
+                    <ColumnDefinition
+                        Width="*" />
                 </Grid.ColumnDefinitions>
-
                 <!-- #region Basic Stream Info Statistics -->
-
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Category:" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Category}" />
-
-                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" VerticalAlignment="Top" Text="Stream Statistics-Count of Items" />
-
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Max Users" />
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MaxUsers, StringFormat=\{0:N0\}}"/>
-                <TextBlock Grid.Row="3" Grid.Column="2" Text="Total Chats" />
-                <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding TotalChats, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Commands" />
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding CommandMsgs, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="4" Grid.Column="2" Text="Auto Commands" />
-                <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding AutomatedCommands, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Channel Points Redeemed" />
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding ChannelPtCount, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="5" Grid.Column="2" Text="Channel Challenges" />
-                <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding ChannelChallenge, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="6" Grid.Column="0" Text="Webhook Messages" />
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding WebhookMsgs, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="6" Grid.Column="2" Text="Clips Made" />
-                <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding ClipsMade, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="7" Grid.Column="0" Text="New Follows"/>
-                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding NewFollows, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="7" Grid.Column="2" Text="Mods Present" />
-                <TextBlock Grid.Row="7" Grid.Column="3" Text="{Binding ModeratorsPresent, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="8" Grid.Column="0" Text="VIPs Present" />
-                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding VIPsPresent, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="8" Grid.Column="2" Text="Subs Present" />
-                <TextBlock Grid.Row="8" Grid.Column="3" Text="{Binding SubsPresent, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="9" Grid.Column="0" Text="New Subs" />
-                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding NewSubscribers, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="9" Grid.Column="2" Text="Gift Subs" />
-                <TextBlock Grid.Row="9" Grid.Column="3" Text="{Binding GiftSubs, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="10" Grid.Column="0" Text="Auto Events" />
-                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding AutomatedEvents, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="10" Grid.Column="2" Text="Bits" />
-                <TextBlock Grid.Row="10" Grid.Column="3" Text="{Binding Bits, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="11" Grid.Column="0" Text="Raids" />
-                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Raids, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="11" Grid.Column="2" Text="Hosted" />
-                <TextBlock Grid.Row="11" Grid.Column="3" Text="{Binding Hosted, StringFormat=\{0:N0\}}" />
-
-                <TextBlock Grid.Row="12" Grid.Column="0" Text="Users TimedOut"/>
-                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UsersTimedOut, StringFormat=\{0:N0\}}" />
-                <TextBlock Grid.Row="12" Grid.Column="2" Text="Users Banned" />
-                <TextBlock Grid.Row="12" Grid.Column="3" Text="{Binding UsersBanned, StringFormat=\{0:N0\}}" />
-
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Text="Category:" />
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Text="{Binding Category}" />
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    VerticalAlignment="Top"
+                    Text="Stream Statistics-Count of Items" />
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Text="Max Users" />
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Text="{Binding MaxUsers, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="2"
+                    Text="Total Chats" />
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="3"
+                    Text="{Binding TotalChats, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Text="Commands" />
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Text="{Binding CommandMsgs, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.Column="2"
+                    Text="Auto Commands" />
+                <TextBlock
+                    Grid.Row="4"
+                    Grid.Column="3"
+                    Text="{Binding AutomatedCommands, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="0"
+                    Text="Channel Points Redeemed" />
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Text="{Binding ChannelPtCount, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="2"
+                    Text="Channel Challenges" />
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="3"
+                    Text="{Binding ChannelChallenge, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Text="Webhook Messages" />
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="1"
+                    Text="{Binding WebhookMsgs, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="2"
+                    Text="Clips Made" />
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="3"
+                    Text="{Binding ClipsMade, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="0"
+                    Text="New Follows" />
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="1"
+                    Text="{Binding NewFollows, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="2"
+                    Text="Mods Present" />
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="3"
+                    Text="{Binding ModeratorsPresent, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="0"
+                    Text="VIPs Present" />
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="1"
+                    Text="{Binding VIPsPresent, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="2"
+                    Text="Subs Present" />
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="3"
+                    Text="{Binding SubsPresent, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="0"
+                    Text="New Subs" />
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="1"
+                    Text="{Binding NewSubscribers, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="2"
+                    Text="Gift Subs" />
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="3"
+                    Text="{Binding GiftSubs, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="0"
+                    Text="Auto Events" />
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="1"
+                    Text="{Binding AutomatedEvents, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="2"
+                    Text="Bits" />
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="3"
+                    Text="{Binding Bits, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="0"
+                    Text="Raids" />
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="1"
+                    Text="{Binding Raids, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="2"
+                    Text="Hosted" />
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="3"
+                    Text="{Binding Hosted, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="0"
+                    Text="Users TimedOut" />
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="1"
+                    Text="{Binding UsersTimedOut, StringFormat=\{0:N0\}}" />
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="2"
+                    Text="Users Banned" />
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="3"
+                    Text="{Binding UsersBanned, StringFormat=\{0:N0\}}" />
                 <!-- #endregion Basic Stream Info Statistics -->
-
-
-                <TextBlock Grid.Row="0" Grid.Column="5" Text="Stream Categories" HorizontalAlignment="Left" />
-                <ListBox Grid.Row="1" Grid.RowSpan="13" 
-                                                                         Grid.Column="5" 
-                                                                         MaxHeight="200" MinWidth="350" MaxWidth="350"
-                                                                         HorizontalAlignment="Left"
-                                                                         ItemsSource="{Binding Category}"
-                                                                         />
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="5"
+                    Text="Stream Categories"
+                    HorizontalAlignment="Left" />
+                <ListBox
+                    Grid.Row="1"
+                    Grid.RowSpan="13"
+                    Grid.Column="5"
+                    MaxHeight="200"
+                    MinWidth="350"
+                    MaxWidth="350"
+                    HorizontalAlignment="Left"
+                    ItemsSource="{Binding Category}" />
             </Grid>
         </Border>
     </DataTemplate>
-
-    <DataTemplate x:Key="DG_RowDetailDT_Users">
-        <Border BorderThickness="1">
+    <DataTemplate
+        x:Key="DG_RowDetailDT_Users">
+        <Border
+            BorderThickness="1">
             <Border.Resources>
-                <Style TargetType="{x:Type Grid}">
-                    <Setter Property="Background" Value="{DynamicResource PartBackground}" />
+                <Style
+                    TargetType="{x:Type Grid}">
+                    <Setter
+                        Property="Background"
+                        Value="{DynamicResource PartBackground}" />
                 </Style>
             </Border.Resources>
-            <Grid Margin="5">
+            <Grid
+                Margin="5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="20" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="20" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition
+                        Width="150" />
+                    <ColumnDefinition
+                        Width="250" />
                 </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Row="0" Grid.Column="0">First Date seen:</TextBlock>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
-
-                <TextBlock Grid.Row="1" Grid.Column="0">Followed Date:</TextBlock>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Follower.FollowedDate, FallbackValue=\&quot;Not a Follower\&quot;, StringFormat={}{0:F}}" />
-
-                <TextBlock Grid.Row="3" Grid.Column="0">Current Login:</TextBlock>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
-                <TextBlock Grid.Row="4" VerticalAlignment="Bottom" >Activity Stats:</TextBlock>
-                <TextBlock Grid.Row="5" Grid.Column="0">Commands called:</TextBlock>
-                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="6" Grid.Column="0">Chats:</TextBlock>
-                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="7" Grid.Column="0">Clips created:</TextBlock>
-                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="8" Grid.Column="0">Channel Point Rewards:</TextBlock>
-                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="9" Grid.Column="0">ShoutOuts Given:</TextBlock>
-                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding UserStats.ShoutOutsGiven, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="10" Grid.Column="0">Custom Welcomes:</TextBlock>
-                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding UserStats.CustomWelcomes, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="11" Grid.Column="0">Giveaways Entered:</TextBlock>
-                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding UserStats.GiveawaysEntered, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="12" Grid.Column="0">Giveaways Won:</TextBlock>
-                <TextBlock Grid.Row="12" Grid.Column="1" Text="{Binding UserStats.GiveawaysWon, StringFormat={}{0:N0}}" />
-                <TextBlock Grid.Row="13" Grid.Column="0">Raids to this Channel:</TextBlock>
-                <TextBlock Grid.Row="13" Grid.Column="1" Text="{Binding UserStats.RaidsReceived, StringFormat={}{0:N0}}" />
-
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0">First Date seen:</TextBlock>
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0">Followed Date:</TextBlock>
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Text="{Binding Follower.FollowedDate, FallbackValue=\&quot;Not a Follower\&quot;, StringFormat={}{0:F}}" />
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="0">Current Login:</TextBlock>
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+                <TextBlock
+                    Grid.Row="4"
+                    VerticalAlignment="Bottom">Activity Stats:</TextBlock>
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="0">Commands called:</TextBlock>
+                <TextBlock
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.CallCommands, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="0">Chats:</TextBlock>
+                <TextBlock
+                    Grid.Row="6"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.ChannelChat, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="0">Clips created:</TextBlock>
+                <TextBlock
+                    Grid.Row="7"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.ClipsCreated, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="0">Channel Point Rewards:</TextBlock>
+                <TextBlock
+                    Grid.Row="8"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.RewardRedeems, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="0">ShoutOuts Given:</TextBlock>
+                <TextBlock
+                    Grid.Row="9"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.ShoutOutsGiven, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="0">Custom Welcomes:</TextBlock>
+                <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.CustomWelcomeMessages, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="0">Giveaways Entered:</TextBlock>
+                <TextBlock
+                    Grid.Row="11"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.GiveawaysEntered, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="0">Giveaways Won:</TextBlock>
+                <TextBlock
+                    Grid.Row="12"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.GiveawaysWon, StringFormat={}{0:N0}}" />
+                <TextBlock
+                    Grid.Row="13"
+                    Grid.Column="0">Raids to this Channel:</TextBlock>
+                <TextBlock
+                    Grid.Row="13"
+                    Grid.Column="1"
+                    Text="{Binding UserStats.RaidsReceived, StringFormat={}{0:N0}}" />
             </Grid>
         </Border>
     </DataTemplate>
-
     <!--#endregion-->
-
     <!--#region DataGrid SelectionViews for Sorting & Grouping table rows -->
-
-    <GUI:GUIDataManagerViews x:Name="DataViews" x:Key="DataViews" />
-
-    <CollectionViewSource x:Key="DG_BanReasons_CVS" Source="{Binding BanReasons, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_BanRules_CVS" Source="{Binding BanRules, Source={StaticResource DataViews}}">
+    <GUI:GUIDataManagerViews
+        x:Name="DataViews"
+        x:Key="DataViews" />
+    <CollectionViewSource
+        x:Key="DG_BanReasons_CVS"
+        Source="{Binding BanReasons, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_BanRules_CVS"
+        Source="{Binding BanRules, Source={StaticResource DataViews}}">
         <CollectionViewSource.GroupDescriptions>
-            <PropertyGroupDescription PropertyName="ViewerTypes" />
+            <PropertyGroupDescription
+                PropertyName="ViewerTypes" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_CategoryList_CVS" Source="{Binding CategoryList, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_ChannelEvents_CVS" Source="{Binding ChannelEvents, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_CategoryList_CVS"
+        Source="{Binding CategoryList, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_ChannelEvents_CVS"
+        Source="{Binding ChannelEvents, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="Name" />
+            <scm:SortDescription
+                PropertyName="Name" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_Clips_CVS" Source="{Binding Clips, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_Clips_CVS"
+        Source="{Binding Clips, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="CategoryList.Category" Direction="Ascending" />
+            <scm:SortDescription
+                PropertyName="CategoryList.Category"
+                Direction="Ascending" />
         </CollectionViewSource.SortDescriptions>
         <CollectionViewSource.GroupDescriptions>
-            <PropertyGroupDescription PropertyName="CategoryList.Category" />
+            <PropertyGroupDescription
+                PropertyName="CategoryList.Category" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_Commands_CVS" Source="{Binding Commands, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_Commands_CVS"
+        Source="{Binding Commands, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="CmdName"/>
+            <scm:SortDescription
+                PropertyName="CmdName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_CommandsUser_CVS" Source="{Binding CommandsUser, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_CommandsUser_CVS"
+        Source="{Binding CommandsUser, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="CmdName"/>
+            <scm:SortDescription
+                PropertyName="CmdName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_CommandPlatformMessages_CVS" Source="{Binding CommandPlatformMessages, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_CommandPlatformMessages_CVS"
+        Source="{Binding CommandPlatformMessages, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="CmdName"/>
-            <scm:SortDescription PropertyName="Platform"/>
+            <scm:SortDescription
+                PropertyName="CmdName" />
+            <scm:SortDescription
+                PropertyName="Platform" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_Currency_CVS" Source="{Binding Currency, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_Currency_CVS"
+        Source="{Binding Currency, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="User.UserName" />
+            <scm:SortDescription
+                PropertyName="User.UserName" />
         </CollectionViewSource.SortDescriptions>
         <!--<CollectionViewSource.GroupDescriptions>
             <PropertyGroupDescription PropertyName="CurrencyName" />
         </CollectionViewSource.GroupDescriptions>-->
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_CurrencyType_CVS" Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_CustomWelcome_CVS" Source="{Binding CustomWelcome, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_CurrencyType_CVS"
+        Source="{Binding CurrencyType, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_CustomWelcome_CVS"
+        Source="{Binding CustomWelcome, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="User.UserName" />
+            <scm:SortDescription
+                PropertyName="User.UserName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-
-    <CollectionViewSource x:Key="DG_Follows_CVS" Source="{Binding Followers, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_Follows_CVS"
+        Source="{Binding Followers, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="FollowedDate" Direction="Descending" />
+            <scm:SortDescription
+                PropertyName="FollowedDate"
+                Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-
-    <CollectionViewSource x:Key="DG_GameDeadCounter_CVS" Source="{Binding GameDeadCounter, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_GiveawayUserData_CVS" Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_GameDeadCounter_CVS"
+        Source="{Binding GameDeadCounter, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_GiveawayUserData_CVS"
+        Source="{Binding GiveawayUserData, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="DateTime" Direction="Descending" />
+            <scm:SortDescription
+                PropertyName="DateTime"
+                Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_InRaidData_CVS" Source="{Binding InRaidData, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_InRaidData_CVS"
+        Source="{Binding InRaidData, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="RaidDate" Direction="Descending" />
+            <scm:SortDescription
+                PropertyName="RaidDate"
+                Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_LearnMsgs_CVS" Source="{Binding LearnMsgs, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_LearnMsgs_CVS"
+        Source="{Binding LearnMsgs, Source={StaticResource DataViews}}">
         <CollectionViewSource.GroupDescriptions>
-            <PropertyGroupDescription PropertyName="MsgType" />
+            <PropertyGroupDescription
+                PropertyName="MsgType" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_ModeratorApprove_CVS" Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}" >
+    <CollectionViewSource
+        x:Key="DG_ModeratorApprove_CVS"
+        Source="{Binding ModeratorApprove, Source={StaticResource DataViews}}">
         <CollectionViewSource.GroupDescriptions>
-            <PropertyGroupDescription PropertyName="ModActionType" />
+            <PropertyGroupDescription
+                PropertyName="ModActionType" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_MultiChannels_CVS" Source="{Binding MultiChannels, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_MultiChannels_CVS"
+        Source="{Binding MultiChannels, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="UserName" />
+            <scm:SortDescription
+                PropertyName="UserName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_MultiLiveStreams_CVS" Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_MultiLiveStreams_CVS"
+        Source="{Binding MultiLiveStreams, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="LiveDate" Direction="Descending" />
-            <scm:SortDescription PropertyName="MultiChannels.UserName" />
+            <scm:SortDescription
+                PropertyName="LiveDate"
+                Direction="Descending" />
+            <scm:SortDescription
+                PropertyName="MultiChannels.UserName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-
-    <CollectionViewSource x:Key="DG_MultiWebhooks_CVS" Source="{Binding MultiWebhooks, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_MultiWebhooks_CVS"
+        Source="{Binding MultiWebhooks, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="Server" />
-            <scm:SortDescription PropertyName="Kind" />
+            <scm:SortDescription
+                PropertyName="Server" />
+            <scm:SortDescription
+                PropertyName="Kind" />
         </CollectionViewSource.SortDescriptions>
         <CollectionViewSource.GroupDescriptions>
-            <PropertyGroupDescription PropertyName="Kind" />
+            <PropertyGroupDescription
+                PropertyName="Kind" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_MultiSummaryLiveStreams_CVS" Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_OldFollowUsers_CVS" Source="{Binding OldFollowUsers, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_OutRaidData_CVS" Source="{Binding OutRaidData, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_MultiSummaryLiveStreams_CVS"
+        Source="{Binding MultiSummaryLiveStreams, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_OldFollowUsers_CVS"
+        Source="{Binding OldFollowUsers, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_OutRaidData_CVS"
+        Source="{Binding OutRaidData, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="RaidDate" Direction="Descending" />
+            <scm:SortDescription
+                PropertyName="RaidDate"
+                Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_OverlayServices_CVS" Source="{Binding OverlayServices, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_OverlayServices_CVS"
+        Source="{Binding OverlayServices, Source={StaticResource DataViews}}">
         <CollectionViewSource.GroupDescriptions>
-            <PropertyGroupDescription PropertyName="OverlayType" />
+            <PropertyGroupDescription
+                PropertyName="OverlayType" />
         </CollectionViewSource.GroupDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_OverlayServicesSelection_CVS" Source="{Binding OverlayServicesSelection, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_OverlayTicker_CVS" Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_Quotes_CVS" Source="{Binding Quotes, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_ShoutOuts_CVS" Source="{Binding ShoutOuts, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_StreamStats_CVS" Source="{Binding StreamStats, Source={StaticResource DataViews}}">
+    <CollectionViewSource
+        x:Key="DG_OverlayServicesSelection_CVS"
+        Source="{Binding OverlayServicesSelection, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_OverlayTicker_CVS"
+        Source="{Binding OverlayTicker, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_Quotes_CVS"
+        Source="{Binding Quotes, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_ShoutOuts_CVS"
+        Source="{Binding ShoutOuts, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_StreamStats_CVS"
+        Source="{Binding StreamStats, Source={StaticResource DataViews}}">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="StreamStart" Direction="Descending" />
+            <scm:SortDescription
+                PropertyName="StreamStart"
+                Direction="Descending" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_Users_CVS" Source="{Binding Users, Source={StaticResource DataViews}}" IsLiveSortingRequested="True">
+    <CollectionViewSource
+        x:Key="DG_Users_CVS"
+        Source="{Binding Users, Source={StaticResource DataViews}}"
+        IsLiveSortingRequested="True">
         <CollectionViewSource.SortDescriptions>
-            <scm:SortDescription PropertyName="LastDateSeen" Direction="Descending" />
-            <scm:SortDescription PropertyName="UserName" />
+            <scm:SortDescription
+                PropertyName="LastDateSeen"
+                Direction="Descending" />
+            <scm:SortDescription
+                PropertyName="UserName" />
         </CollectionViewSource.SortDescriptions>
     </CollectionViewSource>
-    <CollectionViewSource x:Key="DG_UserStats_CVS" Source="{Binding UserStats, Source={StaticResource DataViews}}" />
-    <CollectionViewSource x:Key="DG_Webhooks_CVS" Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
-
+    <CollectionViewSource
+        x:Key="DG_UserStats_CVS"
+        Source="{Binding UserStats, Source={StaticResource DataViews}}" />
+    <CollectionViewSource
+        x:Key="DG_Webhooks_CVS"
+        Source="{Binding Webhooks, Source={StaticResource DataViews}}" />
     <!--#endregion-->
-
     <!--#region Cell Templates-->
-
-    <DataTemplate x:Key="CategoryDataTemplate">
+    <DataTemplate
+        x:Key="CategoryDataTemplate">
         <StackPanel>
-            <TextBlock Text="{Binding Category, Mode=TwoWay, Converter={StaticResource CategoryConverter}}" TextWrapping="Wrap" Width="250" />
+            <TextBlock
+                Text="{Binding Category, Mode=TwoWay, Converter={StaticResource CategoryConverter}}"
+                TextWrapping="Wrap"
+                Width="250" />
         </StackPanel>
     </DataTemplate>
-
     <!--<DataTemplate x:Key="EditCategoryDataTemplate">
         <StackPanel>
             <ListBox
@@ -755,166 +1256,205 @@
                 SelectedItem="{Binding Category, Converter={StaticResource EditConvertCategory}, Mode=TwoWay}" />
         </StackPanel>
     </DataTemplate>-->
-
     <!--#region DataGrid DateTime templates -->
-    <DataTemplate x:Key="DateFirstSeenTemplate">
+    <DataTemplate
+        x:Key="DateFirstSeenTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding FirstDateSeen, StringFormat={}{0:F}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateCurrentLoginTemplate">
+    <DataTemplate
+        x:Key="DateCurrentLoginTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding CurrLoginDate, StringFormat={}{0:F}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateLastSeenTemplate">
+    <DataTemplate
+        x:Key="DateLastSeenTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding LastDateSeen, StringFormat={}{0:g}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding LastDateSeen, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateFollowedTemplate">
+    <DataTemplate
+        x:Key="DateFollowedTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding FollowedDate, StringFormat={}{0:g}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding FollowedDate, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateStatusChangedTemplate">
+    <DataTemplate
+        x:Key="DateStatusChangedTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StatusChangeDate, StringFormat={}{0:g}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding StatusChangeDate, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateGiveawayTemplate">
+    <DataTemplate
+        x:Key="DateGiveawayTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding DateTime, StringFormat={}{0:f}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding DateTime, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="EditDateGiveawayTemplate">
+    <DataTemplate
+        x:Key="EditDateGiveawayTemplate">
         <StackPanel>
-            <TextBox Text="{Binding DateTime}" ToolTip="Input date and time in the provided format." />
+            <TextBox
+                Text="{Binding DateTime}"
+                ToolTip="Input date and time in the provided format." />
             <!--<DatePicker SelectedDate="{Binding DateTime}" />-->
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateInRaidTemplate">
+    <DataTemplate
+        x:Key="DateInRaidTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding RaidDate, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="EditInRaidTemplate">
+    <DataTemplate
+        x:Key="EditInRaidTemplate">
         <StackPanel>
-            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <TextBox
+                Text="{Binding RaidDate}"
+                ToolTip="Input date and time in the provided format." />
             <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateOutRaidTemplate">
+    <DataTemplate
+        x:Key="DateOutRaidTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding RaidDate, StringFormat={}{0:f}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding RaidDate, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="EditOutRaidTemplate">
+    <DataTemplate
+        x:Key="EditOutRaidTemplate">
         <StackPanel>
-            <TextBox Text="{Binding RaidDate}" ToolTip="Input date and time in the provided format." />
+            <TextBox
+                Text="{Binding RaidDate}"
+                ToolTip="Input date and time in the provided format." />
             <!--<DatePicker SelectedDate="{Binding RaidDate}" />-->
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateClipCreatedTemplate">
+    <DataTemplate
+        x:Key="DateClipCreatedTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding CreatedAt, StringFormat={}{0:g}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding CreatedAt, StringFormat={}{0:g}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateStreamStartTemplate">
+    <DataTemplate
+        x:Key="DateStreamStartTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamStart, StringFormat={}{0:f}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding StreamStart, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="EditStreamStartTemplate">
+    <DataTemplate
+        x:Key="EditStreamStartTemplate">
         <StackPanel>
-            <TextBox Text="{Binding StreamStart}" ToolTip="Input date and time in the provided format." />
+            <TextBox
+                Text="{Binding StreamStart}"
+                ToolTip="Input date and time in the provided format." />
             <!--<DatePicker SelectedDate="{Binding StreamStart}" />-->
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateStreamEndTemplate">
+    <DataTemplate
+        x:Key="DateStreamEndTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding StreamEnd, StringFormat={}{0:f}}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding StreamEnd, StringFormat={}{0:f}}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="EditStreamEndTemplate">
+    <DataTemplate
+        x:Key="EditStreamEndTemplate">
         <StackPanel>
-            <TextBox Text="{Binding StreamEnd}" ToolTip="Input date and time in the provided format." />
+            <TextBox
+                Text="{Binding StreamEnd}"
+                ToolTip="Input date and time in the provided format." />
             <!--<DatePicker SelectedDate="{Binding StreamEnd}" />-->
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="StreamDurationTemplate">
-        <TextBlock Text="{Binding Duration, StringFormat={}{0:g}}" />
+    <DataTemplate
+        x:Key="StreamDurationTemplate">
+        <TextBlock
+            Text="{Binding Duration, StringFormat={}{0:g}}" />
     </DataTemplate>
-
-    <DataTemplate x:Key="DateLiveTemplate">
+    <DataTemplate
+        x:Key="DateLiveTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding LiveDate}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding LiveDate}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="EditLiveDateTemplate">
+    <DataTemplate
+        x:Key="EditLiveDateTemplate">
         <StackPanel>
-            <TextBox Text="{Binding LiveDate}" ToolTip="Input date and time in the provided format." />
+            <TextBox
+                Text="{Binding LiveDate}"
+                ToolTip="Input date and time in the provided format." />
             <!--<DatePicker SelectedDate="{Binding LiveDate}" />-->
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="DateThroughTemplate">
+    <DataTemplate
+        x:Key="DateThroughTemplate">
         <StackPanel>
-            <Border BorderThickness="1">
-                <TextBlock Text="{Binding ThroughDate}" />
+            <Border
+                BorderThickness="1">
+                <TextBlock
+                    Text="{Binding ThroughDate}" />
             </Border>
         </StackPanel>
     </DataTemplate>
-
-    <DataTemplate x:Key="EditThroughDateTemplate">
+    <DataTemplate
+        x:Key="EditThroughDateTemplate">
         <StackPanel>
-            <TextBox Text="{Binding ThroughDate}" ToolTip="Input date and time in the provided format." />
+            <TextBox
+                Text="{Binding ThroughDate}"
+                ToolTip="Input date and time in the provided format." />
             <!--<DatePicker SelectedDate="{Binding ThroughDate}" />-->
         </StackPanel>
     </DataTemplate>
-
     <!--#endregion-->
     <!--#endregion-->
-
 </ResourceDictionary>

@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
+﻿using StreamerBotLib.Static;
 
 using System.ComponentModel;
 using System.Globalization;

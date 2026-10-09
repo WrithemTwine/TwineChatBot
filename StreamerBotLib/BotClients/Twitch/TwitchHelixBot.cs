@@ -16,6 +16,7 @@ using TwitchLib.Api.Helix.Models.Clips.GetClips;
 using TwitchLib.Api.Helix.Models.Games;
 using TwitchLib.Api.Helix.Models.Moderation.BanUser;
 using TwitchLib.Api.Helix.Models.Raids.StartRaid;
+using TwitchLib.Api.Helix.Models.Streams.CreateStreamMarker;
 using TwitchLib.Api.Helix.Models.Streams.GetStreams;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.Api.Services.Events.FollowerService;
@@ -260,6 +261,22 @@ namespace StreamerBotLib.BotClients.Twitch
             return null;
         }
 
+        private async Task<CreateStreamMarkerResponse> CreateStreamMarkerAsync(string UserId = null, string UserName = null, string Description = null)
+        {
+            string Id = UserId ?? await HelixGetUserId(UserName);
+            if(Id != null)
+            {
+                var request = new CreateStreamMarkerRequest() { UserId = Id };
+
+                if (!string.IsNullOrEmpty(Description))
+                {
+                    request.Description = Description.Length > 140 ? Description.Substring(0, 140) : Description;
+                }
+
+                return await tokenBot.StreamerHelixApi.Helix.Streams.CreateStreamMarkerAsync(request);
+            }
+            return null;
+        }
         #endregion
 
         #region Data Methods - Interface to Helix calls
@@ -280,6 +297,12 @@ namespace StreamerBotLib.BotClients.Twitch
                 try
                 {
                     return func.Invoke();
+                }
+                catch(BadRequestException ex)
+                {
+                    LogWriter.LogException(ex, MethodName);
+
+                    return default;
                 }
                 catch (Exception ex)
                 {
@@ -627,6 +650,14 @@ namespace StreamerBotLib.BotClients.Twitch
             {
                 return GetAdScheduleAsync(UserId: UserId, UserName: UserName);
             }).Result;
+        }
+
+        public CreateStreamMarkerResponse CreateStreamMarker(string UserId = null, string UserName = null, string Description = null)
+        {
+            return PerformAction("CreateStreamMarker", () =>
+            {
+                return CreateStreamMarkerAsync(UserId, UserName, Description);
+            })?.Result;
         }
 
         #region process events

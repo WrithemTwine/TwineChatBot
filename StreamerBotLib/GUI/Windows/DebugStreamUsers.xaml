@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamerBotLib.GUI.Windows"
         mc:Ignorable="d"
-        Title="Debug Stream Users" Height="123" Width="215">
+        Title="Debug Stream Users" Height="123" Width="215"
+        SnapsToDevicePixels="True">
     <DockPanel>
         <Button x:Name="Button_AddRandomUsers" DockPanel.Dock="Top" Margin="10" Width="150" Height="25" Content="Add Random Users" Click="Button_AddRandomUsers_Click" />
     </DockPanel>

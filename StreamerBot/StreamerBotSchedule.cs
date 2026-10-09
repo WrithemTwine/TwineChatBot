@@ -27,6 +27,11 @@ namespace StreamerBot
             {
                 currSched.SentDay = true;
 
+                foreach(var item in ScheduleData)
+                {
+                    item.Save();
+                }
+
                 Controller.SendSchedule(currSched);
             }
         }

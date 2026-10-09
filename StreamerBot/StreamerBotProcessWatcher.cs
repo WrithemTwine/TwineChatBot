@@ -74,7 +74,7 @@ namespace StreamerBot
                         {
                             if(sendSchedule.TimeOfDay != OptionFlags.ScheduleSendTime.TimeOfDay)
                             {  // user may update the check time
-                                sendSchedule = DateTime.Today.Add(OptionFlags.ScheduleSendTime.TimeOfDay);
+                                sendSchedule = sendSchedule.Date.Add(OptionFlags.ScheduleSendTime.TimeOfDay);
                             }
                             if (currTime > sendSchedule)
                             {// setup new check time for tomorrow, check OptionFlags.ScheduleSendTime for updated send time

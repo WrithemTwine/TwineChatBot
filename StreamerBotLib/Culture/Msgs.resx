@@ -1024,6 +1024,9 @@
     <value>streamer</value>
     <comment>MsgVar variable value</comment>
   </data>
+  <data name="marker" xml:space="preserve">
+    <value>marker</value>
+  </data>
   <data name="time" xml:space="preserve">
     <value>time</value>
     <comment>default command, can be translated</comment>
@@ -1058,5 +1061,15 @@
   <data name="worklurk" xml:space="preserve">
     <value>worklurk</value>
     <comment>default command, can be translated</comment>
+  </data>
+  <data name="Parammarker" xml:space="preserve">
+    <value>-use:!marker &lt;optional-description&gt;, channel VOD must be enabled -param:true</value>
+  </data>
+  <data name="Msgmarker" xml:space="preserve">
+    <value>#user set a new stream marker #title</value>
+    <comment>leave #(variable) intact, the message otherwise can be re-arranged/translated as necessary. also used as default message to build data table</comment>
+  </data>
+  <data name="Msgmarkerfail" xml:space="preserve">
+    <value>Creating the marker failed. Is VOD enabled?</value>
   </data>
 </root>

@@ -7,7 +7,10 @@
         xmlns:s="clr-namespace:StreamerBotLib.Properties"
         mc:Ignorable="d"
         DataContext="{Binding Source={x:Static s:Settings.Default}}"
-        Title="Choose Storage Database" SizeToContent="WidthAndHeight" MaxWidth="800">
+    Title="Choose Storage Database"
+    SizeToContent="WidthAndHeight"
+    MaxWidth="800"
+    SnapsToDevicePixels="True">
     <DockPanel ScrollViewer.VerticalScrollBarVisibility="Auto">
         <TabControl TabStripPlacement="Left" DockPanel.Dock="Top" Height="300">
             <TabControl.Resources>

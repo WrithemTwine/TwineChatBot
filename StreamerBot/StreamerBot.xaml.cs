@@ -507,7 +507,7 @@ namespace StreamerBot
         #region Data side
 
         private void BeginUpdateOverlayTypes()
-        {
+        { // needs to start only when the Twitch-Helix is ready to accept an API call
             ThreadManager.CreateThreadStart("BeginUpdateOverlayTypes", () =>
             {
                 GUIOverlayTypeAlerts.AddData(OverlayTypes.Giveaway, [OverlayTypes.Giveaway.ToString()]);

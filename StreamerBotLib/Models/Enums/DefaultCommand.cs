@@ -35,6 +35,7 @@
         quote,
         removequote,
         clip,
-        time
+        time,
+        marker
     }
 }

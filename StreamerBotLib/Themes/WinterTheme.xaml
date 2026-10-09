@@ -4,144 +4,184 @@
     <!--#region Colors -->
     <Color
         x:Key="LighterColor">#E3F2FD</Color>
-    <!-- very pale icy blue -->
     <Color
-        x:Key="MediumColor">#BBDEFB</Color>
-    <!-- light frost blue -->
+        x:Key="MediumColor">#90CAF9</Color>
     <Color
-        x:Key="FullColor">#F5F8FF</Color>
-    <!-- pure snow white with cold tint -->
+        x:Key="FullColor">#BBDEFB</Color>
     <Color
         x:Key="ForegroundColor">#0D47A1</Color>
-    <!-- deep frozen indigo -->
     <Color
         x:Key="DisabledForegroundButtonColor">#90CAF9</Color>
-    <!-- DataGrid Colors -->
     <Color
-        x:Key="DataGridAlternateColorColor">#E8F5FE</Color>
+        x:Key="DataGridAlternateColorColor">#E3F2FD</Color>
     <Color
-        x:Key="DataGridBackgroundColor">#F5F8FF</Color>
+        x:Key="DataGridBackgroundColor">#F5F9FF</Color>
     <Color
         x:Key="DataGridRowHeaderBackgroundColor">#BBDEFB</Color>
     <Color
-        x:Key="DataGridColumnHeaderBackgroundColor">#E3F2FD</Color>
+        x:Key="DataGridColumnHeaderBackgroundColor">#90CAF9</Color>
     <Color
-        x:Key="DataGridRowSelectedColor">#455A64</Color>
+        x:Key="DataGridRowSelectedColor">#42A5F5</Color>
     <Color
-        x:Key="DataGridRowSelectedInactiveColor">#263238</Color>
+        x:Key="DataGridRowSelectedInactiveColor">#64B5F6</Color>
     <Color
-        x:Key="DataGridRowHoverColor">#37474F</Color>
-    <!-- border colors -->
+        x:Key="DataGridRowHoverColor">#E3F2FD</Color>
     <Color
-        x:Key="BorderColor">#90CAF9</Color>
-    <!-- soft ice blue -->
-    <!-- scrollbar colors -->
+        x:Key="BorderColor">#64B5F6</Color>
     <Color
-        x:Key="ScrollBarRepeatButton">#BBDEFB</Color>
-    <!-- tab item colors -->
+        x:Key="ScrollBarRepeatButton">#90CAF9</Color>
     <Color
         x:Key="TabItemControlLightColor">#E3F2FD</Color>
     <Color
-        x:Key="TabItemControlMediumColor">#BBDEFB</Color>
+        x:Key="TabItemControlMediumColor">#90CAF9</Color>
     <Color
-        x:Key="TabItemControlFullColor">#F5F8FF</Color>
-    <!-- ListView colors -->
+        x:Key="TabItemControlFullColor">#BBDEFB</Color>
     <Color
-        x:Key="ListViewControlFullColor">#F5F8FF</Color>
+        x:Key="ListViewControlFullColor">#BBDEFB</Color>
     <Color
-        x:Key="ListViewControlMediumColor">#BBDEFB</Color>
+        x:Key="ListViewControlMediumColor">#90CAF9</Color>
     <Color
         x:Key="ListViewControlLightColor">#E3F2FD</Color>
-    <!-- button colors -->
     <Color
         x:Key="ButtonHoverControlLightColor">#E3F2FD</Color>
     <Color
-        x:Key="ButtonHoverControlMediumColor">#BBDEFB</Color>
+        x:Key="ButtonHoverControlMediumColor">#90CAF9</Color>
     <Color
-        x:Key="ButtonHoverControlFullColor">#0288D1</Color>
-    <!-- bright icy cyan -->
+        x:Key="ButtonHoverControlFullColor">#64B5F6</Color>
     <Color
-        x:Key="ButtonDisabledBackgroundColor">#E3F2FD</Color>
+        x:Key="ButtonDisabledBackgroundColor">#F5F9FF</Color>
     <Color
         x:Key="ButtonDisabledForegroundColor">#90CAF9</Color>
     <Color
         x:Key="ButtonDisabledBorderColor">#BBDEFB</Color>
-    <!-- General Element Colors -->
     <Color
-        x:Key="WindowColor">#F5F8FF</Color>
+        x:Key="WindowColor">#F5F9FF</Color>
     <Color
-        x:Key="ContentAreaColorLight">#E8F5FE</Color>
+        x:Key="ContentAreaColorLight">#E3F2FD</Color>
     <Color
-        x:Key="ContentAreaColorDark">#E3F2FD</Color>
+        x:Key="ContentAreaColorDark">#BBDEFB</Color>
     <Color
-        x:Key="DisabledControlLightColor">#F5F8FF</Color>
+        x:Key="DisabledControlLightColor">#E3F2FD</Color>
     <Color
-        x:Key="DisabledControlDarkColor">#E3F2FD</Color>
+        x:Key="DisabledControlDarkColor">#BBDEFB</Color>
     <Color
         x:Key="DisabledForegroundColor">#90CAF9</Color>
     <Color
-        x:Key="SelectedBackgroundColor">#BBDEFB</Color>
+        x:Key="SelectedBackgroundColor">#42A5F5</Color>
     <Color
-        x:Key="SelectedUnfocusedColor">#E8F5FE</Color>
+        x:Key="SelectedUnfocusedColor">#64B5F6</Color>
     <Color
-        x:Key="ControlLightColor">#F5F8FF</Color>
+        x:Key="ControlLightColor">#E3F2FD</Color>
     <Color
-        x:Key="ControlMediumColor">#BBDEFB</Color>
+        x:Key="ControlMediumColor">#90CAF9</Color>
     <Color
-        x:Key="ControlDarkColor">#0288D1</Color>
+        x:Key="ControlDarkColor">#BBDEFB</Color>
     <Color
-        x:Key="ControlMouseOverColor">#0288D1</Color>
+        x:Key="ControlMouseOverColor">#64B5F6</Color>
     <Color
-        x:Key="ControlPressedColor">#0277BD</Color>
+        x:Key="ControlPressedColor">#42A5F5</Color>
     <Color
         x:Key="GlyphColor">#0D47A1</Color>
     <Color
-        x:Key="GlyphMouseOver">sc#1, 0.0, 0.6, 1.0</Color>
-    <!--Border colors-->
+        x:Key="GlyphMouseOver">sc#1, 0.2, 0.4, 0.7</Color>
     <Color
         x:Key="BorderLightColor">#E3F2FD</Color>
     <Color
-        x:Key="BorderMediumColor">#90CAF9</Color>
+        x:Key="BorderMediumColor">#64B5F6</Color>
     <Color
-        x:Key="BorderDarkColor">#0277BD</Color>
+        x:Key="BorderDarkColor">#42A5F5</Color>
     <Color
-        x:Key="PressedBorderLightColor">#0288D1</Color>
+        x:Key="PressedBorderLightColor">#64B5F6</Color>
     <Color
-        x:Key="PressedBorderDarkColor">#0277BD</Color>
+        x:Key="PressedBorderDarkColor">#42A5F5</Color>
     <Color
-        x:Key="DisabledBorderLightColor">#E3F2FD</Color>
+        x:Key="DisabledBorderLightColor">#F5F9FF</Color>
     <Color
         x:Key="DisabledBorderDarkColor">#BBDEFB</Color>
     <Color
-        x:Key="DefaultBorderBrushDarkColor">#90CAF9</Color>
-    <!--Control-specific resources.-->
+        x:Key="DefaultBorderBrushDarkColor">#64B5F6</Color>
     <Color
-        x:Key="HeaderTopColor">#BBDEFB</Color>
+        x:Key="HeaderTopColor">#90CAF9</Color>
     <Color
-        x:Key="DatagridCurrentCellBorderColor">#0288D1</Color>
+        x:Key="DatagridCurrentCellBorderColor">#42A5F5</Color>
     <Color
-        x:Key="SliderTrackDarkColor">#E3F2FD</Color>
+        x:Key="SliderTrackDarkColor">#90CAF9</Color>
     <Color
-        x:Key="NavButtonFrameColor">#0288D1</Color>
+        x:Key="NavButtonFrameColor">#42A5F5</Color>
+    <Color
+        x:Key="ScrollBarForegroundColor">#64B5F6</Color>
+    <Color
+        x:Key="ScrollBarArrowFillColor">#0D47A1</Color>
+    <Color
+        x:Key="ScrollBarThumbBorderColor">#64B5F6</Color>
+    <Color
+        x:Key="ScrollBarThumbBackgroundColor">#90CAF9</Color>
+    <Color
+        x:Key="ScrollBarThumbMouseOverColor">#42A5F5</Color>
+    <Color
+        x:Key="ScrollBarThumbPressedColor">#1E88E5</Color>
     <!--#endregion-->
-    <!--#region Brushes -->
-    <LinearGradientBrush
+    <!--#region Brushes - GradientCapable -->
+    <SolidColorBrush
         x:Key="FullBackground"
-        StartPoint="0,0"
-        EndPoint="0,1">
+        Color="{DynamicResource FullColor}" />
+    <LinearGradientBrush
+        x:Key="ComboBox.Static.Background"
+        EndPoint="0,1"
+        StartPoint="0,0">
         <GradientStop
-            Color="#F0F7FF"
-            Offset="0.00" />
-        <!-- pale icy sky / snow reflection top -->
+            Color="{DynamicResource MediumColor}"
+            Offset="0.0" />
         <GradientStop
-            Color="#E3F2FD"
-            Offset="0.45" />
-        <!-- light frost blue -->
-        <GradientStop
-            Color="#F5F8FF"
-            Offset="1.00" />
-        <!-- pure snow white with cold tint bottom -->
+            Color="{DynamicResource LighterColor}"
+            Offset="1.0" />
     </LinearGradientBrush>
+    <LinearGradientBrush
+        x:Key="ComboBox.MouseOver.Background"
+        EndPoint="0,1"
+        StartPoint="0,0">
+        <GradientStop
+            Color="{DynamicResource LighterColor}"
+            Offset="0.0" />
+        <GradientStop
+            Color="{DynamicResource MediumColor}"
+            Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush
+        x:Key="ComboBox.MouseOver.Editable.Button.Background"
+        EndPoint="0,1"
+        StartPoint="0,0">
+        <GradientStop
+            Color="{DynamicResource LighterColor}"
+            Offset="0.0" />
+        <GradientStop
+            Color="{DynamicResource MediumColor}"
+            Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush
+        x:Key="ComboBox.Pressed.Background"
+        EndPoint="0,1"
+        StartPoint="0,0">
+        <GradientStop
+            Color="{DynamicResource MediumColor}"
+            Offset="0.0" />
+        <GradientStop
+            Color="{DynamicResource FullColor}"
+            Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush
+        x:Key="ComboBox.Pressed.Editable.Button.Background"
+        EndPoint="0,1"
+        StartPoint="0,0">
+        <GradientStop
+            Color="{DynamicResource MediumColor}"
+            Offset="0.0" />
+        <GradientStop
+            Color="{DynamicResource FullColor}"
+            Offset="1.0" />
+    </LinearGradientBrush>
+    <!--#endregion-->
+    <!--#region Brushes - Solid -->
     <SolidColorBrush
         x:Key="PartBackground"
         Color="{DynamicResource MediumColor}" />
@@ -154,53 +194,48 @@
     <SolidColorBrush
         x:Key="DisabledForegroundButtonText"
         Color="{DynamicResource DisabledForegroundButtonColor}" />
-    <!-- activity colors -->
     <SolidColorBrush
         x:Key="BrightGo"
-        Color="#0288D1" />
-    <!-- bright icy cyan -->
+        Color="#66BB6A" />
     <SolidColorBrush
         x:Key="BrightStop"
-        Color="#D32F2F" />
+        Color="#EF5350" />
     <SolidColorBrush
         x:Key="Go"
-        Color="#0277BD" />
+        Color="#43A047" />
     <SolidColorBrush
         x:Key="Stop"
-        Color="#C62828" />
+        Color="#E53935" />
     <SolidColorBrush
         x:Key="LabelBeta"
         Color="MediumVioletRed" />
     <SolidColorBrush
         x:Key="TabControlTabs"
         Color="{DynamicResource MediumColor}" />
-    <!-- border colors -->
     <SolidColorBrush
         x:Key="Borders"
         Color="{DynamicResource BorderMediumColor}" />
-    <!-- scrollbar colors -->
     <SolidColorBrush
         x:Key="ScrollBarBackground"
         Color="{DynamicResource FullColor}" />
     <SolidColorBrush
         x:Key="ScrollBarForeground"
-        Color="#0288D1" />
+        Color="{DynamicResource ScrollBarForegroundColor}" />
     <SolidColorBrush
         x:Key="ScrollBarArrowFill"
-        Color="#0D47A1" />
+        Color="{DynamicResource ScrollBarArrowFillColor}" />
     <SolidColorBrush
         x:Key="ScrollBarThumbBorder"
-        Color="#90CAF9" />
+        Color="{DynamicResource ScrollBarThumbBorderColor}" />
     <SolidColorBrush
         x:Key="ScrollBarThumbBackground"
-        Color="#BBDEFB" />
+        Color="{DynamicResource ScrollBarThumbBackgroundColor}" />
     <SolidColorBrush
         x:Key="ScrollBarThumbMouseOver"
-        Color="#0288D1" />
+        Color="{DynamicResource ScrollBarThumbMouseOverColor}" />
     <SolidColorBrush
         x:Key="ScrollBarThumbPressed"
-        Color="#0277BD" />
-    <!-- tab item colors -->
+        Color="{DynamicResource ScrollBarThumbPressedColor}" />
     <SolidColorBrush
         x:Key="TabItemControlLight"
         Color="{DynamicResource TabItemControlLightColor}" />
@@ -210,7 +245,6 @@
     <SolidColorBrush
         x:Key="TabItemControlFull"
         Color="{DynamicResource TabItemControlFullColor}" />
-    <!-- datagrid colors -->
     <SolidColorBrush
         x:Key="DataGridAlternateColor"
         Color="{DynamicResource DataGridAlternateColorColor}" />
@@ -232,14 +266,12 @@
     <SolidColorBrush
         x:Key="DataGridRowHover"
         Color="{DynamicResource DataGridRowHoverColor}" />
-    <!-- contextmenu coloring -->
     <SolidColorBrush
         x:Key="ContextMenuBackground"
         Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
         x:Key="ContextMenuForeground"
         Color="{DynamicResource ForegroundColor}" />
-    <!-- ListView colors -->
     <SolidColorBrush
         x:Key="ListViewControlLight"
         Color="{DynamicResource ListViewControlLightColor}" />
@@ -249,21 +281,9 @@
     <SolidColorBrush
         x:Key="ListViewControlFull"
         Color="{DynamicResource ListViewControlFullColor}" />
-    <!-- ComboBox colors -->
     <SolidColorBrush
         x:Key="TextBox.Static.Background"
         Color="{DynamicResource MediumColor}" />
-    <LinearGradientBrush
-        x:Key="ComboBox.Static.Background"
-        EndPoint="0,1"
-        StartPoint="0,0">
-        <GradientStop
-            Color="{DynamicResource MediumColor}"
-            Offset="0.0" />
-        <GradientStop
-            Color="{DynamicResource LighterColor}"
-            Offset="1.0" />
-    </LinearGradientBrush>
     <SolidColorBrush
         x:Key="ComboBox.Static.Border"
         Color="{DynamicResource BorderDarkColor}" />
@@ -282,20 +302,6 @@
     <SolidColorBrush
         x:Key="ComboBox.Static.Editable.Button.Border"
         Color="Transparent" />
-    <LinearGradientBrush
-        x:Key="ComboBox.MouseOver.Background"
-        EndPoint="0,1"
-        StartPoint="0,0">
-        <GradientStop
-            Color="#E8F5FE"
-            Offset="0.0" />
-        <GradientStop
-            Color="#E3F2FD"
-            Offset="1.0" />
-    </LinearGradientBrush>
-    <SolidColorBrush
-        x:Key="ComboBox.MouseOver.Border"
-        Color="#0288D1" />
     <SolidColorBrush
         x:Key="ComboBox.MouseOver.Glyph"
         Color="{DynamicResource ForegroundColor}" />
@@ -303,59 +309,11 @@
         x:Key="ComboBox.MouseOver.Editable.Background"
         Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
-        x:Key="ComboBox.MouseOver.Editable.Border"
-        Color="#0288D1" />
-    <LinearGradientBrush
-        x:Key="ComboBox.MouseOver.Editable.Button.Background"
-        EndPoint="0,1"
-        StartPoint="0,0">
-        <GradientStop
-            Color="#E8F5FE"
-            Offset="0.0" />
-        <GradientStop
-            Color="#E3F2FD"
-            Offset="1.0" />
-    </LinearGradientBrush>
-    <SolidColorBrush
-        x:Key="ComboBox.MouseOver.Editable.Button.Border"
-        Color="#0288D1" />
-    <LinearGradientBrush
-        x:Key="ComboBox.Pressed.Background"
-        EndPoint="0,1"
-        StartPoint="0,0">
-        <GradientStop
-            Color="#BBDEFB"
-            Offset="0.0" />
-        <GradientStop
-            Color="#F5F8FF"
-            Offset="1.0" />
-    </LinearGradientBrush>
-    <SolidColorBrush
-        x:Key="ComboBox.Pressed.Border"
-        Color="#0277BD" />
-    <SolidColorBrush
         x:Key="ComboBox.Pressed.Glyph"
         Color="{DynamicResource ForegroundColor}" />
     <SolidColorBrush
         x:Key="ComboBox.Pressed.Editable.Background"
         Color="{DynamicResource MediumColor}" />
-    <SolidColorBrush
-        x:Key="ComboBox.Pressed.Editable.Border"
-        Color="#0277BD" />
-    <LinearGradientBrush
-        x:Key="ComboBox.Pressed.Editable.Button.Background"
-        EndPoint="0,1"
-        StartPoint="0,0">
-        <GradientStop
-            Color="#BBDEFB"
-            Offset="0.0" />
-        <GradientStop
-            Color="#F5F8FF"
-            Offset="1.0" />
-    </LinearGradientBrush>
-    <SolidColorBrush
-        x:Key="ComboBox.Pressed.Editable.Button.Border"
-        Color="#0277BD" />
     <SolidColorBrush
         x:Key="ComboBox.Disabled.Background"
         Color="{DynamicResource FullColor}" />
@@ -364,7 +322,7 @@
         Color="{DynamicResource BorderDarkColor}" />
     <SolidColorBrush
         x:Key="ComboBox.Disabled.Glyph"
-        Color="#90CAF9" />
+        Color="{DynamicResource DisabledForegroundColor}" />
     <SolidColorBrush
         x:Key="ComboBox.Disabled.Editable.Background"
         Color="{DynamicResource MediumColor}" />
@@ -377,7 +335,24 @@
     <SolidColorBrush
         x:Key="ComboBox.Disabled.Editable.Button.Border"
         Color="Transparent" />
-    <!-- Checkbox colors -->
+    <SolidColorBrush
+        x:Key="ComboBox.MouseOver.Border"
+        Color="{DynamicResource ControlMouseOverColor}" />
+    <SolidColorBrush
+        x:Key="ComboBox.MouseOver.Editable.Border"
+        Color="{DynamicResource ControlMouseOverColor}" />
+    <SolidColorBrush
+        x:Key="ComboBox.MouseOver.Editable.Button.Border"
+        Color="{DynamicResource ControlMouseOverColor}" />
+    <SolidColorBrush
+        x:Key="ComboBox.Pressed.Border"
+        Color="{DynamicResource ControlPressedColor}" />
+    <SolidColorBrush
+        x:Key="ComboBox.Pressed.Editable.Border"
+        Color="{DynamicResource ControlPressedColor}" />
+    <SolidColorBrush
+        x:Key="ComboBox.Pressed.Editable.Button.Border"
+        Color="{DynamicResource ControlPressedColor}" />
     <SolidColorBrush
         x:Key="CheckBoxFullBackground"
         Color="{DynamicResource FullColor}" />
@@ -395,7 +370,7 @@
         Color="{DynamicResource FullColor}" />
     <SolidColorBrush
         x:Key="CheckBoxNotEnabledForeground"
-        Color="#90CAF9" />
+        Color="{DynamicResource DisabledForegroundColor}" />
     <SolidColorBrush
         x:Key="CheckBoxNotEnabledPath"
         Color="{DynamicResource MediumColor}" />
@@ -408,7 +383,6 @@
     <SolidColorBrush
         x:Key="CheckBoxPressedBackground"
         Color="{DynamicResource ButtonHoverControlFullColor}" />
-    <!-- Button colors -->
     <SolidColorBrush
         x:Key="ButtonHoverControlLight"
         Color="{DynamicResource ButtonHoverControlLightColor}" />
@@ -427,7 +401,6 @@
     <SolidColorBrush
         x:Key="ButtonDisabledBorder"
         Color="{DynamicResource ButtonDisabledBorderColor}" />
-    <!-- RadioButton colors -->
     <SolidColorBrush
         x:Key="RadioButtonMedBackground"
         Color="{DynamicResource MediumColor}" />
@@ -436,7 +409,7 @@
         Color="{DynamicResource ForegroundColor}" />
     <SolidColorBrush
         x:Key="RadioButton.Static.Background"
-        Color="{DynamicResource FullColor}" />
+        Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
         x:Key="RadioButton.Static.Border"
         Color="{DynamicResource BorderLightColor}" />
@@ -448,7 +421,7 @@
         Color="{DynamicResource ButtonHoverControlFullColor}" />
     <SolidColorBrush
         x:Key="RadioButton.MouseOver.Border"
-        Color="#0288D1" />
+        Color="{DynamicResource ButtonHoverControlFullColor}" />
     <SolidColorBrush
         x:Key="RadioButton.MouseOver.Glyph"
         Color="{DynamicResource ForegroundColor}" />
@@ -457,7 +430,7 @@
         Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
         x:Key="RadioButton.Pressed.Border"
-        Color="#0277BD" />
+        Color="{DynamicResource ControlPressedColor}" />
     <SolidColorBrush
         x:Key="RadioButton.Pressed.Glyph"
         Color="{DynamicResource ForegroundColor}" />
@@ -469,7 +442,7 @@
         Color="{DynamicResource BorderDarkColor}" />
     <SolidColorBrush
         x:Key="RadioButton.Disabled.Glyph"
-        Color="#90CAF9" />
+        Color="{DynamicResource DisabledForegroundColor}" />
     <!--#endregion-->
     <!--#region Controls -->
     <Style

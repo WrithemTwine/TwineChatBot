@@ -9,6 +9,8 @@ using StreamerBotLib.Systems.Overlay.Enums;
 using System.ComponentModel;
 using System.Globalization;
 
+using TwitchLib.Api.Helix.Models.Streams.CreateStreamMarker;
+
 namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem : INotifyPropertyChanged
@@ -624,6 +626,27 @@ namespace StreamerBotLib.Systems
                        {
                             new(MsgVars.quotenum, DataManage.RemoveQuote(Convert.ToInt32(arglist[0])) ? arglist[0] : LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote))
                        }));
+            }
+            else if (command == LocalizedMsgSystem.GetVar(DefaultCommand.marker))
+            {
+                string ParseResult(object response)
+                {
+                    if(User.Platform == Platform.Twitch)
+                    {
+                        return (response as CreateStreamMarkerResponse).Marker[0].Description;
+                    }
+                    return "";
+                }
+                LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Adding new stream marker.");
+                string description = arglist.Count == 0 ? null : string.Join(' ', arglist);
+                var response = BotController.CreateStreamMarker(description, User.Platform);
+                result = response == null ? LocalizedMsgSystem.GetVar("Msgmarkerfail") :
+                    VariableParser.ParseReplace( cmdrow.Message, 
+                    VariableParser.BuildDictionary( new Tuple<MsgVars, string>[] 
+                    { 
+                        new(MsgVars.user, User.UserName), 
+                        new(MsgVars.title, ParseResult(response)) 
+                    }));
             }
             else
             {

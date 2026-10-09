@@ -257,8 +257,6 @@ namespace StreamerBot
                     CheckDebug(this, new());
                     SetVisibility(this, new());
                 });
-
-                BeginUpdateOverlayTypes();
             });
         }
 
@@ -312,6 +310,8 @@ namespace StreamerBot
                         LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
                     });
                 }
+
+                BeginUpdateOverlayTypes();
             });
         }
 

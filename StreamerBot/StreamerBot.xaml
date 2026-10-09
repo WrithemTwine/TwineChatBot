@@ -1387,7 +1387,7 @@
                                                             x:Name="GroupBox_Twitch_AdditionalStreamerCredentials"
                                                             Header="{DynamicResource Bots_Twitch_StreamerCredentials_Header}"
                                                             Visibility="Collapsed"
-                                                            Width="450">
+                                                            Width="Auto">
                                                             <StackPanel>
                                                                 <TextBlock
                                                                     Text="{DynamicResource Bots_Twitch_StreamerCredentials_Explanation}"
@@ -1991,12 +1991,22 @@
                                                         Text="DataGrid"
                                                         FontWeight="Bold"
                                                         Margin="0,0,0,6" />
-                                                    <DataGrid
-                                                        Height="240"
-                                                        AutoGenerateColumns="True"
-                                                        DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}"
-                                                        ItemsSource="{Binding Collection}"
-                                                        IsReadOnly="True" />
+                                                <DataGrid
+                                                    Height="240"
+                                                    Width="350"
+                                                    DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}"
+                                                    ItemsSource="{Binding Collection}"
+                                                    IsReadOnly="True">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn 
+                                                            Header ="Parameter"
+                                                            Width="80"
+                                                            Binding="{Binding Parameter}"/>
+                                                        <DataGridTextColumn Header="Value"
+                                                                            Width="220"
+                                                                            Binding="{Binding Value}"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
                                                 </StackPanel>
                                             </Grid>
                                         </GroupBox>
@@ -3292,7 +3302,8 @@
                                                         <TextBlock
                                                             Text="{DynamicResource Options_Schedule_ResetDaily}" />
                                                     </CheckBox>
-                                                    <CheckBox>
+                                                    <CheckBox
+                                                        IsChecked="{Binding ScheduleSendScheduleDaily}">
                                                         <TextBlock
                                                             Text="{DynamicResource Options_Schedule_SendTimeTextBlock}" />
                                                     </CheckBox>
@@ -3931,7 +3942,7 @@
                                                 <!-- Day column (read-only) -->
                                                 <GridViewColumn
                                                     Header="{DynamicResource Schedule_Day}"
-                                                    Width="Auto">
+                                                    Width="130">
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <TextBlock
