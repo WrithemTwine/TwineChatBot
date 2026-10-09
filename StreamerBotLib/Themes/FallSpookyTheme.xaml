@@ -25,7 +25,9 @@
     <Color
         x:Key="DataGridRowSelectedInactiveColor">#5E35B1</Color>
     <Color
-        x:Key="DataGridRowHoverColor">#283593</Color>
+        x:Key="DataGridRowHoverColor">#303F9F</Color>
+    <Color
+        x:Key="DataGridCellFocusColor">#B39DDB</Color>
     <Color
         x:Key="BorderColor">#7E57C2</Color>
     <Color
@@ -41,7 +43,7 @@
     <Color
         x:Key="ListViewControlMediumColor">#303F9F</Color>
     <Color
-        x:Key="ListViewControlLightColor">#283593</Color>
+        x:Key="ListViewControlLightColor">#303F9F</Color>
     <Color
         x:Key="ButtonHoverControlLightColor">#7E57C2</Color>
     <Color
@@ -251,6 +253,9 @@
     <SolidColorBrush
         x:Key="DataGridBackground"
         Color="{DynamicResource DataGridBackgroundColor}" />
+    <SolidColorBrush
+        x:Key="DataGridCellFocus"
+        Color="{DynamicResource DataGridCellFocusColor}" />
     <SolidColorBrush
         x:Key="DataGridRowHeaderBackground"
         Color="{DynamicResource DataGridRowHeaderBackgroundColor}" />
@@ -557,7 +562,7 @@
                     Value="{DynamicResource ButtonDisabledBorder}" />
                 <Setter
                     Property="Opacity"
-                    Value="0.7" />
+                    Value="0.75" />
             </Trigger>
             <Trigger
                 Property="IsEnabled"
@@ -613,7 +618,7 @@
                                 x:Name="CommonStates">
                                 <VisualStateGroup.Transitions>
                                     <VisualTransition
-                                        GeneratedDuration="0:0:0.5" />
+                                        GeneratedDuration="0:0:0.4" />
                                     <VisualTransition
                                         GeneratedDuration="0"
                                         To="Pressed" />
@@ -649,7 +654,7 @@
                             Value="true">
                             <Setter
                                 Property="BorderBrush"
-                                Value="{DynamicResource FullBackground}" />
+                                Value="{DynamicResource ButtonHoverControlFull}" />
                         </Trigger>
                         <Trigger
                             Property="IsMouseOver"
@@ -693,136 +698,105 @@
     <Style
         TargetType="{x:Type RadioButton}">
         <Setter
-            Property="Margin"
-            Value="10,5,0,5" />
-        <Setter
-            Property="Padding"
-            Value="2,0,0,0" />
-        <Setter
-            Property="VerticalContentAlignment"
-            Value="Center" />
+            Property="Foreground"
+            Value="{DynamicResource ForegroundText}" />
         <Setter
             Property="Background"
-            Value="{DynamicResource RadioButtonMedBackground}" />
+            Value="{DynamicResource RadioButton.Static.Background}" />
         <Setter
-            Property="Foreground"
-            Value="{DynamicResource RadioButtonForeground}" />
+            Property="BorderBrush"
+            Value="{DynamicResource RadioButton.Static.Border}" />
+        <Setter
+            Property="FocusVisualStyle"
+            Value="{x:Null}" />
         <Setter
             Property="Template">
             <Setter.Value>
                 <ControlTemplate
                     TargetType="{x:Type RadioButton}">
-                    <Grid
-                        x:Name="templateRoot"
-                        SnapsToDevicePixels="True"
+                    <BulletDecorator
                         Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition
-                                Width="Auto" />
-                            <ColumnDefinition
-                                Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Border
-                            x:Name="radioButtonBorder"
-                            Margin="1,1,2,1"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            CornerRadius="100">
+                        <BulletDecorator.Bullet>
                             <Grid
-                                x:Name="markGrid"
-                                Margin="2">
+                                Width="16"
+                                Height="16">
                                 <Ellipse
-                                    x:Name="optionMark"
-                                    Opacity="0"
-                                    MinWidth="6"
-                                    MinHeight="6"
-                                    Fill="{DynamicResource RadioButton.Static.Glyph}" />
+                                    x:Name="Outer"
+                                    Stroke="{TemplateBinding BorderBrush}"
+                                    StrokeThickness="1"
+                                    Fill="{TemplateBinding Background}" />
+                                <Ellipse
+                                    x:Name="Inner"
+                                    Margin="4"
+                                    Fill="{DynamicResource RadioButton.Static.Glyph}"
+                                    Visibility="Collapsed" />
                             </Grid>
-                        </Border>
+                        </BulletDecorator.Bullet>
                         <ContentPresenter
-                            x:Name="contentPresenter"
-                            RecognizesAccessKey="True"
-                            Grid.Column="1"
-                            Margin="{TemplateBinding Padding}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Focusable="False" />
-                    </Grid>
+                            Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            RecognizesAccessKey="True" />
+                    </BulletDecorator>
                     <ControlTemplate.Triggers>
                         <Trigger
-                            Property="HasContent"
-                            Value="true">
+                            Property="IsChecked"
+                            Value="True">
                             <Setter
-                                Property="Padding"
-                                Value="4,-1,0,0" />
+                                TargetName="Inner"
+                                Property="Visibility"
+                                Value="Visible" />
                         </Trigger>
                         <Trigger
                             Property="IsMouseOver"
-                            Value="true">
+                            Value="True">
                             <Setter
-                                Property="Background"
-                                Value="{DynamicResource RadioButton.MouseOver.Background}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="BorderBrush"
-                                Value="{DynamicResource RadioButton.MouseOver.Border}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
+                                TargetName="Outer"
                                 Property="Fill"
-                                Value="{DynamicResource RadioButton.MouseOver.Glyph}"
-                                TargetName="optionMark" />
-                        </Trigger>
-                        <Trigger
-                            Property="IsEnabled"
-                            Value="false">
+                                Value="{DynamicResource RadioButton.MouseOver.Background}" />
                             <Setter
-                                Property="Background"
-                                Value="{DynamicResource RadioButton.Disabled.Background}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="BorderBrush"
-                                Value="{DynamicResource RadioButton.Disabled.Border}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="Fill"
-                                Value="{DynamicResource RadioButton.Disabled.Glyph}"
-                                TargetName="optionMark" />
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource RadioButton.MouseOver.Border}" />
                         </Trigger>
                         <Trigger
                             Property="IsPressed"
-                            Value="true">
+                            Value="True">
                             <Setter
-                                Property="Background"
-                                Value="{DynamicResource RadioButton.Pressed.Background}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="BorderBrush"
-                                Value="{DynamicResource RadioButton.Pressed.Border}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
+                                TargetName="Outer"
                                 Property="Fill"
-                                Value="{DynamicResource RadioButton.Pressed.Glyph}"
-                                TargetName="optionMark" />
+                                Value="{DynamicResource RadioButton.Pressed.Background}" />
+                            <Setter
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource RadioButton.Pressed.Border}" />
                         </Trigger>
                         <Trigger
-                            Property="IsChecked"
-                            Value="true">
+                            Property="IsEnabled"
+                            Value="False">
                             <Setter
-                                Property="Opacity"
-                                Value="1"
-                                TargetName="optionMark" />
+                                TargetName="Outer"
+                                Property="Fill"
+                                Value="{DynamicResource RadioButton.Disabled.Background}" />
+                            <Setter
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource RadioButton.Disabled.Border}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource DisabledForegroundColor}" />
                         </Trigger>
+                        <!-- Keyboard focus -->
                         <Trigger
-                            Property="IsChecked"
-                            Value="{x:Null}">
+                            Property="IsKeyboardFocused"
+                            Value="True">
                             <Setter
-                                Property="Opacity"
-                                Value="0.56"
-                                TargetName="optionMark" />
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource DataGridCellFocus}" />
+                            <Setter
+                                TargetName="Outer"
+                                Property="StrokeThickness"
+                                Value="2" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

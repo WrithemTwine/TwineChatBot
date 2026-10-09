@@ -24,9 +24,11 @@
     <Color
         x:Key="DataGridRowSelectedColor">#00E5FF</Color>
     <Color
-        x:Key="DataGridRowSelectedInactiveColor">#00B8D4</Color>
+        x:Key="DataGridRowSelectedInactiveColor">#00838F</Color>
     <Color
-        x:Key="DataGridRowHoverColor">#111827</Color>
+        x:Key="DataGridRowHoverColor">#1A2332</Color>
+    <Color
+        x:Key="DataGridCellFocusColor">#18FFFF</Color>
     <Color
         x:Key="BorderColor">#00E5FF</Color>
     <Color
@@ -42,7 +44,7 @@
     <Color
         x:Key="ListViewControlMediumColor">#00B8D4</Color>
     <Color
-        x:Key="ListViewControlLightColor">#111827</Color>
+        x:Key="ListViewControlLightColor">#1A2332</Color>
     <Color
         x:Key="ButtonHoverControlLightColor">#00E5FF</Color>
     <Color
@@ -253,6 +255,9 @@
         x:Key="DataGridBackground"
         Color="{DynamicResource DataGridBackgroundColor}" />
     <SolidColorBrush
+        x:Key="DataGridCellFocus"
+        Color="{DynamicResource DataGridCellFocusColor}" />
+    <SolidColorBrush
         x:Key="DataGridRowHeaderBackground"
         Color="{DynamicResource DataGridRowHeaderBackgroundColor}" />
     <SolidColorBrush
@@ -457,7 +462,7 @@
             Value="{DynamicResource CheckBoxMedBackground}" />
         <Setter
             Property="Foreground"
-            Value="{DynamicResource ForegroundText}" />
+            Value="{DynamicResource CheckBoxForeground}" />
         <Setter
             Property="BorderBrush"
             Value="{DynamicResource CheckBoxBorder}" />
@@ -558,38 +563,19 @@
                     Value="{DynamicResource ButtonDisabledBorder}" />
                 <Setter
                     Property="Opacity"
-                    Value="0.6" />
+                    Value="0.75" />
             </Trigger>
             <Trigger
-                Property="IsMouseOver"
+                Property="IsEnabled"
                 Value="True">
                 <Setter
                     Property="Background"
-                    Value="{DynamicResource ButtonHoverControlFull}" />
+                    Value="{DynamicResource PartBackground}" />
                 <Setter
                     Property="Foreground"
-                    Value="{DynamicResource ForegroundTextDark}" />
-                <Setter
-                    Property="BorderBrush"
-                    Value="{DynamicResource BorderLightColor}" />
-            </Trigger>
-            <Trigger
-                Property="IsPressed"
-                Value="True">
-                <Setter
-                    Property="Background"
-                    Value="{DynamicResource FullBackground}" />
-                <Setter
-                    Property="Foreground"
-                    Value="{DynamicResource ForegroundTextDark}" />
-                <Setter
-                    Property="BorderBrush"
-                    Value="{DynamicResource BorderDarkColor}" />
+                    Value="{DynamicResource ForegroundText}" />
             </Trigger>
         </Style.Triggers>
-        <Setter
-            Property="Foreground"
-            Value="{DynamicResource ForegroundText}" />
         <Setter
             Property="Template">
             <Setter.Value>
@@ -604,12 +590,16 @@
                             <LinearGradientBrush
                                 StartPoint="0,0"
                                 EndPoint="0,1">
-                                <GradientStop
-                                    Color="{DynamicResource BorderLightColor}"
-                                    Offset="0.0" />
-                                <GradientStop
-                                    Color="{DynamicResource BorderMediumColor}"
-                                    Offset="1.0" />
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStopCollection>
+                                        <GradientStop
+                                            Color="{DynamicResource ButtonHoverControlLightColor}"
+                                            Offset="0.0" />
+                                        <GradientStop
+                                            Color="{DynamicResource ButtonHoverControlMediumColor}"
+                                            Offset="1.0" />
+                                    </GradientStopCollection>
+                                </LinearGradientBrush.GradientStops>
                             </LinearGradientBrush>
                         </Border.BorderBrush>
                         <Border.Background>
@@ -617,13 +607,39 @@
                                 EndPoint="0.5,1"
                                 StartPoint="0.5,0">
                                 <GradientStop
-                                    Color="{DynamicResource MediumColor}"
+                                    Color="{DynamicResource ButtonHoverControlMediumColor}"
                                     Offset="0" />
                                 <GradientStop
-                                    Color="{DynamicResource LighterColor}"
+                                    Color="{DynamicResource ButtonHoverControlLightColor}"
                                     Offset="1" />
                             </LinearGradientBrush>
                         </Border.Background>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup
+                                x:Name="CommonStates">
+                                <VisualStateGroup.Transitions>
+                                    <VisualTransition
+                                        GeneratedDuration="0:0:0.4" />
+                                    <VisualTransition
+                                        GeneratedDuration="0"
+                                        To="Pressed" />
+                                </VisualStateGroup.Transitions>
+                                <VisualState
+                                    x:Name="Normal" />
+                                <VisualState
+                                    x:Name="MouseOver">
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames
+                                            Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                            Storyboard.TargetName="Border">
+                                            <EasingColorKeyFrame
+                                                KeyTime="0"
+                                                Value="{DynamicResource ButtonHoverControlFullColor}" />
+                                        </ColorAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
                         <ContentPresenter
                             x:Name="contentPresenter"
                             Focusable="False"
@@ -639,195 +655,161 @@
                             Value="true">
                             <Setter
                                 Property="BorderBrush"
-                                Value="{DynamicResource ControlMouseOverColor}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <!-- RadioButton – use dark text on bright hover/pressed -->
-    <Style
-        TargetType="{x:Type RadioButton}">
-        <Style.Triggers>
-            <Trigger
-                Property="IsMouseOver"
-                Value="true">
-                <Setter
-                    Property="Foreground"
-                    Value="{DynamicResource ForegroundTextDark}" />
-            </Trigger>
-            <Trigger
-                Property="IsPressed"
-                Value="true">
-                <Setter
-                    Property="Foreground"
-                    Value="{DynamicResource ForegroundTextDark}" />
-            </Trigger>
-        </Style.Triggers>
-        <Setter
-            Property="Foreground"
-            Value="{DynamicResource ForegroundText}" />
-        <Setter
-            Property="Margin"
-            Value="10,5,0,5" />
-        <Setter
-            Property="Padding"
-            Value="2,0,0,0" />
-        <Setter
-            Property="VerticalContentAlignment"
-            Value="Center" />
-        <Setter
-            Property="Background"
-            Value="{DynamicResource RadioButtonMedBackground}" />
-        <Setter
-            Property="Template">
-            <Setter.Value>
-                <ControlTemplate
-                    TargetType="{x:Type RadioButton}">
-                    <Grid
-                        x:Name="templateRoot"
-                        SnapsToDevicePixels="True"
-                        Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition
-                                Width="Auto" />
-                            <ColumnDefinition
-                                Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Border
-                            x:Name="radioButtonBorder"
-                            Margin="1,1,2,1"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            CornerRadius="100">
-                            <Grid
-                                x:Name="markGrid"
-                                Margin="2">
-                                <Ellipse
-                                    x:Name="optionMark"
-                                    Opacity="0"
-                                    MinWidth="6"
-                                    MinHeight="6"
-                                    Fill="{DynamicResource RadioButton.Static.Glyph}" />
-                            </Grid>
-                        </Border>
-                        <ContentPresenter
-                            x:Name="contentPresenter"
-                            RecognizesAccessKey="True"
-                            Grid.Column="1"
-                            Margin="{TemplateBinding Padding}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Focusable="False" />
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger
-                            Property="HasContent"
-                            Value="true">
-                            <Setter
-                                Property="Padding"
-                                Value="4,-1,0,0" />
+                                Value="{DynamicResource ButtonHoverControlFull}" />
                         </Trigger>
                         <Trigger
                             Property="IsMouseOver"
                             Value="true">
                             <Setter
                                 Property="Background"
-                                Value="{DynamicResource RadioButton.MouseOver.Background}"
-                                TargetName="radioButtonBorder" />
+                                Value="{DynamicResource ButtonHoverControlFull}" />
                             <Setter
                                 Property="BorderBrush"
-                                Value="{DynamicResource RadioButton.MouseOver.Border}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="Fill"
-                                Value="{DynamicResource RadioButton.MouseOver.Glyph}"
-                                TargetName="optionMark" />
-                        </Trigger>
-                        <Trigger
-                            Property="IsEnabled"
-                            Value="false">
-                            <Setter
-                                Property="Background"
-                                Value="{DynamicResource RadioButton.Disabled.Background}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="BorderBrush"
-                                Value="{DynamicResource RadioButton.Disabled.Border}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="Fill"
-                                Value="{DynamicResource RadioButton.Disabled.Glyph}"
-                                TargetName="optionMark" />
+                                Value="{DynamicResource BorderLightColor}" />
                         </Trigger>
                         <Trigger
                             Property="IsPressed"
                             Value="true">
                             <Setter
                                 Property="Background"
-                                Value="{DynamicResource RadioButton.Pressed.Background}"
-                                TargetName="radioButtonBorder" />
+                                Value="{DynamicResource FullBackground}" />
                             <Setter
                                 Property="BorderBrush"
-                                Value="{DynamicResource RadioButton.Pressed.Border}"
-                                TargetName="radioButtonBorder" />
-                            <Setter
-                                Property="Fill"
-                                Value="{DynamicResource RadioButton.Pressed.Glyph}"
-                                TargetName="optionMark" />
+                                Value="{DynamicResource BorderDarkColor}" />
                         </Trigger>
                         <Trigger
-                            Property="IsChecked"
-                            Value="true">
+                            Property="IsEnabled"
+                            Value="false">
                             <Setter
-                                Property="Opacity"
-                                Value="1"
-                                TargetName="optionMark" />
-                        </Trigger>
-                        <Trigger
-                            Property="IsChecked"
-                            Value="{x:Null}">
+                                Property="Background"
+                                Value="{DynamicResource ButtonDisabledBackground}" />
                             <Setter
-                                Property="Opacity"
-                                Value="0.56"
-                                TargetName="optionMark" />
+                                Property="BorderBrush"
+                                Value="{DynamicResource ButtonDisabledBorder}" />
+                            <Setter
+                                Property="TextBlock.Foreground"
+                                TargetName="contentPresenter"
+                                Value="{DynamicResource DisabledForegroundButtonText}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-    <!-- ToggleButton -->
     <Style
-        x:Key="ToggleButtonTwitchTokenSelecter"
-        TargetType="{x:Type ToggleButton}">
-        <Style.Triggers>
-            <Trigger
-                Property="IsChecked"
-                Value="True">
-                <Setter
-                    Property="Foreground"
-                    Value="{DynamicResource ForegroundTextDark}" />
-            </Trigger>
-            <Trigger
-                Property="IsMouseOver"
-                Value="True">
-                <Setter
-                    Property="Foreground"
-                    Value="{DynamicResource ForegroundTextDark}" />
-            </Trigger>
-        </Style.Triggers>
-        <Setter
-            Property="Background"
-            Value="{DynamicResource PartBackground}" />
+        TargetType="{x:Type RadioButton}">
         <Setter
             Property="Foreground"
             Value="{DynamicResource ForegroundText}" />
+        <Setter
+            Property="Background"
+            Value="{DynamicResource RadioButton.Static.Background}" />
+        <Setter
+            Property="BorderBrush"
+            Value="{DynamicResource RadioButton.Static.Border}" />
+        <Setter
+            Property="FocusVisualStyle"
+            Value="{x:Null}" />
+        <Setter
+            Property="Template">
+            <Setter.Value>
+                <ControlTemplate
+                    TargetType="{x:Type RadioButton}">
+                    <BulletDecorator
+                        Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Grid
+                                Width="16"
+                                Height="16">
+                                <Ellipse
+                                    x:Name="Outer"
+                                    Stroke="{TemplateBinding BorderBrush}"
+                                    StrokeThickness="1"
+                                    Fill="{TemplateBinding Background}" />
+                                <Ellipse
+                                    x:Name="Inner"
+                                    Margin="4"
+                                    Fill="{DynamicResource RadioButton.Static.Glyph}"
+                                    Visibility="Collapsed" />
+                            </Grid>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter
+                            Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            RecognizesAccessKey="True" />
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger
+                            Property="IsChecked"
+                            Value="True">
+                            <Setter
+                                TargetName="Inner"
+                                Property="Visibility"
+                                Value="Visible" />
+                        </Trigger>
+                        <Trigger
+                            Property="IsMouseOver"
+                            Value="True">
+                            <Setter
+                                TargetName="Outer"
+                                Property="Fill"
+                                Value="{DynamicResource RadioButton.MouseOver.Background}" />
+                            <Setter
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource RadioButton.MouseOver.Border}" />
+                        </Trigger>
+                        <Trigger
+                            Property="IsPressed"
+                            Value="True">
+                            <Setter
+                                TargetName="Outer"
+                                Property="Fill"
+                                Value="{DynamicResource RadioButton.Pressed.Background}" />
+                            <Setter
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource RadioButton.Pressed.Border}" />
+                        </Trigger>
+                        <Trigger
+                            Property="IsEnabled"
+                            Value="False">
+                            <Setter
+                                TargetName="Outer"
+                                Property="Fill"
+                                Value="{DynamicResource RadioButton.Disabled.Background}" />
+                            <Setter
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource RadioButton.Disabled.Border}" />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource DisabledForegroundColor}" />
+                        </Trigger>
+                        <!-- Keyboard focus -->
+                        <Trigger
+                            Property="IsKeyboardFocused"
+                            Value="True">
+                            <Setter
+                                TargetName="Outer"
+                                Property="Stroke"
+                                Value="{DynamicResource DataGridCellFocus}" />
+                            <Setter
+                                TargetName="Outer"
+                                Property="StrokeThickness"
+                                Value="2" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style
+        x:Key="ToggleButtonTwitchTokenSelecter"
+        TargetType="{x:Type ToggleButton}">
+        <Setter
+            Property="Background"
+            Value="{DynamicResource PartBackground}" />
         <Setter
             Property="Template">
             <Setter.Value>
@@ -846,7 +828,7 @@
                                             Storyboard.TargetName="Border">
                                             <EasingColorKeyFrame
                                                 KeyTime="0"
-                                                Value="{DynamicResource ControlMouseOverColor}" />
+                                                Value="{DynamicResource ButtonHoverControlFullColor}" />
                                         </ColorAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
@@ -890,7 +872,7 @@
                                             Storyboard.TargetName="Border">
                                             <EasingColorKeyFrame
                                                 KeyTime="0"
-                                                Value="{DynamicResource ControlPressedColor}" />
+                                                Value="{DynamicResource ButtonHoverControlFullColor}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <PointAnimation
                                             Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoiceEllipse"
@@ -933,7 +915,7 @@
                                             Storyboard.TargetName="Border">
                                             <EasingColorKeyFrame
                                                 KeyTime="0"
-                                                Value="{DynamicResource ControlMouseOverColor}" />
+                                                Value="{DynamicResource ButtonHoverControlFullColor}" />
                                         </ColorAnimationUsingKeyFrames>
                                         <PointAnimation
                                             Storyboard.TargetName="ToggleButton_TwitchAuthText_ChoiceEllipse"

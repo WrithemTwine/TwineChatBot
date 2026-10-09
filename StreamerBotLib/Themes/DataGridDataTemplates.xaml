@@ -223,7 +223,7 @@
                             <Setter
                                 TargetName="Bd"
                                 Property="Background"
-                                Value="{DynamicResource DataGridRowHover}" />
+                                Value="{DynamicResource DataGridCellFocus}" />
                             <Setter
                                 Property="Foreground"
                                 Value="{DynamicResource ForegroundText}" />
@@ -241,7 +241,7 @@
                             <Setter
                                 TargetName="Bd"
                                 Property="Background"
-                                Value="{DynamicResource DataGridRowSelected}" />
+                                Value="{DynamicResource DataGridCellFocus}" />
                             <Setter
                                 Property="Foreground"
                                 Value="{DynamicResource ForegroundText}" />
