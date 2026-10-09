@@ -2010,351 +2010,339 @@
                                                 </StackPanel>
                                             </Grid>
                                         </GroupBox>
-                                    
-                                        <GroupBox
-                                            Grid.Row="1"
-                                            Width="Auto"
-                                            Header="{DynamicResource Options_Theme_SelectHeader}">
-                                            <ScrollViewer
-                                                VerticalScrollBarVisibility="Auto">
-                                                <UniformGrid
-                                                    Columns="4"
-                                                    HorizontalAlignment="Center">
-                                                    <!-- Column 1 -->
-                                                    <StackPanel
-                                                        Margin="20">
+                                    <GroupBox
+                                        Grid.Row="1"
+                                        Width="Auto"
+                                        Header="{DynamicResource Options_Theme_SelectHeader}">
+                                        <ScrollViewer
+                                            VerticalScrollBarVisibility="Auto">
+                                            <UniformGrid
+                                                Columns="4"
+                                                HorizontalAlignment="Stretch">
+                                                <!-- ==================== Column 1: Core + Sports ==================== -->
+                                                <StackPanel
+                                                    Margin="16,8">
+                                                    <TextBlock
+                                                        Text="{DynamicResource Options_Theme_Core_Title}"
+                                                        FontWeight="Bold"
+                                                        Margin="0,0,0,8" />
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Light"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeLight}"
+                                                        Checked="RadioButton_Theme_Checked">
                                                         <TextBlock
-                                                            Text="{DynamicResource Options_Theme_Core_Title}"
-                                                            FontWeight="Bold"
-                                                            Margin="0,0,0,10" />
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Light"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeLight}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Light}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Dark"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeDark}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Dark}" />
-                                                        </RadioButton>
-                                                        <StackPanel
-                                                            Height="20" />
+                                                            Text="{DynamicResource Options_Theme_Light}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Dark"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeDark}"
+                                                        Checked="RadioButton_Theme_Checked">
                                                         <TextBlock
-                                                            Text="{DynamicResource Options_Theme_Sports_Title}"
-                                                            FontWeight="Bold"
-                                                            Margin="0,0,0,10" />
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Baseball"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeBaseball}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Baseball}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Basketball"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeBasketball}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Basketball}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Chess"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeChess}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Chess}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Golf"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeGolf}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Golf}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Hockey"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeHockey}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Hockey}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Soccer"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSoccer}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Soccer}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Swimming"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSwimming}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Swimming}" />
-                                                        </RadioButton>
-                                                    </StackPanel>
-                                                    <!-- Column 2 -->
-                                                    <StackPanel
-                                                        Margin="20"
-                                                        MinWidth="280">
+                                                            Text="{DynamicResource Options_Theme_Dark}" />
+                                                    </RadioButton>
+                                                    <TextBlock
+                                                        Text="{DynamicResource Options_Theme_Sports_Title}"
+                                                        FontWeight="Bold"
+                                                        Margin="0,16,0,8" />
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Baseball"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeBaseball}"
+                                                        Checked="RadioButton_Theme_Checked">
                                                         <TextBlock
-                                                            Text="{DynamicResource Options_Theme_SpringSummer_Title}"
-                                                            FontWeight="Bold"
-                                                            Margin="0,0,0,10" />
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Spring"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSpring}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Spring}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_SilverCherry"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSilverCherry}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_SilverCherry}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_SpringCherry"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSpringCherry}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_SpringCherry}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_SpringMint"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSpringMint}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_SpringMint}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Summer"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSummer}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Summer}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_SummerBeach"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSummerBeach}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_SummerBeach}" />
-                                                        </RadioButton>
-                                                        <StackPanel
-                                                            Height="20" />
+                                                            Text="{DynamicResource Options_Theme_Baseball}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Basketball"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeBasketball}"
+                                                        Checked="RadioButton_Theme_Checked">
                                                         <TextBlock
-                                                            Text="{DynamicResource Options_Theme_FallWinter_Title}"
-                                                            FontWeight="Bold"
-                                                            Margin="0,0,0,10" />
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Fall"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeFall}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Fall}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_FallSpooky"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeFallSpooky}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_FallSpooky}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_HalloweenPumpkin"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeHalloweenPumpkin}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_HalloweenPumpkin}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Winter"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeWinter}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Winter}" />
-                                                        </RadioButton>
-                                                        <StackPanel
-                                                            Height="20" />
-                                                    </StackPanel>
-                                                    <!-- Column 3 -->
-                                                    <StackPanel
-                                                        Margin="20"
-                                                        MinWidth="280">
+                                                            Text="{DynamicResource Options_Theme_Basketball}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Chess"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeChess}"
+                                                        Checked="RadioButton_Theme_Checked">
                                                         <TextBlock
-                                                            Text="{DynamicResource Options_Theme_Legendary_Title}"
-                                                            FontWeight="Bold"
-                                                            Margin="0,0,0,10" />
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Forest"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeForest}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Forest}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Ivory"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeIvory}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Ivory}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Nord"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeNord}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Nord}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Slate"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSlate}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Slate}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_BaseballLegendary"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeBaseballLegendary}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_BaseballLegendary}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_ChessEpic"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeChessEpic}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_ChessEpic}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_ChessLegendary"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeChessLegendary}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_ChessLegendary}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_GolfEpic"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeGolfEpic}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_GolfEpic}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_GolfLegendary"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeGolfLegendary}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_GolfLegendary}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_HockeyEpic"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeHockeyEpic}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_HockeyEpic}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_HockeyLegendary"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeHockeyLegendary}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_HockeyLegendary}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_SwimmingEpic"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeSwimmingEpic}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_SwimmingEpic}" />
-                                                        </RadioButton>
-                                                        <StackPanel
-                                                            Height="20" />
-                                                    </StackPanel>
-                                                    <!-- Column 4 -->
-                                                    <StackPanel
-                                                        Margin="20"
-                                                        MinWidth="280">
+                                                            Text="{DynamicResource Options_Theme_Chess}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Golf"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeGolf}"
+                                                        Checked="RadioButton_Theme_Checked">
                                                         <TextBlock
-                                                            Text="{DynamicResource Options_Theme_Fun_Title}"
-                                                            FontWeight="Bold"
-                                                            Margin="0,0,0,10" />
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_Candy"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeCandy}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_Candy}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_NeonCyber"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeNeonCyber}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_NeonCyber}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_PastelGalaxy"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemePastelGalaxy}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_PastelGalaxy}" />
-                                                        </RadioButton>
-                                                        <RadioButton
-                                                            x:Name="RadioButton_Theme_RetroArcade"
-                                                            GroupName="AppThemeGroup"
-                                                            IsChecked="{Binding ThemeRetroArcade}"
-                                                            Checked="RadioButton_Theme_Checked">
-                                                            <TextBlock
-                                                                Text="{DynamicResource Options_Theme_RetroArcade}" />
-                                                        </RadioButton>
-                                                    </StackPanel>
-                                                </UniformGrid>
-                                            </ScrollViewer>
-                                        </GroupBox>
-                                    </Grid>
+                                                            Text="{DynamicResource Options_Theme_Golf}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Hockey"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeHockey}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Hockey}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Soccer"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSoccer}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Soccer}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Swimming"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSwimming}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Swimming}" />
+                                                    </RadioButton>
+                                                </StackPanel>
+                                                <!-- ==================== Column 2: Seasons ==================== -->
+                                                <StackPanel
+                                                    Margin="16,8">
+                                                    <TextBlock
+                                                        Text="{DynamicResource Options_Theme_SpringSummer_Title}"
+                                                        FontWeight="Bold"
+                                                        Margin="0,0,0,8" />
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Spring"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSpring}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Spring}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_SilverCherry"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSilverCherry}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_SilverCherry}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_SpringCherry"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSpringCherry}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_SpringCherry}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_SpringMint"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSpringMint}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_SpringMint}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Summer"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSummer}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Summer}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_SummerBeach"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSummerBeach}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_SummerBeach}" />
+                                                    </RadioButton>
+                                                    <TextBlock
+                                                        Text="{DynamicResource Options_Theme_FallWinter_Title}"
+                                                        FontWeight="Bold"
+                                                        Margin="0,16,0,8" />
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Fall"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeFall}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Fall}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_FallSpooky"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeFallSpooky}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_FallSpooky}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_HalloweenPumpkin"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeHalloweenPumpkin}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_HalloweenPumpkin}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Winter"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeWinter}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Winter}" />
+                                                    </RadioButton>
+                                                </StackPanel>
+                                                <!-- ==================== Column 3: Legendary / Epic ==================== -->
+                                                <StackPanel
+                                                    Margin="16,8">
+                                                    <TextBlock
+                                                        Text="{DynamicResource Options_Theme_Legendary_Title}"
+                                                        FontWeight="Bold"
+                                                        Margin="0,0,0,8" />
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Forest"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeForest}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Forest}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Ivory"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeIvory}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Ivory}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Nord"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeNord}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Nord}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Slate"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSlate}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Slate}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_BaseballLegendary"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeBaseballLegendary}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_BaseballLegendary}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_ChessEpic"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeChessEpic}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_ChessEpic}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_ChessLegendary"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeChessLegendary}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_ChessLegendary}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_GolfEpic"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeGolfEpic}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_GolfEpic}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_GolfLegendary"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeGolfLegendary}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_GolfLegendary}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_HockeyEpic"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeHockeyEpic}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_HockeyEpic}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_HockeyLegendary"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeHockeyLegendary}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_HockeyLegendary}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_SwimmingEpic"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeSwimmingEpic}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_SwimmingEpic}" />
+                                                    </RadioButton>
+                                                </StackPanel>
+                                                <!-- ==================== Column 4: Fun ==================== -->
+                                                <StackPanel
+                                                    Margin="16,8">
+                                                    <TextBlock
+                                                        Text="{DynamicResource Options_Theme_Fun_Title}"
+                                                        FontWeight="Bold"
+                                                        Margin="0,0,0,8" />
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_Candy"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeCandy}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_Candy}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_NeonCyber"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeNeonCyber}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_NeonCyber}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_PastelGalaxy"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemePastelGalaxy}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_PastelGalaxy}" />
+                                                    </RadioButton>
+                                                    <RadioButton
+                                                        x:Name="RadioButton_Theme_RetroArcade"
+                                                        GroupName="AppThemeGroup"
+                                                        IsChecked="{Binding ThemeRetroArcade}"
+                                                        Checked="RadioButton_Theme_Checked">
+                                                        <TextBlock
+                                                            Text="{DynamicResource Options_Theme_RetroArcade}" />
+                                                    </RadioButton>
+                                                </StackPanel>
+                                            </UniformGrid>
+                                        </ScrollViewer>
+                                    </GroupBox>
+                                </Grid>
                             </TabItem>
                             <TabItem
                                 Header="{DynamicResource Options_StreamerBot_SubHeader}">
