@@ -3,125 +3,135 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--#region Colors -->
     <Color
-        x:Key="LighterColor">#FFCC80</Color>
+        x:Key="LighterColor">#FFECB3</Color>
     <Color
-        x:Key="MediumColor">#E65100</Color>
+        x:Key="MediumColor">#FF8F00</Color>
     <Color
-        x:Key="FullColor">#3E2723</Color>
+        x:Key="FullColor">#E65100</Color>
     <Color
-        x:Key="ForegroundColor">#FFF3E0</Color>
+        x:Key="ForegroundColor">#3E2723</Color>
     <Color
-        x:Key="DisabledForegroundButtonColor">#BCAAA4</Color>
+        x:Key="DisabledForegroundButtonColor">#FFCC80</Color>
     <Color
-        x:Key="DataGridAlternateColorColor">#4E342E</Color>
+        x:Key="DataGridAlternateColorColor">#FFF3E0</Color>
     <Color
-        x:Key="DataGridBackgroundColor">#3E2723</Color>
+        x:Key="DataGridBackgroundColor">#FFF8E1</Color>
     <Color
-        x:Key="DataGridRowHeaderBackgroundColor">#5D4037</Color>
+        x:Key="DataGridRowHeaderBackgroundColor">#FFCC80</Color>
     <Color
-        x:Key="DataGridColumnHeaderBackgroundColor">#5D4037</Color>
+        x:Key="DataGridColumnHeaderBackgroundColor">#FFB74D</Color>
     <Color
         x:Key="DataGridRowSelectedColor">#EF6C00</Color>
     <Color
-        x:Key="DataGridRowSelectedInactiveColor">#BF360C</Color>
+        x:Key="DataGridRowSelectedInactiveColor">#E65100</Color>
     <Color
-        x:Key="DataGridRowHoverColor">#5D4037</Color>
+        x:Key="DataGridRowHoverColor">#FFCC80</Color>
     <Color
-        x:Key="DataGridCellFocusColor">#FF9800</Color>
+        x:Key="DataGridCellFocusColor">#FFB74D</Color>
     <Color
-        x:Key="BorderColor">#FF9800</Color>
+        x:Key="BorderColor">#FF8F00</Color>
     <Color
-        x:Key="ScrollBarRepeatButton">#5D4037</Color>
+        x:Key="ScrollBarRepeatButton">#FFB74D</Color>
     <Color
-        x:Key="TabItemControlLightColor">#FFCC80</Color>
+        x:Key="TabItemControlLightColor">#FFECB3</Color>
     <Color
-        x:Key="TabItemControlMediumColor">#E65100</Color>
+        x:Key="TabItemControlMediumColor">#FF8F00</Color>
     <Color
-        x:Key="TabItemControlFullColor">#3E2723</Color>
+        x:Key="TabItemControlFullColor">#E65100</Color>
     <Color
-        x:Key="ListViewControlFullColor">#3E2723</Color>
+        x:Key="ListViewControlFullColor">#E65100</Color>
     <Color
-        x:Key="ListViewControlMediumColor">#5D4037</Color>
+        x:Key="ListViewControlMediumColor">#FF8F00</Color>
     <Color
-        x:Key="ListViewControlLightColor">#5D4037</Color>
+        x:Key="ListViewControlLightColor">#FFCC80</Color>
     <Color
-        x:Key="ButtonHoverControlLightColor">#FFCC80</Color>
+        x:Key="ButtonHoverControlLightColor">#FFECB3</Color>
     <Color
-        x:Key="ButtonHoverControlMediumColor">#E65100</Color>
+        x:Key="ButtonHoverControlMediumColor">#FF8F00</Color>
     <Color
-        x:Key="ButtonHoverControlFullColor">#FF9800</Color>
+        x:Key="ButtonHoverControlFullColor">#FFB74D</Color>
     <Color
-        x:Key="ButtonDisabledBackgroundColor">#4E342E</Color>
+        x:Key="ButtonDisabledBackgroundColor">#FFF8E1</Color>
     <Color
-        x:Key="ButtonDisabledForegroundColor">#BCAAA4</Color>
+        x:Key="ButtonDisabledForegroundColor">#FFCC80</Color>
     <Color
-        x:Key="ButtonDisabledBorderColor">#5D4037</Color>
+        x:Key="ButtonDisabledBorderColor">#FFB74D</Color>
     <Color
-        x:Key="WindowColor">#3E2723</Color>
+        x:Key="WindowColor">#FFF8E1</Color>
     <Color
-        x:Key="ContentAreaColorLight">#4E342E</Color>
+        x:Key="ContentAreaColorLight">#FFECB3</Color>
     <Color
-        x:Key="ContentAreaColorDark">#3E2723</Color>
+        x:Key="ContentAreaColorDark">#FFCC80</Color>
     <Color
-        x:Key="DisabledControlLightColor">#4E342E</Color>
+        x:Key="DisabledControlLightColor">#FFECB3</Color>
     <Color
-        x:Key="DisabledControlDarkColor">#3E2723</Color>
+        x:Key="DisabledControlDarkColor">#FFCC80</Color>
     <Color
-        x:Key="DisabledForegroundColor">#BCAAA4</Color>
+        x:Key="DisabledForegroundColor">#FFCC80</Color>
     <Color
         x:Key="SelectedBackgroundColor">#EF6C00</Color>
     <Color
-        x:Key="SelectedUnfocusedColor">#BF360C</Color>
+        x:Key="SelectedUnfocusedColor">#E65100</Color>
     <Color
-        x:Key="ControlLightColor">#FFCC80</Color>
+        x:Key="ControlLightColor">#FFECB3</Color>
     <Color
-        x:Key="ControlMediumColor">#E65100</Color>
+        x:Key="ControlMediumColor">#FF8F00</Color>
     <Color
-        x:Key="ControlDarkColor">#3E2723</Color>
+        x:Key="ControlDarkColor">#E65100</Color>
     <Color
-        x:Key="ControlMouseOverColor">#FF9800</Color>
+        x:Key="ControlMouseOverColor">#FFB74D</Color>
     <Color
         x:Key="ControlPressedColor">#EF6C00</Color>
     <Color
-        x:Key="GlyphColor">#FFF3E0</Color>
+        x:Key="GlyphColor">#3E2723</Color>
     <Color
-        x:Key="GlyphMouseOver">sc#1, 1.0, 0.8, 0.4</Color>
+        x:Key="GlyphMouseOver">sc#1, 0.6, 0.3, 0.1</Color>
     <Color
-        x:Key="BorderLightColor">#FFCC80</Color>
+        x:Key="BorderLightColor">#FFECB3</Color>
     <Color
-        x:Key="BorderMediumColor">#FF9800</Color>
+        x:Key="BorderMediumColor">#FF8F00</Color>
     <Color
-        x:Key="BorderDarkColor">#EF6C00</Color>
+        x:Key="BorderDarkColor">#E65100</Color>
     <Color
-        x:Key="PressedBorderLightColor">#FF9800</Color>
+        x:Key="PressedBorderLightColor">#FFB74D</Color>
     <Color
         x:Key="PressedBorderDarkColor">#EF6C00</Color>
     <Color
-        x:Key="DisabledBorderLightColor">#4E342E</Color>
+        x:Key="DisabledBorderLightColor">#FFF8E1</Color>
     <Color
-        x:Key="DisabledBorderDarkColor">#5D4037</Color>
+        x:Key="DisabledBorderDarkColor">#FFB74D</Color>
     <Color
-        x:Key="DefaultBorderBrushDarkColor">#FF9800</Color>
+        x:Key="DefaultBorderBrushDarkColor">#FF8F00</Color>
     <Color
-        x:Key="HeaderTopColor">#5D4037</Color>
+        x:Key="HeaderTopColor">#FFB74D</Color>
     <Color
-        x:Key="DatagridCurrentCellBorderColor">#FF9800</Color>
+        x:Key="DatagridCurrentCellBorderColor">#EF6C00</Color>
     <Color
-        x:Key="SliderTrackDarkColor">#5D4037</Color>
+        x:Key="SliderTrackDarkColor">#FFB74D</Color>
     <Color
-        x:Key="NavButtonFrameColor">#FF9800</Color>
+        x:Key="NavButtonFrameColor">#EF6C00</Color>
     <Color
-        x:Key="ScrollBarForegroundColor">#FF9800</Color>
+        x:Key="ScrollBarForegroundColor">#FF8F00</Color>
     <Color
-        x:Key="ScrollBarArrowFillColor">#FFF3E0</Color>
+        x:Key="ScrollBarArrowFillColor">#3E2723</Color>
     <Color
-        x:Key="ScrollBarThumbBorderColor">#FF9800</Color>
+        x:Key="ScrollBarThumbBorderColor">#FF8F00</Color>
     <Color
-        x:Key="ScrollBarThumbBackgroundColor">#E65100</Color>
+        x:Key="ScrollBarThumbBackgroundColor">#FFB74D</Color>
     <Color
-        x:Key="ScrollBarThumbMouseOverColor">#FF9800</Color>
+        x:Key="ScrollBarThumbMouseOverColor">#FFB74D</Color>
     <Color
         x:Key="ScrollBarThumbPressedColor">#EF6C00</Color>
+    <Color
+        x:Key="BrightGoColor">#FF66BB6A</Color>
+    <Color
+        x:Key="GoColor">#FF43A047</Color>
+    <Color
+        x:Key="BrightStopColor">#FFEF5350</Color>
+    <Color
+        x:Key="StopColor">#FFE53935</Color>
+    <Color
+        x:Key="LabelBetaColor">#FFD84315</Color>
     <!--#endregion-->
     <!--#region Brushes - GradientCapable -->
     <SolidColorBrush
@@ -185,6 +195,10 @@
     <!--#endregion-->
     <!--#region Brushes - Solid -->
     <SolidColorBrush
+        x:Key="ControlBackground"
+        Color="{DynamicResource MediumColor}"
+        Opacity="{StaticResource ThemeBrushOpacity}" />
+    <SolidColorBrush
         x:Key="PartBackground"
         Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
@@ -198,19 +212,19 @@
         Color="{DynamicResource DisabledForegroundButtonColor}" />
     <SolidColorBrush
         x:Key="BrightGo"
-        Color="#66BB6A" />
+        Color="{DynamicResource BrightGoColor}" />
     <SolidColorBrush
         x:Key="BrightStop"
-        Color="#EF5350" />
+        Color="{DynamicResource BrightStopColor}" />
     <SolidColorBrush
         x:Key="Go"
-        Color="#43A047" />
+        Color="{DynamicResource GoColor}" />
     <SolidColorBrush
         x:Key="Stop"
-        Color="#E53935" />
+        Color="{DynamicResource StopColor}" />
     <SolidColorBrush
         x:Key="LabelBeta"
-        Color="MediumVioletRed" />
+        Color="{DynamicResource LabelBetaColor}" />
     <SolidColorBrush
         x:Key="TabControlTabs"
         Color="{DynamicResource MediumColor}" />

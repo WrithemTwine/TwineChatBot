@@ -123,11 +123,35 @@
         x:Key="ScrollBarThumbMouseOverColor">#90A4AE</Color>
     <Color
         x:Key="ScrollBarThumbPressedColor">#607D8B</Color>
+    <Color
+        x:Key="BrightGoColor">#FF66BB6A</Color>
+    <Color
+        x:Key="GoColor">#FF43A047</Color>
+    <Color
+        x:Key="BrightStopColor">#FFEF5350</Color>
+    <Color
+        x:Key="StopColor">#FFE53935</Color>
+    <Color
+        x:Key="LabelBetaColor">#FF90A4AE</Color>
     <!--#endregion-->
     <!--#region Brushes - GradientCapable -->
-    <SolidColorBrush
+    <RadialGradientBrush
         x:Key="FullBackground"
-        Color="{DynamicResource FullColor}" />
+        MappingMode="Absolute"
+        GradientOrigin="300,300"
+        Center="300,300"
+        RadiusX="400"
+        RadiusY="400">
+        <GradientStop
+            Color="#78909C"
+            Offset="0.0" />
+        <GradientStop
+            Color="#455A64"
+            Offset="0.45" />
+        <GradientStop
+            Color="#263238"
+            Offset="1.0" />
+    </RadialGradientBrush>
     <LinearGradientBrush
         x:Key="ComboBox.Static.Background"
         EndPoint="0,1"
@@ -186,6 +210,10 @@
     <!--#endregion-->
     <!--#region Brushes - Solid -->
     <SolidColorBrush
+        x:Key="ControlBackground"
+        Color="{DynamicResource MediumColor}"
+        Opacity="{StaticResource ThemeBrushOpacity}" />
+    <SolidColorBrush
         x:Key="PartBackground"
         Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
@@ -199,19 +227,19 @@
         Color="{DynamicResource DisabledForegroundButtonColor}" />
     <SolidColorBrush
         x:Key="BrightGo"
-        Color="#66BB6A" />
+        Color="{DynamicResource BrightGoColor}" />
     <SolidColorBrush
         x:Key="BrightStop"
-        Color="#EF5350" />
+        Color="{DynamicResource BrightStopColor}" />
     <SolidColorBrush
         x:Key="Go"
-        Color="#43A047" />
+        Color="{DynamicResource GoColor}" />
     <SolidColorBrush
         x:Key="Stop"
-        Color="#E53935" />
+        Color="{DynamicResource StopColor}" />
     <SolidColorBrush
         x:Key="LabelBeta"
-        Color="MediumVioletRed" />
+        Color="{DynamicResource LabelBetaColor}" />
     <SolidColorBrush
         x:Key="TabControlTabs"
         Color="{DynamicResource MediumColor}" />

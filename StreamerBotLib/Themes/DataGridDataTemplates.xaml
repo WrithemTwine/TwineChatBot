@@ -114,6 +114,20 @@
             Value="True" />
         <Style.Triggers>
             <Trigger
+                Property="AlternationIndex"
+                Value="0">
+                <Setter
+                    Property="Background"
+                    Value="{DynamicResource DataGridBackground}" />
+            </Trigger>
+            <Trigger
+                Property="AlternationIndex"
+                Value="1">
+                <Setter
+                    Property="Background"
+                    Value="{DynamicResource DataGridAlternateColor}" />
+            </Trigger>
+            <Trigger
                 Property="IsMouseOver"
                 Value="True">
                 <Setter
@@ -255,7 +269,7 @@
         TargetType="{x:Type DataGrid}">
         <Setter
             Property="AlternationCount"
-            Value="1" />
+            Value="2" />
         <Setter
             Property="ScrollViewer.CanContentScroll"
             Value="True" />
@@ -267,13 +281,7 @@
             Value="{DynamicResource ForegroundText}" />
         <Setter
             Property="Background"
-            Value="{DynamicResource PartBackground}" />
-        <Setter
-            Property="RowBackground"
-            Value="{DynamicResource DataGridBackground}" />
-        <Setter
-            Property="AlternatingRowBackground"
-            Value="{DynamicResource DataGridAlternateColor}" />
+            Value="Transparent" />
         <Setter
             Property="CanUserAddRows"
             Value="False" />
@@ -318,7 +326,6 @@
             </Setter.Value>
         </Setter>
     </Style>
-
     <!--#region DataGrid RowDetail DataTemplates -->
     <DataTemplate
         x:Key="DG_RowDetailDT_Clips">

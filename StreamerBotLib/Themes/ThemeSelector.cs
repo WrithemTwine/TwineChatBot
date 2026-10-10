@@ -27,7 +27,7 @@ namespace StreamerBotLib.Themes
         {
             ThemeProperties theme = (from ThemeProperties prop in ThemeList
                                      where prop.ThemeSelected == true
-                                     select prop).FirstOrDefault();
+                                     select prop).FirstOrDefault() ?? ThemeList.FirstOrDefault();
 
             return $"pack://application:,,,/StreamerBotLib;component/Themes/{theme.ThemeName.Replace(OptionFlags.PrefixForThemes, "")}{OptionFlags.PrefixForThemes}.xaml";
         }

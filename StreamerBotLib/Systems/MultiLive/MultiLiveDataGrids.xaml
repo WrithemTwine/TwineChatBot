@@ -16,7 +16,7 @@
     SnapsToDevicePixels="True"
     UseLayoutRounding="True"
     DataContext="{DynamicResource DataViews}"
-    Background="{DynamicResource FullBackground}">
+    Background="Transparent">
     <Page.Resources>
         <ContextMenu
             x:Key="DataGrid_Multi_ContextMenu"

@@ -122,6 +122,16 @@
         x:Key="ScrollBarThumbMouseOverColor">#757575</Color>
     <Color
         x:Key="ScrollBarThumbPressedColor">#9E9E9E</Color>
+    <Color
+        x:Key="BrightGoColor">#FF2ECC71</Color>
+    <Color
+        x:Key="GoColor">#FF27AE60</Color>
+    <Color
+        x:Key="BrightStopColor">#FFFF6B6B</Color>
+    <Color
+        x:Key="StopColor">#FFE74C3C</Color>
+    <Color
+        x:Key="LabelBetaColor">#FF5DADE2</Color>
     <!--#endregion-->
     <!--#region Brushes - GradientCapable -->
     <SolidColorBrush
@@ -185,6 +195,10 @@
     <!--#endregion-->
     <!--#region Brushes - Solid -->
     <SolidColorBrush
+        x:Key="ControlBackground"
+        Color="{DynamicResource MediumColor}"
+        Opacity="{StaticResource ThemeBrushOpacity}" />
+    <SolidColorBrush
         x:Key="PartBackground"
         Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
@@ -198,19 +212,19 @@
         Color="{DynamicResource DisabledForegroundButtonColor}" />
     <SolidColorBrush
         x:Key="BrightGo"
-        Color="#66BB6A" />
+        Color="{DynamicResource BrightGoColor}" />
     <SolidColorBrush
         x:Key="BrightStop"
-        Color="#EF5350" />
+        Color="{DynamicResource BrightStopColor}" />
     <SolidColorBrush
         x:Key="Go"
-        Color="#43A047" />
+        Color="{DynamicResource GoColor}" />
     <SolidColorBrush
         x:Key="Stop"
-        Color="#E53935" />
+        Color="{DynamicResource StopColor}" />
     <SolidColorBrush
         x:Key="LabelBeta"
-        Color="MediumVioletRed" />
+        Color="{DynamicResource LabelBetaColor}" />
     <SolidColorBrush
         x:Key="TabControlTabs"
         Color="{DynamicResource MediumColor}" />

@@ -4,12 +4,11 @@
                     xmlns:Enums="clr-namespace:StreamerBotLib.Models.Enums;assembly=StreamerBotLib"         
                     xmlns:OEnums="clr-namespace:StreamerBotLib.Systems.Overlay.Enums;assembly=StreamerBotLib"
                     xmlns:OSEnums="clr-namespace:StreamerBotLib.Models.Overlay;assembly=StreamerBotLib"
-
                     xmlns:core="clr-namespace:System;assembly=mscorlib">
 
     <Style TargetType="{x:Type StatusBar}">
         <Setter Property="Foreground" Value="{DynamicResource ForegroundText}" />
-        <Setter Property="Background" Value="{DynamicResource FullBackground}" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <Style TargetType="{x:Type Separator}">
@@ -67,7 +66,7 @@
     </Style>
 
     <Style TargetType="{x:Type DockPanel}">
-        <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Margin" Value="5" />
     </Style>
 
@@ -218,8 +217,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style
-        x:Key="{x:Static GridView.GridViewItemContainerStyleKey}"
+    <Style x:Key="{x:Static GridView.GridViewItemContainerStyleKey}"
         TargetType="{x:Type ListViewItem}">
         <Setter
             Property="OverridesDefaultStyle"
@@ -287,8 +285,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style
-        TargetType="{x:Type ListViewItem}"
+    <Style TargetType="{x:Type ListViewItem}"
         BasedOn="{StaticResource {x:Static GridView.GridViewItemContainerStyleKey}}" />
     
     <Style TargetType="{x:Type ListBox}" >
@@ -327,8 +324,7 @@
             </Setter.Value>
         </Setter>-->
     </Style>
-    <Style
-        TargetType="{x:Type ContextMenu}">
+    <Style TargetType="{x:Type ContextMenu}">
         <Setter
             Property="OverridesDefaultStyle"
             Value="True" />
@@ -369,8 +365,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style
-        TargetType="{x:Type MenuItem}">
+    <Style TargetType="{x:Type MenuItem}">
         <Setter
             Property="Foreground"
             Value="{DynamicResource ContextMenuForeground}" />
@@ -612,7 +607,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Rectangle x:Name="Corner" Grid.Row="1" Grid.Column="1" 
-                                   Fill="{DynamicResource FullBackground}" 
+                                   Fill="Transparent" 
                                    Style="{x:Null}"/>
                         <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" 
                                                 CanHorizontallyScroll="False" 
@@ -652,13 +647,17 @@
     </Style>
 
     <Style TargetType="{x:Type TabControl}">
-        <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+        <Setter
+            Property="Background"
+            Value="Transparent" />
         <Setter Property="Margin" Value="0,8" />
     </Style>
 
     <Style TargetType="{x:Type TabItem}">
         <Setter Property="Foreground" Value="{DynamicResource ForegroundText}"/>
-        <Setter Property="Background" Value="{DynamicResource FullBackground}"/>
+        <Setter
+            Property="Background"
+            Value="Transparent" />
         <Setter Property="MinWidth" Value="50"/>
         <Setter Property="Height" Value="25"/>
         <Setter Property="VerticalAlignment" Value="Bottom" />
@@ -667,7 +666,13 @@
                 <ControlTemplate TargetType="{x:Type TabItem}">
                     <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
                         <Border x:Name="mainBorder" BorderThickness="1" Margin="0" CornerRadius="5">
-                            <Border x:Name="innerBorder" Background="{DynamicResource FullBackground}" BorderBrush="{DynamicResource Borders}" BorderThickness="1,1,1,0" Margin="-1" Opacity="0"/>
+                            <Border
+                                x:Name="innerBorder"
+                                Background="{DynamicResource ControlBackground}"
+                                BorderBrush="{DynamicResource Borders}"
+                                BorderThickness="1,1,1,0"
+                                Margin="-1"
+                                Opacity="0" />
                             <Border.BorderBrush>
                                 <SolidColorBrush Color="{DynamicResource BorderColor}" />
                             </Border.BorderBrush>
@@ -1195,10 +1200,8 @@
     </ObjectDataProvider>
     
     <!--#endregion-->
-    <!--#region Controls -->
-    <Style
-        x:Key="{x:Type CheckBox}"
-        TargetType="{x:Type CheckBox}">
+ 
+    <Style x:Key="{x:Type CheckBox}" TargetType="{x:Type CheckBox}">
         <Setter
             Property="Margin"
             Value="5" />
@@ -1291,8 +1294,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style
-        TargetType="{x:Type Button}">
+    <Style  TargetType="{x:Type Button}">
         <Style.Triggers>
             <Trigger
                 Property="IsEnabled"
@@ -1441,8 +1443,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style
-        TargetType="{x:Type RadioButton}">
+    <Style  TargetType="{x:Type RadioButton}">
         <Setter
             Property="Margin"
             Value="10,5,0,5" />
@@ -1557,9 +1558,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style
-        x:Key="ToggleButtonTwitchTokenSelecter"
-        TargetType="{x:Type ToggleButton}">
+    <Style  x:Key="ToggleButtonTwitchTokenSelecter" TargetType="{x:Type ToggleButton}">
         <Setter
             Property="Background"
             Value="{DynamicResource PartBackground}" />
@@ -1788,5 +1787,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <!--#endregion-->
 </ResourceDictionary>

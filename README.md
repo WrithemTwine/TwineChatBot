@@ -1,5 +1,5 @@
 # TwineStreamerBot
-Twitch bots written using .NET 9.0/C#, Entity Framework Core (EFC) 9, and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, with data grids visualizing table data saved to a SQL database, and user settings are saved to user/App Data.
+Twitch bots written using .NET 10.0/C#, Entity Framework Core (EFC) 10, and TwitchLib, https://github.com/TwitchLib/TwitchLib. It implements a WPF GUI, with data grids visualizing table data saved to a SQL database, and user settings are saved to user/App Data.
 
 The goal is to provide a local running (not through a website) bot application for streamers to use and improve the stream viewer experience, and provide many useful features without needing other bots to supplement the feature set. Other streaming platforms may be supported with enough interest - the code is setup to support adding additional platforms in the future.
 

@@ -133,7 +133,7 @@
                 <DockPanel
                     IsHitTestVisible="True"
                     WindowChrome.IsHitTestVisibleInChrome="True"
-                    Background="{DynamicResource FullBackground}"
+                    Background="Transparent"
                     MouseLeftButtonDown="DockPanel_MouseLeftButtonDown"
                     LastChildFill="True">
                     <Image
@@ -148,7 +148,7 @@
                         Margin="8,0" />
                     <Border
                         DockPanel.Dock="Right"
-                        Background="{DynamicResource FullBackground}"
+                        Background="Transparent"
                         IsHitTestVisible="True">
                         <!--<StackPanel Orientation="Horizontal" 
                                     HorizontalAlignment="Right"

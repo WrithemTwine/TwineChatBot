@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--#region Colors -->
     <Color
-        x:Key="LighterColor">#E0F2F1</Color>
+        x:Key="LighterColor">#E0F7FA</Color>
     <Color
         x:Key="MediumColor">#80CBC4</Color>
     <Color
@@ -33,7 +33,7 @@
     <Color
         x:Key="ScrollBarRepeatButton">#80CBC4</Color>
     <Color
-        x:Key="TabItemControlLightColor">#E0F2F1</Color>
+        x:Key="TabItemControlLightColor">#E0F7FA</Color>
     <Color
         x:Key="TabItemControlMediumColor">#80CBC4</Color>
     <Color
@@ -45,7 +45,7 @@
     <Color
         x:Key="ListViewControlLightColor">#B2DFDB</Color>
     <Color
-        x:Key="ButtonHoverControlLightColor">#E0F2F1</Color>
+        x:Key="ButtonHoverControlLightColor">#E0F7FA</Color>
     <Color
         x:Key="ButtonHoverControlMediumColor">#80CBC4</Color>
     <Color
@@ -59,11 +59,11 @@
     <Color
         x:Key="WindowColor">#F1F8F7</Color>
     <Color
-        x:Key="ContentAreaColorLight">#E0F2F1</Color>
+        x:Key="ContentAreaColorLight">#E0F7FA</Color>
     <Color
         x:Key="ContentAreaColorDark">#B2DFDB</Color>
     <Color
-        x:Key="DisabledControlLightColor">#E0F2F1</Color>
+        x:Key="DisabledControlLightColor">#E0F7FA</Color>
     <Color
         x:Key="DisabledControlDarkColor">#B2DFDB</Color>
     <Color
@@ -73,7 +73,7 @@
     <Color
         x:Key="SelectedUnfocusedColor">#4DB6AC</Color>
     <Color
-        x:Key="ControlLightColor">#E0F2F1</Color>
+        x:Key="ControlLightColor">#E0F7FA</Color>
     <Color
         x:Key="ControlMediumColor">#80CBC4</Color>
     <Color
@@ -87,7 +87,7 @@
     <Color
         x:Key="GlyphMouseOver">sc#1, 0.2, 0.5, 0.45</Color>
     <Color
-        x:Key="BorderLightColor">#E0F2F1</Color>
+        x:Key="BorderLightColor">#E0F7FA</Color>
     <Color
         x:Key="BorderMediumColor">#4DB6AC</Color>
     <Color
@@ -122,6 +122,16 @@
         x:Key="ScrollBarThumbMouseOverColor">#26A69A</Color>
     <Color
         x:Key="ScrollBarThumbPressedColor">#00897B</Color>
+    <Color
+        x:Key="BrightGoColor">#FF26A69A</Color>
+    <Color
+        x:Key="GoColor">#FF00897B</Color>
+    <Color
+        x:Key="BrightStopColor">#FFFF8A80</Color>
+    <Color
+        x:Key="StopColor">#FFE53935</Color>
+    <Color
+        x:Key="LabelBetaColor">#FFFFD54F</Color>
     <!--#endregion-->
     <!--#region Brushes - GradientCapable -->
     <SolidColorBrush
@@ -185,6 +195,10 @@
     <!--#endregion-->
     <!--#region Brushes - Solid -->
     <SolidColorBrush
+        x:Key="ControlBackground"
+        Color="{DynamicResource MediumColor}"
+        Opacity="{StaticResource ThemeBrushOpacity}" />
+    <SolidColorBrush
         x:Key="PartBackground"
         Color="{DynamicResource MediumColor}" />
     <SolidColorBrush
@@ -198,19 +212,19 @@
         Color="{DynamicResource DisabledForegroundButtonColor}" />
     <SolidColorBrush
         x:Key="BrightGo"
-        Color="#66BB6A" />
+        Color="{DynamicResource BrightGoColor}" />
     <SolidColorBrush
         x:Key="BrightStop"
-        Color="#EF5350" />
+        Color="{DynamicResource BrightStopColor}" />
     <SolidColorBrush
         x:Key="Go"
-        Color="#43A047" />
+        Color="{DynamicResource GoColor}" />
     <SolidColorBrush
         x:Key="Stop"
-        Color="#E53935" />
+        Color="{DynamicResource StopColor}" />
     <SolidColorBrush
         x:Key="LabelBeta"
-        Color="MediumVioletRed" />
+        Color="{DynamicResource LabelBetaColor}" />
     <SolidColorBrush
         x:Key="TabControlTabs"
         Color="{DynamicResource MediumColor}" />
