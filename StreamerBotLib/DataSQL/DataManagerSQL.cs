@@ -687,7 +687,7 @@ namespace StreamerBotLib.DataSQL
 
         public void PostBulkOverlayAlerts(List<OverlayActionType> overlayActionTypes)
         {
-            LogWriter.DebugLog("PostBulkOverlayAlerts", DebugLogTypes.DataManager, "Posting bulk overlay alerts to database." );            
+            LogWriter.DebugLog("PostBulkOverlayAlerts", DebugLogTypes.DataManager, "Posting bulk overlay alerts to database.");
             lock (GUIDataManagerLock.Lock)
             {
                 ThreadManager.AddTaskToGUIDispatcher(async () =>

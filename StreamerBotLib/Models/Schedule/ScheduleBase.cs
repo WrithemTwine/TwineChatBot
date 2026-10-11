@@ -4,10 +4,10 @@ using System.ComponentModel;
 using System.Globalization;
 
 namespace StreamerBotLib.Models.Schedule
-{       
+{
     // add platforms for each built platform-schedule
     public enum SchedulePlatform { Twitch };
-    
+
     public class ScheduleBase : IEquatable<ScheduleBase>
     {
         public SchedulePlatform Platform;

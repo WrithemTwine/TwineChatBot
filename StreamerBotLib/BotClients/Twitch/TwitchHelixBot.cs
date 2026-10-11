@@ -264,7 +264,7 @@ namespace StreamerBotLib.BotClients.Twitch
         private async Task<CreateStreamMarkerResponse> CreateStreamMarkerAsync(string UserId = null, string UserName = null, string Description = null)
         {
             string Id = UserId ?? await HelixGetUserId(UserName);
-            if(Id != null)
+            if (Id != null)
             {
                 var request = new CreateStreamMarkerRequest() { UserId = Id };
 
@@ -298,7 +298,7 @@ namespace StreamerBotLib.BotClients.Twitch
                 {
                     return func.Invoke();
                 }
-                catch(BadRequestException ex)
+                catch (BadRequestException ex)
                 {
                     LogWriter.LogException(ex, MethodName);
 
@@ -537,11 +537,12 @@ namespace StreamerBotLib.BotClients.Twitch
             });
         }
 
-        public bool SetChannelTitleCategory(string Title, string CategoryName=null, string CategoryId = null)
+        public bool SetChannelTitleCategory(string Title, string CategoryName = null, string CategoryId = null)
         {
             LogWriter.DebugLog("SetChannelTitleCategory", DebugLogTypes.TwitchHelixBot, $"Setting the channel title to {Title} and category to {CategoryName}.");
 
-            return PerformAction("SetChannelTitleCategory", () => {
+            return PerformAction("SetChannelTitleCategory", () =>
+            {
                 CategoryId ??= GetGameId(CategoryName);
                 _ = ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, Title: Title, GameId: CategoryId);
                 return true;

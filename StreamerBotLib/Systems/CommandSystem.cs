@@ -631,7 +631,7 @@ namespace StreamerBotLib.Systems
             {
                 string ParseResult(object response)
                 {
-                    if(User.Platform == Platform.Twitch)
+                    if (User.Platform == Platform.Twitch)
                     {
                         return (response as CreateStreamMarkerResponse).Marker[0].Description;
                     }
@@ -641,11 +641,11 @@ namespace StreamerBotLib.Systems
                 string description = arglist.Count == 0 ? null : string.Join(' ', arglist);
                 var response = BotController.CreateStreamMarker(description, User.Platform);
                 result = response == null ? LocalizedMsgSystem.GetVar("Msgmarkerfail") :
-                    VariableParser.ParseReplace( cmdrow.Message, 
-                    VariableParser.BuildDictionary( new Tuple<MsgVars, string>[] 
-                    { 
-                        new(MsgVars.user, User.UserName), 
-                        new(MsgVars.title, ParseResult(response)) 
+                    VariableParser.ParseReplace(cmdrow.Message,
+                    VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
+                    {
+                        new(MsgVars.user, User.UserName),
+                        new(MsgVars.title, ParseResult(response))
                     }));
             }
             else

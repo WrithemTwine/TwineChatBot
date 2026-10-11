@@ -7,16 +7,21 @@
         xmlns:s="clr-namespace:StreamerBotLib.Properties"
         mc:Ignorable="d"
         DataContext="{Binding Source={x:Static s:Settings.Default}}"
-    Title="Choose Storage Database"
-    SizeToContent="WidthAndHeight"
-    MaxWidth="800"
-    SnapsToDevicePixels="True">
+        Title="Choose Storage Database"
+        SizeToContent="WidthAndHeight"
+        MaxWidth="800"
+        SnapsToDevicePixels="True">
     <DockPanel ScrollViewer.VerticalScrollBarVisibility="Auto">
-        <TabControl TabStripPlacement="Left" DockPanel.Dock="Top" Height="300">
+        <TabControl TabStripPlacement="Left"
+                    DockPanel.Dock="Top"
+                    Height="300">
             <TabControl.Resources>
-                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-                    <Setter Property="Padding" Value="10" />
-                    <Setter Property="TextWrapping" Value="Wrap" />
+                <Style TargetType="{x:Type TextBlock}"
+                       BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="Padding"
+                            Value="10" />
+                    <Setter Property="TextWrapping"
+                            Value="Wrap" />
                 </Style>
             </TabControl.Resources>
             <TabItem Header="Information">
@@ -39,8 +44,7 @@
                     <LineBreak />
                     - The new EFC functionality requires an initial setup of database connection variables, as summarized 
             in the following sections.
-                    <LineBreak />
-                </TextBlock>
+                    <LineBreak /></TextBlock>
             </TabItem>
             <TabItem Header="Same Provider DB">
                 <TextBlock>
@@ -55,8 +59,7 @@
                     <LineBreak />
                     - Once the previous datastore xml diffgram import completes, user can delete or move the data file, since it is no longer needed
             and won't be updated.
-                    <LineBreak />
-                </TextBlock>
+                    <LineBreak /></TextBlock>
             </TabItem>
             <TabItem Header="Diff Provider Same DB">
                 <TextBlock><Underline>
@@ -75,8 +78,7 @@
                 - Once the previous datastore xml diffgram import completes, user can keep the file to import the same data snapshot
             into a new database provider file or delete/move the file outside of the application directory to next time load initial
             default data into the new database.
-                <LineBreak />
-                </TextBlock>
+                <LineBreak /></TextBlock>
             </TabItem>
             <TabItem Header="Change Provider Change DB">
                 <TextBlock>
@@ -92,90 +94,130 @@
               2: User can also keep the datastore xml file snapshot from the prior application version, which will import into the new
             database provider configuration, not including any newly generated data: <LineBreak />
               3: Starting a new EFC database provider will show this setup procedure again and setup the database 
-            schema through either initial default data or importing the snapshot xml datastore file. <LineBreak />
-                </TextBlock>
+            schema through either initial default data or importing the snapshot xml datastore file. <LineBreak /></TextBlock>
             </TabItem>
         </TabControl>
-
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button x:Name="Button_Apply" Content="Apply" Margin="10" Padding="3" Click="Button_ApplyClick" />
-            <Button x:Name="Button_Exit" Content="Exit" Margin="10" Padding="3" Click="Button_ExitClick" />
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+            <Button x:Name="Button_Apply"
+                    Content="Apply"
+                    Margin="10"
+                    Padding="3"
+                    Click="Button_ApplyClick" />
+            <Button x:Name="Button_Exit"
+                    Content="Exit"
+                    Margin="10"
+                    Padding="3"
+                    Click="Button_ExitClick" />
         </StackPanel>
-
-        <StackPanel x:Name="StackPanel_ChooseDB" DockPanel.Dock="Top" Margin="15" >
+        <StackPanel x:Name="StackPanel_ChooseDB"
+                    DockPanel.Dock="Top"
+                    Margin="15">
             <StackPanel.Resources>
-                <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="Width" Value="100" />
+                <Style TargetType="{x:Type TextBlock}"
+                       BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="HorizontalAlignment"
+                            Value="Left" />
+                    <Setter Property="Width"
+                            Value="100" />
                 </Style>
-                <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-                    <Setter Property="Width" Value="400" />
-                    <Setter Property="TextWrapping" Value="Wrap" />
+                <Style TargetType="{x:Type TextBox}"
+                       BasedOn="{StaticResource {x:Type TextBox}}">
+                    <Setter Property="Width"
+                            Value="400" />
+                    <Setter Property="TextWrapping"
+                            Value="Wrap" />
                 </Style>
-                <Style TargetType="{x:Type StackPanel}" >
-                    <Setter Property="Margin" Value="5" />
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Margin"
+                            Value="5" />
                 </Style>
             </StackPanel.Resources>
-
             <TextBlock Width="Auto">The data strings below are generally formatted for the Entity Framework Core 8 requirement. These strings are supplied as is to the Entity Framework Core database constructor to connect the database. The spaces and layout per the documentation strings needs to be maintained here or the database will fail to load (and would require editing the connection strings (Options->Database) and restarting this bot to connect to the database).</TextBlock>
-
-            <StackPanel x:Name="StackPanel_Sqlite" Orientation="Vertical" Visibility="Collapsed" >
+            <StackPanel x:Name="StackPanel_Sqlite"
+                        Orientation="Vertical"
+                        Visibility="Collapsed">
                 <TextBlock Width="500">Database: Sqlite</TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Connect String:</TextBlock>
-                    <TextBox x:Name="TextBox_SqliteConnect" Text="{Binding EFCConnectStringSqlite}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_SqliteConnect"
+                             Text="{Binding EFCConnectStringSqlite}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel x:Name="StackPanel_SQLServer" Orientation="Vertical" Visibility="Collapsed" >
+            <StackPanel x:Name="StackPanel_SQLServer"
+                        Orientation="Vertical"
+                        Visibility="Collapsed">
                 <TextBlock Width="500">Database: SQL Server</TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Connect String:</TextBlock>
-                    <TextBox x:Name="TextBox_SQLServerConnect" Text="{Binding EFCConnectStringSqlServer}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_SQLServerConnect"
+                             Text="{Binding EFCConnectStringSqlServer}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel x:Name="StackPanel_Cosmos" Orientation="Vertical" Visibility="Collapsed" >
+            <StackPanel x:Name="StackPanel_Cosmos"
+                        Orientation="Vertical"
+                        Visibility="Collapsed">
                 <TextBlock Width="500">Database: Cosmos</TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Connect String:</TextBlock>
-                    <TextBox x:Name="TextBox_CosmosConnect" Text="{Binding EFCConnectStringCosmos}" TextWrapping="Wrap" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_CosmosConnect"
+                             Text="{Binding EFCConnectStringCosmos}"
+                             TextWrapping="Wrap"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Database Name:</TextBlock>
-                    <TextBox x:Name="TextBox_CosmosDatabaseName" Text="{Binding EFCDbNameCosmos}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_CosmosDatabaseName"
+                             Text="{Binding EFCDbNameCosmos}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel x:Name="StackPanel_PostgreSQL" Orientation="Vertical" Visibility="Collapsed" >
+            <StackPanel x:Name="StackPanel_PostgreSQL"
+                        Orientation="Vertical"
+                        Visibility="Collapsed">
                 <TextBlock Width="500">Database: PostgreSQL</TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Connect String:</TextBlock>
-                    <TextBox x:Name="TextBox_PostgreSQLConnect" Text="{Binding EFCConnectStringPostgreSQL}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_PostgreSQLConnect"
+                             Text="{Binding EFCConnectStringPostgreSQL}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel x:Name="StackPanel_MySQL" Orientation="Vertical" Visibility="Collapsed" >
+            <StackPanel x:Name="StackPanel_MySQL"
+                        Orientation="Vertical"
+                        Visibility="Collapsed">
                 <TextBlock Width="500">Database: MySQL</TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Connect String:</TextBlock>
-                    <TextBox x:Name="TextBox_MySqlConnect" Text="{Binding EFCConnectStringMySql}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_MySqlConnect"
+                             Text="{Binding EFCConnectStringMySql}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
             </StackPanel>
-
-            <StackPanel x:Name="StackPanel_KNet" Orientation="Vertical" Visibility="Collapsed" >
+            <StackPanel x:Name="StackPanel_KNet"
+                        Orientation="Vertical"
+                        Visibility="Collapsed">
                 <TextBlock Width="500">Database: MASES-KNet-Apache</TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Bootstrap Server:</TextBlock>
-                    <TextBox x:Name="TextBox_KNetBootstrapServers" Text="{Binding EFCKNetBootstrapServers}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_KNetBootstrapServers"
+                             Text="{Binding EFCKNetBootstrapServers}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Application Id:</TextBlock>
-                    <TextBox x:Name="TextBox_KNetApplicationId" Text="{Binding EFCKNetApplicationId}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_KNetApplicationId"
+                             Text="{Binding EFCKNetApplicationId}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Database Name:</TextBlock>
-                    <TextBox x:Name="TextBox_KNetDatabaseName" Text="{Binding EFCDbNameKNet}" TextChanged="TextBox_TextChanged" />
+                    <TextBox x:Name="TextBox_KNetDatabaseName"
+                             Text="{Binding EFCDbNameKNet}"
+                             TextChanged="TextBox_TextChanged" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>

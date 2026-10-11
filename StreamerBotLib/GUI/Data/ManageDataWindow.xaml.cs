@@ -175,7 +175,7 @@ namespace StreamerBotLib.GUI.Data
         {
             void UpdateComboBoxItems(ComboBox source, ComboBox target)
             {
-                target?.ItemsSource = ActionSystem.GUIOverlayTypeAlerts.GetValue( Enum.Parse<OverlayTypes>(source.SelectedItem as string) );
+                target?.ItemsSource = ActionSystem.GUIOverlayTypeAlerts.GetValue(Enum.Parse<OverlayTypes>(source.SelectedItem as string));
             }
 
             if (_comboboxActionType == sender)

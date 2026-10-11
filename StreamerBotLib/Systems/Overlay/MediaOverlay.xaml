@@ -5,9 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StreamerBotLib.Systems.Overlay"
         mc:Ignorable="d"
-        Height="550" Width="510" 
-        Title="Media Overlay Service" Loaded="Window_Loaded" Closing="Window_Closing">
-
-        <Frame Source="pack://application:,,,/StreamerBotLib;component/Systems/Overlay/MediaOverlayPage.xaml" IsManipulationEnabled="True" />
-
+        Height="550"
+        Width="510"
+        Title="Media Overlay Service"
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
+    <Frame Source="pack://application:,,,/StreamerBotLib;component/Systems/Overlay/MediaOverlayPage.xaml"
+           IsManipulationEnabled="True" />
 </Window>

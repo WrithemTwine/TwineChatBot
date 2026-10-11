@@ -1067,7 +1067,7 @@ namespace StreamerBotLib.Static
         {
             get
             {
-                return new DateTime(1, 1, 1,ScheduleSendTimeHrs, ScheduleSendTimeMin, 0);
+                return new DateTime(1, 1, 1, ScheduleSendTimeHrs, ScheduleSendTimeMin, 0);
             }
         }
 

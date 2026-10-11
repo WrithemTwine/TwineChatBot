@@ -1,4 +1,6 @@
-﻿using StreamerBotLib.BotIOController;
+﻿#define UseContextMenu_Enabled
+
+using StreamerBotLib.BotIOController;
 using StreamerBotLib.DataSQL.AccessPolicy;
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.DataSQL.TableMeta;
@@ -335,6 +337,27 @@ namespace StreamerBot
                 // menu access permissions for the current DataGrid table
                 MenuAccess tableMenuAccess = PermissionDigest.GetTableMenuAccess(GetTableName((DataGrid)sender));
 
+#if UseContextMenu_Enabled
+                foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
+                {
+                    if (M.GetType() == typeof(MenuItem))
+                    {
+                        MenuItem menuitem = (MenuItem)M;
+                        menuitem.IsEnabled = (bool)tableMenuAccess[MenuAccessMap[menuitem.Name]];
+                    }
+                    //else if (M.GetType() == typeof(Separator))
+                    //{
+                    //    if (((Separator)M).Name == "DataGridContextMenu_Separator1")
+                    //    {
+                    //        ((Separator)M).Visibility = tableMenuAccess.AutoShout || tableMenuAccess.MonitorLive ? Visibility.Visible : Visibility.Collapsed;
+                    //    }
+                    //    else if (((Separator)M).Name == "DataGridContextMenu_Separator2")
+                    //    {
+                    //        ((Separator)M).Visibility = tableMenuAccess.EnableItems || tableMenuAccess.DisableItems ? Visibility.Visible : Visibility.Collapsed;
+                    //    }
+                    //}
+                }
+#else
                 foreach (var M in ((ContextMenu)Resources["DataGrid_ContextMenu"]).Items)
                 {
                     if (M.GetType() == typeof(MenuItem))
@@ -354,6 +377,7 @@ namespace StreamerBot
                         }
                     }
                 }
+#endif
             }
 
             //if (sender.GetType() == typeof(DataGrid))
@@ -689,7 +713,7 @@ namespace StreamerBot
 
         #endregion
 
-        #endregion
+#endregion
 
         #region DataGrid Item editing
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)

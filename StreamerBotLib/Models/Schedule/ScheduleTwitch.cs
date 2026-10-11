@@ -1,7 +1,4 @@
-﻿using StreamerBotLib.Models.Enums;
-using StreamerBotLib.Static;
-
-namespace StreamerBotLib.Models.Schedule
+﻿namespace StreamerBotLib.Models.Schedule
 {
     public class ScheduleTwitch : ScheduleBase
     {

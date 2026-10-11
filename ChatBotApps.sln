@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImplementCustomTitleBar", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildPermissionDigestXML", "BuildPermissionDigestXML\BuildPermissionDigestXML.csproj", "{9A77FB08-FFEC-441A-AA34-37BE5C0C4889}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThemeEditor", "ThemeEditor\ThemeEditor.csproj", "{1944422B-A01D-4C4D-8872-CB76F87C892C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_EFEETesting|Any CPU = Debug_EFEETesting|Any CPU
@@ -267,6 +269,30 @@ Global
 		{9A77FB08-FFEC-441A-AA34-37BE5C0C4889}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A77FB08-FFEC-441A-AA34-37BE5C0C4889}.Update_Nuget_Only|Any CPU.ActiveCfg = Release|Any CPU
 		{9A77FB08-FFEC-441A-AA34-37BE5C0C4889}.Update_Nuget_Only|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Debug_EFEETesting|Any CPU.ActiveCfg = Debug|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Debug_EFEETesting|Any CPU.Build.0 = Debug|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Debug_ViewXAML|Any CPU.ActiveCfg = Debug|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Debug_ViewXAML|Any CPU.Build.0 = Debug|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_Cosmos|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_Cosmos|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_KNet|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_KNet|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_MySql|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_MySql|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_PomeloMySql|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_PomeloMySql|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_PostGre|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_PostGre|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_Sqlite|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_Sqlite|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_SqlServer|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release_SqlServer|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Update_Nuget_Only|Any CPU.ActiveCfg = Release|Any CPU
+		{1944422B-A01D-4C4D-8872-CB76F87C892C}.Update_Nuget_Only|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -283,6 +309,7 @@ Global
 		{21ED3CD3-F07A-430E-91E9-076EE9EB9EE2} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
 		{633999BF-030D-4D33-A0EF-C824F19F1B6F} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
 		{9A77FB08-FFEC-441A-AA34-37BE5C0C4889} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
+		{1944422B-A01D-4C4D-8872-CB76F87C892C} = {A310FC30-D3E0-4DE4-8762-B361E91C90FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2590D191-DDC6-433E-9B3A-4EC8148CA900}

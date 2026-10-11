@@ -768,9 +768,9 @@ namespace StreamerBotLib.BotClients
 
             if (!OptionFlags.IsStreamOnline)
             {
-                InvokeStaticBotEvent(null, BotEvents.TwitchStreamUpdate, 
+                InvokeStaticBotEvent(null, BotEvents.TwitchStreamUpdate,
                     new NewChannelUpdateEventArgs(
-                        new TwitchLib.EventSub.Core.SubscriptionTypes.Channel.ChannelUpdate() { CategoryId = CategoryId , CategoryName = CategoryName }));
+                        new TwitchLib.EventSub.Core.SubscriptionTypes.Channel.ChannelUpdate() { CategoryId = CategoryId, CategoryName = CategoryName }));
             }
 
             return result;

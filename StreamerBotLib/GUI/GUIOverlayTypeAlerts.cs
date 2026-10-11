@@ -44,8 +44,8 @@ namespace StreamerBotLib.GUI
         {
             lock (OverlayTypeActionPairs)
             {
-                return 
-                    type == OverlayTypes.None 
+                return
+                    type == OverlayTypes.None
                     ? [] // send empty for "None" records 
                     : [.. OverlayTypeActionPairs[type.ToString()]];
             }

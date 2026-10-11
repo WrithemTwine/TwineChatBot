@@ -575,16 +575,16 @@ namespace StreamerBotLib.DataSQL.EFC10
             await context.Database.BeginTransactionAsync();
 
             await context.OverlayServices.AddRangeAsync(from Oa in overlayActionTypes
-                                                        select 
+                                                        select
                                                         new OverlayServices(
-                                                            isEnabled: true, 
-                                                            overlayType: Oa.OverlayType, 
-                                                            overlayAction: Oa.ActionValue, 
-                                                            userName: Oa.UserName, 
-                                                            useChatMsg: Oa.UseChatMsg, 
+                                                            isEnabled: true,
+                                                            overlayType: Oa.OverlayType,
+                                                            overlayAction: Oa.ActionValue,
+                                                            userName: Oa.UserName,
+                                                            useChatMsg: Oa.UseChatMsg,
                                                             duration: Oa.Duration,
-                                                            message: Oa.Message, 
-                                                            imageFile: Oa.ImageFile, 
+                                                            message: Oa.Message,
+                                                            imageFile: Oa.ImageFile,
                                                             mediaFile: Oa.MediaFile));
 
             await context.Database.CommitTransactionAsync();
