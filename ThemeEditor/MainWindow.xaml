@@ -4,13 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ThemeEditor"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="800">
+        Background="{DynamicResource FullBackground}"
+        Foreground="{DynamicResource ForegroundText}"
+        Title="Theme Editor"
+        Height="850"
+        Width="1000">
     <Window.Resources>
-        <sys:Double x:Key="ThemeBrushOpacity">0.85</sys:Double>
         <ResourceDictionary>
-            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary x:Name="ResourceThemeDictionary"
                                     Source="/DarkTheme.xaml" />
@@ -20,190 +21,189 @@
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel>
-        
-    
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150*" />
-            <ColumnDefinition Width="200*" />
-        </Grid.ColumnDefinitions>
-        <!-- Red Slider -->
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="0"
-                    Margin="0,5">
-            <TextBlock Text="R:"
-                       Width="20"
-                       VerticalAlignment="Center" />
-            <Slider x:Name="SliderR"
-                    Minimum="0"
-                    Maximum="255"
-                    Width="200"
-                    ValueChanged="Slider_ValueChanged" />
-            <TextBlock x:Name="TextR"
-                       Width="40"
-                       VerticalAlignment="Center" />
-        </StackPanel>
-        <!-- Green Slider -->
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="1"
-                    Margin="0,5">
-            <TextBlock Text="G:"
-                       Width="20"
-                       VerticalAlignment="Center" />
-            <Slider x:Name="SliderG"
-                    Minimum="0"
-                    Maximum="255"
-                    Width="200"
-                    ValueChanged="Slider_ValueChanged" />
-            <TextBlock x:Name="TextG"
-                       Width="40"
-                       VerticalAlignment="Center" />
-        </StackPanel>
-        <!-- Blue Slider -->
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="2"
-                    Margin="0,5">
-            <TextBlock Text="B:"
-                       Width="20"
-                       VerticalAlignment="Center" />
-            <Slider x:Name="SliderB"
-                    Minimum="0"
-                    Maximum="255"
-                    Width="200"
-                    ValueChanged="Slider_ValueChanged" />
-            <TextBlock x:Name="TextB"
-                       Width="40"
-                       VerticalAlignment="Center" />
-        </StackPanel>
-        <!-- Color Preview -->
-        <Border Grid.Row="3"
-                Grid.ColumnSpan="2"
-                Margin="0,10"
-                BorderBrush="Black"
-                BorderThickness="1"
-                CornerRadius="5">
-            <Rectangle x:Name="ColorPreview"
-                       Height="50"
-                       Fill="Black" />
+        <DockPanel DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal"
+                        Margin="5"
+                        DockPanel.Dock="Top">
+                <ComboBox Name="ComboBoxSelectThemeFile"
+                          Margin="10,0"
+                          MinWidth="150"
+                          MaxWidth="150"
+                          SelectionChanged="ComboBoxSelectThemeFile_SelectionChanged" />
+                <Button x:Name="Button_SelectedThemeSave" Content="Save"
+                        Padding="5,0" Click="Button_SelectedThemeSave_Click" />
+            </StackPanel>
+            <ListView Name="ListViewThemeFileContents"
+                      DockPanel.Dock="Top"
+                      Width="Auto"
+                      ItemsSource="{Binding CurrentColors}"
+                      SelectedItem="{Binding SelectedColor, Mode=TwoWay}"
+                      IsSynchronizedWithCurrentItem="True"
+                      ScrollViewer.CanContentScroll="True">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Key"
+                                        Width="250">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Key}"
+                                               TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Color"
+                                        Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </DockPanel>
+        <Border DockPanel.Dock="Top">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding SelectedColor.Color}" />
+            </Border.Background>
+            <StackPanel Background="Black" Width="280">
+                <!-- Red Slider -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,5">
+                    <TextBlock Text="R:"
+                               Width="30"
+                               Foreground="White"
+                               VerticalAlignment="Center" />
+                    <Slider x:Name="SliderR"
+                            Minimum="0"
+                            Maximum="255"
+                            Width="200" 
+                            Value="{Binding SelectedColor.Color.R}" />
+                    <TextBlock x:Name="TextR"
+                               Width="40"
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Text="{Binding Value, ElementName=SliderR}" />
+                </StackPanel>
+                <!-- Green Slider -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,5">
+                    <TextBlock Text="G:"
+                               Width="30"
+                               Foreground="White"
+                               VerticalAlignment="Center" />
+                    <Slider x:Name="SliderG"
+                            Minimum="0"
+                            Maximum="255"
+                            Width="200"
+                            Value="{Binding SelectedColor.Color.G}"/>
+                    <TextBlock x:Name="TextG"
+                               Width="40"
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Text="{Binding Value, ElementName=SliderG}" />
+                </StackPanel>
+                <!-- Blue Slider -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,5">
+                    <TextBlock Text="B:"
+                               Width="30"
+                               Foreground="White"
+                               VerticalAlignment="Center" />
+                    <Slider x:Name="SliderB"
+                            Minimum="0"
+                            Maximum="255"
+                            Width="200"
+                            Value="{Binding SelectedColor.Color.B}"/>
+                    <TextBlock x:Name="TextB"
+                               Width="40"
+                               Foreground="White"
+                               VerticalAlignment="Center"
+                               Text="{Binding Value, ElementName=SliderB}" />
+                </StackPanel>
+                <!-- Color Spectrum Image -->
+                <Image x:Name="ColorImage"
+                       Stretch="Fill"
+                       MouseDown="ColorImage_MouseDown" />
+                
+            </StackPanel>
         </Border>
-        <!-- Color Spectrum Image -->
-        <Image x:Name="ColorImage"
-               Grid.Column="1"
-               Stretch="Fill"
-               MouseDown="ColorImage_MouseDown" />
-        <!-- Preview -->
-        <StackPanel Grid.Row="0"
-                    Grid.Column="1"
-                    Grid.RowSpan="3"
-                    Orientation="Horizontal"
-                    Margin="0,10">
-            <Rectangle x:Name="PreviewRect"
-                       Width="50"
-                       Height="50"
-                       Stroke="Black"
-                       StrokeThickness="1" />
-            <TextBlock x:Name="ColorInfo"
-                       Margin="10,0"
-                       VerticalAlignment="Center" />
-        </StackPanel>
         <GroupBox Header="Theme Example"
-                  Grid.Row="4"
-                  Grid.ColumnSpan="2"
                   Width="Auto"
                   MaxWidth="1100"
                   Margin="0,2,0,0"
                   Padding="10">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="20*" />
-                    <ColumnDefinition Width="20*" />
-                    <ColumnDefinition Width="25*" />
-                    <ColumnDefinition Width="35*" />
-                </Grid.ColumnDefinitions>
-                <!-- ========== Column 1: Basic Controls ========== -->
-                <StackPanel Grid.Column="0"
-                            Margin="0,0,15,0">
-                    <TextBlock Text="Buttons &amp; Inputs"
-                               FontWeight="Bold"
-                               Margin="0,0,0,8" />
-                    <StackPanel Orientation="Horizontal"
-                                Margin="0,0,0,6">
-                        <Button Content="Enabled"
-                                Width="80"
-                                Margin="0,0,8,0" />
-                        <Button Content="Disabled"
-                                Width="80"
-                                IsEnabled="False" />
-                    </StackPanel>
-                    <CheckBox Content="Enabled Checkbox"
-                              Margin="0,4" />
-                    <CheckBox Content="Disabled Checkbox"
-                              IsEnabled="False"
-                              Margin="0,4" />
-                    <RadioButton Content="Enabled Radio"
-                                 Margin="0,4" />
-                    <RadioButton Content="Disabled Radio"
-                                 IsEnabled="False"
-                                 Margin="0,4" />
-                    <TextBox Text="Enabled TextBox"
-                             Margin="0,8,0,4" />
-                    <TextBox Text="Disabled TextBox"
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left" Width="250">
+                <TextBlock Text="Buttons &amp; Inputs"
+                           FontWeight="Bold"
+                           Margin="0,0,0,8" />
+                <StackPanel Orientation="Horizontal"
+                            Margin="8,0,8,6">
+                    <Button Content="Enabled"
+                            Width="80"
+                            Margin="0,0,8,0" />
+                    <Button Content="Disabled"
+                            Width="80"
+                            IsEnabled="False" />
+                </StackPanel>
+                <CheckBox Content="Enabled Checkbox"
+                          Margin="0,4" />
+                <CheckBox Content="Disabled Checkbox"
+                          IsEnabled="False"
+                          Margin="0,4" />
+                <RadioButton Content="Enabled Radio"
+                             Margin="0,4" />
+                <RadioButton Content="Disabled Radio"
                              IsEnabled="False"
-                             Margin="0,0,0,8" />
-                    <TextBlock Text="TextBlock"
-                               Margin="0,4" />
-                    <Label Content="Label"
-                           Padding="0"
-                           Margin="0,2" />
-                </StackPanel>
-                <!-- ========== Column 2: Status Colors ========== -->
-                <StackPanel Grid.Column="1"
-                            Margin="0,0,15,0">
-                    <TextBlock Text="Status Colors"
-                               FontWeight="Bold"
-                               Margin="0,0,0,8" />
-                    <TextBlock Text="BrightGo"
-                               Foreground="{DynamicResource BrightGo}"
-                               Margin="0,4" />
-                    <TextBlock Text="Go"
-                               Foreground="{DynamicResource Go}"
-                               Margin="0,4" />
-                    <TextBlock Text="BrightStop"
-                               Foreground="{DynamicResource BrightStop}"
-                               Margin="0,4" />
-                    <TextBlock Text="Stop"
-                               Foreground="{DynamicResource Stop}"
-                               Margin="0,4" />
-                    <TextBlock Text="TabControl"
-                               FontWeight="Bold"
-                               Margin="0,20,0,6" />
-                    <TabControl Height="90">
-                        <TabItem Header="Tab 1">
-                            <TextBlock Text="Content 1"
-                                       Margin="8" />
-                        </TabItem>
-                        <TabItem Header="Tab 2">
-                            <TextBlock Text="Content 2"
-                                       Margin="8" />
-                        </TabItem>
-                    </TabControl>
-                </StackPanel>
-                <!-- ========== Column 3: ListBox + ListView ========== -->
-                <StackPanel Grid.Column="2"
-                            Margin="0,0,15,0">
+                             Margin="0,4" />
+                <TextBox Text="Enabled TextBox"
+                         Margin="0,8,0,4" />
+                <TextBox Text="Disabled TextBox"
+                         IsEnabled="False"
+                         Margin="0,0,0,8" />
+                <TextBlock Text="TextBlock"
+                           Margin="0,4" />
+                <Label Content="Label"
+                       Padding="0"
+                       Margin="0,2" />
+                <TextBlock Text="Status Colors"
+                           FontWeight="Bold"
+                           Margin="0,0,0,8" />
+                <TextBlock Text="BrightGo"
+                           Foreground="{DynamicResource BrightGo}"
+                           Margin="0,4" />
+                <TextBlock Text="Go"
+                           Foreground="{DynamicResource Go}"
+                           Margin="0,4" />
+                <TextBlock Text="BrightStop"
+                           Foreground="{DynamicResource BrightStop}"
+                           Margin="0,4" />
+                <TextBlock Text="Stop"
+                           Foreground="{DynamicResource Stop}"
+                           Margin="0,4" />
+                <TextBlock Text="TabControl"
+                           FontWeight="Bold"
+                           Margin="0,20,0,6" />
+                <TabControl Height="90">
+                    <TabItem Header="Tab 1">
+                        <TextBlock Text="Content 1"
+                                   Margin="8" />
+                    </TabItem>
+                    <TabItem Header="Tab 2">
+                        <TextBlock Text="Content 2"
+                                   Margin="8" />
+                    </TabItem>
+                </TabControl></StackPanel>
+                <StackPanel DockPanel.Dock="Right">
+                <StackPanel>
                     <TextBlock Text="ListBox"
                                FontWeight="Bold"
                                Margin="0,0,0,6" />
                     <ListBox Height="110"
-                             DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}"
-                             ItemsSource="{Binding Collection}">
+                             ItemsSource="{Binding Collection}"
+                             d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -215,12 +215,14 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                </StackPanel>
+                <StackPanel>
                     <TextBlock Text="ListView"
                                FontWeight="Bold"
                                Margin="0,12,0,6" />
                     <ListView Height="110"
-                              DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}"
-                              ItemsSource="{Binding Collection}">
+                              ItemsSource="{Binding Collection}"
+                              d:ItemsSource="{d:SampleData ItemCount=5}">
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn Header="Parameter"
@@ -233,15 +235,12 @@
                         </ListView.View>
                     </ListView>
                 </StackPanel>
-                <!-- ========== Column 4: DataGrid ========== -->
-                <StackPanel Grid.Column="3">
+                <StackPanel>
                     <TextBlock Text="DataGrid"
                                FontWeight="Bold"
                                Margin="0,0,0,6" />
                     <DataGrid Height="240"
-                              Width="350"
-                              DataContext="{Binding Mode=OneWay, Source={StaticResource CommandInfo}}"
-                              ItemsSource="{Binding Collection}"
+                              d:ItemsSource="{d:SampleData ItemCount=20}"
                               IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Parameter"
@@ -252,9 +251,8 @@
                                                 Binding="{Binding Value}" />
                         </DataGrid.Columns>
                     </DataGrid>
-                </StackPanel>
-            </Grid>
+                </StackPanel></StackPanel>
+            </DockPanel>
         </GroupBox>
-    </Grid>
     </DockPanel>
 </Window>

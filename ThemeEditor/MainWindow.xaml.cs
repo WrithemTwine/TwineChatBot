@@ -1,32 +1,60 @@
-﻿using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ThemeEditor
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private readonly ThemeFile _themeFiles = new();
+
+        private ObservableCollection<ColorElement> _currentColors = new();
+        private ColorElement? _selectedColor;
+
+        public ObservableCollection<ColorElement> CurrentColors
+        {
+            get => _currentColors;
+            set { _currentColors = value; OnPropertyChanged(); }
+        }
+
+        public ColorElement? SelectedColor
+        {
+            get => _selectedColor;
+            set { _selectedColor = value; OnPropertyChanged(); }
+        }
+
         private WriteableBitmap _bitmap;
+
+        public WriteableBitmap bitmap
+        {
+            get => _bitmap;
+            set { _bitmap = value; OnPropertyChanged(); }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string? name = null)
+        {
+            PropertyChanged?.Invoke(this, new(name));
+        }
 
         public MainWindow()
         {
             InitializeComponent();
-            UpdateColorPreview();
+            DataContext = this;
+            ComboBoxSelectThemeFile.ItemsSource = _themeFiles.ThemeFiles;
 
             // Create a gradient spectrum programmatically
             int width = 256;
             int height = 256;
-            _bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+            bitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
 
             byte[] pixels = new byte[width * height * 4];
             for (int y = 0; y < height; y++)
@@ -46,25 +74,13 @@ namespace ThemeEditor
             }
         }
 
-        private void Slider_ValueChanged(object sender, RoutedEventArgs e)
+        private void AdjustThemeResource(string themefilename)
         {
-            UpdateColorPreview();
-        }
-
-        private void UpdateColorPreview()
-        {
-            // Get slider values
-            byte r = (byte)SliderR.Value;
-            byte g = (byte)SliderG.Value;
-            byte b = (byte)SliderB.Value;
-
-            // Update text blocks
-            TextR.Text = r.ToString();
-            TextG.Text = g.ToString();
-            TextB.Text = b.ToString();
-
-            // Update preview rectangle
-            ColorPreview.Fill = new SolidColorBrush(Color.FromRgb(r, g, b));
+            Resources.MergedDictionaries[0] =
+                 new ResourceDictionary
+                 {
+                     Source = new Uri(ThemeFile.ThemeFilePath(themefilename), UriKind.Absolute)
+                 };
         }
 
         private void ColorImage_MouseDown(object sender, MouseButtonEventArgs e)
@@ -83,10 +99,28 @@ namespace ThemeEditor
             _bitmap.CopyPixels(new Int32Rect(px, py, 1, 1), pixels, 4, 0);
 
             Color color = Color.FromArgb(pixels[3], pixels[2], pixels[1], pixels[0]);
-
-            // Update preview
-            PreviewRect.Fill = new SolidColorBrush(color);
-            ColorInfo.Text = $"RGB: {color.R}, {color.G}, {color.B}";
         }
+
+        #region ThemeFile Collection
+        private void ComboBoxSelectThemeFile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBoxSelectThemeFile.SelectedItem is string name)
+            {
+                CurrentColors = new ObservableCollection<ColorElement>(_themeFiles.OpenThemeFile(name));
+                SelectedColor = CurrentColors.FirstOrDefault();
+                AdjustThemeResource(name);
+            }
+        }
+
+        private void Button_SelectedThemeSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (ComboBoxSelectThemeFile.SelectedItem is string name)
+            {
+                _themeFiles.SaveThemeFile(name, [.. _currentColors]);
+            }
+        }
+
+        #endregion
+
     }
 }

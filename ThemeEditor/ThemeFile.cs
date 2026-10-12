@@ -17,14 +17,14 @@ namespace ThemeEditor
             ThemeFiles = [];
             ThemeFiles.AddRange(from string t in
                                     from s in Directory.GetFiles(ThemePath)
-                                    where s.Contains(".xaml") && s.Contains("Theme")
-                                    select s
+                                    where s.Contains("Theme.xaml")
+                                    select Path.GetFileNameWithoutExtension(s)
                                 select t);
         }
 
         public static string ThemeFilePath(string filename)
         {
-            return Path.Combine(ThemePath, filename) + ".xaml";
+            return filename == null ? "" : Path.Combine(ThemePath, filename) + ".xaml";
         }
 
         public List<ColorElement> OpenThemeFile(string themefile)
@@ -34,12 +34,17 @@ namespace ThemeEditor
             if (File.Exists(path))
             {
                 XElement themedatafile = XElement.Load(path);
-                data.AddRange(from item in themedatafile.Elements("Color")
-                              select new ColorElement()
-                              {
-                                  Key = item.Attribute("x:Key").Value,
-                                  Color = (Color)ColorConverter.ConvertFromString(item.Value)
-                              });
+                XNamespace ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+                XNamespace xns = "http://schemas.microsoft.com/winfx/2006/xaml";
+                data.AddRange(
+                    from item in themedatafile.Elements(ns + "Color")
+                    let keyAttr = item.Attribute(xns + "Key")
+                    where keyAttr != null
+                    select new ColorElement(
+                        keyAttr.Value,
+                        (Color)ColorConverter.ConvertFromString(item.Value)
+                    )
+                );
             }
             return data;
         }
@@ -48,10 +53,13 @@ namespace ThemeEditor
         {
             string path = ThemeFilePath(themefile);
             XElement themedatafile = XElement.Load(path);
+            XNamespace ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+            XNamespace xns = "http://schemas.microsoft.com/winfx/2006/xaml";
 
-            foreach(XElement color in themedatafile.Elements("Color"))
+            foreach (XElement color in themedatafile.Elements(ns + "Color"))
             {
-                int idx = data.FindIndex(d => d.Key == color.Attribute("x:Key").Value);
+                var key = color.Attribute(xns + "Key")?.Value;
+                int idx = data.FindIndex(d => d.Key == key);
                 if(idx != -1)
                 {
                     Color curr = (data[idx]).Color;
@@ -73,7 +81,7 @@ namespace ThemeEditor
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Path.Combine(ThemePath, value as string ?? "", ".xaml");
+                return ThemeFile.ThemeFilePath(value as string);
         }
     }
 }
