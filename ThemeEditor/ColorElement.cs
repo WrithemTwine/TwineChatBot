@@ -29,7 +29,7 @@ namespace ThemeEditor
         }
         public string Hex
         {
-            get => $"#{_color.A:X2}{_color.R:X2}{_color.G:X2}{_color.B:X2}";
+            get => $"#{_color.R:X2}{_color.G:X2}{_color.B:X2}";
             set
             {
                 try

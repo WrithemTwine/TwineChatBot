@@ -9,7 +9,7 @@
         Foreground="{DynamicResource ForegroundText}"
         Title="Theme Editor"
         Height="850"
-        Width="1000">
+        Width="1100">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -30,12 +30,20 @@
                           MinWidth="150"
                           MaxWidth="150"
                           SelectionChanged="ComboBoxSelectThemeFile_SelectionChanged" />
-                <Button x:Name="Button_SelectedThemeSave" Content="Save"
-                        Padding="5,0" Click="Button_SelectedThemeSave_Click" />
+                <Button x:Name="Button_SelectedThemeSave"
+                        Content="Save"
+                        Padding="5,0"
+                        Click="Button_SelectedThemeSave_Click" />
+                <Button Margin="35,0"
+                        Content="Undo Curr Hex"
+                        Padding="5,0"
+                        Click="Button_UndoColor_Click"
+                        ToolTip="Revert selected color to value when it was selected" />
             </StackPanel>
             <ListView Name="ListViewThemeFileContents"
                       DockPanel.Dock="Top"
                       Width="Auto"
+                      Background="GhostWhite"
                       ItemsSource="{Binding CurrentColors}"
                       SelectedItem="{Binding SelectedColor, Mode=TwoWay}"
                       IsSynchronizedWithCurrentItem="True"
@@ -47,7 +55,20 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Key}"
+                                               Background="Transparent"
+                                               Foreground="Black"
                                                TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Actual"
+                                        Width="70">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Width="25">
+                                        <TextBlock.Background>
+                                            <SolidColorBrush Color="{Binding Color}" />
+                                        </TextBlock.Background></TextBlock>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -55,78 +76,146 @@
                                         Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBox Text="{Binding Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox Background="Transparent"
+                                             Foreground="Black"
+                                             Width="80"
+                                             Text="{Binding Hex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                     </GridView>
                 </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="#FFE8E8E8" />
+                            </Trigger>
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+                                <Setter Property="Background"
+                                        Value="#FF4A90D9" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.ItemContainerStyle>
             </ListView>
         </DockPanel>
         <Border DockPanel.Dock="Top">
             <Border.Background>
                 <SolidColorBrush Color="{Binding SelectedColor.Color}" />
             </Border.Background>
-            <StackPanel Background="Black" Width="280">
-                <!-- Red Slider -->
-                <StackPanel Orientation="Horizontal"
-                            Margin="0,5">
-                    <TextBlock Text="R:"
-                               Width="30"
-                               Foreground="White"
-                               VerticalAlignment="Center" />
-                    <Slider x:Name="SliderR"
+            <StackPanel Orientation="Horizontal">
+                <StackPanel Width="40" Height="280" Background="Black">
+                    <Slider x:Name="SliderBrightnessChange"
+                            Orientation="Vertical"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
                             Minimum="0"
                             Maximum="255"
-                            Width="200" 
-                            Value="{Binding SelectedColor.Color.R}" />
-                    <TextBlock x:Name="TextR"
-                               Width="40"
-                               Foreground="White"
-                               VerticalAlignment="Center"
-                               Text="{Binding Value, ElementName=SliderR}" />
+                            Value="{Binding H}"
+                            Height="256"
+                            ValueChanged="SliderBrightnessChange_ValueChanged" />
+                    <TextBlock HorizontalAlignment="Center" Foreground="GhostWhite"  Text="{Binding Value, ElementName=SliderBrightnessChange}" />
                 </StackPanel>
-                <!-- Green Slider -->
-                <StackPanel Orientation="Horizontal"
-                            Margin="0,5">
-                    <TextBlock Text="G:"
-                               Width="30"
-                               Foreground="White"
-                               VerticalAlignment="Center" />
-                    <Slider x:Name="SliderG"
-                            Minimum="0"
-                            Maximum="255"
-                            Width="200"
-                            Value="{Binding SelectedColor.Color.G}"/>
-                    <TextBlock x:Name="TextG"
-                               Width="40"
-                               Foreground="White"
-                               VerticalAlignment="Center"
-                               Text="{Binding Value, ElementName=SliderG}" />
+                <Canvas x:Name="CanvasColorPicker"
+                        Width="256"
+                        Height="256">
+                    <Image x:Name="ColorImage"
+                           Stretch="Fill"
+                           Width="256"
+                           Height="256"
+                           MouseDown="ColorImage_MouseDown"
+                           MouseMove="ColorImage_MouseMove"
+                           MouseUp="ColorImage_MouseUp" />
+                    <Ellipse x:Name="PickerMarker"
+                             Width="12"
+                             Height="12"
+                             StrokeThickness="2"
+                             IsHitTestVisible="False">
+                        <Ellipse.Stroke>
+                            <LinearGradientBrush>
+                                <GradientStop Offset="0.0" Color="#FFEEFF" />
+                                <GradientStop Offset="0.2" Color="#25DDFF" />
+                                <GradientStop Offset="0.3" Color="#0034FF" />
+                                <GradientStop Offset="0.65" Color="#FFDD00" />
+                                <GradientStop Offset="0.8" Color="#A13F11" />
+                                <GradientStop Offset="1.0"
+                                              Color="#001100" />
+                            </LinearGradientBrush>
+                        </Ellipse.Stroke>
+                    </Ellipse>
+                </Canvas>
+                <StackPanel Background="Black"
+                            Width="280"
+                            Height="90">
+                    <!-- Red Slider -->
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,5"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="R:"
+                                   Width="30"
+                                   Foreground="White"
+                                   VerticalAlignment="Center" />
+                        <Slider x:Name="SliderR"
+                                Minimum="0"
+                                Maximum="255"
+                                Width="200"
+                                IsSnapToTickEnabled="True"
+                                IsMoveToPointEnabled="True"
+                                Value="{Binding R}" />
+                        <TextBlock x:Name="TextR"
+                                   Width="40"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding Value, ElementName=SliderR}" />
+                    </StackPanel>
+                    <!-- Green Slider -->
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,5"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="G:"
+                                   Width="30"
+                                   Foreground="White"
+                                   VerticalAlignment="Center" />
+                        <Slider x:Name="SliderG"
+                                Minimum="0"
+                                Maximum="255"
+                                Width="200"
+                                IsSnapToTickEnabled="True"
+                                IsMoveToPointEnabled="True"
+                                Value="{Binding G}" />
+                        <TextBlock x:Name="TextG"
+                                   Width="40"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding Value, ElementName=SliderG}" />
+                    </StackPanel>
+                    <!-- Blue Slider -->
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,5"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="B:"
+                                   Width="30"
+                                   Foreground="White"
+                                   VerticalAlignment="Center" />
+                        <Slider x:Name="SliderB"
+                                Minimum="0"
+                                Maximum="255"
+                                Width="200"
+                                Value="{Binding B}"
+                                IsSnapToTickEnabled="True"
+                                IsMoveToPointEnabled="True" />
+                        <TextBlock x:Name="TextB"
+                                   Width="40"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   Text="{Binding Value, ElementName=SliderB}" />
+                    </StackPanel>
+                    <!-- Color Spectrum Image -->
                 </StackPanel>
-                <!-- Blue Slider -->
-                <StackPanel Orientation="Horizontal"
-                            Margin="0,5">
-                    <TextBlock Text="B:"
-                               Width="30"
-                               Foreground="White"
-                               VerticalAlignment="Center" />
-                    <Slider x:Name="SliderB"
-                            Minimum="0"
-                            Maximum="255"
-                            Width="200"
-                            Value="{Binding SelectedColor.Color.B}"/>
-                    <TextBlock x:Name="TextB"
-                               Width="40"
-                               Foreground="White"
-                               VerticalAlignment="Center"
-                               Text="{Binding Value, ElementName=SliderB}" />
-                </StackPanel>
-                <!-- Color Spectrum Image -->
-                <Image x:Name="ColorImage"
-                       Stretch="Fill"
-                       MouseDown="ColorImage_MouseDown" />
-                
             </StackPanel>
         </Border>
         <GroupBox Header="Theme Example"
@@ -135,123 +224,127 @@
                   Margin="0,2,0,0"
                   Padding="10">
             <DockPanel>
-                <StackPanel DockPanel.Dock="Left" Width="250">
-                <TextBlock Text="Buttons &amp; Inputs"
-                           FontWeight="Bold"
-                           Margin="0,0,0,8" />
-                <StackPanel Orientation="Horizontal"
-                            Margin="8,0,8,6">
-                    <Button Content="Enabled"
-                            Width="80"
-                            Margin="0,0,8,0" />
-                    <Button Content="Disabled"
-                            Width="80"
-                            IsEnabled="False" />
-                </StackPanel>
-                <CheckBox Content="Enabled Checkbox"
-                          Margin="0,4" />
-                <CheckBox Content="Disabled Checkbox"
-                          IsEnabled="False"
-                          Margin="0,4" />
-                <RadioButton Content="Enabled Radio"
-                             Margin="0,4" />
-                <RadioButton Content="Disabled Radio"
+                <StackPanel DockPanel.Dock="Left"
+                            Width="250">
+                    <TextBlock Text="Buttons &amp; Inputs"
+                               FontWeight="Bold"
+                               Margin="0,0,0,8" />
+                    <StackPanel Orientation="Horizontal"
+                                Margin="8,0,8,6">
+                        <Button Content="Enabled"
+                                Width="80"
+                                Margin="0,0,8,0" />
+                        <Button Content="Disabled"
+                                Width="80"
+                                IsEnabled="False" />
+                    </StackPanel>
+                    <CheckBox Content="Enabled Checkbox"
+                              Margin="0,4" />
+                    <CheckBox Content="Disabled Checkbox"
+                              IsEnabled="False"
+                              Margin="0,4" />
+                    <RadioButton Content="Enabled Radio"
+                                 Margin="0,4" />
+                    <RadioButton Content="Disabled Radio"
+                                 IsEnabled="False"
+                                 Margin="0,4" />
+                    <TextBox Text="Enabled TextBox"
+                             Margin="0,8,0,4" />
+                    <TextBox Text="Disabled TextBox"
                              IsEnabled="False"
-                             Margin="0,4" />
-                <TextBox Text="Enabled TextBox"
-                         Margin="0,8,0,4" />
-                <TextBox Text="Disabled TextBox"
-                         IsEnabled="False"
-                         Margin="0,0,0,8" />
-                <TextBlock Text="TextBlock"
-                           Margin="0,4" />
-                <Label Content="Label"
-                       Padding="0"
-                       Margin="0,2" />
-                <TextBlock Text="Status Colors"
-                           FontWeight="Bold"
-                           Margin="0,0,0,8" />
-                <TextBlock Text="BrightGo"
-                           Foreground="{DynamicResource BrightGo}"
-                           Margin="0,4" />
-                <TextBlock Text="Go"
-                           Foreground="{DynamicResource Go}"
-                           Margin="0,4" />
-                <TextBlock Text="BrightStop"
-                           Foreground="{DynamicResource BrightStop}"
-                           Margin="0,4" />
-                <TextBlock Text="Stop"
-                           Foreground="{DynamicResource Stop}"
-                           Margin="0,4" />
-                <TextBlock Text="TabControl"
-                           FontWeight="Bold"
-                           Margin="0,20,0,6" />
-                <TabControl Height="90">
-                    <TabItem Header="Tab 1">
-                        <TextBlock Text="Content 1"
-                                   Margin="8" />
-                    </TabItem>
-                    <TabItem Header="Tab 2">
-                        <TextBlock Text="Content 2"
-                                   Margin="8" />
-                    </TabItem>
-                </TabControl></StackPanel>
+                             Margin="0,0,0,8" />
+                    <TextBlock Text="TextBlock"
+                               Margin="0,4" />
+                    <Label Content="Label"
+                           Padding="0"
+                           Margin="0,2" />
+                    <TextBlock Text="Status Colors"
+                               FontWeight="Bold"
+                               Margin="0,0,0,8" />
+                    <TextBlock Text="BrightGo"
+                               Foreground="{DynamicResource BrightGo}"
+                               Margin="0,4" />
+                    <TextBlock Text="Go"
+                               Foreground="{DynamicResource Go}"
+                               Margin="0,4" />
+                    <TextBlock Text="BrightStop"
+                               Foreground="{DynamicResource BrightStop}"
+                               Margin="0,4" />
+                    <TextBlock Text="Stop"
+                               Foreground="{DynamicResource Stop}"
+                               Margin="0,4" />
+                    <TextBlock Text="TabControl"
+                               FontWeight="Bold"
+                               Margin="0,20,0,6" />
+                    <TabControl Height="90">
+                        <TabItem Header="Tab 1">
+                            <TextBlock Text="Content 1"
+                                       Margin="8" />
+                        </TabItem>
+                        <TabItem Header="Tab 2">
+                            <TextBlock Text="Content 2"
+                                       Margin="8" />
+                        </TabItem>
+                    </TabControl>
+                </StackPanel>
                 <StackPanel DockPanel.Dock="Right">
-                <StackPanel>
-                    <TextBlock Text="ListBox"
-                               FontWeight="Bold"
-                               Margin="0,0,0,6" />
-                    <ListBox Height="110"
-                             ItemsSource="{Binding Collection}"
-                             d:ItemsSource="{d:SampleData ItemCount=5}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Parameter}"
-                                               Width="90" />
-                                    <TextBlock Text="{Binding Value}"
-                                               Width="140" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                    <StackPanel>
+                        <TextBlock Text="ListBox"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,6" />
+                        <ListBox Height="110"
+                                 ItemsSource="{Binding Items}"
+                                 d:ItemsSource="{d:SampleData ItemCount=5}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Parameter}"
+                                                   Width="90" />
+                                        <TextBlock Text="{Binding Value}"
+                                                   Width="140" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="ListView"
+                                   FontWeight="Bold"
+                                   Margin="0,12,0,6" />
+                        <ListView Height="110"
+                                  ItemsSource="{Binding Items}"
+                                  d:ItemsSource="{d:SampleData ItemCount=5}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Parameter"
+                                                    Width="90"
+                                                    DisplayMemberBinding="{Binding Parameter}" />
+                                    <GridViewColumn Header="Value"
+                                                    Width="140"
+                                                    DisplayMemberBinding="{Binding Value}" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="DataGrid"
+                                   FontWeight="Bold"
+                                   Margin="0,0,0,6" />
+                        <DataGrid Height="240"
+                                  ItemsSource="{Binding Items}"
+                                  d:ItemsSource="{d:SampleData ItemCount=20}"
+                                  IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Parameter"
+                                                    Width="80"
+                                                    Binding="{Binding Parameter}" />
+                                <DataGridTextColumn Header="Value"
+                                                    Width="220"
+                                                    Binding="{Binding Value}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel>
-                    <TextBlock Text="ListView"
-                               FontWeight="Bold"
-                               Margin="0,12,0,6" />
-                    <ListView Height="110"
-                              ItemsSource="{Binding Collection}"
-                              d:ItemsSource="{d:SampleData ItemCount=5}">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Parameter"
-                                                Width="90"
-                                                DisplayMemberBinding="{Binding Parameter}" />
-                                <GridViewColumn Header="Value"
-                                                Width="140"
-                                                DisplayMemberBinding="{Binding Value}" />
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock Text="DataGrid"
-                               FontWeight="Bold"
-                               Margin="0,0,0,6" />
-                    <DataGrid Height="240"
-                              d:ItemsSource="{d:SampleData ItemCount=20}"
-                              IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Parameter"
-                                                Width="80"
-                                                Binding="{Binding Parameter}" />
-                            <DataGridTextColumn Header="Value"
-                                                Width="220"
-                                                Binding="{Binding Value}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </StackPanel></StackPanel>
             </DockPanel>
         </GroupBox>
     </DockPanel>
