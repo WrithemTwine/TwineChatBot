@@ -180,6 +180,7 @@ namespace StreamerBotLib.GUI
                 case nameof(CategoryList):
                     CategoryList = (ObservableCollection<CategoryList>)source;
                     CurrCategoryList = CategoryList;
+                    NotifyPropertyChanged(nameof(CategoryNames));
                     break;
                 case nameof(ChannelEvents):
                     ChannelEvents = (ObservableCollection<ChannelEvents>)source;

@@ -80,8 +80,8 @@ namespace ThemeEditor
             {
                 _selectedColor = value;
                 CaptureOriginalForUndo();
-                PullRgbFromSelected(); 
-                OnPropertyChanged(); OnPropertyChanged(nameof(R)); 
+                PullRgbFromSelected();
+                OnPropertyChanged(); OnPropertyChanged(nameof(R));
                 OnPropertyChanged(nameof(G)); OnPropertyChanged(nameof(B));
             }
         }
@@ -327,6 +327,7 @@ namespace ThemeEditor
             if (ComboBoxSelectThemeFile.SelectedItem is string name)
             {
                 _themeFiles.SaveThemeFile(name, [.. _currentColors]);
+                AdjustThemeResource(name);
             }
         }
 

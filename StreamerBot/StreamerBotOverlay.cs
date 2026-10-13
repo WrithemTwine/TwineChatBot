@@ -1,7 +1,6 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.GUI.Data;
-using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
 

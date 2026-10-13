@@ -1491,18 +1491,22 @@
                                                 <TextBlock Text="Status Colors"
                                                            FontWeight="Bold"
                                                            Margin="0,0,0,8" />
-                                                <TextBlock Text="BrightGo"
-                                                           Foreground="{DynamicResource BrightGo}"
-                                                           Margin="0,4" />
-                                                <TextBlock Text="Go"
-                                                           Foreground="{DynamicResource Go}"
-                                                           Margin="0,4" />
-                                                <TextBlock Text="BrightStop"
-                                                           Foreground="{DynamicResource BrightStop}"
-                                                           Margin="0,4" />
-                                                <TextBlock Text="Stop"
-                                                           Foreground="{DynamicResource Stop}"
-                                                           Margin="0,4" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="BrightGo"
+                                                               Foreground="{DynamicResource BrightGo}"
+                                                               Margin="0,4" />
+                                                    <TextBlock Text="Go"
+                                                               Foreground="{DynamicResource Go}"
+                                                               Margin="0,4" />
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="BrightStop"
+                                                               Foreground="{DynamicResource BrightStop}"
+                                                               Margin="0,4" />
+                                                    <TextBlock Text="Stop"
+                                                               Foreground="{DynamicResource Stop}"
+                                                               Margin="0,4" />
+                                                </StackPanel>
                                                 <TextBlock Text="TabControl"
                                                            FontWeight="Bold"
                                                            Margin="0,20,0,6" />
@@ -2975,79 +2979,128 @@
                                         <ModConv:DayOfWeekToNameConverter x:Key="DayOfWeekToNameConverter"
                                                                           x:Name="DayOfWeekToNameConverter" />
                                     </TabItem.Resources>
-                                    <ListView Name="Schedule_ListView_Twitch"
-                                              DataContext="{StaticResource ScheduleItem_Twitch}"
-                                              ItemsSource="{Binding TwitchSchedule}"
-                                              DataContextChanged="Schedule_ListView_DataContextChanged">
-                                        <ListView.View>
-                                            <GridView>
-                                                <!-- Send button column -->
-                                                <GridViewColumn Header="{DynamicResource Schedule_Sent}"
-                                                                Width="80">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <Button ClickMode="Press"
-                                                                    Click="Schedule_SentButton_Click">
-                                                                <Button.Style>
-                                                                    <Style TargetType="Button"
-                                                                           BasedOn="{StaticResource {x:Type Button}}">
-                                                                        <Setter Property="Content"
-                                                                                Value="{DynamicResource Schedule_SentButton_NotSent}" />
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding SentDay}"
-                                                                                         Value="True">
-                                                                                <Setter Property="Content"
-                                                                                        Value="{DynamicResource Schedule_SentButton_Sent}" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </Button.Style>
-                                                            </Button>
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                                <!-- Day column (read-only) -->
-                                                <GridViewColumn Header="{DynamicResource Schedule_Day}"
-                                                                Width="130">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding Day, Converter={StaticResource DayOfWeekToNameConverter}}"
-                                                                       VerticalAlignment="Center" />
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                                <!-- Title column -->
-                                                <GridViewColumn Header="{DynamicResource Schedule_Title}"
-                                                                Width="220">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <TextBox Width="200"
-                                                                     TextWrapping="Wrap"
-                                                                     MaxLength="140"
-                                                                     Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
-                                                                     VerticalAlignment="Center" />
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                                <!-- Category column -->
-                                                <GridViewColumn Header="{DynamicResource Schedule_Category}"
-                                                                Width="Auto"
-                                                                ToolTipService.ToolTip="{DynamicResource Schedule_Category_Tooltip}">
-                                                    <GridViewColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <ComboBox Width="240"
-                                                                      ItemsSource="{Binding CategoryNames, Source={StaticResource DataViews}}"
-                                                                      SelectedItem="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
-                                                                      IsEditable="False"
-                                                                      VerticalAlignment="Center"
-                                                                      IsReadOnly="True"
-                                                                      ToolTip="{DynamicResource Schedule_Category_Tooltip}" />
-                                                        </DataTemplate>
-                                                    </GridViewColumn.CellTemplate>
-                                                </GridViewColumn>
-                                            </GridView>
-                                        </ListView.View>
-                                    </ListView>
+                                    <StackPanel>
+                                        <Grid DataContext="{Binding Source={StaticResource ScheduleItem_Twitch}}" HorizontalAlignment="Center"
+                                              Margin="0,5,0,10">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Row="1"
+                                                       Grid.Column="0"
+                                                       Margin="5,0"
+                                                       Text="{DynamicResource Schedule_TwitchSingleEntry_Title}" />
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="1"
+                                                       Margin="5,0"
+                                                       Text="{DynamicResource Schedule_TwitchTitle}" />
+                                            <TextBox Grid.Row="1"
+                                                     Grid.Column="1"
+                                                     Margin="5,0"
+                                                     Width="220"
+                                                     MaxLength="140"
+                                                     Text="{Binding SingleItem.Title, Source={StaticResource ScheduleItem_Twitch}, UpdateSourceTrigger=PropertyChanged}" />
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="2"
+                                                       Margin="5,0"
+                                                       Text="{DynamicResource Schedule_Category}" />
+                                            <ComboBox Grid.Row="1"
+                                                      Grid.Column="2"
+                                                      Margin="5,0"
+                                                      Width="240"
+                                                      ItemsSource="{Binding CategoryNames, Source={StaticResource DataViews}}"
+                                                      SelectedItem="{Binding SingleItem.CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                                                      IsEditable="False"
+                                                      IsReadOnly="True"
+                                                      ToolTip="{DynamicResource Schedule_Category_Tooltip}" />
+                                            <TextBlock Grid.Row="0"
+                                                       Grid.Column="3"
+                                                       Text="{DynamicResource Schedule_SendTitle_Category}" />
+                                            <Button Grid.Row="1"
+                                                    Grid.Column="3"
+                                                    Content="{DynamicResource Schedule_Button_SendSchedule}"
+                                                    Click="Schedule_Button_SendSingleSchedule_Click" />
+                                        </Grid>
+                                        <ListView Name="Schedule_ListView_Twitch"
+                                                  DataContext="{StaticResource ScheduleItem_Twitch}"
+                                                  ItemsSource="{Binding TwitchSchedule}"
+                                                  DataContextChanged="Schedule_ListView_DataContextChanged">
+                                            <ListView.View>
+                                                <GridView>
+                                                    <!-- Send button column -->
+                                                    <GridViewColumn Header="{DynamicResource Schedule_Sent}"
+                                                                    Width="80">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <Button ClickMode="Press"
+                                                                        Click="Schedule_SentButton_Click">
+                                                                    <Button.Style>
+                                                                        <Style TargetType="Button"
+                                                                               BasedOn="{StaticResource {x:Type Button}}">
+                                                                            <Setter Property="Content"
+                                                                                    Value="{DynamicResource Schedule_SentButton_NotSent}" />
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding SentDay}"
+                                                                                             Value="True">
+                                                                                    <Setter Property="Content"
+                                                                                            Value="{DynamicResource Schedule_SentButton_Sent}" />
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </Button.Style>
+                                                                </Button>
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <!-- Day column (read-only) -->
+                                                    <GridViewColumn Header="{DynamicResource Schedule_Day}"
+                                                                    Width="130">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Day, Converter={StaticResource DayOfWeekToNameConverter}}"
+                                                                           VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <!-- Title column -->
+                                                    <GridViewColumn Header="{DynamicResource Schedule_TwitchTitle}"
+                                                                    Width="220">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBox Width="200"
+                                                                         TextWrapping="Wrap"
+                                                                         MaxLength="140"
+                                                                         Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
+                                                                         VerticalAlignment="Center" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                    <!-- Category column -->
+                                                    <GridViewColumn Header="{DynamicResource Schedule_Category}"
+                                                                    Width="Auto"
+                                                                    ToolTipService.ToolTip="{DynamicResource Schedule_Category_Tooltip}">
+                                                        <GridViewColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ComboBox Width="240"
+                                                                          ItemsSource="{Binding CategoryNames, Source={StaticResource DataViews}}"
+                                                                          SelectedItem="{Binding CategoryName, UpdateSourceTrigger=PropertyChanged}"
+                                                                          IsEditable="False"
+                                                                          VerticalAlignment="Center"
+                                                                          IsReadOnly="True"
+                                                                          ToolTip="{DynamicResource Schedule_Category_Tooltip}" />
+                                                            </DataTemplate>
+                                                        </GridViewColumn.CellTemplate>
+                                                    </GridViewColumn>
+                                                </GridView>
+                                            </ListView.View>
+                                        </ListView>
+                                    </StackPanel>
                                 </TabItem>
                             </TabControl>
                         </StackPanel>

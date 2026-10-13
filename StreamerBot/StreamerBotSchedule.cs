@@ -21,13 +21,27 @@ namespace StreamerBot
             ProcessSchedule(curr.DataContext as ScheduleConfig);
         }
 
-        private void ProcessSchedule(ScheduleConfig currSched)
+        private void Schedule_Button_SendSingleSchedule_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as Button).DataContext is ScheduleBase scheduleConfig)
+            {
+                if (!string.IsNullOrEmpty(scheduleConfig.SingleItem.Title) && !string.IsNullOrEmpty(scheduleConfig.SingleItem.CategoryName))
+                {
+                    ProcessSchedule(scheduleConfig.SingleItem, false);
+                }
+            }
+        }
+
+        private void ProcessSchedule(ScheduleConfig currSched, bool configureSentDay = true)
         {
             if (OptionFlags.ScheduleUseSchedule)
             {
-                currSched.SentDay = true;
+                if (configureSentDay)
+                {
+                    currSched.SentDay = true;
+                }
 
-                foreach(var item in ScheduleData)
+                foreach (var item in ScheduleData)
                 {
                     item.Save();
                 }

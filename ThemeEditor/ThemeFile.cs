@@ -60,7 +60,7 @@ namespace ThemeEditor
             {
                 var key = color.Attribute(xns + "Key")?.Value;
                 int idx = data.FindIndex(d => d.Key == key);
-                if(idx != -1)
+                if (idx != -1)
                 {
                     Color curr = (data[idx]).Color;
                     color.Value = $"#{curr.R:X2}{curr.G:X2}{curr.B:X2}";
@@ -81,7 +81,7 @@ namespace ThemeEditor
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-                return ThemeFile.ThemeFilePath(value as string);
+            return ThemeFile.ThemeFilePath(value as string);
         }
     }
 }

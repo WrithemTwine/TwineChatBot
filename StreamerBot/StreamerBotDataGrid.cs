@@ -278,7 +278,7 @@ namespace StreamerBot
                             DG_OverlayService_Actions.Items.Refresh();
                             break;
                         case "OverlayServicesSelection":
-                             DG_OldFollowUsers.Items.Refresh();
+                            DG_OldFollowUsers.Items.Refresh();
                             break;
                         case "OverlayTicker":
                             DG_OverlayService_Ticker.Items.Refresh();
@@ -713,7 +713,7 @@ namespace StreamerBot
 
         #endregion
 
-#endregion
+        #endregion
 
         #region DataGrid Item editing
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)

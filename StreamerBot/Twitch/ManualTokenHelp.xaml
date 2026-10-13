@@ -8,14 +8,6 @@
     mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ManualTokenHelp">
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Culture/GUI_Msgs.xaml" />
-                <ResourceDictionary Source="../Culture/GUI_HelpMsgs.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
 
     <Expander IsExpanded="{Binding ExpanderCredentialsHelp, Mode=OneWay, Source={x:Static s:Settings.Default}}"
               ScrollViewer.CanContentScroll="True"

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ThemeEditor
-{    public class Item
+﻿namespace ThemeEditor
+{
+    public class Item
     {
         public string Parameter { get; set; } = "Parameter";
         public string Value { get; set; } = "Value";

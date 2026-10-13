@@ -16,6 +16,8 @@ namespace StreamerBotLib.Models.Schedule
 
         private string CurrData = "";
 
+        public ScheduleConfig SingleItem { get; set; }
+
         public ScheduleBase()
         {
             int x = Enum.GetNames<SchedulePlatform>().Length;
@@ -44,7 +46,7 @@ namespace StreamerBotLib.Models.Schedule
 
         private string GetCurrDataString()
         {
-            return string.Join(Delimiter, PlatformSchedule[Platform].Select(s => s.ToString()));
+            return string.Join(Delimiter, [.. SingleItem.ToString(), PlatformSchedule[Platform].Select(s => s.ToString())]);
         }
 
         protected void PrepareLoadData(SchedulePlatform platform)
@@ -58,11 +60,14 @@ namespace StreamerBotLib.Models.Schedule
             if (!string.IsNullOrEmpty(srcdata))
             {
                 PlatformSchedule[platform].Clear();
-                PlatformSchedule[platform].AddRange(from s in srcdata.Split(Delimiter)
-                                                    select ScheduleConfig.FromString(s, Platform));
+                List<ScheduleConfig> configdata = [..from s in srcdata.Split(Delimiter)
+                                                  select ScheduleConfig.FromString(s, Platform)];
+                SingleItem = configdata.Take(1).First();
+                PlatformSchedule[platform].AddRange(configdata.Skip(1));
             }
             else
             {
+                SingleItem = new(0, "", "", Platform);
                 PlatformSchedule[platform].AddRange(Enumerable.Range(0, 7)
                 .Select(i =>
                 {

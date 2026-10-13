@@ -28,14 +28,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Remove="Culture\GUIMsgs.xaml" />
-	  <Page Remove="Culture\GUI_HelpMsgs.xaml" />
 	  <Page Remove="Culture\GUI_Msgs.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Resource Include="Culture\GUIMsgs.xaml" />
-	  <Resource Include="Culture\GUI_HelpMsgs.xaml" />
 	  <Resource Include="Culture\GUI_Msgs.xaml" />
 	  <Resource Include="img\TSB_Icon.ico" />
 	</ItemGroup>

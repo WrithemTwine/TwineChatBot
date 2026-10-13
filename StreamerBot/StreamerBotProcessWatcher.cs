@@ -72,7 +72,7 @@ namespace StreamerBot
 
                         if (OptionFlags.ScheduleSendScheduleDaily)
                         {
-                            if(sendSchedule.TimeOfDay != OptionFlags.ScheduleSendTime.TimeOfDay)
+                            if (sendSchedule.TimeOfDay != OptionFlags.ScheduleSendTime.TimeOfDay)
                             {  // user may update the check time
                                 sendSchedule = sendSchedule.Date.Add(OptionFlags.ScheduleSendTime.TimeOfDay);
                             }
