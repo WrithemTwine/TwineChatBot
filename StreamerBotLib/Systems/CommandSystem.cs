@@ -612,10 +612,14 @@ namespace StreamerBotLib.Systems
                 else
                 {
                     LogWriter.DebugLog("ParseCommand", DebugLogTypes.CommandSystem, $"Getting quote: {arglist[0]}.");
+                    var quote = DataManage.GetQuote(Convert.ToInt32(arglist[0]));
+
                     result = VariableParser.ParseReplace(cmdrow.Message, VariableParser.BuildDictionary(new Tuple<MsgVars, string>[]
                         {
-                            new(MsgVars.quote,
-                            $"{LocalizedMsgSystem.GetVar(DefaultCommand.quote)} {DataManage.GetQuote(Convert.ToInt32(arglist[0]))?.ToString() ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote)}" )
+                            new(MsgVars.quote, quote.Quote ?? LocalizedMsgSystem.GetVar(Msg.MsgDefaultQuote) ),
+                            new(MsgVars.date, FormatData.FormatTimes(quote.QuoteDate.ToLocalTime())),
+                            new(MsgVars.title, quote.CategoryName),
+                            new(MsgVars.quotenum, quote.Number.ToString())
                         }));
                 }
             }
