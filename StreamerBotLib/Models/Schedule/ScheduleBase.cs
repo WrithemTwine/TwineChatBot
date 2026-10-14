@@ -46,7 +46,7 @@ namespace StreamerBotLib.Models.Schedule
 
         private string GetCurrDataString()
         {
-            return string.Join(Delimiter, [.. SingleItem.ToString(), PlatformSchedule[Platform].Select(s => s.ToString())]);
+            return string.Join(Delimiter, [SingleItem.ToString(), .. PlatformSchedule[Platform].Select(s => s.ToString())]);
         }
 
         protected void PrepareLoadData(SchedulePlatform platform)

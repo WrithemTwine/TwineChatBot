@@ -94,6 +94,13 @@ namespace StreamerBotLib.GUI.Data
         {
             TextBox saveMediaPath = ImageFileTextBox;
 
+            FilePicker(saveMediaPath);
+
+            OnPropertyChanged(nameof(OverlayActionType.ImageFile));
+        }
+
+        private static void FilePicker(TextBox saveMediaPath)
+        {
             OpenFileDialog pickFile = new()
             {
                 Multiselect = true,
@@ -109,70 +116,53 @@ namespace StreamerBotLib.GUI.Data
                 saveMediaPath.Text = string.Join("; ", pickFile.FileNames);
                 OptionFlags.MediaOverlayMRUPathSelect = Path.GetDirectoryName(pickFile.FileNames[0]);
             }
-
-            OnPropertyChanged(nameof(OverlayActionType.ImageFile));
         }
 
         private void BrowseMedia_Click(object sender, RoutedEventArgs e)
         {
             TextBox saveMediaPath = MediaFileTextBox;
 
-            OpenFileDialog pickFile = new()
-            {
-                Multiselect = true,
-                CheckFileExists = true,
-                DereferenceLinks = true,
-                Title = "Select media file (picture/video) for Overlay event! (needs to be viewable in a webpage)",
-                InitialDirectory = Directory.Exists(OptionFlags.MediaOverlayMRUPathSelect) ? OptionFlags.MediaOverlayMRUPathSelect : Directory.GetCurrentDirectory()
-            };
-
-
-            if (pickFile.ShowDialog() == true)
-            {
-                saveMediaPath.Text = string.Join("; ", pickFile.FileNames);
-                OptionFlags.MediaOverlayMRUPathSelect = Path.GetDirectoryName(pickFile.FileNames[0]);
-            }
+            FilePicker(saveMediaPath);
 
             OnPropertyChanged(nameof(OverlayActionType.MediaFile));
         }
-
 
         #endregion
 
         private void CreateRecords_Click(object sender, RoutedEventArgs e)
         {
-            bool UseSameImage = UseSameImageCheckBox.IsChecked == true;
-
             string[] images = ImageFileTextBox.Text.Split("; ");
             string[] media = MediaFileTextBox.Text.Split("; ");
 
             List<OverlayActionType> bulk = [];
+            List<Tuple<string, string>> files = [];
 
-            bool imagesAdded = false;
-
-            foreach (string m in media)
+            if (images.Length == 0)
             {
-                OverlayActionType curr = OverlayActionType.Copy();
-                string image = "";
-                if (UseSameImage && !imagesAdded)
+                files.AddRange(from m in media
+                               select new Tuple<string, string>("", FileCopy(m, OverlayActionType.ToString())));
+            }
+            else if (media.Length == 0)
+            {
+                files.AddRange(from i in images
+                               select new Tuple<string, string>(FileCopy(i, OverlayActionType.ToString()), ""));
+            }
+            else
+            {
+                foreach (string i in images)
                 {
-                    image = images.Length > 0 ? images[0] : "";
-
-                    curr.ImageFile = FileCopy(image, curr.OverlayType.ToString());
-                    imagesAdded = true;
-                }
-                else if (images.Length > 0 && !imagesAdded)
-                {
-                    imagesAdded = true;
-                    curr.MediaFile = "";
-                    foreach (string i in images)
+                    foreach (string m in media)
                     {
-                        curr.ImageFile = FileCopy(i, curr.OverlayType.ToString());
-
-                        bulk.Add(curr);
+                        files.Add(new(FileCopy(i, OverlayActionType.OverlayType.ToString()), FileCopy(m, OverlayActionType.OverlayType.ToString())));
                     }
                 }
-                curr.MediaFile = FileCopy(m, curr.OverlayType.ToString());
+            }
+
+            foreach (var t in files)
+            {
+                OverlayActionType curr = OverlayActionType.Copy();
+                curr.ImageFile = t.Item1;
+                curr.MediaFile = t.Item2;
                 bulk.Add(curr);
             }
 

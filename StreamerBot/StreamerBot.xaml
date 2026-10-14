@@ -476,8 +476,10 @@
                                     <StackPanel Orientation="Horizontal"
                                                 DockPanel.Dock="Top"
                                                 HorizontalAlignment="Center">
-                                        <Button Content="{DynamicResource Bots_StartAll}"
+                                        <Button x:Name="Bots_StartBots_ButtonStartAllBots"
+                                            Content="{DynamicResource Bots_StartAll}"
                                                 Click="GUIStartBots_Click"
+                                                IsEnabled="False"
                                                 Margin="15,5" />
                                         <Button Content="{DynamicResource Bots_StopAll}"
                                                 Click="GUIStopBots_Click"

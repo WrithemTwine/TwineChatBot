@@ -84,6 +84,16 @@ namespace StreamerBotLib.DataSQL.EFC10
                             await RefreshCommandsList(true);
                         }
                         break;
+                    case "CommandPlatformMessages":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.CommandPlatformMessages.RemoveRange(entities.Cast<Models.CommandPlatformMessages>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshCommandPlatformMessageList(true);
+                        }
+                        break;
                     case "CommandsUser":
                         using (var context = BuildDataContext())
                         {
@@ -254,6 +264,16 @@ namespace StreamerBotLib.DataSQL.EFC10
                             await context.Database.CommitTransactionAsync();
                             await context.SaveChangesAsync(true);
                             await RefreshOverlayServicesList(true);
+                        }
+                        break;
+                    case "OverlayServicesSelection":
+                        using (var context = BuildDataContext())
+                        {
+                            await context.Database.BeginTransactionAsync();
+                            context.OverlayServicesSelection.RemoveRange(entities.Cast<Models.OverlayServicesSelection>());
+                            await context.Database.CommitTransactionAsync();
+                            await context.SaveChangesAsync(true);
+                            await RefreshOverlayServicesSelectionList(true);
                         }
                         break;
                     case "OverlayTicker":

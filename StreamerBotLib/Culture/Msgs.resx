@@ -656,7 +656,7 @@
     <value>The details of the queue, list who is in it</value>
   </data>
   <data name="Msgquote" xml:space="preserve">
-    <value>#quote</value>
+    <value>Quote #quotenum - #title #date "#quote"</value>
   </data>
   <data name="MsgQuoteNumber" xml:space="preserve">
     <value>There #be #quotenum.</value>
