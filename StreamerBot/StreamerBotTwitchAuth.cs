@@ -509,10 +509,15 @@ namespace StreamerBot
 
         private void Controller_TokensInitializedAsync(object sender, EventArgs e)
         {
-            Dispatcher.Invoke(() => Task.Run(() =>
+            ThreadManager.AddTaskToGUIDispatcher(() => Task.Run(() =>
             {
                 SetBotRadioButtons(true, Platform.Twitch); // event handler from Twitch bots, at this point the tokens are authorized
                 StartAutoBots();
+
+                ThreadManager.AddTaskToGUIDispatcher(() =>
+                {
+                    Bots_StartBots_ButtonStartAllBots.IsEnabled = true;
+                });
             }));
         }
     }

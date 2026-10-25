@@ -1632,7 +1632,9 @@ namespace StreamerBotLib.BotClients
                             AdStatus = TwitchHelixBot.GetAdSchedule(UserId: OptionFlags.TwitchStreamerUserId);
                         }
                     }
-                    catch (BadScopeException ex)
+                    catch (Exception ex) when (
+                            ex is BadScopeException ||
+                            (ex is AggregateException agg && agg.InnerException is BadScopeException))
                     { // the token probably expired during this call, so check the token and restart the thread with the new token
                         LogWriter.LogException(ex, "AdNotificationThread");
                         LogWriter.DebugLog("AdNotificationThread", DebugLogTypes.TwitchBots, "Received a BadScopeException, likely due to expired Twitch access token. Resetting token.");

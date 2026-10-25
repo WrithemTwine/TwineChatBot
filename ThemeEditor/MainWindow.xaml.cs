@@ -132,7 +132,8 @@ namespace ThemeEditor
                 OnPropertyChanged(nameof(B));
 
                 ColorToHsv(c, out _hue, out double s, out double v);
-                H = (int)(_hue * 255);
+                _H = (int)(_hue * 255);
+                OnPropertyChanged(nameof(H));
                 _markerPos = new Point(s * 255, (1 - v) * 255);
                 RebuildBitmap();   // square matches this hue (blues appear when hue is blue)
 
@@ -208,6 +209,8 @@ namespace ThemeEditor
 
         private void SliderBrightnessChange_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (_updatingFromColor) return;
+
             _hue = e.NewValue / 255.0;
             RebuildBitmap();
             SampleFromBitmap(_markerPos);

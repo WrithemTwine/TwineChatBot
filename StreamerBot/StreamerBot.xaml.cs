@@ -523,7 +523,10 @@ namespace StreamerBot
 
         private void RefreshUpdateOverlayTypeChannelPoints()
         {
-            GUITwitchBots.GetChannelPoints(OptionFlags.TwitchChannelName);
+            ThreadManager.CreateThreadStart("RefreshUpdateOverlayTypeChannelPoints", () =>
+            {
+                GUITwitchBots.GetChannelPoints(OptionFlags.TwitchChannelName);
+            });
         }
 
         private void TwitchBotUserSvc_GetChannelPoints(object sender, OnGetChannelPointsEventArgs e)

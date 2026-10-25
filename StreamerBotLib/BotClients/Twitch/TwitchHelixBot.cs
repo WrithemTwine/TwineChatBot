@@ -324,14 +324,25 @@ namespace StreamerBotLib.BotClients.Twitch
             }
         }
 
+        private T PerformAction<T>(string MethodName, Func<Task <T>> func)
+        {
+            return PerformAction(MethodName, () => func().GetAwaiter().GetResult());
+        }
+
+        private void PerformAction(string MethodName, Func<Task> func)
+        {
+            _ = PerformAction(MethodName, async () =>
+            {
+                await func().ConfigureAwait(false);
+                return true;
+            });
+        }
+
         public void BanUser(string BannedUserName, BanReasons banReason, int Duration = 0)
         {
             LogWriter.DebugLog("BanUser", DebugLogTypes.TwitchHelixBot, "Performing a ban user operation.");
 
-            _ = PerformAction("BanUser", () =>
-            {
-                return BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason)?.Result;
-            });
+            _ = PerformAction("BanUser", () => BanUser(UserName: BannedUserName, forDuration: Duration, banReason: banReason));
         }
 
         /// <summary>
@@ -371,32 +382,23 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog("GetUserInfo", DebugLogTypes.TwitchHelixBot, $"The API call to get the channel information for {UserName}.");
 
-            return PerformAction("GetUserInfo", () =>
-            {
-                return GetChannelInformationAsync(UserId: UserId, UserName: UserName)?.Result;
-            });
+            return PerformAction("GetUserInfo", () =>  GetChannelInformationAsync(UserId: UserId, UserName: UserName));
         }
 
         public void SendShoutOut(string toBroadcasterId = null, string toBroadcasterUserName = null)
         {
-            _ = PerformAction("SendShoutOut", () =>
-            {
-                return ChatSendShoutOut(
+            PerformAction("SendShoutOut", () => ChatSendShoutOut(
                     OptionFlags.TwitchStreamerUserId,
                     toBroadcasterId ?? GetUserId(toBroadcasterUserName),
                     OptionFlags.TwitchStreamerUserId
-                    );
-            });
+                    ));
         }
 
         public string GetUserId(string UserName)
         {
             LogWriter.DebugLog("GetUserId", DebugLogTypes.TwitchHelixBot, $"Retrieving the user Id for the username, {UserName}.");
 
-            return PerformAction("GetUserId", () =>
-            {
-                return HelixGetUserId(UserName)?.Result;
-            });
+            return PerformAction("GetUserId", () => HelixGetUserId(UserName)?.GetAwaiter().GetResult());
         }
 
         /// <summary>
@@ -408,10 +410,7 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog("GetGameId", DebugLogTypes.TwitchHelixBot, $"Getting the game ID of the provided game name, {GameName}.");
 
-            return PerformAction("GetGameId", () =>
-            {
-                return GetGameId(GameName: [GameName]).Result.Data[0].IgdbId;
-            });
+            return PerformAction("GetGameId", () => GetGameId(GameName: [GameName])).Data[0].IgdbId;
         }
 
         /// <summary>
@@ -423,22 +422,16 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog("GetViewerCount", DebugLogTypes.TwitchHelixBot, "Getting the current viewer count.");
 
-            _ = PerformAction("GetViewerCount", () =>
-            {
-                GetStreamsResponse getStreamsResponse = GetStreams(UserName: UserName).Result;
+                GetStreamsResponse getStreamsResponse = PerformAction("GetViewerCount", () =>GetStreams(UserName: UserName));
                 GetCurrentViewerCount(getStreamsResponse);
-                return getStreamsResponse;
-            });
+                //return getStreamsResponse;
         }
 
         public GetStreamsResponse GetStreamDetail(string UserId = null, string UserName = null)
         {
             LogWriter.DebugLog("GetStreamDetail", DebugLogTypes.TwitchHelixBot, "Getting the current stream data.");
 
-            return PerformAction("GetStreamDetail", () =>
-            {
-                return GetStreams(UserId: UserId, UserName: UserName).Result;
-            });
+            return PerformAction("GetStreamDetail", () => GetStreams(UserId: UserId, UserName: UserName));
         }
 
         /// <summary>
@@ -451,26 +444,23 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog("GetChatters", DebugLogTypes.TwitchHelixBot, "Getting a list of current chatters.");
 
-            return PerformAction("GetChatters", () =>
+            string channelId = OptionFlags.TwitchStreamerUserId, botId = OptionFlags.TwitchStreamerUserId;
+
+            List<Chatter> currChat = [];
+            GetChattersResponse curr = PerformAction("GetChatters", () => GetChatters(channelId, botId));
+            string cursor = curr.Pagination?.Cursor;
+            currChat.AddRange(curr.Data);
+
+            while (!string.IsNullOrEmpty(cursor))
             {
-                string channelId = OptionFlags.TwitchStreamerUserId, botId = OptionFlags.TwitchStreamerUserId;
-
-                List<Chatter> currChat = [];
-                GetChattersResponse curr = GetChatters(channelId, botId).Result;
-                string cursor = curr.Pagination?.Cursor;
+                curr = PerformAction("GetChatters", () => GetChatters(channelId, botId, after: cursor));
+                cursor = curr.Pagination?.Cursor;
                 currChat.AddRange(curr.Data);
+            }
 
-                while (!string.IsNullOrEmpty(cursor))
-                {
-                    curr = GetChatters(channelId, botId, after: cursor).Result;
-                    cursor = curr.Pagination?.Cursor;
-                    currChat.AddRange(curr.Data);
-                }
+            LogWriter.DebugLog("GetChatters", DebugLogTypes.TwitchHelixBot, $"Finished getting a list of {currChat.Count} current chatters.");
 
-                LogWriter.DebugLog("GetChatters", DebugLogTypes.TwitchHelixBot, $"Finished getting a list of {currChat.Count} current chatters.");
-
-                return currChat ?? [];
-            });
+            return currChat ?? [];
         }
 
         /// <summary>
@@ -483,20 +473,14 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog("GetUserCreatedAt", DebugLogTypes.TwitchHelixBot, "Getting the current account's creation date.");
 
-            return PerformAction("GetUserCreatedAt", () =>
-            {
-                return HelixGetUserCreatedAt(UserName, UserId).Result;
-            });
+            return PerformAction("GetUserCreatedAt", () => HelixGetUserCreatedAt(UserName, UserId));
         }
 
         public GetCustomRewardsResponse GetCustomRewardsId(string UserId = null, string UserName = null)
         {
             LogWriter.DebugLog("GetCustomRewardsId", DebugLogTypes.TwitchHelixBot, "API call to get a channel's point redemption rewards.");
 
-            return PerformAction("GetCustomRewardsId", () =>
-            {
-                return GetChannelPointInformationAsync(UserId: UserId, UserName: UserName).Result;
-            });
+            return PerformAction("GetCustomRewardsId", () => GetChannelPointInformationAsync(UserId: UserId, UserName: UserName));
         }
 
         public List<string> GetUserCustomRewards(string UserId = null, string UserName = null)
@@ -530,35 +514,26 @@ namespace StreamerBotLib.BotClients.Twitch
         {
             LogWriter.DebugLog("SetChannelTitle", DebugLogTypes.TwitchHelixBot, $"Setting current stream title to, {Title}.");
 
-            return PerformAction("SetChannelTitle", () =>
-            {
-                _ = ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, Title: Title);
-                return true;
-            });
+            PerformAction("SetChannelTitle", () => ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, Title: Title));
+            return true;
         }
 
         public bool SetChannelTitleCategory(string Title, string CategoryName = null, string CategoryId = null)
         {
             LogWriter.DebugLog("SetChannelTitleCategory", DebugLogTypes.TwitchHelixBot, $"Setting the channel title to {Title} and category to {CategoryName}.");
 
-            return PerformAction("SetChannelTitleCategory", () =>
-            {
                 CategoryId ??= GetGameId(CategoryName);
-                _ = ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, Title: Title, GameId: CategoryId);
+                PerformAction("SetChannelTitleCategory", () => ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, Title: Title, GameId: CategoryId));
                 return true;
-            });
         }
 
         public bool SetChannelCategory(string CategoryName = null, string CategoryId = null)
         {
             LogWriter.DebugLog("SetChannelCategory", DebugLogTypes.TwitchHelixBot, $"Setting the channel category to {CategoryName}.");
 
-            return PerformAction("SetChannelCategory", () =>
-            {
                 CategoryId ??= GetGameId(CategoryName);
-                _ = ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, GameId: CategoryId);
+                PerformAction("SetChannelCategory", () => ModifyChannelInformation(OptionFlags.TwitchStreamerUserId, GameId: CategoryId));
                 return true;
-            });
         }
 
         public void RaidChannel(string ToChannelName)
@@ -571,16 +546,8 @@ namespace StreamerBotLib.BotClients.Twitch
             }
             else
             {
-                _ = PerformAction("RaidChannel", () =>
-                {
+                    StartRaidResponse response = PerformAction("RaidChannel", () => StartRaid(OptionFlags.TwitchStreamerUserId, ToUserName: ToChannelName));
                     OptionFlags.TwitchOutRaidStarted = true;
-                    StartRaidResponse response = StartRaid(OptionFlags.TwitchStreamerUserId, ToUserName: ToChannelName).Result;
-                    //if (response != null)
-                    //{
-                    //    NotifyStartRaidResponse(ToChannelName, response);
-                    //}
-                    return true;
-                });
             }
         }
 
@@ -639,26 +606,17 @@ namespace StreamerBotLib.BotClients.Twitch
 
         public List<HelixClips> GetChannelClips(string UserId = null, string UserName = null)
         {
-            return PerformAction("GetChannelClips", () =>
-            {
-                return GetChannelClipsAsync(UserId: UserId, UserName: UserName);
-            }).Result;
+            return PerformAction("GetChannelClips", () => GetChannelClipsAsync(UserId: UserId, UserName: UserName));
         }
 
         public GetAdScheduleResponse GetAdSchedule(string UserId = null, string UserName = null)
         {
-            return PerformAction("GetAdSchedule", () =>
-            {
-                return GetAdScheduleAsync(UserId: UserId, UserName: UserName);
-            }).Result;
+            return PerformAction("GetAdSchedule", () => GetAdScheduleAsync(UserId: UserId, UserName: UserName).GetAwaiter().GetResult());
         }
 
         public CreateStreamMarkerResponse CreateStreamMarker(string UserId = null, string UserName = null, string Description = null)
         {
-            return PerformAction("CreateStreamMarker", () =>
-            {
-                return CreateStreamMarkerAsync(UserId, UserName, Description);
-            })?.Result;
+            return PerformAction("CreateStreamMarker", () => CreateStreamMarkerAsync(UserId, UserName, Description));
         }
 
         #region process events

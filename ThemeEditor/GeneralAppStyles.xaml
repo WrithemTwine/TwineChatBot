@@ -2049,13 +2049,23 @@
                 <MultiTrigger.Conditions>
                     <Condition Property="IsSelected"
                                Value="True" />
-                    <Condition Property="Selector.IsSelectionActive"
+                    <Condition Property="IsKeyboardFocusWithin"
+                               Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter Property="Background"
+                        Value="#FF4A90D9" />
+                <Setter Property="Foreground"
+                        Value="White" />
+            </MultiTrigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsSelected"
+                               Value="True" />
+                    <Condition Property="IsKeyboardFocusWithin"
                                Value="False" />
                 </MultiTrigger.Conditions>
                 <Setter Property="Background"
-                        Value="{DynamicResource DataGridRowSelectedInactive}" />
-                <Setter Property="Foreground"
-                        Value="{DynamicResource ForegroundText}" />
+                        Value="#FFD0D0D0" />
             </MultiTrigger>
         </Style.Triggers>
     </Style>
@@ -2149,8 +2159,6 @@
                 Value="Transparent" />
         <Setter Property="CanUserAddRows"
                 Value="False" />
-        <Setter Property="IsSynchronizedWithCurrentItem"
-                Value="True" />
         <Setter Property="RowStyle"
                 Value="{StaticResource DataGridRowStyle}" />
         <Setter Property="CellStyle"

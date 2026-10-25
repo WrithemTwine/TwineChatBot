@@ -308,7 +308,6 @@ namespace StreamerBot
                             LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, $"Starting {(tuple.Item3.DataContext as IOModule).BotClientName}.");
                         }
                         LogWriter.DebugLog("StartAutoBots", DebugLogTypes.GUIHelpers, "Finished starting bots and beginning to update category.");
-                        Bots_StartBots_ButtonStartAllBots.IsEnabled = true;
                     });
                 }
 
