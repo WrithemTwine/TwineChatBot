@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Models;
@@ -49,7 +51,43 @@ namespace StreamerBotLib.DataSQL.EFC10
         public async Task InitializeDataBaseAsync()
         {
             var initialcontext = BuildDataContext();
-            await initialcontext.Database.MigrateAsync();
+
+            var applied = await initialcontext.Database.GetAppliedMigrationsAsync();
+
+            if (!applied.Any())
+            {
+                // Brand new install
+                await initialcontext.Database.EnsureCreatedAsync();
+
+                // Mark all current migrations as applied without running their Up()
+                var historyRepo = initialcontext.GetService<IHistoryRepository>();
+                await historyRepo.CreateAsync();   // this is the official way
+                foreach (var id in initialcontext.Database.GetMigrations())
+                {
+                    await initialcontext.Database.ExecuteSqlRawAsync(
+                        historyRepo.GetInsertScript(new HistoryRow(id, ProductInfo.GetVersion())));
+                }
+            }
+            else
+            {
+                try
+                {
+                    await initialcontext.Database.MigrateAsync();
+                }
+                catch (Exception ex) when (ex.Message.Contains("duplicate column", StringComparison.OrdinalIgnoreCase)
+                                        || ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+                {
+                    // History is behind the actual schema – just stamp the missing ones
+                    var pending = await initialcontext.Database.GetPendingMigrationsAsync();
+                    var history = initialcontext.GetService<IHistoryRepository>();
+                    foreach (var id in pending)
+                    {
+                        await initialcontext.Database.ExecuteSqlRawAsync(
+                            history.GetInsertScript(new HistoryRow(id, ProductInfo.GetVersion())));
+                    }
+                }
+            }
+
             await initialcontext.SaveChangesAsync(true);
             initialcontext.Dispose();
 
