@@ -53,15 +53,18 @@ namespace StreamerBotLib.DataSQL.EFC10
             var initialcontext = BuildDataContext();
 
             var applied = await initialcontext.Database.GetAppliedMigrationsAsync();
-
             if (!applied.Any())
             {
-                // Brand new install
                 await initialcontext.Database.EnsureCreatedAsync();
 
-                // Mark all current migrations as applied without running their Up()
                 var historyRepo = initialcontext.GetService<IHistoryRepository>();
-                await historyRepo.CreateAsync();   // this is the official way
+
+                // Only create the history table if it is truly missing
+                if (!await historyRepo.ExistsAsync())
+                {
+                    await historyRepo.CreateAsync();
+                }
+
                 foreach (var id in initialcontext.Database.GetMigrations())
                 {
                     await initialcontext.Database.ExecuteSqlRawAsync(
@@ -74,16 +77,16 @@ namespace StreamerBotLib.DataSQL.EFC10
                 {
                     await initialcontext.Database.MigrateAsync();
                 }
-                catch (Exception ex) when (ex.Message.Contains("duplicate column", StringComparison.OrdinalIgnoreCase)
-                                        || ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
+                catch (Exception ex) when (
+                    ex.Message.Contains("duplicate column", StringComparison.OrdinalIgnoreCase) ||
+                    ex.Message.Contains("already exists", StringComparison.OrdinalIgnoreCase))
                 {
-                    // History is behind the actual schema – just stamp the missing ones
                     var pending = await initialcontext.Database.GetPendingMigrationsAsync();
-                    var history = initialcontext.GetService<IHistoryRepository>();
+                    var historyRepo = initialcontext.GetService<IHistoryRepository>();
                     foreach (var id in pending)
                     {
                         await initialcontext.Database.ExecuteSqlRawAsync(
-                            history.GetInsertScript(new HistoryRow(id, ProductInfo.GetVersion())));
+                            historyRepo.GetInsertScript(new HistoryRow(id, ProductInfo.GetVersion())));
                     }
                 }
             }
