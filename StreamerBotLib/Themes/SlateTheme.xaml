@@ -1,5 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:Double x:Key="ThemeBrushOpacity">0.85</sys:Double>
     <!--#region Colors -->
     <Color x:Key="LighterColor">#78909C</Color>
     <Color x:Key="MediumColor">#455A64</Color>

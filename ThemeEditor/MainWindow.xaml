@@ -273,6 +273,9 @@
                     <TextBlock Text="Stop"
                                Foreground="{DynamicResource Stop}"
                                Margin="0,4" />
+                    <TextBlock Text="Beta"
+                               Foreground="{DynamicResource LabelBeta}"
+                               Margin="0,4" />
                     <TextBlock Text="TabControl"
                                FontWeight="Bold"
                                Margin="0,20,0,6" />

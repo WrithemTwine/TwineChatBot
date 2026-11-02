@@ -116,6 +116,26 @@ namespace ThemeEditor
         {
             if (_updatingFromColor || SelectedColor is null) return;
             SelectedColor.Color = Color.FromRgb((byte)_r, (byte)_g, (byte)_b);
+            SyncPickerFromRgb();
+        }
+
+        private void SyncPickerFromRgb()
+        {
+            var c = Color.FromRgb((byte)_r, (byte)_g, (byte)_b);
+            ColorToHsv(c, out _hue, out double s, out double v);
+
+            _updatingFromColor = true;          // don't let H slider ValueChanged re-sample
+            try
+            {
+                _H = (int)(_hue * 255);
+                OnPropertyChanged(nameof(H));
+            }
+            finally { _updatingFromColor = false; }
+
+            _markerPos = new Point(s * 255, (1 - v) * 255);
+            RebuildBitmap();
+            Canvas.SetLeft(PickerMarker, _markerPos.X - PickerMarker.Width / 2);
+            Canvas.SetTop(PickerMarker, _markerPos.Y - PickerMarker.Height / 2);
         }
 
         private void PullRgbFromSelected()
