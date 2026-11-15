@@ -1,6 +1,9 @@
-﻿namespace StreamerBotLib.Models.Events
+﻿using StreamerBotLib.Models.Data;
+using StreamerBotLib.Models.Users;
+
+namespace StreamerBotLib.Models.Events
 {
-    public class OnIncomingRaidArgs : EventArgs
+    public class OnIncomingRaidArgs : BotPlatformEventArgs
     {
         public LiveUser LiveUser { get; set; }
         public DateTime RaidTime { get; set; }

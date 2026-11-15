@@ -1,14 +1,31 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.Culture;
+using StreamerBotLib.Models.Statistics;
+
+using System.Collections.ObjectModel;
 
 namespace StreamerBotLib.GUI
 {
     public class GUIAppStats
     {
+        public AppStat Threads { get; } = new() { Name = Msgs.appstatThread };
+        public AppStat ClosedThreads { get; } = new() { Name = Msgs.appstatClosedThreads };
+        public AppStat Uptime { get; } = new() { Name = Msgs.appstatUptime };
 
-        public AppStat<string> Header { get; private set; } = new() { Name = "Property Name", Value = "Value" };
-        public AppStat<int> Threads { get; private set; } = new() { Name = "Thread Count", Value = 0 };
-        public AppStat<int> ClosedThreads { get; private set; } = new() { Name = "Closed Threads", Value = 0 };
-        public AppStat<TimeSpan> Uptime { get; private set; } = new() { Name = "Bot Uptime", Value = new(0) };
+        /// <summary>Bind the ListView to this — add new stats here once.</summary>
+        public List<AppStat> Items { get; }
 
+        public GUIAppStats()
+        {
+            Threads.UpdateValue(0);
+            ClosedThreads.UpdateValue(0);
+            Uptime.UpdateValue(TimeSpan.Zero);
+
+            Items =
+            [
+                Threads,
+                ClosedThreads,
+                Uptime
+            ];
+        }
     }
 }

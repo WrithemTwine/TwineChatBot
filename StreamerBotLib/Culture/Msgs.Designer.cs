@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace StreamerBotLib.Culture
-{
-
-
+namespace StreamerBotLib.Culture {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -19,7 +19,7 @@ namespace StreamerBotLib.Culture
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Msgs {
@@ -93,6 +93,33 @@ namespace StreamerBotLib.Culture
         internal static string approve {
             get {
                 return ResourceManager.GetString("approve", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Closed Threads.
+        /// </summary>
+        internal static string appstatClosedThreads {
+            get {
+                return ResourceManager.GetString("appstatClosedThreads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thread Count.
+        /// </summary>
+        internal static string appstatThread {
+            get {
+                return ResourceManager.GetString("appstatThread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uptime.
+        /// </summary>
+        internal static string appstatUptime {
+            get {
+                return ResourceManager.GetString("appstatUptime", resourceCulture);
             }
         }
         
@@ -295,6 +322,15 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to clip.
+        /// </summary>
+        internal static string clip {
+            get {
+                return ResourceManager.GetString("clip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to commands.
         /// </summary>
         internal static string commands {
@@ -318,6 +354,15 @@ namespace StreamerBotLib.Culture
         internal static string dequeue {
             get {
                 return ResourceManager.GetString("dequeue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to duration.
+        /// </summary>
+        internal static string duration {
+            get {
+                return ResourceManager.GetString("duration", resourceCulture);
             }
         }
         
@@ -421,6 +466,24 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to shows the duration of the ad(s).
+        /// </summary>
+        internal static string Helpadduration {
+            get {
+                return ResourceManager.GetString("Helpadduration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to shows how much time until the ad starts.
+        /// </summary>
+        internal static string Helpadtime {
+            get {
+                return ResourceManager.GetString("Helpadtime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to permits distinguishing if the channel is hosted or autohosted.
         /// </summary>
         internal static string Helpautohost {
@@ -520,7 +583,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to When included, will replace &apos;#everyone&apos; with either (true) &apos;@everyone&apos; or (false) &apos;&lt;blank&gt;&apos; depending on whether the &apos;AddEveryone&apos; is checked (true) or unchecked (false) alongside the WebHooks Server link..
+        ///   Looks up a localized string similar to When included, will replace &apos;#everyone&apos; with either (true) &apos;@everyone&apos; or (false) &apos;&lt;blank&gt;&apos; depending on whether the &apos;AddEveryone&apos; is checked (true) or unchecked (false) alongside the Discord Server link..
         /// </summary>
         internal static string Helpeveryone {
             get {
@@ -610,6 +673,15 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Paste full path to file, double-click to browse to file..
+        /// </summary>
+        internal static string HelpPath {
+            get {
+                return ResourceManager.GetString("HelpPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Blackjack message to show how much currency the player won.
         /// </summary>
         internal static string Helppayout {
@@ -655,11 +727,11 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Currently not used..
+        ///   Looks up a localized string similar to Usage &quot;#random&quot; (equivalent to #random_100_0), &quot;#random_N_D&quot;, or &quot;#random_N_D_%&quot;, for a random number between 0 - N with &quot;D&quot; decimal digits. (e.g. #random_10_2_% =&gt; 5.84 %). The last symbol attaches to the end of the number, &quot;5.84 %&quot;..
         /// </summary>
-        internal static string HelpRandom {
+        internal static string Helprandom {
             get {
-                return ResourceManager.GetString("HelpRandom", resourceCulture);
+                return ResourceManager.GetString("Helprandom", resourceCulture);
             }
         }
         
@@ -808,7 +880,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to display name of the user sending action, some contexts - the streamer.
+        ///   Looks up a localized string similar to display name of the user sending action, in some contexts - the streamer; &apos;@user&apos; format.
         /// </summary>
         internal static string Helpuser {
             get {
@@ -822,6 +894,15 @@ namespace StreamerBotLib.Culture
         internal static string HelpUserJoined {
             get {
                 return ResourceManager.GetString("HelpUserJoined", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to display name of the user sending action, in some contexts - the streamer; &apos;user&apos; format.
+        /// </summary>
+        internal static string Helpusername {
+            get {
+                return ResourceManager.GetString("Helpusername", resourceCulture);
             }
         }
         
@@ -840,6 +921,15 @@ namespace StreamerBotLib.Culture
         internal static string Helpviewers {
             get {
                 return ResourceManager.GetString("Helpviewers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the current viewers / current followers percentage for the current live stream..
+        /// </summary>
+        internal static string Helpviewrate {
+            get {
+                return ResourceManager.GetString("Helpviewrate", resourceCulture);
             }
         }
         
@@ -925,6 +1015,15 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to marker.
+        /// </summary>
+        internal static string marker {
+            get {
+                return ResourceManager.GetString("marker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to mergeaccounts.
         /// </summary>
         internal static string mergeaccounts {
@@ -952,11 +1051,47 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Command-{0}-already exists, not added. Instead, use !editcommand..
+        /// </summary>
+        internal static string MsgAddCommandFailed {
+            get {
+                return ResourceManager.GetString("MsgAddCommandFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Thank you for adding quote #quotenum..
         /// </summary>
         internal static string Msgaddquote {
             get {
                 return ResourceManager.GetString("Msgaddquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The ads have ended. Welcome back!.
+        /// </summary>
+        internal static string MsgAdEnd {
+            get {
+                return ResourceManager.GetString("MsgAdEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It&apos;s time for an ad break in #adtime. The #adduration of ads help support the channel. So please stay and watch them! If you&apos;re subscribed or have turbo, you can bypass any ads!.
+        /// </summary>
+        internal static string MsgAdSoon {
+            get {
+                return ResourceManager.GetString("MsgAdSoon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ads have started! We&apos;ll see you back in #adduration!.
+        /// </summary>
+        internal static string MsgAdStart {
+            get {
+                return ResourceManager.GetString("MsgAdStart", resourceCulture);
             }
         }
         
@@ -1004,7 +1139,7 @@ namespace StreamerBotLib.Culture
                 return ResourceManager.GetString("MsgBits", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to #user started a game of BlackJack-21! For the next 1 minute, use &quot;!blackjack &lt;amount&gt;&quot; to join and wager virtual stream currency! The objective is to reach 21 without going over (bust). The 2-10 cards are face value, Q J K are worth 10, and A are worth 1 or 11. The House stands at #housestand or higher. All ties are a draw, players receive their wager. Each player gets a turn to &apos;#hit&apos; for a card, or &apos;#stand&apos;. No answer means a &apos;#stand&apos;. Payouts at the end of the game..
         /// </summary>
@@ -1024,7 +1159,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to $&quot;Fatal error, both main data and backup data files failed to properly load. All further data saves have been suspended until the Bot restarts. Please close and review the data files for improper XML formatting, retore from backups - ensure using the &apos;{StreamerBotLib.Data.DataManager.DataFileXML}&apos; filename. Without restoration, the datafile will need to be restarted from default.&quot;.
+        ///   Looks up a localized string similar to &quot;Could not connect to the database. Please ensure the data file is available and not open by another program.&quot;.
         /// </summary>
         internal static string MsgBoxDataLoadedMsg {
             get {
@@ -1056,6 +1191,15 @@ namespace StreamerBotLib.Culture
         internal static string MsgBoxManageDataArchiveTitle {
             get {
                 return ResourceManager.GetString("MsgBoxManageDataArchiveTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #user, I&apos;ve asked for a 30 second clip of the stream. I&apos;ll check in a few minutes and post the clip link..
+        /// </summary>
+        internal static string Msgclip {
+            get {
+                return ResourceManager.GetString("Msgclip", resourceCulture);
             }
         }
         
@@ -1123,6 +1267,15 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Social media url here.
+        /// </summary>
+        internal static string MsgDefaultSocialMsg {
+            get {
+                return ResourceManager.GetString("MsgDefaultSocialMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Also with leave, user leaves the play list.
         /// </summary>
         internal static string Msgdequeue {
@@ -1150,7 +1303,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you are enjoying the Content, please hit that follow button!.
+        ///   Looks up a localized string similar to If you are enjoying the content, please hit that follow button!.
         /// </summary>
         internal static string Msgfollow {
             get {
@@ -1222,6 +1375,24 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #user set a new stream marker #title.
+        /// </summary>
+        internal static string Msgmarker {
+            get {
+                return ResourceManager.GetString("Msgmarker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating the marker failed. Is VOD enabled?.
+        /// </summary>
+        internal static string Msgmarkerfail {
+            get {
+                return ResourceManager.GetString("Msgmarkerfail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The account merge failed..
         /// </summary>
         internal static string MsgMergeFailed {
@@ -1272,6 +1443,15 @@ namespace StreamerBotLib.Culture
         internal static string MsgNoCategory {
             get {
                 return ResourceManager.GetString("MsgNoCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Commands Enabled for use..
+        /// </summary>
+        internal static string MsgNoCommands {
+            get {
+                return ResourceManager.GetString("MsgNoCommands", resourceCulture);
             }
         }
         
@@ -1330,6 +1510,24 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Existing {0} Row.
+        /// </summary>
+        internal static string MsgPopupEditRow {
+            get {
+                return ResourceManager.GetString("MsgPopupEditRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add New {0} Row.
+        /// </summary>
+        internal static string MsgPopupNewRow {
+            get {
+                return ResourceManager.GetString("MsgPopupNewRow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use -!join &apos;gamertag&apos;- (or !enqueue) to join the queue, and !leave (or !dequeue) to leave the queue..
         /// </summary>
         internal static string Msgqinfo {
@@ -1337,7 +1535,7 @@ namespace StreamerBotLib.Culture
                 return ResourceManager.GetString("Msgqinfo", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The queue list to join me in the game has started!.
         /// </summary>
@@ -1366,7 +1564,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #quote.
+        ///   Looks up a localized string similar to Quote #quotenum - #title #date &quot;#quote&quot;.
         /// </summary>
         internal static string Msgquote {
             get {
@@ -1510,6 +1708,15 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The current time at my location is: #time, on #date..
+        /// </summary>
+        internal static string Msgtime {
+            get {
+                return ResourceManager.GetString("Msgtime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to refresh the access token. This can result from any of the following: the application access scopes changed; the application isn&apos;t yet approved; the account password changed; or the account&apos;s Twitch website setting disconnected the application. Please authorize the application to (re)gain access to Twitch..
         /// </summary>
         internal static string MsgTwitchAuthFailedAuthentication {
@@ -1528,7 +1735,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #user has been streaming for #uptime, with #viewers (#deltaviewers)..
+        ///   Looks up a localized string similar to #user has been streaming for #uptime, now with #viewers (#deltaviewers). The current viewer to follower rate is #viewrate, note, all viewers may not be followers..
         /// </summary>
         internal static string Msguptime {
             get {
@@ -1654,6 +1861,15 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -use:!clip.
+        /// </summary>
+        internal static string Paramclip {
+            get {
+                return ResourceManager.GetString("Paramclip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to -t:Commands -f:CmdName -top:-1 -s:ASC -use:!commands.
         /// </summary>
         internal static string Paramcommands {
@@ -1726,7 +1942,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -f:Message -use:!intro Username.
+        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -f:Message -use:!intro username.
         /// </summary>
         internal static string Paramintro {
             get {
@@ -1758,6 +1974,15 @@ namespace StreamerBotLib.Culture
         internal static string Paramlurk {
             get {
                 return ResourceManager.GetString("Paramlurk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!marker &lt;optional-description&gt;, channel VOD must be enabled -param:true.
+        /// </summary>
+        internal static string Parammarker {
+            get {
+                return ResourceManager.GetString("Parammarker", resourceCulture);
             }
         }
         
@@ -1861,7 +2086,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -p:Mod -f:Message -a:Post -use:!intro Username message.
+        ///   Looks up a localized string similar to -t:CustomWelcome -param:true -p:Mod -f:Message -a:Post -use:!intro username message.
         /// </summary>
         internal static string Paramsetintro {
             get {
@@ -1879,7 +2104,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -p:Mod -param:true -use:!so Username - only mods can use !so..
+        ///   Looks up a localized string similar to -p:Mod -param:true -use:!so username - only mods can use !so..
         /// </summary>
         internal static string Paramso {
             get {
@@ -1902,6 +2127,15 @@ namespace StreamerBotLib.Culture
         internal static string Paramsocials {
             get {
                 return ResourceManager.GetString("Paramsocials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -use:!time.
+        /// </summary>
+        internal static string Paramtime {
+            get {
+                return ResourceManager.GetString("Paramtime", resourceCulture);
             }
         }
         
@@ -1942,7 +2176,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to -t:Users -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;.
+        ///   Looks up a localized string similar to -t:UserStats -f:WatchTime -param:true -use:!watchtime or !watchtime &lt;user&gt;.
         /// </summary>
         internal static string Paramwatchtime {
             get {
@@ -2028,6 +2262,15 @@ namespace StreamerBotLib.Culture
         internal static string Pluralquote {
             get {
                 return ResourceManager.GetString("Pluralquote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to second, seconds.
+        /// </summary>
+        internal static string Pluralsecond {
+            get {
+                return ResourceManager.GetString("Pluralsecond", resourceCulture);
             }
         }
         
@@ -2239,6 +2482,15 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to time.
+        /// </summary>
+        internal static string time {
+            get {
+                return ResourceManager.GetString("time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to total.
         /// </summary>
         internal static string Total {
@@ -2248,7 +2500,7 @@ namespace StreamerBotLib.Culture
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Twine Chat Bot by WrithemTwine, #url, version {0}.{1}.{2}.{3} is now connected!.
+        ///   Looks up a localized string similar to Twine Chat Bot by WrithemTwine, #url, version {0} is now connected!.
         /// </summary>
         internal static string TwineBotInfo {
             get {

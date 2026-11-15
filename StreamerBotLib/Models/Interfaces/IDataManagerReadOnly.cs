@@ -1,4 +1,7 @@
-﻿using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Data;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.MachineLearning;
+using StreamerBotLib.Models.Users;
 
 namespace StreamerBotLib.Models.Interfaces
 {

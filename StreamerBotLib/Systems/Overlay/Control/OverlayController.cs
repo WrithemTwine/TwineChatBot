@@ -5,8 +5,8 @@
 #define UseGUIDLL
 #endif
 
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Overlay;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Models;
 using StreamerBotLib.Systems.Overlay.Server;

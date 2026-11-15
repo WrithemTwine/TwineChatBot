@@ -12,19 +12,19 @@ namespace StreamerBotLib.GUI
 
         protected void BotStarted(BotStartStopEventArgs e)
         {
-            LogWriter.DebugLog("BotStarted", DebugLogTypes.GUIBotComs, $"Bot started, {e.BotName}.");
+            LogWriter.DebugLog("BotStarted", DebugLogTypes.GUIBotComs, $"Bot started, {e.Bots}.");
             OnBotStarted?.Invoke(this, e);
         }
 
         protected void BotStopped(BotStartStopEventArgs e)
         {
-            LogWriter.DebugLog("BotStopped", DebugLogTypes.GUIBotComs, $"Bot stopped, {e.BotName}.");
+            LogWriter.DebugLog("BotStopped", DebugLogTypes.GUIBotComs, $"Bot stopped, {e.Bots}.");
             OnBotStopped?.Invoke(this, e);
         }
 
         protected void BotFailedStart(BotStartStopEventArgs e)
         {
-            LogWriter.DebugLog("BotFailedStart", DebugLogTypes.GUIBotComs, $"Bot failed to start, {e.BotName}.");
+            LogWriter.DebugLog("BotFailedStart", DebugLogTypes.GUIBotComs, $"Bot failed to start, {e.Bots}.");
             OnBotFailedStart?.Invoke(this, e);
         }
     }

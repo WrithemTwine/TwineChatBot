@@ -1,5 +1,6 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.StreamGames;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems.CurrencyGames

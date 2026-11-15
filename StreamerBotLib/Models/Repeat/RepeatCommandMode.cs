@@ -67,7 +67,7 @@ namespace StreamerBotLib.Models.Repeat
         protected void RepeatEvent(string command, Platform platform)
         {
             LogWriter.DebugLog("RepeatEvent", DebugLogTypes.RepeatCommandSystem, $"Repeat command ready to perform, {command}.");
-            OnRepeatEventOccured?.Invoke(this, new() { Command = command, platform = platform });
+            OnRepeatEventOccured?.Invoke(this, new() { Command = command, Platform = platform });
         }
 
     }

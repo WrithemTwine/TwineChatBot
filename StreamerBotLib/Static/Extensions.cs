@@ -6,14 +6,13 @@ namespace StreamerBotLib.Static
     {
         public static DateTime Max(DateTime A, DateTime B) => A <= B ? B : A;
 
-
         /// <summary>
         /// Uniquely adds an item to the provided <paramref name="List"/>, first checking if <paramref name="List"/> contains the item.
         /// </summary>
         /// <typeparam name="T">The generic type of the list.</typeparam>
         /// <param name="List">The List to add the item.</param>
         /// <param name="Item">The item to check if List contains and then add this item.</param>
-        /// <returns><code>true</code> - if added to List, <code>false</code> - if List contained item and not added.</returns>
+        /// <returns><c>true</c> - if added to List, <c>false</c> - if List contained item and not added.</returns>
         public static bool UniqueAdd<T>(this List<T> List, T Item)
         {
             bool added = false;
@@ -33,7 +32,7 @@ namespace StreamerBotLib.Static
         /// <param name="List">The List to add the item.</param>
         /// <param name="Item">The item to check if List contains and then add this item.</param>
         /// <param name="comparer">An item comparer to use to determine if two list objects are equal.</param>
-        /// <returns><code>true</code> - if added to List, <code>false</code> - if List contained item and not added.</returns>
+        /// <returns><c>true</c> - if added to List, <c>false</c> - if List contained item and not added.</returns>
         public static bool UniqueAdd<T>(this List<T> List, T Item, Predicate<T> predicate)
         {
             bool added = false;
@@ -67,7 +66,7 @@ namespace StreamerBotLib.Static
         /// <typeparam name="T">The generic type of the ICollection.</typeparam>
         /// <param name="ICollection">The ICollection to add the item.</param>
         /// <param name="Item">The item to check if ICollection contains and then add this item.</param>
-        /// <returns><code>true</code> - if added to ICollection, <code>false</code> - if ICollection contained item and not added.</returns>
+        /// <returns><c>true</c> - if added to ICollection, <c>false</c> - if ICollection contained item and not added.</returns>
         public static bool UniqueAdd<T>(this ICollection<T> ICollection, T Item)
         {
             bool added = false;
@@ -87,7 +86,7 @@ namespace StreamerBotLib.Static
         /// <param name="ICollection">The ICollection to add the item.</param>
         /// <param name="Item">The item to check if ICollection contains and then add this item.</param>
         /// <param name="comparer">An item comparer to use to determine if two ICollection objects are equal.</param>
-        /// <returns><code>true</code> - if added to ICollection, <code>false</code> - if ICollection contained item and not added.</returns>
+        /// <returns><c>true</c> - if added to ICollection, <c>false</c> - if ICollection contained item and not added.</returns>
         public static bool UniqueAdd<T>(this ICollection<T> ICollection, T Item, Predicate<T> predicate)
         {
             bool added = false;

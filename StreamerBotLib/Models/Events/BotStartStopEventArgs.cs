@@ -2,9 +2,8 @@
 
 namespace StreamerBotLib.Models.Events
 {
-    public class BotStartStopEventArgs : EventArgs
+    public class BotStartStopEventArgs : BotPlatformEventArgs
     {
-        public Bots BotName { get; set; }
         public bool Started { get; set; }
         public bool Stopped { get; set; }
     }

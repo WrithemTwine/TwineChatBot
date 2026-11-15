@@ -1,5 +1,6 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.MachineLearning;
+using StreamerBotLib.Models.Moderation;
 using StreamerBotLib.Static;
 
 namespace StreamerBotLib.Systems.MLearning

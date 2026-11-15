@@ -1,4 +1,6 @@
-﻿namespace StreamerBotLib.Models.Interfaces
+﻿using StreamerBotLib.Models.Users;
+
+namespace StreamerBotLib.Models.Interfaces
 {
     public interface IDataManagerTestMethods : IDataManager
     {

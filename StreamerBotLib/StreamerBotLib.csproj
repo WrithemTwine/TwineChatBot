@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.1.0.9</Version>
+		<Version>3.0.0.1</Version>
 		<TargetFramework>net10.0-windows7.0</TargetFramework>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<Nullable>disable</Nullable>
@@ -139,6 +139,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Update="Culture\Msgs.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Msgs.resx</DependentUpon>
+		</Compile>
 		<Compile Update="Properties\Resources.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
@@ -152,6 +157,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <EmbeddedResource Update="Culture\Msgs.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Msgs.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	  <EmbeddedResource Update="Properties\Resources.resx">
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>

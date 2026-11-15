@@ -1,6 +1,8 @@
-﻿namespace StreamerBotLib.Models.Events
+﻿using StreamerBotLib.Models.Users;
+
+namespace StreamerBotLib.Models.Events
 {
-    public class StreamerOnUserLeftArgs : EventArgs
+    public class StreamerOnUserLeftArgs : BotPlatformEventArgs
     {
         public LiveUser LiveUser { get; set; }
     }

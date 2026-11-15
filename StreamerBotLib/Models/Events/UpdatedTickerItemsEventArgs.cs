@@ -1,4 +1,6 @@
-﻿namespace StreamerBotLib.Models.Events
+﻿using StreamerBotLib.Models.Overlay;
+
+namespace StreamerBotLib.Models.Events
 {
     public class UpdatedTickerItemsEventArgs : EventArgs
     {

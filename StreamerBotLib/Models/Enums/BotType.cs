@@ -4,6 +4,7 @@
     {
         BotAccount,
         StreamerAccount,
-        StreamerNoScopes
+        StreamerNoScopes,
+        Service
     }
 }

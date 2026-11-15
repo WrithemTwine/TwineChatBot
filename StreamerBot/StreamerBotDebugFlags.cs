@@ -1,5 +1,4 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Properties;
+﻿using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 
 using System.Configuration;
@@ -7,6 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Data;
+
 
 
 #if DEBUG

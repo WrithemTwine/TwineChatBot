@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.Models.Events
 {
-    public class ResumeStreamOnlineEventArgs(Stream stream) : EventArgs
+    public class ResumeStreamOnlineEventArgs(Stream stream) : BotPlatformEventArgs
     {
         public Stream Stream { get; set; } = stream;
     }

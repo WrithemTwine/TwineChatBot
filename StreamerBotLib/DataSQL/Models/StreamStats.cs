@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using StreamerBotLib.Models.Statistics;
 using StreamerBotLib.Static;
 
 using System.Diagnostics;
@@ -88,7 +89,7 @@ namespace StreamerBotLib.DataSQL.Models
         public int MaxUsers { get; set; } = maxUsers;
         public ICollection<string> Category { get; set; } = category ?? [];
 
-        public void Update(StreamerBotLib.Models.StreamStat streamStat)
+        public void Update(StreamStat streamStat)
         {
             StreamStart = streamStat.StreamStart;
             StreamEnd = streamStat.StreamEnd;

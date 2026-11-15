@@ -5,12 +5,13 @@ using StreamerBotLib.BotClients.Twitch.EventSubSubscriptionManagers;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.ClipService;
 using StreamerBotLib.BotClients.Twitch.TwitchLib.Events.EventSub;
 using StreamerBotLib.Culture;
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.AdManage;
+using StreamerBotLib.Models.Data;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Models.Schedule;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 using StreamerBotLib.Static.Logger;
 using StreamerBotLib.Systems;
@@ -32,7 +33,6 @@ namespace StreamerBotLib.BotClients
     {
         #region Properties-Events
 
-        public override Platform Platform { get; set; } = Platform.Twitch;
 
         internal static TwitchTokenBot TwitchTokenBot { get; private set; }
 
@@ -109,7 +109,7 @@ namespace StreamerBotLib.BotClients
         /// we need to setup the objects using the tokens.
         /// The token bot now manages the tokens, refreshing the auth mode tokens.
         /// </summary>
-        public static async Task InitializeHelix()
+        public async Task InitializeHelix()
         {
             await TwitchTokenBot.StartBot(); // performs a null check and creates a new api if necessary
         }
@@ -128,6 +128,8 @@ namespace StreamerBotLib.BotClients
         public BotsTwitch()
         {
             LogWriter.DebugLog(".ctor_BotsTwitch", DebugLogTypes.TwitchBots, "Building all of the Twitch bots.");
+
+            Platform = Platform.Twitch;
 
             StreamLoggerProvider.OnWriteLine += StreamLoggerProvider_OnWriteLine;
 #if USEQUEUELOGGER
@@ -676,6 +678,15 @@ namespace StreamerBotLib.BotClients
         #endregion
 
         #region Twitch Helix Calls
+
+        public static bool ConfirmHelixApiObjects()
+        {
+            LogWriter.DebugLog("ConfirmHelixApiObjects", DebugLogTypes.TwitchBots, "Confirming the Helix API objects are constructed and valid.");
+            return 
+                TwitchTokenBot.BotHelixApi != null 
+                && TwitchTokenBot.StreamerHelixApi != null
+                && TwitchTokenBot.StreamerNoScopesHelixApi != null;
+        }
         //private static Models.LiveUser AddUserId(string s)
         //{
         //    LogWriter.DebugLog("AddUserId", DebugLogTypes.TwitchBots, "Adding user Id to the existing user name.");

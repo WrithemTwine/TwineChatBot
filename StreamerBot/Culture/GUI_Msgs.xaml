@@ -184,6 +184,7 @@ You would only need to perform the new 'access token' to get another token.</sys
     <!-- ============================================================= -->
     <!--                     Bots Tab                                  -->
     <!-- ============================================================= -->
+    <system:String x:Key="Bots_ServiceBots">Service Bots</system:String>
     <system:String x:Key="Bots_Category_Twitch">Platform-Twitch</system:String>
     <system:String x:Key="Bots_TabHeader">Bots</system:String>
     <system:String x:Key="Bots_StartAll">Start All Bots</system:String>
@@ -776,14 +777,24 @@ You would only need to perform the new 'access token' to get another token.</sys
     <!-- ============================================================= -->
     <!--                     Logs Tab                                  -->
     <!-- ============================================================= -->
-    <system:String x:Key="Logs_TabHeader">Logs</system:String>
-    <system:String x:Key="Logs_BotStatus_Tab">Bot Status</system:String>
+    <system:String x:Key="Logs_TabHeader">Status</system:String>
+    <system:String x:Key="Logs_Status_Tab">App Status</system:String>
+    <system:String x:Key="Logs_Status_HeaderPlatform">Platform</system:String>
+    <system:String x:Key="Logs_Status_HeaderLive">Live</system:String>
+    <system:String x:Key="Logs_Status_HeaderViewers">Viewers</system:String>
+    <system:String x:Key="Logs_Status_HeaderFollowers">Followers</system:String>
+    <system:String x:Key="Logs_Status_HeaderCategory">Category</system:String>
+    <system:String x:Key="Logs_Status_HeaderTitle">Title</system:String>
+    <system:String x:Key="Logs_Status_HeaderTokenExpiration">Token Expiration</system:String>
+    <system:String x:Key="Logs_BotStatus_Tab">Bot Data</system:String>
     <system:String x:Key="Logs_TwitchStatus_Tab">Twitch Status</system:String>
     <system:String x:Key="Logs_BotStatusLog_Header">Bot Status Log</system:String>
     <system:String x:Key="Logs_EnableBotStatus">Enable Bot Status Logging</system:String>
     <system:String x:Key="Logs_BotStatusLog_Tooltip">Save this log - 'StatusLog.txt'</system:String>
     <system:String x:Key="Logs_EnableExceptions">Enable TwineBot Exception Logging</system:String>
     <system:String x:Key="Logs_ExceptionsLog_Tooltip">Save Exceptions - 'ExceptionsLog.txt'</system:String>
+    <system:String x:Key="Logs_Stats_PropertyName">Property Name</system:String>
+    <system:String x:Key="Logs_Stats_PropertyValue">Value</system:String>
     <!-- ============================================================= -->
     <!--                     User Join Tab                             -->
     <!-- ============================================================= -->

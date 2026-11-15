@@ -1,6 +1,7 @@
-﻿
-using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models.Data;
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Statistics;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;
 

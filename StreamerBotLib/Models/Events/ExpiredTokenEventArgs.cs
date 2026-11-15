@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Models.Events
 {
-    public class ExpiredTokenEventArgs(Action rePerformAction) : EventArgs
+    public class ExpiredTokenEventArgs(Action rePerformAction) : BotPlatformEventArgs
     {
         /// <summary>
         /// When a token expires during an action, this action can be set to re-attempt the action after the token is refreshed.

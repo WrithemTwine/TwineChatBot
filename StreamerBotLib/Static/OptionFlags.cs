@@ -2,6 +2,9 @@
 using StreamerBotLib.Properties;
 
 using System.Collections.Specialized;
+using System.IO;
+using System.Reflection;
+using System.Windows;
 
 namespace StreamerBotLib.Static
 {
@@ -1382,6 +1385,107 @@ namespace StreamerBotLib.Static
         public static void SaveSettings()
         {
             Settings.Default.Save();
+        }
+
+        public static void CheckSettings()
+        {
+            if (Settings.Default.UpgradeRequired)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+
+                #region Manage app authorization for access scope changes
+                // reserved for clearing tokens when there is an access scope change
+                // have a trailing access scope saved for each token method, if the saved scope doesn't match the current scopes, then clear the tokens and saved scopes to force a new authentication with the new scopes. This is needed because Twitch requires a new access token with the required access scopes when accessing newly implemented API calls within the app.
+
+                // TODO: update the tokenbot or GUI to save the scopes when the manual tokens are entered in the Twitch token credentials
+                // TODO: update the authcode flow, tokenbot?, to save the scopes when authorizing the app
+
+                if (Settings.Default.TwitchTokenUseAuth)
+                {
+                    if (OptionFlags.TwitchStreamerUseToken)
+                    {
+                        if (Settings.Default.TwitchAuthBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthBot)
+                        {
+                            Settings.Default.TwitchAuthBotAccessToken = string.Empty;
+                            Settings.Default.TwitchAuthBotRefreshToken = string.Empty;
+                            Settings.Default.TwitchAuthBotAuthCode = string.Empty;
+                        }
+                        if (Settings.Default.TwitchAuthStreamerScopeApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthChannel)
+                        {
+                            Settings.Default.TwitchAuthStreamerAccessToken = string.Empty;
+                            Settings.Default.TwitchAuthStreamerRefreshToken = string.Empty;
+                            Settings.Default.TwitchAuthStreamerAuthCode = string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        if (Settings.Default.TwitchAuthBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesOauthSame)
+                        {
+                            Settings.Default.TwitchAuthBotAccessToken = string.Empty;
+                            Settings.Default.TwitchAuthBotRefreshToken = string.Empty;
+                            Settings.Default.TwitchAuthBotAuthCode = string.Empty;
+                        }
+                    }
+                }
+                else
+                {
+                    if (OptionFlags.TwitchStreamerUseToken)
+                    {
+                        if (Settings.Default.TwitchBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthBot)
+                        {
+                            Settings.Default.TwitchBotAccessToken = string.Empty;
+                            Settings.Default.TwitchBotRefreshToken = string.Empty;
+                        }
+                        if (Settings.Default.TwitchStreamerScopesApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesDiffOauthChannel)
+                        {
+                            Settings.Default.TwitchStreamerAccessToken = string.Empty;
+                            Settings.Default.TwitchStreamerRefreshToken = string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        if (Settings.Default.TwitchBotApproveScopes != StreamerBotLib.Properties.Resources.CredentialsTwitchScopesOauthSame)
+                        {
+                            Settings.Default.TwitchBotAccessToken = string.Empty;
+                            Settings.Default.TwitchBotRefreshToken = string.Empty;
+                        }
+                    }
+                }
+
+                // end of the reserved section for clearing tokens when there is an access scope change
+                #endregion
+
+                SaveSettings();
+            }
+
+            string SaveCWDPath = GetAppDataCWD();
+            if (Settings.Default.AppCurrWorkingPopup)
+            {
+                Settings.Default.AppCurrWorkingPopup = false;
+
+                MessageBoxResult boxResult = MessageBox.Show($"This application supports saving all data files at:\r\n{SaveCWDPath}\r\n\tor at the application'AppVersion current location:\r\n{Directory.GetCurrentDirectory()}\r\n\r\nPlease select 'Yes' to enable the APPData save location and restart the app.\r\n\r\nPlease see 'Data/Options/Any - Data Management' to change this option.\r\n\r\nThis dialog will not re-appear unless the settings are reset.", "Decide File Save Location", MessageBoxButton.YesNo);
+
+                if (boxResult == MessageBoxResult.Yes)
+                {
+                    Settings.Default.AppCurrWorkingAppData = true;
+                }
+            }
+
+            if (Settings.Default.AppCurrWorkingAppData)
+            {
+                Directory.CreateDirectory(SaveCWDPath);
+                Directory.SetCurrentDirectory(SaveCWDPath);
+            }
+        }
+
+        /// <summary>
+        /// Get the application current working directory
+        /// </summary>
+        /// <returns>The user'AppVersion local application data path to store application save data.</returns>
+        private static string GetAppDataCWD()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Assembly.GetExecutingAssembly().GetName().Name, "Data");
         }
     }
 }

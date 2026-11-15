@@ -1,7 +1,8 @@
 ﻿using StreamerBotLib.BotIOController;
-using StreamerBotLib.Models;
+using StreamerBotLib.Models.Data;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;

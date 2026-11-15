@@ -4,8 +4,8 @@
 using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 
 using System.Diagnostics;

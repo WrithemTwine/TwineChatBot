@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.Models.Events
 {
-    public class ClipFoundEventArgs(bool allClips, List<TwitchClip> clipList) : EventArgs
+    public class ClipFoundEventArgs(bool allClips, List<TwitchClip> clipList) : BotPlatformEventArgs
     {
         public bool AllClips { get; set; } = allClips;
 

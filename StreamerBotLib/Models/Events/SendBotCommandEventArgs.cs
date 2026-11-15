@@ -1,6 +1,8 @@
-﻿namespace StreamerBotLib.Models.Events
+﻿using StreamerBotLib.Models.Data;
+
+namespace StreamerBotLib.Models.Events
 {
-    public class SendBotCommandEventArgs : EventArgs
+    public class SendBotCommandEventArgs : BotPlatformEventArgs
     {
         public CmdMessage CmdMessage { get; set; }
     }

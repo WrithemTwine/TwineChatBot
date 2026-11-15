@@ -1,5 +1,6 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models.Data;
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.CurrencyGames;
 
@@ -7,7 +8,7 @@ namespace StreamerBotLib.Systems
 {
     public partial class ActionSystem
     {
-        private const int TaskDelay = 90000; // in milliseconds
+        private const int TaskDelay = 30000; // in milliseconds
 
         private bool CurAccrualStarted;
         private bool WatchStarted;

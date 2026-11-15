@@ -1,7 +1,7 @@
 ﻿using StreamerBotLib.DataSQL.AccessPolicy;
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Statistics;
 using StreamerBotLib.Static;
 
 using System.Reflection;

@@ -1,4 +1,6 @@
-﻿namespace StreamerBotLib.Models.Enums
+﻿using StreamerBotLib.Models.Users;
+
+namespace StreamerBotLib.Models.Enums
 {
     // DO NOT CHANGE THE ORDER OF THIS ENUM, IT IS USED INTERNALLY WITHIN THE ENTITY FRAMEWORKCORE-DATABASE AS AN INTEGER VALUE, AND CHANGING THE ORDER WILL BREAK EXISTING DATABASES MAPPING THE INTEGER BACK TO THIS ENUM.
     // Only add new platforms to the end of this enum, and do not remove any existing platforms.

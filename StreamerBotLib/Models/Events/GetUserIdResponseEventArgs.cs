@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Models.Events
 {
-    public class GetUserIdResponseEventArgs : EventArgs
+    public class GetUserIdResponseEventArgs : BotPlatformEventArgs
     {
         public string UserId { get; set; }
     }

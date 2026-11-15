@@ -1,5 +1,7 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models.Data;
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.MachineLearning;
+using StreamerBotLib.Models.Moderation;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.MLearning;
 

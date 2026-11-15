@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models.Data;
 using StreamerBotLib.Systems;
 
 namespace StreamerBotLib.Static

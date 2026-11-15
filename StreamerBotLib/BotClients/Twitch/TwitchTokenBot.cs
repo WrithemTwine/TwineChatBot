@@ -1,7 +1,7 @@
 ﻿using StreamerBotLib.BotClients.Twitch.TwitchLib;
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 

@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Data;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
@@ -69,16 +70,16 @@ namespace StreamerBotLib.Models.Repeat
                  )
             {
                 // TODO: fix repeat command platform - probably setup a new data table for messages across platforms to handle cross-platform repeat commands
-                if (e.platform == Platform.Twitch)
+                if (e.Platform == Platform.Twitch)
                 {
                     LogWriter.DebugLog("RepeatEventOccured", DebugLogTypes.RepeatCommandSystem, $"Perform the repeat command: {e.Command}.");
                     CommandData currCommand = ActionSystem.DataManage.GetCommand(e.Command);
                     OnRepeatEventOccured?.Invoke(this, new TimerCommandsEventArgs()
                     {
-                        Platform = e.platform,
+                        Platform = e.Platform,
                         Message = _actionsystem.ParseCommand(
                                                e.Command,
-                                               new(OptionFlags.TwitchBotUserName, e.platform),
+                                               new(OptionFlags.TwitchBotUserName, e.Platform),
                                                [],
                                                currCommand,
                                                out short multi, true),

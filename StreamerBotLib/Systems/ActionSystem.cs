@@ -3,10 +3,12 @@
 using StreamerBotLib.BotClients;
 using StreamerBotLib.DataSQL;
 using StreamerBotLib.GUI;
-using StreamerBotLib.Models;
+using StreamerBotLib.Models.Data;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Models.Statistics;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Enums;

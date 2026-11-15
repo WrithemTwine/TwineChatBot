@@ -1,6 +1,9 @@
 ﻿using StreamerBotLib.BotClients;
 using StreamerBotLib.BotIOController;
 using StreamerBotLib.GUI.Data;
+using StreamerBotLib.Models.Events;
+using StreamerBotLib.Static;
+using StreamerBotLib.Systems.Overlay;
 using StreamerBotLib.Systems.Overlay.Enums;
 using StreamerBotLib.Systems.Overlay.Models;
 
@@ -11,6 +14,17 @@ namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
+        private void MediaOverlayServer_SetOverlayWindow(object sender, SetOverlayWindowEventArgs e)
+        {
+            ThreadManager.CreateThreadStart("MediaOverlayServer_SetOverlayWindow", () =>
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    e.SetOverlay(((MediaOverlayPage)((Frame)TabItem_Bots_OverlayTab.Content).Content));
+                }), null);
+            });
+        }
+
         #region Overlay Service
 
         private void Button_Overlay_PauseAlerts_Click(object sender, RoutedEventArgs e)

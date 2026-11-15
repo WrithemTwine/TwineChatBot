@@ -2,7 +2,7 @@
 
 namespace StreamerBotLib.Models.Events
 {
-    public class BotEventArgs
+    public class BotEventArgs : EventArgs
     {
         public BotEvents MethodName { get; set; }
         public EventArgs e { get; set; }

@@ -3,8 +3,9 @@
 using Microsoft.EntityFrameworkCore;
 
 using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.MachineLearning;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Systems.Overlay.Enums;
 
 namespace StreamerBotLib.DataSQL.EFC10

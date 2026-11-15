@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using StreamerBotLib.Models.Statistics;
+
+using System.Diagnostics.CodeAnalysis;
 
 namespace StreamerBotLib.Models.Events
 {

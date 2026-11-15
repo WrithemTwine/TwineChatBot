@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Models.Events
 {
-    public class OnStreamRaidResponseEventArgs : EventArgs
+    public class OnStreamRaidResponseEventArgs : BotPlatformEventArgs
     {
         public string ToChannel { get; set; }
         public DateTime CreatedAt { get; set; }

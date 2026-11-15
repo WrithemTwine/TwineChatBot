@@ -2,7 +2,7 @@
 
 namespace StreamerBotImport.Import
 {
-    internal class StreamStat : StreamerBotLib.Models.StreamStat
+    internal class StreamStat : StreamerBotLib.Models.Statistics.StreamStat
     {
         public void Update(StreamStatsRow streamStatsRow)
         {

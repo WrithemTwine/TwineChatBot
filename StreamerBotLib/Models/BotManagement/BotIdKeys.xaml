@@ -1,0 +1,225 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:BOStatus="clr-namespace:StreamerBotLib.Models.BotManagement;assembly=StreamerBotLib">
+    
+     <BOStatus:BotIdKey x:Key="BotIdKey_Services_OverlayService_StartLabel"
+                        Platform="Service" 
+                        Bots="MediaOverlayServer" 
+                        BotType="Service" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        LabelOperationVisibility="False" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Services_OverlayService_StopLabel"
+                        Platform="Service" 
+                        Bots="MediaOverlayServer" 
+                        BotType="Service" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        LabelOperationVisibility="False" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Services_OverlayService_Start"
+                        Platform="Service" 
+                        Bots="MediaOverlayServer" 
+                        BotType="Service" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        LabelOperationVisibility="False" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Services_OverlayService_Stop"
+                        Platform="Service" 
+                        Bots="MediaOverlayServer" 
+                        BotType="Service" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        LabelOperationVisibility="False" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Services_OverlayService_Error"
+                        Platform="Service" 
+                        Bots="MediaOverlayServer" 
+                        BotType="Service" 
+                        BotOperationType="ApiReady" 
+                        BotStatusCategory="Error" 
+                        LabelOperationVisibility="False" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Valid" Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="Authorize" 
+                        BotStatusCategory="Label" 
+                        LabelOperationVisibility="True" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Invalid" Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="Authorize" 
+                        BotStatusCategory="Label" 
+                        LabelOperationVisibility="False" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Manual" Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="Authorize" 
+                        BotStatusCategory="Label" 
+                        LabelOperationVisibility="False" 
+                        UseAutoToken="False" />
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Auto"
+                       Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="Authorize" 
+                        BotStatusCategory="Label" 
+                        LabelOperationVisibility="False" 
+                        UseAutoToken="True" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_StartLabel" Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        LabelOperationVisibility="True" />    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_StopLabel" Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        LabelOperationVisibility="False" />
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_Start" Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        LabelOperationVisibility="True" />
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_Stop" Platform="Twitch" 
+                        Bots="TwitchBotSendChatClient" 
+                        BotType="BotAccount" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        LabelOperationVisibility="False" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_ScopesValid" Platform="Twitch" 
+                        Bots="TwitchEventSubStreamer" 
+                        BotOperationType="Authorize" 
+                        LabelOperationVisibility="True" 
+                        BotStatusCategory="Label" 
+                        BotType="StreamerAccount" />
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_ScopesLabel_Invalid" Platform="Twitch" 
+                        Bots="TwitchEventSubStreamer" 
+                        BotOperationType="Authorize" 
+                        LabelOperationVisibility="False" 
+                        BotStatusCategory="Label" 
+                        BotType="StreamerAccount" />
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_NoScopesLabel_Valid" Platform="Twitch" 
+                        Bots="TwitchStreamerEventSubNoScopes" 
+                        BotOperationType="Authorize" 
+                        LabelOperationVisibility="True" 
+                        BotStatusCategory="Label" 
+                        BotType="StreamerNoScopes" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubChat_NoScopesLabel_Invalid" Platform="Twitch" 
+                        Bots="TwitchStreamerEventSubNoScopes" 
+                        BotOperationType="Authorize" 
+                        LabelOperationVisibility="False" 
+                        BotStatusCategory="Label" 
+                        BotType="StreamerNoScopes" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_ManualToken"  Platform="Twitch" 
+                        Bots="TwitchStreamerEventSub" 
+                        BotOperationType="Authorize" 
+                        LabelOperationVisibility="False" 
+                        BotStatusCategory="Label" 
+                        BotType="StreamerAccount" 
+                        UseAutoToken="False" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_AutoToken"  Platform="Twitch" 
+                        Bots="TwitchStreamerEventSub" 
+                        BotOperationType="Authorize" 
+                        LabelOperationVisibility="False" 
+                        BotStatusCategory="Label" 
+                        BotType="StreamerAccount" 
+                        UseAutoToken="True" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_Start_Label"  Platform="Twitch" 
+                        Bots="TwitchStreamerEventSub" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_Stop_Label"  Platform="Twitch" 
+                        Bots="TwitchStreamerEventSub" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_Start"  Platform="Twitch" 
+                        Bots="TwitchStreamerEventSub" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_EventSubNotify_Stop"  Platform="Twitch" 
+                        Bots="TwitchStreamerEventSub" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_MultiBot_Start_Label"  Platform="Twitch" 
+                        Bots="TwitchMultiBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        BotType="StreamerAccount" />
+  
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_MultiBot_Stop_Label"  Platform="Twitch" 
+                        Bots="TwitchMultiBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        BotType="StreamerAccount" />
+   
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_MultiBot_Start"  Platform="Twitch" 
+                        Bots="TwitchMultiBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_MultiBot_Stop"  Platform="Twitch" 
+                        Bots="TwitchMultiBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_ClipBot_Start_Label"
+                        Platform="Twitch" 
+                        Bots="TwitchClipBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_ClipBot_Stop_Label"
+                        Platform="Twitch" 
+                        Bots="TwitchClipBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_ClipBot_Start"
+                        Platform="Twitch" 
+                        Bots="TwitchClipBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Start" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_ClipBot_Stop"
+                        Platform="Twitch" 
+                        Bots="TwitchClipBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Stop" 
+                        BotType="StreamerAccount" />
+    
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_ClipBot_Error"
+                        Platform="Twitch" 
+                        Bots="TwitchClipBot" 
+                        BotOperationType="SingleBotActive" 
+                        BotStatusCategory="Error" 
+                        BotType="StreamerAccount" />
+   
+    
+    
+    
+    
+    
+    
+    
+    
+</ResourceDictionary>

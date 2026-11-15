@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models.Users;
 
 namespace StreamerBotLib.DataSQL.EFC10
 {

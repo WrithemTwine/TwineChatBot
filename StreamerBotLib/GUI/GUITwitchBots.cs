@@ -73,21 +73,21 @@ namespace StreamerBotLib.GUI
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             LogWriter.DebugLog("TwitchBot_OnBotStarted", DebugLogTypes.GUIBotComs, $"Bot started, {currBot.BotClientName}.");
-            BotStarted(new() { BotName = currBot.BotClientName, Started = currBot.IsActive == true });
+            BotStarted(new() { Bots = currBot.BotClientName, Started = currBot.IsActive == true });
         }
 
         private void TwitchBot_OnBotStopped(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             LogWriter.DebugLog("TwitchBot_OnBotStopped", DebugLogTypes.GUIBotComs, $"Bot stopped, {currBot.BotClientName}.");
-            BotStopped(new() { BotName = currBot.BotClientName, Stopped = currBot.IsActive == true });
+            BotStopped(new() { Bots = currBot.BotClientName, Stopped = currBot.IsActive == true });
         }
 
         private void TwitchBot_OnBotFailedStart(object sender, EventArgs e)
         {
             TwitchBotsBase currBot = sender as TwitchBotsBase;
             LogWriter.DebugLog("TwitchBot_OnBotFailedStart", DebugLogTypes.GUIBotComs, $"Bot failed to start, {currBot.BotClientName}.");
-            BotFailedStart(new() { BotName = currBot.BotClientName, Started = currBot.IsActive == true });
+            BotFailedStart(new() { Bots = currBot.BotClientName, Started = currBot.IsActive == true });
         }
 
         #region Events

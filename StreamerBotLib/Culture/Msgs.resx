@@ -1072,4 +1072,13 @@
   <data name="Msgmarkerfail" xml:space="preserve">
     <value>Creating the marker failed. Is VOD enabled?</value>
   </data>
+  <data name="appstatThread" xml:space="preserve">
+    <value>Thread Count</value>
+  </data>
+  <data name="appstatClosedThreads" xml:space="preserve">
+    <value>Closed Threads</value>
+  </data>
+  <data name="appstatUptime" xml:space="preserve">
+    <value>Uptime</value>
+  </data>
 </root>

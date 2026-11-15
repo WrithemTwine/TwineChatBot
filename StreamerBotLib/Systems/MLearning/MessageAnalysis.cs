@@ -1,8 +1,8 @@
 ﻿#define USE_ACCORD  // use Accord.NET for machine learning
 //#define USE_MLNET   // use ML.NET for machine learning
 
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Moderation;
 using StreamerBotLib.Static;
 
 #if USE_ACCORD

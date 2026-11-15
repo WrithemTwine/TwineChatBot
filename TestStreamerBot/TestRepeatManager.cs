@@ -1,9 +1,15 @@
 ﻿using StreamerBotLib.DataSQL.Models;
 using StreamerBotLib.Models;
+using StreamerBotLib.Models.Data;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Models.MachineLearning;
+using StreamerBotLib.Models.Overlay;
 using StreamerBotLib.Models.Repeat;
+using StreamerBotLib.Models.Statistics;
+using StreamerBotLib.Models.StreamGames;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.Overlay.Enums;

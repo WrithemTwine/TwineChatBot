@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>2.1.0.9</Version>
+		<Version>3.0.0.1</Version>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net10.0-windows7.0</TargetFramework>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
@@ -22,6 +22,10 @@
 		<ApplicationIcon>img\TSB_Icon.ico</ApplicationIcon>
 		<Configurations>Debug;Release;Release_Sqlite;Release_PostGre;Release_KNet;Release_Cosmos;Release_MySql;Release_SqlServer;Debug_ViewXAML;Release_PomeloMySql;Debug_EFEETesting;Update_Nuget_Only</Configurations>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="z_oldGUIstartupbot_source.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Remove="img\TSB_Icon.ico" />
@@ -103,6 +107,10 @@
 
 	<ItemGroup>
 	  <Folder Include="Properties\PublishProfiles\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="z_oldGUIstartupbot_source.cs" />
 	</ItemGroup>
 
 </Project>

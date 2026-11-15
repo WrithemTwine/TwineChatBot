@@ -1,5 +1,5 @@
-﻿using StreamerBotLib.Models;
-using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Overlay;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems.Overlay.Control;
 using StreamerBotLib.Systems.Overlay.Enums;

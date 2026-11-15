@@ -1,6 +1,6 @@
 ﻿namespace StreamerBotLib.Models.Events
 {
-    public class StreamUpdatePropertiesEventArgs(string categoryId = "", string categoryName = "") : EventArgs
+    public class StreamUpdatePropertiesEventArgs(string categoryId = "", string categoryName = "") : BotPlatformEventArgs
     {
         public string CategoryId { get; set; } = categoryId;
 

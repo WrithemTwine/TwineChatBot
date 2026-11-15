@@ -1,8 +1,9 @@
 ﻿using StreamerBotLib.DataSQL.Models;
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
+using StreamerBotLib.Models.Statistics;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 

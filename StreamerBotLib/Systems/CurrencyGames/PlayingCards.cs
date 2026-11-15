@@ -1,4 +1,4 @@
-﻿using StreamerBotLib.Models;
+﻿using StreamerBotLib.Models.StreamGames;
 
 namespace StreamerBotLib.Systems.CurrencyGames
 {
