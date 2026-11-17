@@ -4,7 +4,7 @@ using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Static;
 
-namespace StreamerBotLib.GUI
+namespace StreamerBotLib.GUI.toDelete
 {
     public class GUITwitchBots : GUIBotBase
     {

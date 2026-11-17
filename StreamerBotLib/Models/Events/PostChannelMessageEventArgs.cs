@@ -1,6 +1,4 @@
-﻿using StreamerBotLib.Models.Enums;
-
-namespace StreamerBotLib.Models.Events
+﻿namespace StreamerBotLib.Models.Events
 {
     public class PostChannelMessageEventArgs : BotPlatformEventArgs
     {

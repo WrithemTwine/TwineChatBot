@@ -19,7 +19,7 @@ namespace StreamerBotLib.Models.BotManagement
                 }
                 return ApiReady;
             }).ConfigureAwait(false);
-            
+
         }
 
         public override Task<bool> TryCheckApiReadyAsync()
@@ -36,11 +36,12 @@ namespace StreamerBotLib.Models.BotManagement
                 if (OptionFlags.TwitchTokenUseAuth)
                 {
                     fieldstrings.Add(OptionFlags.TwitchAuthBotAuthCode);
-                    if(OptionFlags.TwitchStreamerUseToken)
-                {
-                    fieldstrings.Add(OptionFlags.TwitchAuthStreamerAuthCode);
+                    if (OptionFlags.TwitchStreamerUseToken)
+                    {
+                        fieldstrings.Add(OptionFlags.TwitchAuthStreamerAuthCode);
+                    }
                 }
-                } else
+                else
                 {
                     fieldstrings.Add(OptionFlags.TwitchBotAccessToken);
                     if (OptionFlags.TwitchStreamerUseToken)
@@ -48,7 +49,7 @@ namespace StreamerBotLib.Models.BotManagement
                         fieldstrings.Add(OptionFlags.TwitchStreamerAccessToken);
                     }
                 }
-                
+
                 Authorized = ReadyToAuthorize && !CalculateEmptyString(fieldstrings);
 
                 return Authorized;
@@ -91,7 +92,7 @@ namespace StreamerBotLib.Models.BotManagement
                             OptionFlags.TwitchAuthBotClientId,
                             OptionFlags.TwitchAuthBotClientSecret,
                             OptionFlags.TwitchChannelName]);
-                        if(OptionFlags.TwitchStreamerUseToken)
+                        if (OptionFlags.TwitchStreamerUseToken)
                         {
                             fieldchecks.AddRange([OptionFlags.TwitchAuthStreamerClientId,
                                 OptionFlags.TwitchAuthStreamerClientSecret]);

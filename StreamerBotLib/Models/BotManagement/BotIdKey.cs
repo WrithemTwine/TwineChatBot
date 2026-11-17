@@ -39,6 +39,14 @@ namespace StreamerBotLib.Models.BotManagement
         /// A flag to specify using an automatically refreshed token. Primarily for help context in Label visibility (showing help for the user about automatic refreshing tokens or help for other authentication methods).
         /// </summary>
         public bool UseAutoToken { get; set; } = false;
+        /// <summary>
+        /// Specifies the targeted object will lock when the specified "Bots" is active.
+        /// </summary>
+        public bool LockSingleBotActive { get; set; } = false;
+        /// <summary>
+        /// Specifies the targeted object will lock when any platform bot is active.
+        /// </summary>
+        public bool LockAnyBotActive { get; set; } = false;
 
         /// <summary>
         /// Provides true if the object meets the criteria.

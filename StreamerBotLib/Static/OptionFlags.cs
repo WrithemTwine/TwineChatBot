@@ -1,4 +1,6 @@
-﻿using StreamerBotLib.Models.Repeat;
+﻿using StreamerBotLib.Models.BotManagement;
+using StreamerBotLib.Models.Enums;
+using StreamerBotLib.Models.Repeat;
 using StreamerBotLib.Properties;
 
 using System.Collections.Specialized;
@@ -845,6 +847,15 @@ namespace StreamerBotLib.Static
         /// The user specified time frequency for when to check Twitch for streams appearing online.
         /// </summary>
         public static double TwitchGoLiveFrequency => Settings.Default.TwitchGoLiveFrequency;
+
+
+        private static readonly List<BotAutoStart> _twitchBotList = [
+            new (Bots.TwitchBotSendChatClient, Settings.Default.TwitchBotEventSubAutoStart),
+            new (Bots.TwitchEventSubStreamer, Settings.Default.TwitchStreamEventSubAutoStart),
+            new (Bots.TwitchMultiBot, Settings.Default.TwitchLiveStreamSvcAutoStart),
+            new (Bots.TwitchClipBot, Settings.Default.TwitchClipAutoStart)];
+
+        public static List<BotAutoStart> TwitchBotList => _twitchBotList;
 
         /// <summary>
         /// Flag to warn users of auto-moderation actions.

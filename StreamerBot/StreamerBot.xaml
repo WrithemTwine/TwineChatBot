@@ -35,7 +35,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/StreamerBotLib;component/Models/BotManagement/BotIdKeys.xaml" />
+                <ResourceDictionary Source="/StreamerBotLib;component/Models/BotManagement/BotIdKeysTwitch.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <GUI:GUITwitchBots x:Name="TwitchBot"
                                x:Key="TwitchBot" />
@@ -502,14 +502,14 @@
                                                         <WrapPanel>
                                                             <StackPanel Height="45">
                                                                 <Label x:Name="Label_OverlayService_Start"
-                                                                       Tag="{StaticResource BotIdKey_Services_OverlayService_StartLabel}"
+                                                                       Tag="{StaticResource BotIdKey_Services_Overlay_StartLabel}"
                                                                        Visibility="Collapsed"
                                                                        Loaded="FrameworkElementLoaded">
                                                                     <TextBlock Foreground="{DynamicResource Go}"
                                                                                Text="{DynamicResource Bot_MediaOverlay_Start}" />
                                                                 </Label>
                                                                 <Label x:Name="Label_OverlayService_Stop"
-                                                                       Tag="{StaticResource BotIdKey_Services_OverlayService_StopLabel}"
+                                                                       Tag="{StaticResource BotIdKey_Services_Overlay_StopLabel}"
                                                                        Visibility="Visible"
                                                                        Loaded="FrameworkElementLoaded">
                                                                     <TextBlock Foreground="{DynamicResource Stop}"
@@ -523,7 +523,7 @@
                                                             </CheckBox>
                                                             <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}"
                                                                          x:Name="Radio_Services_OverlayBotStart"
-                                                                         Tag="{StaticResource BotIdKey_Services_OverlayBotStart}"
+                                                                         Tag="{StaticResource BotIdKey_Services_Overlay_Start}"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                                          Loaded="FrameworkElementLoaded">
@@ -531,7 +531,7 @@
                                                             </RadioButton>
                                                             <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}"
                                                                          x:Name="Radio_Services_OverlayBotStop"
-                                                                         Tag="{StaticResource BotIdKey_Services_OverlayBotStop}"
+                                                                         Tag="{StaticResource BotIdKey_Services_Overlay_Stop}"
                                                                          IsEnabled="False"
                                                                          IsChecked="True"
                                                                          PreviewMouseLeftButtonUp="RadioButton_StopBot_PreviewMouseLeftButtonDown"
@@ -540,7 +540,7 @@
                                                             </RadioButton>
                                                             <Label x:Name="Label_OverlayServer_Error"
                                                                    Visibility="Collapsed"
-                                                                   Tag="{StaticResource BotIdKey_Services_OverlayService_Error}"
+                                                                   Tag="{StaticResource BotIdKey_Services_Overlay_Error}"
                                                                    Height="Auto"
                                                                    Loaded="FrameworkElementLoaded">
                                                                 <TextBlock Foreground="{DynamicResource Stop}"
@@ -593,20 +593,20 @@
                                                                     </Grid.ColumnDefinitions>
                                                                     <TextBlock Text="{DynamicResource Bot_AccessAuthorized_Label}" />
                                                                     <TextBlock x:Name="TextBlock_EventSubChat_AccessToken_Valid"
-                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Valid}"
+                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_AuthValid}"
                                                                                Grid.Column="1"
                                                                                Foreground="{DynamicResource BrightGo}"
                                                                                Visibility="Collapsed"
                                                                                Text="{DynamicResource Bot_AccessValid}"
                                                                                Loaded="FrameworkElementLoaded" />
                                                                     <TextBlock x:Name="TextBlock_EventSubChat_AccessToken_Invalid"
-                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Invalid}"
+                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_AuthInvalid}"
                                                                                Grid.Column="1"
                                                                                Foreground="{DynamicResource BrightStop}"
                                                                                Visibility="Visible"
                                                                                Text="{DynamicResource Bot_AccessInvalid}"
                                                                                Loaded="FrameworkElementLoaded" />
-                                                                    <TextBlock Tag="{StaticResource BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Manual}"
+                                                                    <TextBlock Tag="{StaticResource BotIdKey_Twitch_EventSubChat_HelpManual}"
                                                                                Grid.Row="3"
                                                                                Grid.ColumnSpan="2"
                                                                                x:Name="TextBlock_EventSubChat_ManualToken_Info"
@@ -614,7 +614,7 @@
                                                                                Visibility="Visible"
                                                                                Text="{DynamicResource Help_Bot_EventSubChat_ManualToken}"
                                                                                Loaded="FrameworkElementLoaded" />
-                                                                    <TextBlock Tag="{StaticResource BotIdKey_Twitch_EventSubChat_AuthorizeLabel_Auto}"
+                                                                    <TextBlock Tag="{StaticResource BotIdKey_Twitch_EventSubChat_HelpAuto}"
                                                                                Grid.Row="3"
                                                                                Grid.ColumnSpan="2"
                                                                                x:Name="TextBlock_EventSubChat_AuthCode_Info"
@@ -646,7 +646,7 @@
                                                                 <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                             </CheckBox>
                                                             <RadioButton DataContext="{Binding TwitchEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Start"
+                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Start}"
                                                                          x:Name="Radio_Twitch_EventSubBotStart"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
@@ -707,14 +707,14 @@
                                                                     <TextBlock Grid.Row="0"
                                                                                Text="{DynamicResource Bot_AccessAuthorizedScopes_Label}" />
                                                                     <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_Scopes_Valid"
-                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Scopes_Valid}"
+                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_ScopesValid}"
                                                                                Grid.Column="1"
                                                                                Foreground="{DynamicResource BrightGo}"
                                                                                Visibility="Collapsed"
                                                                                Text="{DynamicResource Bot_AccessValid}"
                                                                                Loaded="FrameworkElementLoaded" />
                                                                     <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_Scopes_Invalid"
-                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Scopes_Invalid}"
+                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_ScopesInvalid}"
                                                                                Grid.Column="1"
                                                                                Foreground="{DynamicResource BrightStop}"
                                                                                Visibility="Visible"
@@ -723,7 +723,7 @@
                                                                     <TextBlock Grid.Row="1"
                                                                                Text="{DynamicResource Bot_AccessAuthorizedNoScopes_Label}" />
                                                                     <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_NoScopes_Valid"
-                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_NoScopes_Valid}"
+                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_NoScopesValid}"
                                                                                Grid.Row="1"
                                                                                Grid.Column="1"
                                                                                Foreground="{DynamicResource BrightGo}"
@@ -731,14 +731,14 @@
                                                                                Text="{DynamicResource Bot_AccessValid}"
                                                                                Loaded="FrameworkElementLoaded" />
                                                                     <TextBlock x:Name="TextBlock_EventSubNotify_AccessToken_NoScopes_Invalid"
-                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubChat_NoScopes_Invalid}"
+                                                                               Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_NoScopesInvalid}"
                                                                                Grid.Row="1"
                                                                                Grid.Column="1"
                                                                                Foreground="{DynamicResource BrightStop}"
                                                                                Visibility="Visible"
                                                                                Text="{DynamicResource Bot_AccessInvalid}"
                                                                                Loaded="FrameworkElementLoaded" />
-                                                                    <TextBlock Tag=""
+                                                                    <TextBlock Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_HelpManual}"
                                                                                Grid.Row="3"
                                                                                Grid.ColumnSpan="2"
                                                                                x:Name="TextBlock_EventSubNotify_ManualToken_Info"
@@ -746,7 +746,7 @@
                                                                                Visibility="Visible"
                                                                                Text="{DynamicResource Help_Bot_EventSubNotify_ManualToken}"
                                                                                Loaded="FrameworkElementLoaded" />
-                                                                    <TextBlock  Tag=""
+                                                                    <TextBlock  Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_HelpAuto}"
                                                                                 Grid.Row="3"
                                                                                 Grid.ColumnSpan="2"
                                                                                 x:Name="TextBlock_EventSubNotify_AuthCode_Info"
@@ -759,14 +759,14 @@
                                                             <TextBlock Text="{DynamicResource Bot_EventSubNotifications_Description}" />
                                                             <StackPanel Height="45">
                                                                 <Label x:Name="Label_TwitchBot_EventSubStreamer_Start"
-                                                                       Tag=""
+                                                                       Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_StartLabel}"
                                                                        Visibility="Collapsed"
                                                                        Loaded="FrameworkElementLoaded">
                                                                     <TextBlock Foreground="{DynamicResource Go}"
                                                                                Text="{DynamicResource Bot_EventSubNotifications_Start}" />
                                                                 </Label>
                                                                 <Label x:Name="Label_TwitchBot_EventSubStreamer_Stop"
-                                                                       Tag=""
+                                                                       Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_StopLabel}"
                                                                        Visibility="Visible"
                                                                        Loaded="FrameworkElementLoaded">
                                                                     <TextBlock Foreground="{DynamicResource Stop}"
@@ -778,7 +778,7 @@
                                                                 <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                             </CheckBox>
                                                             <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag=""
+                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_Start}"
                                                                          x:Name="Radio_Twitch_EventSubStreamerStart"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
@@ -786,7 +786,7 @@
                                                                 <TextBlock Text="{DynamicResource Bot_Start_EventSubNotifications}" />
                                                             </RadioButton>
                                                             <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag=""
+                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_Stop}"
                                                                          x:Name="Radio_Twitch_EventSubStreamerStop"
                                                                          IsEnabled="False"
                                                                          IsChecked="True"
@@ -814,14 +814,14 @@
                                                                 <TextBlock Text="{DynamicResource Bot_LiveMonitor_Description}" />
                                                                 <StackPanel Height="45">
                                                                     <Label x:Name="Label_TwitchMultiLive_Start"
-                                                                           Tag=""
+                                                                           Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_StartLabel}"
                                                                            Visibility="Collapsed"
                                                                            Loaded="FrameworkElementLoaded">
                                                                         <TextBlock Foreground="{DynamicResource Go}"
                                                                                    Text="{DynamicResource Bot_LiveMonitor_Start}" />
                                                                     </Label>
                                                                     <Label x:Name="Label_TwitchMultiLive_Stop"
-                                                                           Tag="{BOStatus:BotIdKey Platform=Twitch, Bots=TwitchMultiBot, BotOperationType=SingleBotActive, BotStatusCategory=Stop, BotType=StreamerAccount}"
+                                                                           Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_StopLabel}"
                                                                            Visibility="Visible"
                                                                            Loaded="FrameworkElementLoaded">
                                                                         <TextBlock Foreground="{DynamicResource Stop}"
@@ -833,7 +833,7 @@
                                                                     <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                                 </CheckBox>
                                                                 <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                             Tag=""
+                                                                             Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_Start}"
                                                                              x:Name="Radio_Twitch_LiveBotStart"
                                                                              IsEnabled="False"
                                                                              PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
@@ -841,7 +841,7 @@
                                                                     <TextBlock Text="{DynamicResource Bot_Start_LiveMonitor}" />
                                                                 </RadioButton>
                                                                 <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                             Tag=""
+                                                                             Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_Stop}"
                                                                              x:Name="Radio_Twitch_LiveBotStop"
                                                                              IsEnabled="False"
                                                                              IsChecked="True"
@@ -859,14 +859,14 @@
                                                         <WrapPanel>
                                                             <StackPanel Height="45">
                                                                 <Label x:Name="Label_TwitchClip_Start"
-                                                                       Tag=""
+                                                                       Tag="{StaticResource BotIdKey_Twitch_Clip_StartLabel}"
                                                                        Visibility="Collapsed"
                                                                        Loaded="FrameworkElementLoaded">
                                                                     <TextBlock Foreground="{DynamicResource Go}"
                                                                                Text="{DynamicResource Bot_ClipService_Start}" />
                                                                 </Label>
                                                                 <Label x:Name="Label_TwitchClip_Stop"
-                                                                       Tag="{"
+                                                                       Tag="{StaticResource BotIdKey_Twitch_Clip_StopLabel}"
                                                                        Visibility="Visible"
                                                                        Loaded="FrameworkElementLoaded">
                                                                     <TextBlock Foreground="{DynamicResource Stop}"
@@ -878,7 +878,7 @@
                                                                 <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                             </CheckBox>
                                                             <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag=""
+                                                                         Tag="{StaticResource BotIdKey_Twitch_Clip_Start}"
                                                                          x:Name="Radio_Twitch_ClipBotStart"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
@@ -886,7 +886,7 @@
                                                                 <TextBlock Text="{DynamicResource Bot_Start_ClipService}" />
                                                             </RadioButton>
                                                             <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag=""
+                                                                         Tag="{StaticResource BotIdKey_Twitch_Clip_Stop}"
                                                                          x:Name="Radio_Twitch_ClipBotStop"
                                                                          IsEnabled="False"
                                                                          IsChecked="True"
@@ -895,7 +895,7 @@
                                                                 <TextBlock Text="{DynamicResource Bot_Stop_ClipService}" />
                                                             </RadioButton>
                                                             <Label x:Name="Label_TwitchClip_Error"
-                                                                   Tag=""
+                                                                   Tag="{StaticResource BotIdKey_Twitch_Clip_Error}"
                                                                    Visibility="Collapsed"
                                                                    Height="Auto"
                                                                    Loaded="FrameworkElementLoaded">
@@ -968,6 +968,7 @@
                                                                Content="{Binding Value, ElementName=Slider_TimeClipPollSeconds}" />
                                                     </StackPanel>
                                                     <Slider x:Name="Slider_TimeClipPollSeconds"
+                                                            Tag="{StaticResource BotIdKey_Twitch_Field_LockWhenBotsActive}"
                                                             Height="40"
                                                             Width="Auto"
                                                             AutoToolTipPlacement="TopLeft"
@@ -984,7 +985,8 @@
                                                             IsSnapToTickEnabled="True"
                                                             LostFocus="Settings_LostFocus"
                                                             LargeChange="50"
-                                                            TickFrequency="5" />
+                                                            TickFrequency="5"
+                                                            Loaded="FrameworkElementLoaded" />
                                                 </StackPanel>
                                             </GroupBox>
                                             <!-- Setup Go-Live Notifications -->
@@ -998,6 +1000,7 @@
                                                                Content="{Binding Value, ElementName=Slider_TimeGoLivePollSeconds}" />
                                                     </StackPanel>
                                                     <Slider x:Name="Slider_TimeGoLivePollSeconds"
+                                                            Tag="{StaticResource BotIdKey_Twitch_Field_LockWhenBotsActive}"
                                                             Height="40"
                                                             Width="Auto"
                                                             AutoToolTipPlacement="TopLeft"
@@ -1014,7 +1017,8 @@
                                                             IsSnapToTickEnabled="True"
                                                             LostFocus="Settings_LostFocus"
                                                             LargeChange="50"
-                                                            TickFrequency="10" />
+                                                            TickFrequency="10" 
+                                                            Loaded="FrameworkElementLoaded" />
                                                 </StackPanel>
                                             </GroupBox>
                                         </WrapPanel>
@@ -1035,37 +1039,44 @@
                                                             <StackPanel>
                                                                 <TextBlock x:Uid="ExpiredToken"
                                                                            x:Name="TextBlock_ExpiredCredentialsMsg"
+                                                                           Tag="{StaticResource BotIdKey_Twitch_ExpiredCredentials_Msg}"
                                                                            Foreground="#FFF71553"
                                                                            FontSize="18"
                                                                            HorizontalAlignment="Center"
                                                                            MaxWidth="550"
                                                                            TextAlignment="Center"
                                                                            Visibility="Collapsed"
-                                                                           Text="{DynamicResource Bots_Twitch_ExpiredCredentials}" />
+                                                                           Text="{DynamicResource Bots_Twitch_ExpiredCredentials}" 
+                                                                           Loaded="FrameworkElementLoaded" />
                                                                 <StackPanel Orientation="Horizontal"
                                                                             Margin="10">
                                                                     <Label Content="{DynamicResource Bots_Twitch_ChannelName_Label}" />
                                                                     <TextBox x:Name="TB_Twitch_Channel"
+                                                                             Tag="{Binding BotIdKey_Twitch_Channel_Name}"
                                                                              Text="{Binding TwitchChannelName}"
                                                                              SourceUpdated="TextBox_SourceUpdated"
                                                                              PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                              TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated"
                                                                              TextChanged="TextBox_TextChanged"
                                                                              TextInput="TextBox_TextChanged"
-                                                                             LostFocus="TextBox_TextChanged" />
+                                                                             LostFocus="TextBox_TextChanged"
+                                                                             Loaded="FrameworkElementLoaded" />
                                                                 </StackPanel>
                                                                 <StackPanel Orientation="Horizontal"
                                                                             Margin="10,0">
                                                                     <Label Content="{DynamicResource Bots_Twitch_TokenScope_Label}" />
                                                                     <TextBox x:Name="TextBox_TwitchScopesDiffOauthBot"
+                                                                             Tag="{StaticResource BotIdKey_Twitch_Scopes_DiffAccount}"
                                                                              BorderBrush="Blue"
                                                                              BorderThickness="1"
                                                                              IsReadOnly="True"
                                                                              PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                              SourceUpdated="TextBox_SourceUpdated"
                                                                              DataContext=""
-                                                                             Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}}" />
+                                                                             Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesDiffOauthBot}}"
+                                                                             Loaded="FrameworkElementLoaded" />
                                                                     <TextBox x:Name="TextBox_TwitchScopesOauthSame"
+                                                                             Tag="{StaticResource BotIdKey_Twitch_Scopes_SameAccount}"
                                                                              BorderBrush="Blue"
                                                                              BorderThickness="1"
                                                                              IsReadOnly="True"
@@ -1073,7 +1084,8 @@
                                                                              Visibility="Collapsed"
                                                                              SourceUpdated="TextBox_SourceUpdated"
                                                                              DataContext=""
-                                                                             Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}" />
+                                                                             Text="{Binding Mode=OneWay, Source={x:Static StaticLib:OptionFlags.CredentialsTwitchScopesOauthSame}}"
+                                                                             Loaded="FrameworkElementLoaded" />
                                                                 </StackPanel>
                                                                 <TextBlock Width="300"
                                                                            Text="{DynamicResource Bots_Twitch_SingleChannelNote}"
@@ -1084,13 +1096,15 @@
                                                                             Margin="10">
                                                                     <Label Content="{DynamicResource Bots_Twitch_BotUserName_Label}" />
                                                                     <TextBox x:Name="TB_Twitch_BotUser"
+                                                                             Tag="{StaticResource BotIdKey_Twitch_Bot_Name}"
                                                                              Text="{Binding TwitchBotUserName, Mode=TwoWay}"
                                                                              SourceUpdated="TextBox_SourceUpdated"
                                                                              PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                              TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated"
                                                                              TextChanged="TextBox_TextChanged"
                                                                              TextInput="TextBox_TextChanged"
-                                                                             LostFocus="TextBox_TextChanged" />
+                                                                             LostFocus="TextBox_TextChanged"
+                                                                             Loaded="FrameworkElementLoaded" />
                                                                 </StackPanel>
                                                                 <StackPanel Orientation="Horizontal"
                                                                             Margin="10">
@@ -1115,45 +1129,56 @@
                                                                                     Margin="10">
                                                                             <Label Content="{DynamicResource Bots_Twitch_ClientId_Label}" />
                                                                             <TextBox x:Name="TB_Twitch_ClientID"
+                                                                                     Tag="{StaticResource BotIdKey_Twitch_Bot_ClientId}"
                                                                                      Text="{Binding TwitchBotClientID, Mode=TwoWay}"
                                                                                      ToolTip="{DynamicResource Bots_Twitch_ClientId_Tooltip}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                                      SourceUpdated="TextBox_SourceUpdated"
-                                                                                     TargetUpdated="TextBox_SourceUpdated" />
+                                                                                     TargetUpdated="TextBox_SourceUpdated"
+                                                                                     Loaded="FrameworkElementLoaded" />
                                                                         </StackPanel>
                                                                         <StackPanel Orientation="Horizontal"
                                                                                     Margin="10">
                                                                             <Label Content="{DynamicResource Bots_Twitch_AccessToken_Label}" />
                                                                             <TextBox x:Name="TB_Twitch_AccessToken"
+                                                                                     Tag="{StaticResource BotIdKey_Twitch_Bot_AccessToken}"
                                                                                      Text="{Binding TwitchBotAccessToken, Mode=TwoWay}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                                      SourceUpdated="TextBox_SourceUpdated"
-                                                                                     TargetUpdated="TextBox_SourceUpdated" />
+                                                                                     TargetUpdated="TextBox_SourceUpdated"
+                                                                                     Loaded="FrameworkElementLoaded" />
                                                                         </StackPanel>
                                                                         <StackPanel Orientation="Horizontal"
                                                                                     Margin="10">
                                                                             <Label Content="{DynamicResource Bots_Twitch_RefreshToken_Label}" />
                                                                             <TextBox x:Name="TB_Twitch_RefreshToken"
+                                                                                     Tag="{StaticResource BotIdKey_Twitch_Bot_AccessToken}"
                                                                                      Text="{Binding TwitchBotRefreshToken, Mode=TwoWay}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                                      SourceUpdated="TextBox_SourceUpdated"
-                                                                                     TargetUpdated="TextBox_SourceUpdated" />
+                                                                                     TargetUpdated="TextBox_SourceUpdated"
+                                                                                     Loaded="FrameworkElementLoaded" />
                                                                         </StackPanel>
                                                                         <StackPanel Orientation="Horizontal"
+                                                                                    Tag="{StaticResource BotIdKey_Twitch_Bot_NoScopes_Token}"
                                                                                     Margin="10"
-                                                                                    x:Name="SP_Twitch_UserToken_NoScopes_Bot">
+                                                                                    x:Name="SP_Twitch_UserToken_NoScopes_Bot"
+                                                                                    Loaded="FrameworkElementLoaded" >
                                                                             <TextBlock Text="{DynamicResource Bots_Twitch_NoScopesExplanation}" />
                                                                             <Label Content="{DynamicResource Bots_Twitch_NoScopesToken_Label}" />
                                                                             <TextBox TextWrapping="Wrap"
                                                                                      Text="{Binding TwitchStreamerNoScopesAccessToken, Mode=TwoWay}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
-                                                                                     SourceUpdated="TextBox_SourceUpdated" />
+                                                                                     SourceUpdated="TextBox_SourceUpdated"
+                                                                                     Loaded="FrameworkElementLoaded" />
                                                                             <Button x:Name="Btn_Twitch_RefreshDate_NoScopes"
+                                                                                    Tag="{StaticResource BotIdKey_Twitch_Bot_ReadyToAuthorize_LockBotsActive}"
                                                                                     Content="{DynamicResource Bots_Twitch_RefreshDueDate_Button}"
                                                                                     Width="110"
                                                                                     ToolTip="{DynamicResource Bots_Twitch_RefreshDueDate_Tooltip}"
                                                                                     Click="RefreshButtonNoScopes_Click"
-                                                                                    LostFocus="Settings_LostFocus" />
+                                                                                    LostFocus="Settings_LostFocus" 
+                                                                                    Loaded="FrameworkElementLoaded"/>
                                                                             <Label x:Name="Label_Twitch_RefreshDate_NoScopes"
                                                                                    Width="Auto"
                                                                                    Content="{Binding TwitchStreamerNoScopesTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
@@ -1163,9 +1188,11 @@
                                                             </StackPanel>
                                                         </GroupBox>
                                                         <GroupBox x:Name="GroupBox_Twitch_AdditionalStreamerCredentials"
+                                                                  Tag="{StaticResource BotIdKey_Twitch_Credentials_Streamer_Manual}"
                                                                   Header="{DynamicResource Bots_Twitch_StreamerCredentials_Header}"
                                                                   Visibility="Collapsed"
-                                                                  Width="Auto">
+                                                                  Width="Auto"
+                                                                  Loaded="FrameworkElementLoaded" >
                                                             <StackPanel>
                                                                 <TextBlock Text="{DynamicResource Bots_Twitch_StreamerCredentials_Explanation}"
                                                                            Width="400"
@@ -1174,13 +1201,15 @@
                                                                             Margin="10">
                                                                     <TextBlock x:Uid="ExpiredToken"
                                                                                x:Name="TextBlock_ExpiredStreamerCredentialsMsg"
+                                                                               Tag="{StaticResource BotIdKey_Twitch_ExpiredCredentials_StreamerMsg}"
                                                                                Foreground="#FFF71553"
                                                                                FontSize="18"
                                                                                HorizontalAlignment="Center"
                                                                                MaxWidth="550"
                                                                                TextAlignment="Center"
                                                                                Visibility="Collapsed"
-                                                                               Text="{DynamicResource Bots_Twitch_ExpiredCredentials}" />
+                                                                               Text="{DynamicResource Bots_Twitch_ExpiredCredentials}"
+                                                                               Loaded="FrameworkElementLoaded" />
                                                                     <Button x:Name="Btn_Twitch_RefreshDate_Streamer"
                                                                             Content="{DynamicResource Bots_Twitch_RefreshDueDate_Button}"
                                                                             Width="110"
@@ -1203,10 +1232,12 @@
                                                                                     Margin="10">
                                                                             <Label Content="{DynamicResource Bots_Twitch_ClientId_Label}" />
                                                                             <TextBox TextWrapping="Wrap"
+                                                                                     Tag="{StaticResource BotIdKey_Twitch_Streamer_ClientId}"
                                                                                      Text="{Binding TwitchStreamerClientId, Mode=TwoWay}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                                      ToolTip="{DynamicResource Bots_Twitch_ClientId_Tooltip}"
-                                                                                     SourceUpdated="TextBox_SourceUpdated" />
+                                                                                     SourceUpdated="TextBox_SourceUpdated" 
+                                                                                     Loaded="FrameworkElementLoaded" />
                                                                         </StackPanel>
                                                                         <StackPanel Orientation="Horizontal"
                                                                                     Margin="10">
@@ -1222,9 +1253,11 @@
                                                                             <Label Content="{DynamicResource Bots_Twitch_AccessToken_Label}" />
                                                                             <TextBox TextWrapping="Wrap"
                                                                                      x:Name="TB_TwitchStreamerAccessToken"
+                                                                                     Tag="{StaticResource BotIdKey_Twitch_Streamer_AccessToken}"
                                                                                      Text="{Binding TwitchStreamerAccessToken, Mode=TwoWay}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
-                                                                                     SourceUpdated="TextBox_SourceUpdated" />
+                                                                                     SourceUpdated="TextBox_SourceUpdated" 
+                                                                                     Loaded="FrameworkElementLoaded" />
                                                                         </StackPanel>
                                                                         <StackPanel Orientation="Vertical"
                                                                                     Margin="10"
@@ -1234,9 +1267,11 @@
                                                                             <StackPanel Orientation="Horizontal">
                                                                                 <Label Content="{DynamicResource Bots_Twitch_NoScopesToken_Label}" />
                                                                                 <TextBox TextWrapping="Wrap"
+                                                                                         Tag="{StaticResource BotIdKey_Twitch_Streamer_AccessToken}"
                                                                                          Text="{Binding TwitchStreamerNoScopesAccessToken, Mode=TwoWay}"
                                                                                          PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
-                                                                                         SourceUpdated="TextBox_SourceUpdated" />
+                                                                                         SourceUpdated="TextBox_SourceUpdated" 
+                                                                                         Loaded="FrameworkElementLoaded" />
                                                                             </StackPanel>
                                                                             <StackPanel Orientation="Horizontal">
                                                                                 <Button x:Name="Btn_Twitch_RefreshDate_NoScopesStreamer"
@@ -1298,18 +1333,22 @@
                                                                         <TextBlock Width="90"
                                                                                    Text="{DynamicResource Bots_Twitch_ClientId_Label}" />
                                                                         <TextBox Text="{Binding TwitchAuthBotClientId}"
+                                                                                 Tag="{StaticResource BotIdKey_Twitch_Bot_ClientId}"
                                                                                  SourceUpdated="TextBox_SourceUpdated"
                                                                                  TargetUpdated="TextBox_SourceUpdated"
-                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
+                                                                                 Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <StackPanel Orientation="Horizontal"
                                                                                 Margin="10">
                                                                         <TextBlock Width="90"
                                                                                    Text="{DynamicResource Bots_Twitch_ClientSecret_Label}" />
                                                                         <TextBox Text="{Binding TwitchAuthBotClientSecret}"
+                                                                                 Tag="{StaticResource BotIdKey_Twitch_Bot_ClientSecret}"
                                                                                  SourceUpdated="TextBox_SourceUpdated"
                                                                                  TargetUpdated="TextBox_SourceUpdated"
-                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                                                                 Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <CheckBox Visibility="Collapsed"
                                                                               IsChecked="{Binding TwitchAuthUseInternalBrowser}">
@@ -1323,29 +1362,37 @@
                                                                     <StackPanel Orientation="Horizontal"
                                                                                 HorizontalAlignment="Center">
                                                                         <Button x:Name="Twitch_AuthCode_Button_AuthorizeBot"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Bot_AuthorizeBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeBotToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_ApproveBotURL" />
+                                                                                Click="Button_TwitchAuthCode_ApproveBotURL" 
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                         <Button x:Name="Twitch_AuthCode_Button_AuthorizeBot_Reauthorize"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Bot_ClearAuthBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_ClearBotToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthToken_ReAuthorize" />
+                                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <StackPanel Orientation="Horizontal">
                                                                         <Button x:Name="Twitch_AuthCode_NoScopes_Button_AuthorizeBot"
                                                                                 Visibility="Collapsed"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Bot_NoScopes_AuthorizeBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeNoScopes}"
                                                                                 Width="175"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL" />
+                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL" 
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                         <Button x:Name="Twitch_AuthCode_Button_NoScopesBot_Reauthorize"
                                                                                 Visibility="Collapsed"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Bot_NoScopes_ClearAuthBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_ClearNoScopes}"
                                                                                 Width="175"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthToken_ReAuthorize" />
+                                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </Expander>
@@ -1366,18 +1413,22 @@
                                                                         <TextBlock Width="90"
                                                                                    Text="{DynamicResource Bots_Twitch_ClientId_Label}" />
                                                                         <TextBox Text="{Binding TwitchAuthStreamerClientId}"
+                                                                                 Tag="{StaticResource BotIdKey_Twitch_Streamer_ClientId}"
                                                                                  SourceUpdated="TextBox_SourceUpdated"
                                                                                  TargetUpdated="TextBox_SourceUpdated"
-                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                                                                 Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <StackPanel Orientation="Horizontal"
                                                                                 Margin="10">
                                                                         <TextBlock Width="90"
                                                                                    Text="{DynamicResource Bots_Twitch_ClientSecret_Label}" />
                                                                         <TextBox Text="{Binding TwitchAuthStreamerClientSecret}"
+                                                                                 Tag="{StaticResource BotIdKey_Twitch_Streamer_ClientSecret}"
                                                                                  SourceUpdated="TextBox_SourceUpdated"
                                                                                  TargetUpdated="TextBox_SourceUpdated"
-                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" />
+                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
+                                                                                 Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <CheckBox Visibility="Collapsed"
                                                                               IsChecked="{Binding TwitchAuthUseInternalBrowser}">
@@ -1391,30 +1442,38 @@
                                                                     <StackPanel Orientation="Horizontal"
                                                                                 HorizontalAlignment="Center">
                                                                         <Button x:Name="Twitch_AuthCode_Button_AuthorizeStreamer"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Streamer_AuthorizeBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeScopesToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_ApproveStreamerURL" />
+                                                                                Click="Button_TwitchAuthCode_ApproveStreamerURL" 
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                         <Button x:Name="Twitch_AuthCode_Button_AuthorizeStreamer_Reauthorize"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Streamer_ClearAuthBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_ClearStreamerToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthToken_ReAuthorize" />
+                                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <StackPanel Orientation="Horizontal"
                                                                                 HorizontalAlignment="Center">
                                                                         <Button x:Name="Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Bot_NoScopes_AuthorizeBtn}"
                                                                                 Visibility="Collapsed"
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeNoScopes}"
                                                                                 Width="175"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL" />
+                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL" 
+                                                                                Loaded="FrameworkElementLoaded"/>
                                                                         <Button x:Name="Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer_NoScopes_Reauthorize"
+                                                                                Tag="{StaticResource BotIdKey_Twitch_Bot_NoScopes_ClearAuthBtn}"
                                                                                 Visibility="Collapsed"
                                                                                 Content="{DynamicResource Bots_Twitch_ClearNoScopes}"
                                                                                 Width="175"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthToken_ReAuthorize" />
+                                                                                Click="Button_TwitchAuthToken_ReAuthorize"
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                 </StackPanel>
                                                             </Expander>
@@ -1432,7 +1491,7 @@
                                                                     <TextBlock Width="100"
                                                                                Text="{DynamicResource Bots_Twitch_ChannelName_Label}" />
                                                                     <TextBox x:Name="TextBox_TwitchChannelUserName"
-                                                                             Tag="{BOStatus:BotIdKey Platform=Twitch, BotType=StreamerAccount, BotOperationType=BotsActive}"
+                                                                             Tag="{StaticResource BotIdKey_Twitch_Channel_Name}"
                                                                              Height="22"
                                                                              Text="{Binding TwitchChannelName}"
                                                                              SourceUpdated="TextBox_SourceUpdated"
@@ -1448,23 +1507,27 @@
                                                                     <TextBlock Width="100"
                                                                                Text="{DynamicResource Bots_Twitch_BotUserName_Label}" />
                                                                     <TextBox x:Name="TextBox_TwitchBotUserName"
+                                                                             Tag="{StaticResource BotIdKey_Twitch_Bot_Name}"
                                                                              Text="{Binding TwitchBotUserName}"
                                                                              SourceUpdated="TextBox_SourceUpdated"
                                                                              PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                              TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated"
                                                                              TextChanged="TextBox_TextChanged"
                                                                              TextInput="TextBox_TextChanged"
-                                                                             LostFocus="TextBox_TextChanged" />
+                                                                             LostFocus="TextBox_TextChanged"
+                                                                             Loaded="FrameworkElementLoaded" />
                                                                 </StackPanel>
                                                             </StackPanel>
                                                         </GroupBox>
                                                         <Button DockPanel.Dock="Top"
                                                                 x:Name="Button_TwitchAuthCode_All_ForceReAuthorization"
+                                                                Tag="{StaticResource BotIdKey_Twitch_Bot_ReAuthEverythingBtn}"
                                                                 Content="{DynamicResource Bots_Twitch_ForceReauth}"
                                                                 Width="180"
                                                                 Margin="10"
                                                                 IsEnabled="True"
-                                                                Click="Button_TwitchAuthToken_ReAuthorize" />
+                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                Loaded="FrameworkElementLoaded" />
                                                         <TextBlock Width="400"
                                                                    Text="{DynamicResource Bots_Twitch_NoScopesNote}" />
                                                     </StackPanel>

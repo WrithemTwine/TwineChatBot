@@ -95,6 +95,14 @@ namespace StreamerBotLib.BotClients
             }
         }
 
+        public void StartAutoBot()
+        {
+            if (OptionFlags.MediaOverlayAutoStart)
+            {
+                StartBot();
+            }
+        }
+
         /// <summary>
         /// Probably starts the bot.
         /// </summary>

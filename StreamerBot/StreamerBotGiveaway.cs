@@ -20,7 +20,7 @@ namespace StreamerBot
 
         private void GuiTwitchBot_GiveawayEvents(object sender, BotStartStopEventArgs e)
         {
-            if (e.BotName == Bots.TwitchBotSendChatClient)
+            if (e.Bots == Bots.TwitchBotSendChatClient)
             {
                 RefreshUpdateOverlayTypeChannelPoints();
             }

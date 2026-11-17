@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StreamerBotLib.Models.Enums
+﻿namespace StreamerBotLib.Models.Enums
 {
     public enum BotStatusElements
     {

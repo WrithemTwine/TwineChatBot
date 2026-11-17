@@ -30,6 +30,7 @@ namespace StreamerBot
 
         internal static BotController Controller { get; private set; }
 
+        internal static GUIBotBridge BotBridge { get; private set; }
 
     }
 }

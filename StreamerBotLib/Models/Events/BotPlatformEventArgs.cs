@@ -6,5 +6,5 @@ namespace StreamerBotLib.Models.Events
     {
         public Platform Platform { get; set; } = Platform.Default;
         public Bots Bots { get; set; } = Bots.Default;
-    }    
+    }
 }

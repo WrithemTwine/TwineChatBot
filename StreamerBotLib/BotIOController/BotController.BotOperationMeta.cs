@@ -19,5 +19,41 @@ namespace StreamerBotLib.BotIOController
             }
             return botOperation[botOperationType];
         }
+
+        public void StartBot(Platform p = Platform.Default, BotIdKey key = null)
+        {
+            switch (p)
+            {
+                case Platform.Service:
+                    OverlayServerBot.StartBot();
+                    break;
+                case Platform.Twitch:
+                    TwitchBots.StartBots(key?.Bots);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void StartAutoBots()
+        {
+            OverlayServerBot.StartAutoBot();
+            TwitchBots.StartAutoBots();
+        }
+
+        public void StopBot(Platform p = Platform.Default, BotIdKey key = null)
+        {
+            switch (p)
+            {
+                case Platform.Service:
+                    OverlayServerBot.StopBot();
+                    break;
+                case Platform.Twitch:
+                    TwitchBots.StopBots(key?.Bots);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

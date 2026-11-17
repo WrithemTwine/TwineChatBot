@@ -1,8 +1,6 @@
 ﻿using StreamerBotLib.Culture;
 using StreamerBotLib.Models.Statistics;
 
-using System.Collections.ObjectModel;
-
 namespace StreamerBotLib.GUI
 {
     public class GUIAppStats

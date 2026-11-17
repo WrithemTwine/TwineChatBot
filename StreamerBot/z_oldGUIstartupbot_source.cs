@@ -429,6 +429,26 @@ namespace StreamerBot
         }
 
 
+        private async void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
+        {
+            LogWriter.DebugLog("ToggleButton_ChooseTwitchAuth_Click", DebugLogTypes.GUIBotComs, $"Twitch Auth Code flow chosen {OptionFlags.TwitchTokenUseAuth}.");
+            GUIStopBots_Click(this, new()); // stop the bots to use the new tokens
+
+            if (OptionFlags.TwitchTokenUseAuth)
+            {
+                StackPanel_TwitchTokenFlow.Visibility = Visibility.Collapsed;
+                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPanel_TwitchTokenFlow.Visibility = Visibility.Visible;
+                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
+            }
+
+            await TwitchCheckFocusAsync();
+        }
+
+
         #endregion added to public partial class StreamerBotWindow
 
         internal static GUIOverlayTypeAlerts GUIOverlayTypeAlerts { get; set; }
@@ -1323,24 +1343,6 @@ namespace StreamerBot
             await TwitchCheckFocusAsync();
         }
 
-        private async void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
-        {
-            LogWriter.DebugLog("ToggleButton_ChooseTwitchAuth_Click", DebugLogTypes.GUIBotComs, $"Twitch Auth Code flow chosen {OptionFlags.TwitchTokenUseAuth}.");
-            GUIStopBots_Click(this, new()); // stop the bots to use the new tokens
-
-            if (OptionFlags.TwitchTokenUseAuth)
-            {
-                StackPanel_TwitchTokenFlow.Visibility = Visibility.Collapsed;
-                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                StackPanel_TwitchTokenFlow.Visibility = Visibility.Visible;
-                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
-            }
-
-            await TwitchCheckFocusAsync();
-        }
 
         private void Button_TwitchAuthCode_ApproveBotURL(object sender, RoutedEventArgs e)
         {

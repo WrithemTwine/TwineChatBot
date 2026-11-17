@@ -20,7 +20,8 @@
 
         <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled"
-                                  Width="Auto">
+                                  Width="Auto"
+                                  Foreground="{StaticResource ForegroundText}">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{DynamicResource Help_Twitch_AuthCode_Intro}"/>

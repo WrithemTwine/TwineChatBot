@@ -149,9 +149,9 @@ namespace StreamerBotLib.BotClients
 
             ActiveUserThread = false;
 
+            AddBot(TwitchHelixBot);
             AddBot(TwitchBotClipSvc);
             AddBot(TwitchBotLiveMonitorSvc);
-            AddBot(TwitchHelixBot);
             AddBot(TwitchEventSubBot);
             AddBot(TwitchEventSubStreamer);
             AddBot(TwitchBotSendChatClient);
@@ -286,6 +286,49 @@ namespace StreamerBotLib.BotClients
                 TwitchBotLiveMonitorSvc.HandlersAdded = true;
             }
         }
+
+        #region GUI common methods
+
+        public void StartAutoBots()
+        {
+            foreach (var bot in OptionFlags.TwitchBotList.Where(x => x.AutoStart))
+            {
+                StartBots(bot.BotName);
+            }
+        }
+
+        public void StartBots(Bots? botname)
+        {
+            if (botname == null)
+            {
+                foreach (var bot in BotsList)
+                {
+                    bot.StartBot();
+                }
+            }
+            else
+            {
+                BotsList.FirstOrDefault(x => x.BotClientName == botname)?.StartBot();
+            }
+        }
+
+        public void StopBots(Bots? botname)
+        {
+            if (botname == null)
+            {
+                foreach (var bot in BotsList)
+                {
+                    bot.StopBot();
+                }
+            }
+            else
+            {
+                BotsList.FirstOrDefault(x => x.BotClientName == botname)?.StopBot();
+            }
+        }
+
+        #endregion
+
 
         #region Started-Stopped EventSub Bots
         private void TwitchEventSubBot_OnInitialBotStartupSubHandlers(object sender, EventArgs e)
@@ -682,8 +725,8 @@ namespace StreamerBotLib.BotClients
         public static bool ConfirmHelixApiObjects()
         {
             LogWriter.DebugLog("ConfirmHelixApiObjects", DebugLogTypes.TwitchBots, "Confirming the Helix API objects are constructed and valid.");
-            return 
-                TwitchTokenBot.BotHelixApi != null 
+            return
+                TwitchTokenBot.BotHelixApi != null
                 && TwitchTokenBot.StreamerHelixApi != null
                 && TwitchTokenBot.StreamerNoScopesHelixApi != null;
         }

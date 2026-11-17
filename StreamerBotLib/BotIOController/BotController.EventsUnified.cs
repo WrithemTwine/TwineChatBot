@@ -9,10 +9,7 @@ using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
 using StreamerBotLib.Systems.Overlay.Enums;
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace StreamerBotLib.BotIOController
 {

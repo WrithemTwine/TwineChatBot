@@ -1,24 +1,14 @@
-﻿using StreamerBotLib.BotClients;
-using StreamerBotLib.BotIOController;
+﻿using StreamerBotLib.BotIOController;
 using StreamerBotLib.GUI;
 using StreamerBotLib.GUI.Windows;
-using StreamerBotLib.Models;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
-using StreamerBotLib.Systems.Overlay.Enums;
 
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace StreamerBot
@@ -63,7 +53,6 @@ namespace StreamerBot
 
             ConstructEvents();
             ComboBox_TwitchFollower_RefreshHrs.ItemsSource = new List<int>() { 1, 2, 4, 8, 12, 16, 24, 36, 48, 60, 72 };
-
         }
 
         #region Initializers
@@ -112,7 +101,7 @@ namespace StreamerBot
             NotifyExpiredCredentials += BotWindow_NotifyExpiredCredentials;
             VerifyNewVersion += StreamerBotWindow_VerifyNewVersion;
         }
-      
+
         #endregion
 
 
@@ -157,6 +146,8 @@ namespace StreamerBot
             {
                 _ = Dispatcher.BeginInvoke(() =>
                 {
+                    BotBridge = new(Controller, botControlElements);
+
                     ToggleButton_ChooseTwitchAuth_Click(this, null);
 
                     CheckMessageBoxes();

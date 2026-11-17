@@ -1,9 +1,5 @@
 ﻿using StreamerBotLib.Models.Enums;
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace StreamerBotLib.Models.BotManagement
 {
     public abstract class BotOperationBase(Platform platform)

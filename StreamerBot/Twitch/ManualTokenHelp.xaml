@@ -18,7 +18,8 @@
 
         <FlowDocumentScrollViewer Margin="10" 
                                   VerticalScrollBarVisibility="Auto"
-                                  ScrollViewer.CanContentScroll="True">
+                                  ScrollViewer.CanContentScroll="True"
+                                  Foreground="{StaticResource ForegroundText}">
             <FlowDocument FontSize="12" PagePadding="5">
                 <Section>
                     <Paragraph>

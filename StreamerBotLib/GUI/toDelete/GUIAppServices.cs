@@ -2,7 +2,7 @@
 
 using System.ComponentModel;
 
-namespace StreamerBotLib.GUI
+namespace StreamerBotLib.GUI.toDelete
 {
     public class GUIAppServices : GUIBotBase, INotifyPropertyChanged
     {

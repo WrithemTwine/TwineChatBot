@@ -24,7 +24,7 @@ namespace StreamerBot
             {
                 case BotStatusElements.Live:
                 case BotStatusElements.NotLive:
-                    BotStatusSummary.SetElement( BotStatusData.Any(b => (bool)b.Live.Value == true),
+                    BotStatusSummary.SetElement(BotStatusData.Any(b => (bool)b.Live.Value == true),
                         BotStatusElements.Live);
                     break;
                 case BotStatusElements.Followers:

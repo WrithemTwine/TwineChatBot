@@ -8,14 +8,11 @@ using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.Interfaces;
 using StreamerBotLib.Models.Schedule;
 using StreamerBotLib.Models.Users;
-using StreamerBotLib.Properties;
 using StreamerBotLib.Static;
 using StreamerBotLib.Systems;
-using StreamerBotLib.Systems.Overlay.Enums;
 
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 
 using TwitchLib.Api.Services.Events.FollowerService;
 using TwitchLib.Api.Services.Events.LiveStreamMonitor;
@@ -120,7 +117,7 @@ namespace StreamerBotLib.BotIOController
             BotsList.Add(TwitchBots);
             BotsList.Add(OverlayServerBot);
 
-            
+
             SetBotOperations();
         }
 

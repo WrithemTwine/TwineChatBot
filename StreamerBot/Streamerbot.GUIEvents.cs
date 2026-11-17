@@ -251,7 +251,22 @@ namespace StreamerBot
             BeginUpdateCategory();
         }
 
+        private void ToggleButton_ChooseTwitchAuth_Click(object sender, RoutedEventArgs e)
+        {
+            LogWriter.DebugLog("ToggleButton_ChooseTwitchAuth_Click", DebugLogTypes.GUIBotComs, $"Twitch Auth Code flow chosen {OptionFlags.TwitchTokenUseAuth}.");
 
+            if (OptionFlags.TwitchTokenUseAuth)
+            {
+                StackPanel_TwitchTokenFlow.Visibility = Visibility.Collapsed;
+                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPanel_TwitchTokenFlow.Visibility = Visibility.Visible;
+                StackPanel_TwitchAuthCodeFlow.Visibility = Visibility.Collapsed;
+            }
+
+        }
         #endregion
     }
 }
