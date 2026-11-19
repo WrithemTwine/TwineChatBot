@@ -27,10 +27,12 @@ namespace StreamerBot
 
 
         private readonly GUIAppStats guiAppStats;
+        internal static GUIOverlayTypeAlerts GUIOverlayTypeAlerts { get; set; }
 
         internal static BotController Controller { get; private set; }
 
         internal static GUIBotBridge BotBridge { get; private set; }
+
 
     }
 }

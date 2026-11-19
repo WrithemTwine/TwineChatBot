@@ -61,5 +61,25 @@ namespace StreamerBotLib.Models.BotManagement
         {
             return Platform == platform && Bots == bots && BotType == botType && BotOperationType == botOperationType && NeedSecondAccount == needSecondAccount;
         }
+
+        public bool IsSelected(Platform platform, Bots bots, BotOperationTypes botOperationType, bool needSecondAccount = false)
+        {
+            return Platform == platform && Bots == bots && BotOperationType == botOperationType && NeedSecondAccount == needSecondAccount;
+        }
+
+        public bool IsSelected(Platform platform, Bots bots, BotType botType, bool needSecondAccount = false)
+        {
+            return Platform == platform && Bots == bots && BotType == botType && NeedSecondAccount == needSecondAccount;
+        }
+
+        public bool IsSelected(Platform platform, Bots bots, BotType botType)
+        {
+            return Platform == platform && Bots == bots && BotType == botType;
+        }
+
+        public bool IsSelected(Platform platform, Bots bots, BotOperationTypes botOperationType, BotStatusCategory botStatusCategory)
+        {
+            return Platform == platform && Bots == bots && BotOperationType == botOperationType && BotStatusCategory == botStatusCategory;
+        }
     }
 }

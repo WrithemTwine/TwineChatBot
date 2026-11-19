@@ -5,6 +5,7 @@
         ReadyToAuthorize,
         Authorize,
         ApiReady,
+        CheckApiReady,
         BotsActive,
         SingleBotActive,
         UseSecondAccount

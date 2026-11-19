@@ -9,6 +9,7 @@ using StreamerBotLib.GUI.Data;
 using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Models.Events;
 using StreamerBotLib.Models.MachineLearning;
+using StreamerBotLib.Models.Users;
 using StreamerBotLib.Static;
 
 using System.Data;

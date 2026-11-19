@@ -449,6 +449,71 @@ namespace StreamerBot
         }
 
 
+        private void RadioButton_StartBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as RadioButton).IsEnabled)
+            {
+                (sender as RadioButton).IsEnabled = false;
+                DispatchStartBotAsync((sender as RadioButton).DataContext as IOModule);
+            }
+        }
+
+        private void RadioButton_StopBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if ((sender as RadioButton).IsEnabled)
+            {
+                DispatchStopBot((sender as RadioButton).DataContext as IOModule);
+            }
+        }
+
+        /// <summary>
+        /// Will force start all bots currently not started, regardless of "start if Live" setting is selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStartBots_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var B in BotOps)
+            {
+                if (B.Item3.IsEnabled) // isenabled is a check the credentials are added to the bot
+                {
+                    DispatchStartBotAsync(B.Item3.DataContext as IOModule);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Will stop all bots currently not stopped, regardless of "stop when offline" setting.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStopBots_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var B in BotOps)
+            {
+                if ((B.Item3.DataContext as IOModule).IsActive == true)
+                {
+                    DispatchStopBot(B.Item3.DataContext as IOModule);
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         #endregion added to public partial class StreamerBotWindow
 
         internal static GUIOverlayTypeAlerts GUIOverlayTypeAlerts { get; set; }
@@ -878,22 +943,7 @@ namespace StreamerBot
             });
         }
 
-        private void RadioButton_StartBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if ((sender as RadioButton).IsEnabled)
-            {
-                (sender as RadioButton).IsEnabled = false;
-                DispatchStartBotAsync((sender as RadioButton).DataContext as IOModule);
-            }
-        }
 
-        private void RadioButton_StopBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if ((sender as RadioButton).IsEnabled)
-            {
-                DispatchStopBot((sender as RadioButton).DataContext as IOModule);
-            }
-        }
 
         private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -1108,37 +1158,6 @@ namespace StreamerBot
             }), null);
         }
 
-        /// <summary>
-        /// Will force start all bots currently not started, regardless of "start if Live" setting is selected
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GUIStartBots_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (var B in BotOps)
-            {
-                if (B.Item3.IsEnabled) // isenabled is a check the credentials are added to the bot
-                {
-                    DispatchStartBotAsync(B.Item3.DataContext as IOModule);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Will stop all bots currently not stopped, regardless of "stop when offline" setting.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GUIStopBots_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (var B in BotOps)
-            {
-                if ((B.Item3.DataContext as IOModule).IsActive == true)
-                {
-                    DispatchStopBot(B.Item3.DataContext as IOModule);
-                }
-            }
-        }
 
         /// <summary>
         /// Manages the GUI updates for when bots are started. Hides and enables buttons 

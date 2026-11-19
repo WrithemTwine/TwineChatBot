@@ -258,6 +258,25 @@ namespace StreamerBotLib.BotClients
             TwitchTokenBot.StreamerNoScopesAuthCodeExpired += TwitchTokenBot_StreamerNoScopesAuthCodeExpired;
             TwitchTokenBot.StreamerAccessTokenChanged += TwitchTokenBot_StreamerAccessTokenChanged; // just set a flag for the ad thread to read the Ad Schedule
             TwitchTokenBot.StreamerAccessTokenUnChanged += TwitchTokenBot_StreamerAccessTokenChanged; // just set a flag for the ad thread to read the Ad Schedule
+
+
+            // add Failed handler
+            TwitchBotClipSvc.OnBotFailedStart += TwitchBots_OnBotFailedStart;
+            TwitchBotLiveMonitorSvc.OnBotFailedStart += TwitchBots_OnBotFailedStart;
+            TwitchEventSubBot.OnBotFailedStart += TwitchBots_OnBotFailedStart;
+            TwitchEventSubStreamer.OnBotFailedStart += TwitchBots_OnBotFailedStart;
+        }
+
+        private void TwitchBots_OnBotFailedStart(object sender, EventArgs e)
+        {
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = (sender as IOModule).BotClientName,
+                Started = false,
+                Stopped = true,
+                Error = true
+            });
         }
 
         private void TwitchTokenBot_AccessTokensInitialized(object sender, EventArgs e)
@@ -397,6 +416,14 @@ namespace StreamerBotLib.BotClients
                     GetAllFollowers();
                 });
             }
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchEventSubStreamer,
+                Started = true,
+                Stopped = false
+            });
         }
 
         private void TwitchEventSubStreamer_OnBotStopped(object sender, EventArgs e)
@@ -411,12 +438,28 @@ namespace StreamerBotLib.BotClients
                 // if same stream is still active, starting the bot again to grab the stream, the stop time will overwrite the stop time from earlier stopping the EventSub bot
                 InvokeBotEvent(this, BotEvents.TwitchStreamOffline, null);
             }
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchEventSubStreamer,
+                Started = false,
+                Stopped = true
+            });
         }
 
         private void TwitchEventSubBot_OnBotStarted(object sender, EventArgs e)
         {
             LogWriter.DebugLog("TwitchEventSubBot_OnBotStarted", DebugLogTypes.TwitchBots, "EventSub bot is now started.");
             InvokeBotEvent(this, BotEvents.TwitchBotEventSubStarted, null);
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchEventSubBot,
+                Started = true,
+                Stopped = false
+            });
         }
 
         private void TwitchEventSubBot_OnBotStopped(object sender, EventArgs e)
@@ -425,6 +468,14 @@ namespace StreamerBotLib.BotClients
             InvokeBotEvent(this, BotEvents.TwitchBotEventSubStopped, null);
 
             CheckActiveBots();
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchEventSubBot,
+                Started = false,
+                Stopped = true
+            });
         }
 
         //private void TwitchBotEventSubChatClient_OnBotStarted(object sender, EventArgs e)
@@ -704,6 +755,14 @@ namespace StreamerBotLib.BotClients
             LogWriter.DebugLog("TwitchLiveMonitor_OnBotStarted", DebugLogTypes.TwitchBots, "Bot started, registering handles.");
 
             RegisterHandlers();
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchMultiBot,
+                Started = true,
+                Stopped = false
+            });
         }
 
         private void LiveStreamMonitor_OnStreamOnline(object sender, OnStreamOnlineArgs e)
@@ -716,6 +775,14 @@ namespace StreamerBotLib.BotClients
         private void TwitchBotLiveMonitorSvc_OnBotStopped(object sender, EventArgs e)
         {
             CheckActiveBots();
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchMultiBot,
+                Started = false,
+                Stopped = true
+            });
         }
 
         #endregion
@@ -1267,11 +1334,27 @@ namespace StreamerBotLib.BotClients
             //BulkLoadClips = ThreadManager.CreateThread("TwitchBotClipSvc_OnBotStarted", ProcessClipsAsync);
             //MultiThreadOps.Add(BulkLoadClips);
             //BulkLoadClips.Start();
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchClipBot,
+                Started = true,
+                Stopped = false
+            });
         }
 
         private void TwitchBotClipSvc_OnBotStopped(object sender, EventArgs e)
         {
             CheckActiveBots();
+
+            InvokeBotEvent(this, BotEvents.TwitchBotStatusChanged, new BotStartStopEventArgs()
+            {
+                Platform = Platform.Twitch,
+                Bots = Bots.TwitchClipBot,
+                Started = false,
+                Stopped = true
+            });
         }
 
         public void ClipMonitorServiceOnNewClipFound(object sender, OnNewClipsDetectedArgs e)

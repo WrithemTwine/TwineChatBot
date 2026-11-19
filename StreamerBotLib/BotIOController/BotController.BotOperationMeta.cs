@@ -20,6 +20,16 @@ namespace StreamerBotLib.BotIOController
             return botOperation[botOperationType];
         }
 
+        public void PerformBotOperation(BotOperationTypes botOperationTypes, Platform p = Platform.Default, Bots bots = Bots.Default)
+        {
+            List<BotOperationBase> performTask = (p == Platform.Default) ?  BotOperationStatus : [BotOperationStatus.FirstOrDefault(b => b.Platform == p)];
+
+            foreach(var bot in performTask)
+            {
+                _ = bot.PerformOperation(botOperationTypes, bots: bots);
+            }
+        }
+
         public void StartBot(Platform p = Platform.Default, BotIdKey key = null)
         {
             switch (p)
@@ -29,6 +39,10 @@ namespace StreamerBotLib.BotIOController
                     break;
                 case Platform.Twitch:
                     TwitchBots.StartBots(key?.Bots);
+                    break;
+                case Platform.Default:
+                    OverlayServerBot.StartBot();
+                    TwitchBots.StartBots(null);
                     break;
                 default:
                     break;
@@ -50,6 +64,10 @@ namespace StreamerBotLib.BotIOController
                     break;
                 case Platform.Twitch:
                     TwitchBots.StopBots(key?.Bots);
+                    break;
+                case Platform.Default:
+                    OverlayServerBot.StopBot();
+                    TwitchBots.StopBots(null);
                     break;
                 default:
                     break;

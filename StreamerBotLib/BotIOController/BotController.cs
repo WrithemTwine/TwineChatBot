@@ -36,9 +36,10 @@ namespace StreamerBotLib.BotIOController
         public event EventHandler OnStreamOffline;
 
         internal event EventHandler OnBulkFollowerStarted;
+        public event EventHandler<BotStartStopEventArgs> BotStatusChanged;
 
         private readonly Dictionary<Platform, bool> PlatformOnlineStatus = new(from Platform P in Enum.GetValues<Platform>()
-                                                                               select new KeyValuePair<Platform, bool>(P, false));
+                                  select new KeyValuePair<Platform, bool>(P, false));
 
         // public SystemsController Systems { get; private set; }
         public static DataBot DataBot { get; private set; }
@@ -158,12 +159,17 @@ namespace StreamerBotLib.BotIOController
                 OverlayServerBot.NewOverlayEventHandler,
                 OverlayServerBot.UpdatedTickerEventHandler
                 );
+
+            OverlayServerBot.OnBotStarted += Services_OnBotStarted;
+            OverlayServerBot.OnBotStopped += Services_OnBotStopped;
+            OverlayServerBot.OnBotFailedStart += Services_OnBotFailedStart;
         }
 
         private void SetBotOperations()
         {
             BotOperationStatus.Clear();
             BotOperationStatus.Add(new BotOperationTwitch(TwitchBots, Platform.Twitch));
+            BotOperationStatus.Add(new BotOperationService(OverlayServerBot, Platform.Service));
         }
 
         #endregion
@@ -333,8 +339,10 @@ namespace StreamerBotLib.BotIOController
                             break;
                         case BotEvents.HandleBotEventEmpty:
                             break;
+                        case BotEvents.TwitchBotStatusChanged:
+                            TwitchBotStatusChanged((BotStartStopEventArgs)e.e);
+                            break;
                     }
-
                 }
                 catch (Exception ex)
                 {

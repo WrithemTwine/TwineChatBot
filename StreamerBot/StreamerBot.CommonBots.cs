@@ -1,13 +1,23 @@
 ﻿using StreamerBotLib.Models.BotManagement;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
 using System.Windows;
+using System.Windows.Controls;
 
 namespace StreamerBot
 {
     public partial class StreamerBotWindow
     {
         private readonly List<BotRegistry> botControlElements = [];
+
+
+        private void InitializeBotBridge()
+        {
+            BotBridge = new(Controller, botControlElements);
+            BotBridge.InitializeAsync();
+        }
+
 
         private void RegisterElement(FrameworkElement frameworkElement, BotIdKey botIdKey)
         {

@@ -37,14 +37,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/StreamerBotLib;component/Models/BotManagement/BotIdKeysTwitch.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <GUI:GUITwitchBots x:Name="TwitchBot"
-                               x:Key="TwitchBot" />
             <GUI:GUIAppStats x:Name="AppStats"
                              x:Key="AppStats" />
-            <GUI:GUIAppServices x:Name="AppServices"
-                                x:Key="AppServices" />
             <local:DebugFlags x:Name="DebugFlags"
                               x:Key="DebugFlags" />
+            <ModConv:BoolVisibilityConverter x:Name="BoolVisibilityConverter"
+                                             x:Key="BoolVisibilityConverter" />
             <ContextMenu x:Key="DataGrid_ContextMenu"
                          x:Name="DataGrid_ContextMenu">
                 <MenuItem x:Name="DataGridContextMenu_AddItem"
@@ -521,16 +519,14 @@
                                                                       IsChecked="{Binding MediaOverlayAutoStart}">
                                                                 <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                             </CheckBox>
-                                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}"
-                                                                         x:Name="Radio_Services_OverlayBotStart"
+                                                            <RadioButton x:Name="Radio_Services_OverlayBotStart"
                                                                          Tag="{StaticResource BotIdKey_Services_Overlay_Start}"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                                          Loaded="FrameworkElementLoaded">
                                                                 <TextBlock Text="{DynamicResource Bot_Start_MediaOverlay}" />
                                                             </RadioButton>
-                                                            <RadioButton DataContext="{Binding MediaOverlayServer, Mode=OneWay, Source={StaticResource AppServices}}"
-                                                                         x:Name="Radio_Services_OverlayBotStop"
+                                                            <RadioButton x:Name="Radio_Services_OverlayBotStop"
                                                                          Tag="{StaticResource BotIdKey_Services_Overlay_Stop}"
                                                                          IsEnabled="False"
                                                                          IsChecked="True"
@@ -645,16 +641,14 @@
                                                                       IsChecked="{Binding TwitchBotEventSubAutoStart}">
                                                                 <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                             </CheckBox>
-                                                            <RadioButton DataContext="{Binding TwitchEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Start}"
+                                                            <RadioButton Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Start}"
                                                                          x:Name="Radio_Twitch_EventSubBotStart"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                                          Loaded="FrameworkElementLoaded">
                                                                 <TextBlock Text="{DynamicResource Bot_Start_EventSubChat}" />
                                                             </RadioButton>
-                                                            <RadioButton DataContext="{Binding TwitchEventSubBot, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Stop}"
+                                                            <RadioButton Tag="{StaticResource BotIdKey_Twitch_EventSubChat_Stop}"
                                                                          x:Name="Radio_Twitch_EventSubBotStop"
                                                                          IsEnabled="False"
                                                                          IsChecked="True"
@@ -777,16 +771,14 @@
                                                                       IsChecked="{Binding TwitchStreamEventSubAutoStart}">
                                                                 <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                             </CheckBox>
-                                                            <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_Start}"
+                                                            <RadioButton Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_Start}"
                                                                          x:Name="Radio_Twitch_EventSubStreamerStart"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                                          Loaded="FrameworkElementLoaded">
                                                                 <TextBlock Text="{DynamicResource Bot_Start_EventSubNotifications}" />
                                                             </RadioButton>
-                                                            <RadioButton DataContext="{Binding TwitchEventSubStreamer, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_Stop}"
+                                                            <RadioButton Tag="{StaticResource BotIdKey_Twitch_EventSubNotify_Stop}"
                                                                          x:Name="Radio_Twitch_EventSubStreamerStop"
                                                                          IsEnabled="False"
                                                                          IsChecked="True"
@@ -832,16 +824,14 @@
                                                                           IsChecked="{Binding TwitchLiveStreamSvcAutoStart}">
                                                                     <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                                 </CheckBox>
-                                                                <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                             Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_Start}"
+                                                                <RadioButton Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_Start}"
                                                                              x:Name="Radio_Twitch_LiveBotStart"
                                                                              IsEnabled="False"
                                                                              PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                                              Loaded="FrameworkElementLoaded">
                                                                     <TextBlock Text="{DynamicResource Bot_Start_LiveMonitor}" />
                                                                 </RadioButton>
-                                                                <RadioButton DataContext="{Binding TwitchBotLiveMonitorSvc, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                             Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_Stop}"
+                                                                <RadioButton Tag="{StaticResource BotIdKey_Twitch_LiveMonitor_Stop}"
                                                                              x:Name="Radio_Twitch_LiveBotStop"
                                                                              IsEnabled="False"
                                                                              IsChecked="True"
@@ -877,16 +867,14 @@
                                                                       IsChecked="{Binding TwitchClipAutoStart}">
                                                                 <TextBlock Text="{DynamicResource Common_AutoStart}" />
                                                             </CheckBox>
-                                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag="{StaticResource BotIdKey_Twitch_Clip_Start}"
+                                                            <RadioButton Tag="{StaticResource BotIdKey_Twitch_Clip_Start}"
                                                                          x:Name="Radio_Twitch_ClipBotStart"
                                                                          IsEnabled="False"
                                                                          PreviewMouseLeftButtonDown="RadioButton_StartBot_PreviewMouseLeftButtonDown"
                                                                          Loaded="FrameworkElementLoaded">
                                                                 <TextBlock Text="{DynamicResource Bot_Start_ClipService}" />
                                                             </RadioButton>
-                                                            <RadioButton DataContext="{Binding TwitchClip, Mode=OneWay, Source={StaticResource TwitchBot}}"
-                                                                         Tag="{StaticResource BotIdKey_Twitch_Clip_Stop}"
+                                                            <RadioButton Tag="{StaticResource BotIdKey_Twitch_Clip_Stop}"
                                                                          x:Name="Radio_Twitch_ClipBotStop"
                                                                          IsEnabled="False"
                                                                          IsChecked="True"
@@ -1017,7 +1005,7 @@
                                                             IsSnapToTickEnabled="True"
                                                             LostFocus="Settings_LostFocus"
                                                             LargeChange="50"
-                                                            TickFrequency="10" 
+                                                            TickFrequency="10"
                                                             Loaded="FrameworkElementLoaded" />
                                                 </StackPanel>
                                             </GroupBox>
@@ -1046,7 +1034,7 @@
                                                                            MaxWidth="550"
                                                                            TextAlignment="Center"
                                                                            Visibility="Collapsed"
-                                                                           Text="{DynamicResource Bots_Twitch_ExpiredCredentials}" 
+                                                                           Text="{DynamicResource Bots_Twitch_ExpiredCredentials}"
                                                                            Loaded="FrameworkElementLoaded" />
                                                                 <StackPanel Orientation="Horizontal"
                                                                             Margin="10">
@@ -1163,7 +1151,7 @@
                                                                                     Tag="{StaticResource BotIdKey_Twitch_Bot_NoScopes_Token}"
                                                                                     Margin="10"
                                                                                     x:Name="SP_Twitch_UserToken_NoScopes_Bot"
-                                                                                    Loaded="FrameworkElementLoaded" >
+                                                                                    Loaded="FrameworkElementLoaded">
                                                                             <TextBlock Text="{DynamicResource Bots_Twitch_NoScopesExplanation}" />
                                                                             <Label Content="{DynamicResource Bots_Twitch_NoScopesToken_Label}" />
                                                                             <TextBox TextWrapping="Wrap"
@@ -1177,8 +1165,8 @@
                                                                                     Width="110"
                                                                                     ToolTip="{DynamicResource Bots_Twitch_RefreshDueDate_Tooltip}"
                                                                                     Click="RefreshButtonNoScopes_Click"
-                                                                                    LostFocus="Settings_LostFocus" 
-                                                                                    Loaded="FrameworkElementLoaded"/>
+                                                                                    LostFocus="Settings_LostFocus"
+                                                                                    Loaded="FrameworkElementLoaded" />
                                                                             <Label x:Name="Label_Twitch_RefreshDate_NoScopes"
                                                                                    Width="Auto"
                                                                                    Content="{Binding TwitchStreamerNoScopesTokenDate, FallbackValue=1/1/1900, Mode=TwoWay, StringFormat=MM/dd/yyyy}" />
@@ -1192,7 +1180,7 @@
                                                                   Header="{DynamicResource Bots_Twitch_StreamerCredentials_Header}"
                                                                   Visibility="Collapsed"
                                                                   Width="Auto"
-                                                                  Loaded="FrameworkElementLoaded" >
+                                                                  Loaded="FrameworkElementLoaded">
                                                             <StackPanel>
                                                                 <TextBlock Text="{DynamicResource Bots_Twitch_StreamerCredentials_Explanation}"
                                                                            Width="400"
@@ -1236,7 +1224,7 @@
                                                                                      Text="{Binding TwitchStreamerClientId, Mode=TwoWay}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                                      ToolTip="{DynamicResource Bots_Twitch_ClientId_Tooltip}"
-                                                                                     SourceUpdated="TextBox_SourceUpdated" 
+                                                                                     SourceUpdated="TextBox_SourceUpdated"
                                                                                      Loaded="FrameworkElementLoaded" />
                                                                         </StackPanel>
                                                                         <StackPanel Orientation="Horizontal"
@@ -1256,7 +1244,7 @@
                                                                                      Tag="{StaticResource BotIdKey_Twitch_Streamer_AccessToken}"
                                                                                      Text="{Binding TwitchStreamerAccessToken, Mode=TwoWay}"
                                                                                      PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
-                                                                                     SourceUpdated="TextBox_SourceUpdated" 
+                                                                                     SourceUpdated="TextBox_SourceUpdated"
                                                                                      Loaded="FrameworkElementLoaded" />
                                                                         </StackPanel>
                                                                         <StackPanel Orientation="Vertical"
@@ -1270,7 +1258,7 @@
                                                                                          Tag="{StaticResource BotIdKey_Twitch_Streamer_AccessToken}"
                                                                                          Text="{Binding TwitchStreamerNoScopesAccessToken, Mode=TwoWay}"
                                                                                          PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
-                                                                                         SourceUpdated="TextBox_SourceUpdated" 
+                                                                                         SourceUpdated="TextBox_SourceUpdated"
                                                                                          Loaded="FrameworkElementLoaded" />
                                                                             </StackPanel>
                                                                             <StackPanel Orientation="Horizontal">
@@ -1336,7 +1324,7 @@
                                                                                  Tag="{StaticResource BotIdKey_Twitch_Bot_ClientId}"
                                                                                  SourceUpdated="TextBox_SourceUpdated"
                                                                                  TargetUpdated="TextBox_SourceUpdated"
-                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll" 
+                                                                                 PreviewMouseLeftButtonDown="PreviewMouseLeftButton_SelectAll"
                                                                                  Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <StackPanel Orientation="Horizontal"
@@ -1366,14 +1354,14 @@
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeBotToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_ApproveBotURL" 
+                                                                                Click="Button_TwitchAuthCode_ApproveBotURL"
                                                                                 Loaded="FrameworkElementLoaded" />
                                                                         <Button x:Name="Twitch_AuthCode_Button_AuthorizeBot_Reauthorize"
                                                                                 Tag="{StaticResource BotIdKey_Twitch_Bot_ClearAuthBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_ClearBotToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                                Click="Button_TwitchAuthToken_ReAuthorize"
                                                                                 Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <StackPanel Orientation="Horizontal">
@@ -1383,7 +1371,7 @@
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeNoScopes}"
                                                                                 Width="175"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL" 
+                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL"
                                                                                 Loaded="FrameworkElementLoaded" />
                                                                         <Button x:Name="Twitch_AuthCode_Button_NoScopesBot_Reauthorize"
                                                                                 Visibility="Collapsed"
@@ -1391,7 +1379,7 @@
                                                                                 Content="{DynamicResource Bots_Twitch_ClearNoScopes}"
                                                                                 Width="175"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                                Click="Button_TwitchAuthToken_ReAuthorize"
                                                                                 Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                 </StackPanel>
@@ -1446,14 +1434,14 @@
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeScopesToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_ApproveStreamerURL" 
+                                                                                Click="Button_TwitchAuthCode_ApproveStreamerURL"
                                                                                 Loaded="FrameworkElementLoaded" />
                                                                         <Button x:Name="Twitch_AuthCode_Button_AuthorizeStreamer_Reauthorize"
                                                                                 Tag="{StaticResource BotIdKey_Twitch_Streamer_ClearAuthBtn}"
                                                                                 Content="{DynamicResource Bots_Twitch_ClearStreamerToken}"
                                                                                 Width="160"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                                Click="Button_TwitchAuthToken_ReAuthorize"
                                                                                 Loaded="FrameworkElementLoaded" />
                                                                     </StackPanel>
                                                                     <StackPanel Orientation="Horizontal"
@@ -1464,8 +1452,8 @@
                                                                                 Content="{DynamicResource Bots_Twitch_AuthorizeNoScopes}"
                                                                                 Width="175"
                                                                                 Margin="5"
-                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL" 
-                                                                                Loaded="FrameworkElementLoaded"/>
+                                                                                Click="Button_TwitchAuthCode_NoScopes_ApproveURL"
+                                                                                Loaded="FrameworkElementLoaded" />
                                                                         <Button x:Name="Twitch_AuthCode_NoScopes_Button_AuthorizeStreamer_NoScopes_Reauthorize"
                                                                                 Tag="{StaticResource BotIdKey_Twitch_Bot_NoScopes_ClearAuthBtn}"
                                                                                 Visibility="Collapsed"
@@ -1499,7 +1487,7 @@
                                                                              TargetUpdated="TextBox_TwitchChannelBotNames_TargetUpdated"
                                                                              TextChanged="TextBox_TextChanged"
                                                                              TextInput="TextBox_TextChanged"
-                                                                             LostFocus="TextBox_TextChanged" 
+                                                                             LostFocus="TextBox_TextChanged"
                                                                              Loaded="FrameworkElementLoaded" />
                                                                 </StackPanel>
                                                                 <StackPanel Orientation="Horizontal"
@@ -1526,7 +1514,7 @@
                                                                 Width="180"
                                                                 Margin="10"
                                                                 IsEnabled="True"
-                                                                Click="Button_TwitchAuthToken_ReAuthorize" 
+                                                                Click="Button_TwitchAuthToken_ReAuthorize"
                                                                 Loaded="FrameworkElementLoaded" />
                                                         <TextBlock Width="400"
                                                                    Text="{DynamicResource Bots_Twitch_NoScopesNote}" />
@@ -2030,17 +2018,13 @@
                                                               Unchecked="CheckDebug">
                                                         <TextBlock Text="{DynamicResource Options_DebugLiveStream}" />
                                                     </CheckBox>
-                                                    <CheckBox IsChecked="{Binding ManageClearButtonEnabled}"
-                                                              Checked="SetVisibility"
-                                                              Unchecked="SetVisibility">
+                                                    <CheckBox IsChecked="{Binding ManageClearButtonEnabled, NotifyOnSourceUpdated=True}">
                                                         <CheckBox.ToolTip>
                                                             <TextBlock Text="{DynamicResource Options_ManageClearButton_Tooltip}" />
                                                         </CheckBox.ToolTip>
                                                         <TextBlock Text="{DynamicResource Options_ManageClearButton}" />
                                                     </CheckBox>
-                                                    <CheckBox IsChecked="{Binding EnableManageDataOptions}"
-                                                              Checked="SetVisibility"
-                                                              Unchecked="SetVisibility">
+                                                    <CheckBox IsChecked="{Binding EnableManageDataOptions}">
                                                         <CheckBox.ToolTip>
                                                             <TextBlock Text="{DynamicResource Options_EnableManageData_Tooltip}" />
                                                         </CheckBox.ToolTip>
@@ -2128,13 +2112,13 @@
                                                         <TextBlock Text="{DynamicResource Options_MediaOverlay_ClickNote}" />
                                                     </Label>
                                                     <CheckBox x:Name="CheckBox_MediaOverlay_Enable"
-                                                              IsChecked="{Binding MediaOverlayEnabled}"
+                                                              IsChecked="{Binding MediaOverlayEnabled, NotifyOnSourceUpdated=True}"
                                                               Checked="CheckBox_Checked_PanelVisibility"
                                                               Unchecked="CheckBox_Checked_PanelVisibility">
                                                         <TextBlock Text="{DynamicResource Options_MediaOverlay_Enable}" />
                                                     </CheckBox>
                                                     <StackPanel x:Name="StackPanel_MediaOverlay_MediaOptions"
-                                                                Visibility="Collapsed"
+                                                                Visibility="{Binding MediaOverlayEnabled, Converter={StaticResource BoolVisibilityConverter}}"
                                                                 Loaded="CheckBox_Checked_PanelVisibility"
                                                                 Margin="0,0,0,0">
                                                         <CheckBox IsChecked="{Binding MediaOverlayChannelPoints}">
@@ -2155,14 +2139,14 @@
                                             <GroupBox Header="{DynamicResource Options_MediaOverlay_MultiEventHeader}">
                                                 <StackPanel>
                                                     <CheckBox Name="Options_MediaOverlay_CheckBox_UseMultipleEvents"
-                                                              IsChecked="{Binding MediaOverlayUseMultipleEvents}"
+                                                              IsChecked="{Binding MediaOverlayUseMultipleEvents, NotifyOnSourceUpdated=True}"
                                                               Checked="CheckBox_Checked_PanelVisibility"
                                                               Unchecked="CheckBox_Checked_PanelVisibility">
                                                         <TextBlock Text="{DynamicResource Options_MediaOverlay_UseMultipleEvents}" />
                                                     </CheckBox>
                                                     <StackPanel Name="Options_MediaOverlay_StackPanel_MultiEventOptions"
                                                                 Loaded="CheckBox_Checked_PanelVisibility"
-                                                                Visibility="Collapsed">
+                                                                Visibility="{Binding MediaOverlayUseMultipleEvents, Converter={StaticResource BoolVisibilityConverter}}">
                                                         <TextBlock Text="{DynamicResource Options_MediaOverlay_UseMultiple_Info}" />
                                                         <RadioButton IsChecked="{Binding MediaOverlayUseElimRandom}">
                                                             <TextBlock Text="{DynamicResource Options_MediaOverlay_UseMultiple_EliminationRandom}" />
@@ -2242,9 +2226,7 @@
                                             <GroupBox Header="{DynamicResource Options_ModerateFollows_Header}">
                                                 <StackPanel>
                                                     <CheckBox x:Name="CheckBox_ModFollower_BanEnable"
-                                                              IsChecked="{Binding TwitchFollowerAutoBanBots}"
-                                                              Checked="CheckBox_Checked_PanelVisibility"
-                                                              Unchecked="CheckBox_Checked_PanelVisibility">
+                                                              IsChecked="{Binding TwitchFollowerAutoBanBots, NotifyOnSourceUpdated=True}">
                                                         <StackPanel>
                                                             <TextBlock TextDecorations="Strikethrough"
                                                                        Text="{DynamicResource Options_ModerateFollows_Enable}" />
@@ -2253,8 +2235,7 @@
                                                     </CheckBox>
                                                     <StackPanel x:Name="StackPanel_ModerateFollowers_Count"
                                                                 Orientation="Vertical"
-                                                                Visibility="Hidden"
-                                                                Loaded="CheckBox_Checked_PanelVisibility">
+                                                                Visibility="{Binding TwitchFollowerAutoBanBots, Converter={StaticResource BoolVisibilityConverter}}">
                                                         <TextBlock Text="{DynamicResource Options_ModerateFollows_ClusterNote}" />
                                                         <StackPanel Orientation="Horizontal">
                                                             <Label Content="{DynamicResource Options_ModerateFollows_Choose}" />
@@ -2579,7 +2560,8 @@
                                             </GroupBox>
                                             <!-- Data Management (last group in this sub-tab) -->
                                             <GroupBox x:Name="GroupBox_ManageDataOptions"
-                                                      Header="{DynamicResource Options_DataManagement_Header}">
+                                                      Header="{DynamicResource Options_DataManagement_Header}"
+                                                      Visbility="{Binding EnableManageDataOptions, Source={x:Static s:Settings.Default}, NotifyOnSourceUpdated=True, Converter={StaticResource BoolVisibilityConverter}}">
                                                 <StackPanel>
                                                     <Label>
                                                         <TextBlock Foreground="Red"
@@ -2764,15 +2746,12 @@
                                                         <TextBlock Text="{DynamicResource Options_Twitch_FollowOptions_PruneNonFollowers}" />
                                                     </CheckBox>
                                                     <CheckBox x:Name="CheckBox_TwitchFollower_LimitMsgs"
-                                                              IsChecked="{Binding TwitchFollowerEnableMsgLimit}"
-                                                              Checked="CheckBox_Checked_PanelVisibility"
-                                                              Unchecked="CheckBox_Checked_PanelVisibility">
+                                                              IsChecked="{Binding TwitchFollowerEnableMsgLimit, NotifyOnSourceUpdated=True}">
                                                         <TextBlock Text="{DynamicResource Options_Twitch_FollowOptions_LimitMessages}" />
                                                     </CheckBox>
                                                     <StackPanel x:Name="StackPanel_TwitchFollower_LimitMsgs_Count"
                                                                 Orientation="Vertical"
-                                                                Visibility="Collapsed"
-                                                                Loaded="CheckBox_Checked_PanelVisibility">
+                                                                Visibility="{Binding TwitchFollowerEnableMsgLimit, Converter={StaticResource BoolVisibilityConverter}}">
                                                         <TextBlock Text="{DynamicResource Options_Twitch_FollowOptions_LimitNote}" />
                                                         <StackPanel Orientation="Horizontal">
                                                             <TextBlock Text="{DynamicResource Options_Twitch_FollowOptions_LimitChoose}" />
@@ -2795,9 +2774,7 @@
                                                                 LargeChange="5" />
                                                     </StackPanel>
                                                     <CheckBox x:Name="CheckBox_TwitchFollower_AutoRefresh"
-                                                              IsChecked="{Binding TwitchFollowerAutoRefresh, Mode=TwoWay}"
-                                                              Checked="CheckBox_Checked_PanelVisibility"
-                                                              Unchecked="CheckBox_Checked_PanelVisibility">
+                                                              IsChecked="{Binding TwitchFollowerAutoRefresh, Mode=TwoWay, NotifyOnSourceUpdated=True}">
                                                         <CheckBox.ToolTip>
                                                             <TextBlock Text="{DynamicResource Options_Twitch_FollowOptions_AutoRefresh_Tooltip}" />
                                                         </CheckBox.ToolTip>
@@ -2805,7 +2782,7 @@
                                                     </CheckBox>
                                                     <StackPanel x:Name="StackPanel_TwitchFollows_RefreshHrs"
                                                                 Orientation="Horizontal"
-                                                                Visibility="Hidden"
+                                                                Visibility="{Binding TwitchFollowerAutoRefresh, Converter={StaticResource BoolVisibilityConverter}}"
                                                                 Loaded="CheckBox_Checked_PanelVisibility">
                                                         <Label Content="{DynamicResource Options_Twitch_FollowOptions_RefreshHours_Label}" />
                                                         <ComboBox x:Name="ComboBox_TwitchFollower_RefreshHrs"
@@ -3105,7 +3082,7 @@
                     </TabItem>
                     <TabItem Header="{DynamicResource Schedule_TabHeader}"
                              x:Name="TabItem_Schedule"
-                             Visibility="Collapsed"
+                             Visibility="{Binding ScheduleUseSchedule, Source={x:Static s:Settings.Default}, Converter={StaticResource BoolVisibilityConverter}}"
                              VerticalAlignment="Stretch">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Schedule_Tab_OverallInfo}" />
@@ -3555,6 +3532,7 @@
                                                                 Height="20"
                                                                 Width="130"
                                                                 Margin="70,0,15,0"
+                                                                IsEnabled="{Binding ManageClearButtonEnabled, Source={x:Static s:Settings.Default}}"
                                                                 Click="Button_ClearNonFollowers_Click">
                                                             <Button.ToolTip>
                                                                 <TextBlock Text="{DynamicResource Data_UserData_ClearNonFollowers_Tooltip}" />
@@ -3564,6 +3542,7 @@
                                                                 Content="{DynamicResource Data_UserData_ResetWatchTime}"
                                                                 Height="20"
                                                                 Width="120"
+                                                                IsEnabled="{Binding ManageClearButtonEnabled, Source={x:Static s:Settings.Default}}"
                                                                 Click="Button_ClearWatchTime_Click"
                                                                 Margin="15,0,15,0" />
                                                     </StackPanel>
@@ -3768,6 +3747,7 @@
                                                                 Height="20"
                                                                 Width="147"
                                                                 Content="{DynamicResource Data_Currency_ClearAllValues}"
+                                                                IsEnabled="{Binding ManageClearButtonEnabled, Source={x:Static s:Settings.Default}}"
                                                                 VerticalAlignment="Center"
                                                                 HorizontalAlignment="Right"
                                                                 Click="Button_ClearCurrencyAccrlValues_Click" />
@@ -4476,7 +4456,8 @@
                                 </TabItem>
                                 <!-- Overlays sub-tab -->
                                 <TabItem x:Name="TabItem_Overlays"
-                                         Header="{DynamicResource Data_Overlays_SubHeader}">
+                                         Header="{DynamicResource Data_Overlays_SubHeader}"
+                                         Visibility="{Binding MediaOverlayEnabled, Source={x:Static s:Settings.Default}, Converter={StaticResource BoolVisibilityConverter}}">
                                     <TabControl>
                                         <!-- Events inner tab -->
                                         <TabItem Header="{DynamicResource Data_Overlays_Events_SubHeader}">

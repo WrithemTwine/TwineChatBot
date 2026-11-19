@@ -20,6 +20,36 @@ namespace StreamerBotLib.Models.BotManagement
             }
         }
 
+        public async Task<bool> PerformOperation(BotOperationTypes botOperationType, Bots bots)
+        {
+            bool output = false;
+            switch (botOperationType)
+            {
+                case BotOperationTypes.ReadyToAuthorize:
+                    output = await TryCheckReadyToAuthorizeAsync();
+                    break;
+                case BotOperationTypes.Authorize:
+                    output = await TryCheckAuthorizeAsync();
+                    break;
+                case BotOperationTypes.ApiReady:
+                    output = await TryCheckApiReadyAsync();
+                    break;
+                case BotOperationTypes.BotsActive:
+                    output = await TryCheckBotsActiveAsync();
+                    break;
+                case BotOperationTypes.SingleBotActive:
+                    output = await TryCheckBotsActiveAsync(bots);
+                    break;
+                case BotOperationTypes.CheckApiReady:
+                    output = await TryCheckApiReadyAsync();
+                    break;
+                default:
+                    break;
+            }
+
+            return output;
+        }
+
         /// <summary>
         /// Specifies the platform for the current bot calculation
         /// </summary>

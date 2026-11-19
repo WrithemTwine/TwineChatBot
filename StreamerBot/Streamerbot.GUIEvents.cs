@@ -1,4 +1,5 @@
-﻿using StreamerBotLib.Models.Enums;
+﻿using StreamerBotLib.Models.BotManagement;
+using StreamerBotLib.Models.Enums;
 using StreamerBotLib.Static;
 
 using System.Windows;
@@ -17,26 +18,6 @@ namespace StreamerBot
         private void TextBox_TwitchBotLog_TextChanged(object sender, TextChangedEventArgs e)
         {
             (sender as TextBox).ScrollToEnd();
-        }
-
-        /// <summary>
-        /// Manage GUI element visibility based on user selection. The intent is to add friendly protection
-        /// to prevent accidentally clicking buttons and deleting, often unrecoverable, data-or the latest backup at the least.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SetVisibility(object sender, RoutedEventArgs e)
-        {
-            if (Button_ClearCurrencyAccrlValues != null
-                && Button_ClearCurrencyAccrlValues != null
-                && Button_ClearWatchTime != null
-                && GroupBox_ManageDataOptions != null)
-            {
-                Button_ClearCurrencyAccrlValues.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-                Button_ClearNonFollowers.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-                Button_ClearWatchTime.IsEnabled = OptionFlags.ManageClearButtonEnabled;
-                GroupBox_ManageDataOptions.Visibility = OptionFlags.EnableManageDataOptions ? Visibility.Visible : Visibility.Collapsed;
-            }
         }
 
         private void CheckBox_ManageData_Click(object sender, RoutedEventArgs e)
@@ -147,34 +128,6 @@ namespace StreamerBot
                     SetVisibility(RadioButton_RepeatTimer_SlowDownOption.IsChecked == true ? RadioButton_RepeatTimer_SlowDownOption : RadioButton_RepeatTimer_ThresholdOption, GroupBox_RepeatTimer_ThresholdOptions);
                 }
             }
-            else if (TBSource?.Name == CheckBox_MediaOverlay_Enable.Name || SPSource?.Name == StackPanel_MediaOverlay_MediaOptions.Name)
-            {
-                SetVisibility(CheckBox_MediaOverlay_Enable, StackPanel_MediaOverlay_MediaOptions);
-
-                TabItem_Overlays?.Visibility = CheckBox_MediaOverlay_Enable.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            }
-            else if (TBSource?.Name == Options_MediaOverlay_CheckBox_UseMultipleEvents.Name || SPSource?.Name == Options_MediaOverlay_StackPanel_MultiEventOptions.Name)
-            {
-                SetVisibility(Options_MediaOverlay_CheckBox_UseMultipleEvents, Options_MediaOverlay_StackPanel_MultiEventOptions);
-            }
-            else if (TBSource?.Name == Options_CheckBox_UseSchedule.Name)
-            {
-                SetVisibility(Options_CheckBox_UseSchedule, TabItem_Schedule);
-
-                TabItem_Schedule?.Visibility = Options_CheckBox_UseSchedule.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
-            }
-            else if (TBSource?.Name == CheckBox_ModFollower_BanEnable.Name || SPSource?.Name == StackPanel_ModerateFollowers_Count.Name)
-            {
-                SetVisibility(CheckBox_ModFollower_BanEnable, StackPanel_ModerateFollowers_Count);
-            }
-            else if (TBSource?.Name == CheckBox_TwitchFollower_LimitMsgs.Name || SPSource?.Name == StackPanel_TwitchFollower_LimitMsgs_Count.Name)
-            {
-                SetVisibility(CheckBox_TwitchFollower_LimitMsgs, StackPanel_TwitchFollower_LimitMsgs_Count);
-            }
-            else if (TBSource?.Name == CheckBox_TwitchFollower_AutoRefresh.Name || SPSource?.Name == StackPanel_TwitchFollows_RefreshHrs.Name)
-            {
-                SetVisibility(CheckBox_TwitchFollower_AutoRefresh, StackPanel_TwitchFollows_RefreshHrs);
-            }
         }
 
         private void CheckBox_RepeatWhenLive_UnChecked(object sender, RoutedEventArgs e)
@@ -267,6 +220,46 @@ namespace StreamerBot
             }
 
         }
+
+
+        private void RadioButton_StartBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is RadioButton { IsEnabled: true, Tag: BotIdKey key } rb)
+            {
+                rb.IsEnabled = false;
+                BotBridge.StartBot(key);
+            }
+        }
+
+        private void RadioButton_StopBot_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is RadioButton { IsEnabled: true, Tag: BotIdKey key } rb)
+            {
+                BotBridge.StopBot(key);
+            }
+        }
+
+        /// <summary>
+        /// Will force start all bots currently not started, regardless of "start if Live" setting is selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStartBots_Click(object sender, RoutedEventArgs e)
+        {
+            BotBridge.StartAll();
+        }
+
+        /// <summary>
+        /// Will stop all bots currently not stopped, regardless of "stop when offline" setting.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GUIStopBots_Click(object sender, RoutedEventArgs e)
+        {
+            BotBridge.StopAll();
+        }
+
+
         #endregion
     }
 }

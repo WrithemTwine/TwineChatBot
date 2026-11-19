@@ -18,6 +18,11 @@ namespace StreamerBotLib.BotIOController
     {
         #region Twitch Bot Events
 
+        public void TwitchBotStatusChanged(BotStartStopEventArgs e)
+        {
+            HandleBotStatusChanged(e);
+        }
+
         /// <summary>
         /// Interface method to ask TwitchFollowBot to query Twitch for the followers of the channel, which then posts the followers back into the system through the TwitchPostNewFollowers event method.
         /// </summary>

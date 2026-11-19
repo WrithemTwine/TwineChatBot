@@ -4,5 +4,6 @@
     {
         public bool Started { get; set; }
         public bool Stopped { get; set; }
+        public bool Error { get; set; } = false;
     }
 }

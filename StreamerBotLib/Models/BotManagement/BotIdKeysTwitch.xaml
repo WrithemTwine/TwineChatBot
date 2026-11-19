@@ -33,7 +33,7 @@
                        Platform="Service"
                        Bots="MediaOverlayServer"
                        BotType="Service"
-                       BotOperationType="ApiReady"
+                       BotOperationType="SingleBotActive"
                        BotStatusCategory="Error"
                        LabelOperationVisibility="False" />
     <!-- ========== Twitch: EventSub Chat (bot account) ========== -->
@@ -411,4 +411,10 @@
                        LabelOperationVisibility="False"
                        NeedSecondAccount="False"
                        UseAutoToken="False" />
+    <BOStatus:BotIdKey x:Key="BotIdKey_Twitch_Field_LockWhenBotsActive"
+                       Platform="Twitch"
+                       BotOperationType="BotsActive"
+                       BotStatusCategory="Label"
+                       NeedSecondAccount="False"
+                       LockAnyBotActive="True" />
 </ResourceDictionary>

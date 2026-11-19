@@ -37,6 +37,7 @@
         TwitchCurrentUsers,
         TwitchChannelCheer,
         TwitchResumeStreamOnline,
-        TwitchFoundViewerCategory
+        TwitchFoundViewerCategory,
+        TwitchBotStatusChanged
     }
 }

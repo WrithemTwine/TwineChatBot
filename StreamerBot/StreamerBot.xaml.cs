@@ -34,6 +34,7 @@ namespace StreamerBot
             SetDatabaseChoice();
 
             Controller = new BotController(DataManage_OnLoadCompleted);
+            GUIOverlayTypeAlerts = ActionSystem.GUIOverlayTypeAlerts;
 
             InitializeComponent();
             SetTheme(); // adjust the theme, if user selected a different theme.
@@ -146,7 +147,6 @@ namespace StreamerBot
             {
                 _ = Dispatcher.BeginInvoke(() =>
                 {
-                    BotBridge = new(Controller, botControlElements);
 
                     ToggleButton_ChooseTwitchAuth_Click(this, null);
 
@@ -154,7 +154,8 @@ namespace StreamerBot
                     CheckBox_ManageData_Click(this, new());
                     CheckBox_TabifySettings_Clicked(this, new());
                     CheckDebug(this, new());
-                    SetVisibility(this, new());
+                    //SetVisibility(this, new());
+                    InitializeBotBridge();
                 });
             });
         }
@@ -269,10 +270,5 @@ namespace StreamerBot
 
 
         #endregion
-
-        private void TextBlock_EventSubNotify_AccessToken_Scopes_Valid_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

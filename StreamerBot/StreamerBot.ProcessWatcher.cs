@@ -16,7 +16,7 @@ namespace StreamerBot
         /// <summary>
         /// Handler to stop the bots when the credentials are expired. The thread acting on the bots must be the GUI thread, hence this notification.
         /// </summary>
-        public event EventHandler NotifyExpiredCredentials;
+        public event EventHandler<BotPlatformEventArgs> NotifyExpiredCredentials;
 
         public event EventHandler VerifyNewVersion;
 
@@ -42,7 +42,7 @@ namespace StreamerBot
                     {
 #if DEBUG
 #else
-                        NotifyExpiredCredentials?.Invoke(this, new());
+                        NotifyExpiredCredentials?.Invoke(this, new() { Platform = Platform.Twitch});
 #endif
                     }
 
@@ -182,28 +182,14 @@ namespace StreamerBot
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BotWindow_NotifyExpiredCredentials(object sender, EventArgs e)
+        private void BotWindow_NotifyExpiredCredentials(object sender, BotPlatformEventArgs e)
         {
             LogWriter.DebugLog("BotWindow_NotifyExpiredCredentials", DebugLogTypes.GUIEvents, "Notification the bot tokens are now expired.");
 
-            List<RadioButton> BotOps =
-            [
-                Radio_Twitch_ClipBotStop,
-                Radio_Twitch_LiveBotStop,
-            ];
-
             Dispatcher.Invoke(() =>
             {
-                foreach (RadioButton button in BotOps)
-                {
-                    HelperStopBot(button);
-                }
-
-                LogWriter.DebugLog("BotWindow_NotifyExpiredCredentials", DebugLogTypes.GUIEvents, "Stopped all bots due to expired tokens.");
-
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                TwitchCheckFocusAsync();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                LogWriter.DebugLog("BotWindow_NotifyExpiredCredentials", DebugLogTypes.GUIEvents, $"Stopped all {e.Platform} bots due to expired tokens.");
+                BotBridge.StopAll(e.Platform);
             });
         }
 

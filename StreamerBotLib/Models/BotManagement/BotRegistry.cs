@@ -19,5 +19,10 @@ namespace StreamerBotLib.Models.BotManagement
         {
             return HashCode.Combine(FrameworkElement, BotIdKey);
         }
+
+        public static Visibility SetVisibility(bool isEnabled, bool LabelOperationVisibility = true)
+        {
+            return isEnabled == LabelOperationVisibility ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 }

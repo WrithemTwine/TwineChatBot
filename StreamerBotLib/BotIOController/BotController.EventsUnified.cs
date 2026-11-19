@@ -17,6 +17,16 @@ namespace StreamerBotLib.BotIOController
     {
         #region Handle Bot Events
 
+        #region Bot Status Updates
+
+        public void HandleBotStatusChanged(BotStartStopEventArgs e)
+        {
+            BotStatusChanged?.Invoke(this, e);
+        }
+
+        #endregion
+
+
         #region Followers
 
         /// <summary>
@@ -788,7 +798,6 @@ namespace StreamerBotLib.BotIOController
         #endregion
 
         #region MediaOverlay
-
 
         /// <summary>
         /// Sends the initial ticker items to the overlay server bot, which may include information such as the latest subscriber, latest gift subscriber, or other relevant data that should be displayed on the stream overlay when it first loads. This method is specifically for sending the initial ticker items from the data bot to the overlay server bot, and may be called when the stream starts or when the overlay is initialized to ensure that the most up-to-date information is displayed on the overlay.
